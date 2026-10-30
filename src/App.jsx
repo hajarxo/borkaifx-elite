@@ -1148,10 +1148,10 @@ function HomePage({ setPage }) {
           </div>
           <div className="bx-card p-5">
             <StepDot n="3" />
-            <h3 className="mt-3 text-lg font-extrabold">Pide tu enlace</h3>
+            <h3 className="mt-3 text-lg font-extrabold">Obten Acceso</h3>
             <p className="mt-2 text-sm bx-muted">Contacta con soporte para hacer tu afiliación y tener acceso inmediato.</p>
             <div className="mt-4">
-              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-btn">Pedir mi enlace</a>
+              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-btn">Solicitar Acceso</a>
             </div>
           </div>
         </div>
