@@ -29,36 +29,47 @@ const RES_KEY = "borkaifx_elite_resources_v1";
    CONFIGURACIÓN DE INICIO / SERVICIOS — EDITA AQUÍ TUS DATOS
    ============================================================ */
 const SITE = {
-  // Enlaces de afiliado. Si url está vacío, el botón pide el enlace por Telegram.
+  // WhatsApp oficial: se usa SOLO en el Copytrading (botón "ACTIVAR MI CUENTA AHORA").
+  // Acepta enlace corto (wa.link, ya trae su mensaje) o "https://wa.me/58XXXXXXXXXX".
+  whatsapp: "https://wa.link/2myrg1",
+
+  // Brokers afiliados para el acceso VIP gratis (url vacío = el botón lleva a Telegram)
   affiliates: [
-    { broker: "WELTRADE", url: "" },
-    { broker: "DERIV", url: "" },
+    { broker: "Weltrade", url: "https://es.gowt.net/ib62502" },
+    { broker: "Deriv", url: "https://t.deriv.link/?t=BTTB98WZMRTQ" },
+    { broker: "Vantage", url: "https://vigco.co/la-com-inv/r9mYycMr" },
+    { broker: "AXI", url: "https://records.axiaffiliates.com/visit/?bta=39248&brand=axitrader" },
   ],
-  // Depósito mínimo para el acceso VIP gratis (ej. "$50"). Vacío = "consultar".
-  minDeposit: "",
-  // Planes del pase VIP. price vacío = "Consultar". Ej: price: "$49", period: "/ mes"
+  vipMinDeposit: "$300 USD",
+
+  // Copytrading MT5
+  copyAffiliates: [
+    { broker: "AXI", url: "https://records.axiaffiliates.com/visit/?bta=39248&brand=axitrader" },
+    { broker: "Vantage", url: "https://vigco.co/la-com-inv/r9mYycMr" },
+    { broker: "Deriv", url: "https://t.deriv.link/?t=BTTB98WZMRTQ" },
+  ],
+  copyPrice: "$30 USD",
+  copyMinDeposit: "$500 USD",
+
+  // Planes del pase VIP (amount en USD, months = duración)
   plans: [
-    { name: "VIP Mensual", price: "", period: "/ mes", highlight: false },
-    { name: "VIP Trimestral", price: "", period: "/ 3 meses", highlight: true },
-    { name: "VIP Anual", price: "", period: "/ año", highlight: false },
+    { name: "Plan Mensual", amount: 70, months: 1, label: "Pago mensual" },
+    { name: "Plan Trimestral", amount: 150, months: 3, label: "Pago cada 3 meses" },
+    { name: "Plan Anual", amount: 300, months: 12, label: "Pago anual" },
   ],
   planFeatures: [
     "Acceso al canal VIP de Telegram",
     "Señales de CFDs y Sintéticos",
-    "Niveles de entrada, SL y TP en cada señal",
+    "Acceso al Curso & Entrenamiento",
     "Gestión de riesgo sugerida",
   ],
-  botPoints: [
-    { title: "Formato estándar", text: "Cada señal indica par, dirección, entrada (o Entry 1 / Entry 2), Stop Loss y Take Profits." },
-    { title: "Gestión de riesgo", text: "Se sugiere un riesgo por operación en cada señal." },
-    { title: "Seguimiento hasta el cierre", text: "Se informa cuando se alcanzan los TP, el SL o el Break Even." },
-    { title: "Registro público", text: "Los resultados cerrados se publican en la Bitácora VIP, medidos en pips o puntos." },
-  ],
+
   courseModules: [
-    { title: "Fundamentos del mercado", text: "Cómo funcionan los CFDs y los índices sintéticos." },
-    { title: "Lectura de gráficos", text: "Estructura de mercado y zonas clave para planificar entradas." },
-    { title: "Gestión de riesgo", text: "Cuánto arriesgar por operación y cómo proteger tu capital." },
-    { title: "Plan y psicología", text: "Disciplina, control emocional y cómo seguir las señales VIP." },
+    { title: "Curso fundamental", text: "Las bases para empezar desde cero o reforzar lo que ya sabes." },
+    { title: "Estrategia para operar XAUUSD (Oro)", text: "Estrategia aplicada al oro." },
+    { title: "Estrategia para operar Divisas (Forex)", text: "Estrategia aplicada a los pares de divisas." },
+    { title: "Estrategia para operar Índices", text: "Estrategia aplicada a los índices." },
+    { title: "Ebook “Domina la Mente”", text: "Ebook sobre mentalidad y disciplina del trader." },
   ],
 };
 
@@ -1023,36 +1034,61 @@ const goTo = (id) => {
   if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
-const TgButton = ({ children = "✈ Unirme al Telegram", className = "bx-btn" }) => (
-  <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={className}>{children}</a>
-);
+// Enlace de WhatsApp oficial (con mensaje opcional). Si no está configurado, usa Telegram.
+const waHref = (msg) => {
+  const base = SITE.whatsapp;
+  if (!base) return TELEGRAM_URL;
+  // Los enlaces cortos (wa.link) ya incluyen su mensaje: se usan tal cual
+  if (!/wa\.me|api\.whatsapp\.com/.test(base)) return base;
+  return msg ? `${base}${base.includes("?") ? "&" : "?"}text=${encodeURIComponent(msg)}` : base;
+};
+const fmtMoney = (n) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
 
 const SectionTitle = ({ kicker, title, text }) => (
-  <div className="mb-5">
+  <div className="mb-6 text-center">
     <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">{kicker}</div>
     <h2 className="mt-1 text-2xl md:text-3xl font-black tracking-tight">{title}</h2>
-    {text && <p className="mt-2 text-sm md:text-base bx-ink2 max-w-2xl">{text}</p>}
+    {text && <p className="mt-2 text-sm md:text-base bx-ink2 max-w-2xl text-center mx-auto">{text}</p>}
   </div>
 );
 
+const StepDot = ({ n }) => (
+  <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-white mx-auto" style={{ background: ACCENT }}>{n}</div>
+);
+
+// Botón de broker: si hay enlace de afiliado lo abre; si no, pide el enlace por WhatsApp
+const BrokerBtn = ({ b, wa = false }) =>
+  b.url ? (
+    <a href={b.url} target="_blank" rel="noopener noreferrer sponsored" className="bx-btn text-center">{b.broker}</a>
+  ) : (
+    <a href={wa ? waHref() : TELEGRAM_URL} target="_blank" rel="noopener noreferrer" title="Unirte al VIP" className="bx-ghost text-center">{b.broker}</a>
+  );
+
 function HomePage({ setPage }) {
-  const anchors = [["servicios", "Servicios"], ["vip-gratis", "VIP gratis"], ["bot", "Bot"], ["curso", "Curso"], ["precios", "Precios"]];
+  const [cpStep, setCpStep] = useState(0);
+  const anchors = [["servicios", "Servicios"], ["vip-gratis", "VIP gratis"], ["copytrading", "Copytrading"], ["curso", "Curso"], ["precios", "Precios"]];
+
+  const cpSteps = [
+    { title: "Registro en broker afiliado", text: "Abre tu cuenta mediante los enlaces oficiales de afiliado en una de las plataformas soportadas:", brokers: true },
+    { title: "Depósito de capital de trabajo", text: `Deposita un mínimo de ${SITE.copyMinDeposit} directamente en tu cuenta de trading.`, note: "El dinero permanece a tu nombre, con control total para retirar tu capital y tus ganancias en cualquier momento." },
+    { title: "Verificación y confirmación de cuenta", text: "Envía tu número de ID/CR de trading únicamente por el WhatsApp oficial para validar la vinculación a la red." },
+    { title: "Conexión MT5 y validación", text: "Te enviamos las instrucciones para vincular tu cuenta MT5 a la cuenta maestra y replicar las operaciones en tiempo real." },
+    { title: "Monitoreo y disfrute de beneficios 24/5", text: "Sigue tus operaciones en vivo desde la aplicación de MT5, con 0% de comisión sobre las ganancias." },
+  ];
+  const cs = cpSteps[cpStep];
+
   return (
-    <div className="space-y-14">
+    <div className="space-y-16">
       {/* HERO INICIO */}
-      <section className="bx-card p-6 md:p-10" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}>
+      <section className="bx-card p-6 md:p-10 text-center" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}>
         <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">ECOSISTEMA {BRAND}</div>
         <h1 className="mt-2 text-3xl md:text-5xl font-black tracking-tight leading-tight">
           <span style={{ color: "#FFFFFF" }}>Señales claras.</span> <span style={{ color: ACCENT }}>Resultados</span> <span style={{ color: "#FFFFFF" }}>a la vista.</span>
         </h1>
-        <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl">
+        <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl mx-auto text-center">
           Canal VIP de señales en CFDs y Sintéticos, con una bitácora pública donde cada operación cerrada queda registrada en pips o puntos.
         </p>
-        <div className="mt-6 flex flex-wrap gap-2">
-          <TgButton />
-          <button onClick={() => setPage("journal")} className="bx-ghost">Ver bitácora de resultados →</button>
-        </div>
-        <div className="mt-6 bx-bt pt-4 flex flex-wrap gap-2">
+        <div className="mt-6 bx-bt pt-4 flex flex-wrap justify-center gap-2">
           {anchors.map(([id, l]) => (
             <button key={id} onClick={() => goTo(id)} className="bx-pill">{l}</button>
           ))}
@@ -1062,7 +1098,7 @@ function HomePage({ setPage }) {
       {/* SERVICIOS & OFERTA */}
       <section id="servicios" className="scroll-mt-24">
         <SectionTitle kicker="SERVICIOS & OFERTA" title="Qué ofrece BORKAIFX ELITE" text="Una propuesta enfocada en señales con niveles definidos y resultados que puedes comprobar." />
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">01</div>
             <h3 className="mt-1 text-lg font-extrabold">Señales VIP · CFDs</h3>
@@ -1075,6 +1111,12 @@ function HomePage({ setPage }) {
           </div>
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">03</div>
+            <h3 className="mt-1 text-lg font-extrabold">Copytrading en MT5</h3>
+            <p className="mt-2 text-sm bx-muted">Operaciones replicadas en automático en tu cuenta, sin mensualidades ni comisión sobre ganancias.</p>
+            <button onClick={() => goTo("copytrading")} className="mt-3 text-sm bx-accent font-bold">Ver cómo funciona →</button>
+          </div>
+          <div className="bx-card p-5">
+            <div className="text-xs bx-accent font-bold tracking-widest">04</div>
             <h3 className="mt-1 text-lg font-extrabold">Bitácora transparente</h3>
             <p className="mt-2 text-sm bx-muted">Cada señal cerrada (TP, SL o BE) se publica con su resultado real, sin esconder las pérdidas.</p>
             <button onClick={() => setPage("journal")} className="mt-3 text-sm bx-accent font-bold">Ver resultados →</button>
@@ -1089,108 +1131,157 @@ function HomePage({ setPage }) {
           title="Acceso VIP gratis"
           text="Si prefieres no pagar el pase, puedes acceder al canal VIP abriendo tu cuenta en uno de nuestros brokers recomendados con nuestro enlace y realizando tu depósito."
         />
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-3 gap-4 text-center">
           <div className="bx-card p-5">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-white" style={{ background: ACCENT }}>1</div>
+            <StepDot n="1" />
             <h3 className="mt-3 text-lg font-extrabold">Regístrate con nuestro enlace</h3>
-            <p className="mt-2 text-sm bx-muted">Crea tu cuenta en uno de los brokers recomendados usando el botón correspondiente.</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {SITE.affiliates.map((a) =>
-                a.url ? (
-                  <a key={a.broker} href={a.url} target="_blank" rel="noopener noreferrer sponsored" className="bx-btn">Abrir cuenta en {a.broker}</a>
-                ) : (
-                  <a key={a.broker} href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-ghost">Pedir enlace de {a.broker}</a>
-                )
-              )}
+            <p className="mt-2 text-sm bx-muted">Crea tu cuenta en uno de los brokers afiliados oficiales:</p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              {SITE.affiliates.map((b) => <BrokerBtn key={b.broker} b={b} />)}
             </div>
           </div>
           <div className="bx-card p-5">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-white" style={{ background: ACCENT }}>2</div>
+            <StepDot n="2" />
             <h3 className="mt-3 text-lg font-extrabold">Realiza tu depósito</h3>
-            <p className="mt-2 text-sm bx-muted">
-              {SITE.minDeposit
-                ? `Deposita ${SITE.minDeposit} o más en tu cuenta del broker.`
-                : "Haz tu depósito inicial en el broker. Consulta el monto requerido por Telegram."}
-            </p>
+            <p className="mt-2 text-sm bx-muted">El depósito mínimo requerido en tu cuenta de trading para acceder al VIP GRATIS es de</p>
+            <div className="mt-2 text-3xl font-black bx-accent">{SITE.vipMinDeposit}</div>
           </div>
           <div className="bx-card p-5">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center font-black text-white" style={{ background: ACCENT }}>3</div>
-            <h3 className="mt-3 text-lg font-extrabold">Envía tu ID</h3>
-            <p className="mt-2 text-sm bx-muted">Mándanos tu ID de cuenta por Telegram para verificarlo y activarte el acceso al canal VIP.</p>
-            <div className="mt-4"><TgButton>Enviar mi ID por Telegram</TgButton></div>
+            <StepDot n="3" />
+            <h3 className="mt-3 text-lg font-extrabold">Pide tu enlace</h3>
+            <p className="mt-2 text-sm bx-muted">Contacta con soporte para hacer tu afiliación y tener acceso inmediato.</p>
+            <div className="mt-4">
+              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-btn">Pedir mi enlace</a>
+            </div>
           </div>
         </div>
-        <p className="mt-3 text-xs bx-ink2 max-w-3xl">
+        <p className="mt-4 text-xs bx-ink2 max-w-3xl text-center mx-auto">
           Transparencia: los enlaces son de afiliado y {BRAND} puede recibir una comisión del broker, sin costo adicional para ti. Las condiciones de acceso dependen de la verificación de tu cuenta.
         </p>
       </section>
 
-      {/* INFO DEL BOT */}
-      <section id="bot" className="scroll-mt-24">
-        <SectionTitle kicker="SEÑALES & AUTOMATIZACIÓN" title="Info del Bot" text="Cómo llegan las señales y cómo se hace el seguimiento." />
-        <div className="bx-card p-5 md:p-6 grid md:grid-cols-2 gap-6" style={{ background: "radial-gradient(500px circle at 0% 0%, rgba(255,85,0,.14), transparent 60%), #161616" }}>
-          <ul className="space-y-3">
-            {SITE.botPoints.map((p, i) => (
-              <li key={i} className="flex gap-3 text-sm">
-                <span className="bx-accent font-black">✓</span>
-                <span className="bx-muted"><b className="text-white">{p.title}.</b> {p.text}</span>
-              </li>
-            ))}
-          </ul>
-          <div className="rounded-xl p-4 text-xs font-mono leading-relaxed" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A", color: GREY }}>
-            <div className="mb-2 bx-accent font-bold tracking-widest">EJEMPLO DE SEÑAL</div>
-            Pair: XAUUSD<br />
-            Side: Short / Sell<br />
-            Entry: 4018<br />
-            SL: 4030<br />
-            TP1 4013 · TP2 4008 · TP3 4003<br />
-            TP: Open<br />
-            Risk 0.5–1–2%
+      {/* COPYTRADING */}
+      <section id="copytrading" className="scroll-mt-24">
+        <SectionTitle
+          kicker="COPYTRADING AUTOMÁTICO · METATRADER 5"
+          title="Sistema de Copytrading de Alto Rendimiento"
+          text="Las operaciones se replican solas en tu cuenta de MT5, mientras tú conservas el control de tu dinero."
+        />
+        <div className="grid md:grid-cols-3 gap-4 text-center">
+          <div className="bx-card p-5">
+            <div className="text-3xl font-black bx-accent">100%</div>
+            <h3 className="mt-1 text-lg font-extrabold">Automático</h3>
+            <p className="mt-2 text-sm bx-muted">Operaciones 100% en automático directo a tu MT5.</p>
+          </div>
+          <div className="bx-card p-5">
+            <div className="text-3xl font-black bx-accent">0%</div>
+            <h3 className="mt-1 text-lg font-extrabold">Sin mensualidades ni Profit Share</h3>
+            <p className="mt-2 text-sm bx-muted">Sin mensualidades recurrentes ni cobro de porcentaje de ganancias. Conservas el 100% de tus beneficios.</p>
+          </div>
+          <div className="bx-card p-5" style={{ border: `2px solid ${ACCENT}` }}>
+            <div className="text-3xl font-black bx-accent">{SITE.copyPrice}</div>
+            <h3 className="mt-1 text-lg font-extrabold">Costo de acceso único</h3>
+            <p className="mt-2 text-sm bx-muted">Pago único de configuración (setup), sin cobros ocultos ni mensualidades.</p>
           </div>
         </div>
+
+        {/* Paso a paso interactivo */}
+        <div className="bx-card p-5 md:p-6 mt-6 text-center">
+          <div className="text-xs uppercase tracking-[0.2em] bx-muted">Paso a paso para la activación</div>
+          <div className="mt-4 flex justify-center gap-2 flex-wrap">
+            {cpSteps.map((st, i) => (
+              <button key={i} onClick={() => setCpStep(i)} aria-label={`Paso ${i + 1}`} className={`bx-tab ${cpStep === i ? "on" : ""}`} style={{ padding: ".5rem 1rem" }}>
+                Paso {i + 1}
+              </button>
+            ))}
+          </div>
+          <div className="mt-5 max-w-xl mx-auto">
+            <StepDot n={cpStep + 1} />
+            <h3 className="mt-3 text-xl font-extrabold">{cs.title}</h3>
+            <p className="mt-2 text-sm bx-muted">{cs.text}</p>
+            {cs.brokers && (
+              <div className="mt-4 grid grid-cols-3 gap-2">
+                {SITE.copyAffiliates.map((b) => <BrokerBtn key={b.broker} b={b} wa />)}
+              </div>
+            )}
+            {cs.note && (
+              <div className="mt-4 rounded-xl p-3 text-sm" style={{ background: "rgba(255,85,0,.12)", border: "1px solid rgba(255,85,0,.45)", color: "#ffb089" }}>{cs.note}</div>
+            )}
+          </div>
+          <div className="mt-6 flex justify-center gap-2">
+            <button onClick={() => setCpStep((i) => Math.max(0, i - 1))} disabled={cpStep === 0} className="bx-ghost" style={cpStep === 0 ? { opacity: 0.4 } : {}}>← Anterior</button>
+            <button onClick={() => setCpStep((i) => Math.min(cpSteps.length - 1, i + 1))} disabled={cpStep === cpSteps.length - 1} className="bx-ghost" style={cpStep === cpSteps.length - 1 ? { opacity: 0.4 } : {}}>Siguiente →</button>
+          </div>
+        </div>
+
+        <div className="mt-6 text-center">
+          <a
+            href={waHref("Hola, quiero activar mi cuenta de copytrading")}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bx-btn"
+            style={{ padding: ".9rem 2rem", fontSize: "1rem", letterSpacing: ".04em" }}
+          >
+            ACTIVAR MI CUENTA AHORA
+          </a>
+        </div>
+        <p className="mt-4 text-xs bx-ink2 max-w-3xl text-center mx-auto">
+          Aviso de riesgo: el copytrading no garantiza ganancias. Operar con CFDs e instrumentos sintéticos conlleva riesgo de pérdida, incluso de todo el capital depositado. Los resultados pasados no garantizan resultados futuros. Los enlaces de registro son de afiliado.
+        </p>
       </section>
 
-      {/* CURSO & FORMACIÓN */}
+      {/* CURSO & ENTRENAMIENTO */}
       <section id="curso" className="scroll-mt-24">
-        <SectionTitle kicker="FORMACIÓN" title="Curso & Entrenamiento" text="Programa educativo para entender lo que operas y gestionar el riesgo." />
-        <div className="grid sm:grid-cols-2 gap-4">
+        <SectionTitle
+          kicker="FORMACIÓN"
+          title="Curso & Entrenamiento"
+          text="Un programa diseñado para personas con o sin conocimiento previo que buscan mejorar su operativa."
+        />
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
           {SITE.courseModules.map((c, i) => (
-            <div key={i} className="bx-card p-5 flex gap-4">
+            <div key={i} className="bx-card p-5">
               <div className="text-2xl font-black bx-accent">{String(i + 1).padStart(2, "0")}</div>
-              <div>
-                <h3 className="font-extrabold">{c.title}</h3>
-                <p className="mt-1 text-sm bx-muted">{c.text}</p>
-              </div>
+              <h3 className="mt-1 font-extrabold">{c.title}</h3>
+              <p className="mt-1 text-sm bx-muted">{c.text}</p>
             </div>
           ))}
         </div>
-        <div className="mt-4"><TgButton className="bx-btn">Pedir información del curso</TgButton></div>
+        <div className="mt-5 bx-card p-5 text-center max-w-3xl mx-auto" style={{ border: `2px solid ${ACCENT}` }}>
+          <div className="text-xs font-bold tracking-widest bx-accent">ACCESO EXCLUSIVO PARA MIEMBROS VIP</div>
+          <p className="mt-2 text-sm bx-muted max-w-2xl mx-auto text-center">
+            Al curso únicamente se obtiene acceso mediante la membresía VIP: ya sea comprando el pase de forma directa o accediendo gratis registrándote y depositando en los brokers afiliados.
+          </p>
+          <div className="mt-4 flex flex-wrap justify-center gap-2">
+            <button onClick={() => goTo("precios")} className="bx-btn">Ver precios del pase</button>
+            <button onClick={() => goTo("vip-gratis")} className="bx-ghost">Acceso VIP gratis</button>
+          </div>
+        </div>
       </section>
 
       {/* TABLA DE PRECIOS */}
       <section id="precios" className="scroll-mt-24">
         <SectionTitle kicker="PASE VIP" title="Tabla de precios" text="Compra directa del pase VIP, para quienes prefieren no afiliarse a un broker." />
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-3 gap-4 text-center">
           {SITE.plans.map((p) => (
-            <div key={p.name} className="bx-card p-5 flex flex-col" style={p.highlight ? { border: `2px solid ${ACCENT}` } : {}}>
-              {p.highlight && <div className="text-[10px] font-bold tracking-widest bx-accent mb-1">RECOMENDADO</div>}
+            <div key={p.name} className="bx-card p-5 flex flex-col">
               <h3 className="text-lg font-extrabold">{p.name}</h3>
-              <div className="mt-2 flex items-end gap-1">
-                <span className="text-3xl font-black">{p.price || "Consultar"}</span>
-                {p.price && p.period && <span className="text-sm bx-muted pb-1">{p.period}</span>}
+              <div className="mt-3">
+                <span className="text-4xl font-black">{fmtMoney(p.amount)}</span> <span className="text-sm bx-muted">USD</span>
               </div>
-              <ul className="mt-4 space-y-2 text-sm bx-muted flex-1">
+              <div className="text-xs bx-muted mt-1">{p.label}</div>
+              {p.months > 1 && <div className="mt-2 text-xs font-bold bx-accent">Equivale a {fmtMoney(p.amount / p.months)} USD al mes</div>}
+              <ul className="mt-4 space-y-2 text-sm bx-muted flex-1 text-left mx-auto w-fit">
                 {SITE.planFeatures.map((f, i) => (
                   <li key={i} className="flex gap-2"><span className="bx-accent">✓</span>{f}</li>
                 ))}
               </ul>
-              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={`mt-5 text-center ${p.highlight ? "bx-btn" : "bx-ghost"}`}>
+              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="mt-5 text-center bx-btn">
                 Comprar por Telegram
               </a>
             </div>
           ))}
         </div>
-        <p className="mt-3 text-xs bx-ink2">El pago y la activación se coordinan por Telegram. Operar conlleva riesgo de pérdida de capital.</p>
+        <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-2xl">El pago y la activación se coordinan por Telegram. Operar conlleva riesgo de pérdida de capital.</p>
       </section>
     </div>
   );
@@ -1217,11 +1308,11 @@ function LibraryPage({ isAdmin, resources, setResources }) {
 
   return (
     <div className="space-y-6">
-      <section className="bx-card p-6 md:p-8" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}>
+      <section className="bx-card p-6 md:p-8 text-center" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}>
         <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">RECURSOS & PDF</div>
         <h1 className="mt-2 text-3xl md:text-4xl font-black tracking-tight"><span style={{ color: "#FFFFFF" }}>Material educativo para</span> <span style={{ color: ACCENT }}>descargar</span></h1>
-        <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl">PDFs, ebooks de trading, guías de gestión de riesgo y plantillas para tu operativa.</p>
-        <div className="mt-5 flex flex-wrap gap-2">
+        <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl mx-auto text-center">PDFs, ebooks de trading, guías de gestión de riesgo y plantillas para tu operativa.</p>
+        <div className="mt-5 flex flex-wrap justify-center gap-2">
           {["Todos", ...RES_TYPES].map((t) => (
             <button key={t} onClick={() => setTypeF(t)} className={`bx-pill ${typeF === t ? "on" : ""}`}>{t}</button>
           ))}
@@ -1552,19 +1643,19 @@ export default function App() {
         {page === "journal" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section
-          className="bx-card p-5 md:p-8"
+          className="bx-card p-5 md:p-8 text-center"
           style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}
         >
           <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">BITÁCORA PÚBLICA · CANAL VIP</div>
           <h1 className="mt-2 text-3xl md:text-5xl font-black tracking-tight leading-tight">
             <span style={{ color: "#FFFFFF" }}>Resultados</span> <span style={{ color: ACCENT }}>reales</span><span style={{ color: "#FFFFFF" }}>, sin filtros.</span>
           </h1>
-          <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl">
+          <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl mx-auto text-center">
             Historial público de las señales del canal VIP de {BRAND}: cada entrada, cada TP, cada SL y cada señal descartada, medidos en pips y puntos y documentados con total transparencia.
           </p>
 
           <div className="mt-6 bx-bt pt-5 space-y-3">
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               {[["CFD", "CFDs"], ["SINTETICO", "Sintéticos"]].map(([k, label]) => (
                 <button key={k} onClick={() => setTab(k)} className={`bx-tab ${tab === k ? "on" : ""}`}>
                   {label.toUpperCase()}
@@ -1573,20 +1664,20 @@ export default function App() {
             </div>
 
             {tab === "CFD" ? (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap justify-center gap-2">
                 {["Todos", ...CFD_SUBS].map((s) => (
                   <button key={s} onClick={() => setCfdSub(s)} className={`bx-pill ${cfdSub === s ? "on" : ""}`}>{s}</button>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap justify-center gap-2">
                 {BROKERS.map((b) => (
                   <button key={b} onClick={() => setBroker(b)} className={`bx-pill ${broker === b ? "on" : ""}`}>{b}</button>
                 ))}
               </div>
             )}
 
-            <div className="flex flex-wrap items-center gap-2 pt-1">
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
               <div className="flex items-center gap-1">
                 <button onClick={() => stepPeriod(1)} className="bx-ghost" title="Mes anterior" aria-label="Mes anterior">‹</button>
                 <select className="bx-input" style={{ width: "auto", minWidth: 180 }} value={periodEff} onChange={(e) => setPeriod(e.target.value)} aria-label="Periodo">
@@ -1601,7 +1692,7 @@ export default function App() {
 
         {/* ------------------------- MÉTRICAS ------------------------- */}
         <section>
-          <div className="text-[11px] uppercase tracking-[0.2em] bx-ink2 mb-2">Métricas · {scopeLabel} · {periodLabel} · en {scopeUnit}</div>
+          <div className="text-[11px] uppercase tracking-[0.2em] bx-ink2 mb-2 text-center">Métricas · {scopeLabel} · {periodLabel} · en {scopeUnit}</div>
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
             <Stat label="Win Rate" value={`${m.winRate.toFixed(1)}%`} sub={`${m.wins} TP · ${m.losses} SL · ${m.be} BE`} tone={m.winRate >= 50 ? "pos" : m.winRate > 0 ? "neg" : undefined} />
             <Stat label={`${scopeUnit} totales`} value={fmtP(m.totalPips)} sub="Acumulado de todas las entradas" tone={pipsTone} />
@@ -1759,7 +1850,7 @@ export default function App() {
           <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-accent font-bold block">
             t.me/borkaifxoficial
           </a>
-          <p className="max-w-3xl mx-auto leading-relaxed">
+          <p className="max-w-3xl mx-auto text-center leading-relaxed">
             Aviso de riesgo: operar CFDs e instrumentos sintéticos conlleva un alto riesgo de pérdida de capital. Los resultados pasados no garantizan resultados futuros. Este contenido es informativo y no constituye asesoría financiera.
           </p>
           <div className="tracking-[0.25em]">© {new Date().getFullYear()} {BRAND}</div>
