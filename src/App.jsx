@@ -1131,6 +1131,132 @@ function LoginModal({ onClose, onOk }) {
   );
 }
 
+/* ----------------------------- Resumen en texto (admin) ----------------------------- */
+const addDays = (ymd, n) => {
+  const [y, m, d] = ymd.split("-").map(Number);
+  const dt = new Date(y, m - 1, d + n);
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
+};
+const DAYS_ES = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+
+function buildReport(trades, mode, ref, scope) {
+  let from = ref, to = ref, title = "";
+  const [y, m, d] = ref.split("-").map(Number);
+  if (mode === "weekly") {
+    const dow = (new Date(y, m - 1, d).getDay() + 6) % 7; // lunes = 0
+    from = addDays(ref, -dow);
+    to = addDays(from, 6);
+    title = `RESUMEN SEMANAL · ${fmtDate(from)} al ${fmtDate(to)}`;
+  } else if (mode === "monthly") {
+    const ym = ref.slice(0, 7);
+    from = `${ym}-01`;
+    to = `${ym}-${String(new Date(y, m, 0).getDate()).padStart(2, "0")}`;
+    title = `RESUMEN MENSUAL · ${monthLabel(ym)}`;
+  } else {
+    title = `RESUMEN DIARIO · ${DAYS_ES[new Date(y, m - 1, d).getDay()]} ${fmtDate(ref)}`;
+  }
+  const list = trades
+    .filter((t) => t.date >= from && t.date <= to)
+    .filter((t) => scope === "ALL" || (scope === "CFD" ? t.category === "CFD" : scope === "DERIV" ? t.category === "SINTETICO" && t.broker !== "WELTRADE" : t.category === "SINTETICO" && t.broker === "WELTRADE"))
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+
+  const stat = (t) => (t.status === "Descartada" || t.discarded ? "DESCARTADA" : t.status === "Abierta" ? "ABIERTA" : t.status);
+  const cnt = (k) => list.filter((t) => stat(t) === k).length;
+  const tp = cnt("TP"), sl = cnt("SL"), be = cnt("BE"), dis = cnt("DESCARTADA"), open = cnt("ABIERTA");
+  const dec = tp + sl;
+  const wr = dec ? Math.round((tp / dec) * 100) : 0;
+
+  const units = {};
+  list.forEach((t) => {
+    if (t.discarded || !legResults(t).length) return;
+    const u = unitWord(t);
+    units[u] = round1((units[u] || 0) + (Number(t.pips) || 0));
+  });
+  const netLines = Object.keys(units).length ? Object.entries(units).map(([u, v]) => `${fmtP(v)} ${u}`) : ["0"];
+  const scopeName = { ALL: "Todos los mercados", CFD: "CFDs", DERIV: "Sintéticos · DERIV", WELTRADE: "Sintéticos · WELTRADE" }[scope];
+
+  const L = [];
+  L.push("📊 BORKAIFX ELITE");
+  L.push(title);
+  L.push(`Mercado: ${scopeName}`);
+  L.push("");
+  L.push("MÉTRICAS CLAVE");
+  L.push(`• Total de operaciones: ${list.length}`);
+  L.push(`• Win Rate: ${wr}% (${tp} TP / ${dec} decisivas · BE no cuenta)`);
+  L.push(`• Resultado neto: ${netLines.join("  |  ")}`);
+  L.push(`• TP: ${tp}  |  SL: ${sl}  |  BE: ${be}  |  Descartadas: ${dis}${open ? `  |  Abiertas: ${open}` : ""}`);
+  L.push("");
+  L.push("DETALLE DE OPERACIONES");
+  if (!list.length) L.push("Sin operaciones en este período.");
+  list.forEach((t, i) => {
+    const has = !t.discarded && legResults(t).length > 0;
+    const res = has ? `${fmtP(t.pips)} ${unitWord(t)}` : "—";
+    L.push(`${i + 1}. ${mode === "daily" ? "" : fmtDate(t.date) + " · "}${t.asset} · ${t.direction} · ${res} · ${stat(t)}`);
+    const note = (t.notes || "").trim();
+    if (note) L.push(`   📝 ${note.replace(/\s*\n\s*/g, " ")}`);
+  });
+  L.push("");
+  L.push("Telegram: " + TELEGRAM_URL);
+  return { text: L.join("\n"), count: list.length };
+}
+
+function ReportModal({ trades, onClose }) {
+  const [mode, setMode] = useState("daily");
+  const [ref, setRef] = useState(localDate());
+  const [scope, setScope] = useState("ALL");
+  const [copied, setCopied] = useState(false);
+  const rep = useMemo(() => buildReport(trades, mode, ref || localDate(), scope), [trades, mode, ref, scope]);
+  const [text, setText] = useState(rep.text);
+  useEffect(() => { setText(rep.text); setCopied(false); }, [rep.text]);
+  const taRef = useRef(null);
+
+  const copy = async () => {
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {}
+    if (!ok) {
+      try { taRef.current?.select(); ok = document.execCommand("copy"); } catch (e) {}
+    }
+    setCopied(ok);
+    if (ok) setTimeout(() => setCopied(false), 2200);
+  };
+  const modes = [["daily", "Diario"], ["weekly", "Semanal"], ["monthly", "Mensual"]];
+  return (
+    <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/75 p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} className="bx-card w-full max-w-2xl p-5 mt-6" role="dialog" aria-label="Generar resumen en texto">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="text-lg font-extrabold bx-accent tracking-wide">GENERAR RESUMEN EN TEXTO</h3>
+          <button type="button" onClick={onClose} className="bx-ghost">Cerrar</button>
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2">
+          {modes.map(([k, l]) => (
+            <button key={k} type="button" onClick={() => setMode(k)} className={`bx-pill ${mode === k ? "on" : ""}`}>{l}</button>
+          ))}
+        </div>
+        <div className="mt-3 grid sm:grid-cols-2 gap-3">
+          <label className="text-xs bx-muted block">
+            {mode === "daily" ? "Día" : mode === "weekly" ? "Cualquier día de la semana" : "Cualquier día del mes"}
+            <input type="date" className="bx-input mt-1" value={ref} onChange={(e) => setRef(e.target.value)} />
+          </label>
+          <label className="text-xs bx-muted block">
+            Mercado
+            <select className="bx-input mt-1" value={scope} onChange={(e) => setScope(e.target.value)}>
+              <option value="ALL">Todos</option>
+              <option value="CFD">CFDs (pips)</option>
+              <option value="DERIV">Sintéticos · DERIV (puntos)</option>
+              <option value="WELTRADE">Sintéticos · WELTRADE (puntos WELTRADE)</option>
+            </select>
+          </label>
+        </div>
+        <textarea ref={taRef} rows={16} className="bx-input mt-3 font-mono text-xs leading-relaxed" value={text} onChange={(e) => setText(e.target.value)} aria-label="Texto del resumen" />
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+          <span className="text-xs bx-muted">{rep.count} {rep.count === 1 ? "operación" : "operaciones"} en el rango · puedes editar el texto antes de copiar</span>
+          <button type="button" onClick={copy} className="bx-btn">{copied ? "✓ ¡Copiado!" : "Copiar al portapapeles"}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ----------------------------- Inicio / Servicios ----------------------------- */
 const goTo = (id) => {
   const el = document.getElementById(id);
@@ -1749,6 +1875,7 @@ export default function App() {
     try { return sessionStorage.getItem(SESSION_KEY) === "1"; } catch (e) { return false; }
   });
   const [showLogin, setShowLogin] = useState(false);
+  const [showReport, setShowReport] = useState(false);
   const [editing, setEditing] = useState(null);
   const [detail, setDetail] = useState(null); // id
   const [confirmDel, setConfirmDel] = useState(null);
@@ -2114,7 +2241,10 @@ export default function App() {
         {/* ------------------------- PEGAR SEÑAL (admin) ------------------------- */}
         {isAdmin && (
           <section className="bx-card p-4">
-            <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold mb-2">Pegar señal (CFDs y Sintéticos)</div>
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Pegar señal (CFDs y Sintéticos)</div>
+              <button type="button" onClick={() => setShowReport(true)} className="bx-ghost text-xs">📄 Generar Resumen en Texto</button>
+            </div>
             <textarea
               rows={6}
               className="bx-input"
@@ -2244,6 +2374,7 @@ export default function App() {
       </main>
 
       {/* ------------------------- MODALES ------------------------- */}
+      {showReport && isAdmin && <ReportModal trades={trades} onClose={() => setShowReport(false)} />}
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} onOk={login} />}
       {editing && <TradeForm initial={editing} onCancel={() => setEditing(null)} onSave={saveTrade} />}
       {detailTrade && <DetailModal t={detailTrade} onClose={() => setDetail(null)} isAdmin={isAdmin} onUpdate={updateTrade} />}
