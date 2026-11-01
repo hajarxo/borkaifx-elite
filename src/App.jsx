@@ -192,6 +192,8 @@ const inPeriod = (date, period) => {
   return d.startsWith(period.slice(2));
 };
 const isClosed = (t) => ["TP", "SL", "BE"].includes(t.status);
+// Visible al público: cerradas (TP/SL/BE) y descartadas. Las ABIERTAS quedan ocultas (solo admin).
+const isPublic = (t) => isClosed(t) || t.status === "Descartada" || !!t.discarded;
 const isImageUrl = (u) => /\.(png|jpe?g|webp|gif)(\?.*)?$/i.test(u) || u.includes("s3.tradingview.com/snapshots");
 
 // https://www.tradingview.com/x/ABC123/ -> imagen directa del snapshot
@@ -1257,7 +1259,7 @@ function HomePage({ setPage }) {
           </div>
         </div>
         <p className="mt-5 text-sm md:text-base font-medium max-w-2xl text-center mx-auto" style={{ color: "#3A362F" }}>
-          ¿Ya tienes una cuenta creada en DERIV O VANTAGE? Puedes vincular tu cuenta existente con nosotros para hacerlo. Escríbenos por TELEGRAM para guiarte en el proceso.
+          ¿Ya tienes una cuenta creada en DERIV, VANTAGE, WELTRADE o AXI? Puedes vincular tu cuenta existente con nosotros para activar tu acceso. Escríbenos por WhatsApp para guiarte en el proceso.
         </p>
       </section>
 
@@ -1382,7 +1384,7 @@ function HomePage({ setPage }) {
             </div>
           ))}
         </div>
-        <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-2xl">El pago y la activación se coordinan por Telegram.</p>
+        <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-2xl">El pago y la activación se coordinan por Telegram. Operar conlleva riesgo de pérdida de capital.</p>
       </section>
     </div>
   );
@@ -1488,6 +1490,7 @@ function dayStats(list) {
   const decisive = wins + losses;
   return {
     closed: closed.length,
+    shown: list.filter(isPublic).length,
     open: list.filter((t) => t.status === "Abierta").length,
     pips: round1(live.reduce((a, t) => a + (Number(t.pips) || 0), 0)),
     wr: decisive ? Math.round((wins / decisive) * 100) : null,
@@ -1534,7 +1537,7 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
       out.push({
         days,
         pips: round1(real.reduce((a, x) => a + x.st.pips, 0)),
-        traded: real.filter((x) => x.st.closed > 0).length,
+        traded: real.filter((x) => x.st.shown > 0).length,
       });
     }
     return out;
@@ -1572,7 +1575,7 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
                 {wk.days.map((c, di) => {
                   if (!c) return <div key={di} />;
                   const { st } = c;
-                  const has = st.closed > 0;
+                  const has = st.shown > 0;
                   const border = !has ? "#2A2A2A" : st.pips > 0 ? "rgba(16,185,129,.6)" : st.pips < 0 ? "rgba(244,63,94,.6)" : "#4A4A4A";
                   const bg = !has ? "#0F0F0F" : st.pips > 0 ? "rgba(16,185,129,.13)" : st.pips < 0 ? "rgba(244,63,94,.13)" : "#1B1B1B";
                   const sel = selDay === c.key;
@@ -1589,7 +1592,7 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
                         <>
                           <span className={`text-sm md:text-base font-extrabold text-center mt-1 ${pnlColor(st.pips)}`}>{fmtP(st.pips)}</span>
                           <span className="text-[10px] bx-muted text-center leading-tight">
-                            {plural(st.closed, "trade", "trades")} | {st.wr === null ? "BE" : `${st.wr}% WR`}
+                            {plural(st.shown, "trade", "trades")} | {st.wr === null ? (st.closed ? "BE" : "Desc.") : `${st.wr}% WR`}
                           </span>
                         </>
                       )}
@@ -1650,7 +1653,7 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Stat label="Win Rate" value={`${m.winRate.toFixed(0)}%`} sub={`${m.wins} Wins / ${m.executed} Trades · BE no cuenta`} tone={m.winRate >= 50 && dec ? "pos" : dec ? "neg" : undefined} />
           <Stat label="R:R promedio" value={`${m.avgR >= 0 ? "+" : ""}${m.avgR.toFixed(2)}R`} sub={`Acumulado: ${m.totalR >= 0 ? "+" : ""}${m.totalR.toFixed(2)}R`} tone={m.avgR > 0 ? "pos" : m.avgR < 0 ? "neg" : undefined} />
-          <Stat label="Total trades" value={m.total} sub={isAdmin ? `${m.executed} cerrados · ${m.open} abiertos · ${m.discarded} descartados` : "Operaciones cerradas en el mes"} />
+          <Stat label="Total trades" value={m.total} sub={isAdmin ? `${m.executed} cerrados · ${m.open} abiertos · ${m.discarded} descartados` : "Cerradas y descartadas del mes"} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-4 mt-4">
@@ -1806,8 +1809,8 @@ export default function App() {
   };
 
   // alcance según pestañas
-  // El público solo ve operaciones cerradas (TP / SL / BE). El admin ve todo.
-  const visible = useMemo(() => trades.filter((t) => isAdmin || isClosed(t)), [trades, isAdmin]);
+  // El público ve cerradas (TP / SL / BE) y descartadas; las abiertas solo las ve el admin.
+  const visible = useMemo(() => trades.filter((t) => isAdmin || isPublic(t)), [trades, isAdmin]);
   const market = useMemo(
     () =>
       visible.filter((t) => {
@@ -2076,7 +2079,7 @@ export default function App() {
             <Stat label={`${scopeUnit} totales`} value={fmtP(m.totalPips)} sub="Acumulado de todas las entradas" tone={pipsTone} />
             <Stat label="Ratio R/R medio" value={`${m.avgR >= 0 ? "+" : ""}${m.avgR.toFixed(2)}R`} sub={`Acumulado: ${m.totalR >= 0 ? "+" : ""}${m.totalR.toFixed(2)}R`} tone={m.avgR > 0 ? "pos" : m.avgR < 0 ? "neg" : undefined} />
             <Stat label="Profit Factor" value={m.profitFactor === Infinity ? "∞" : m.profitFactor.toFixed(2)} sub={`${m.legsCount} entradas cerradas`} />
-            <Stat label="Señales ejecutadas" value={m.executed} sub={isAdmin ? `${m.open} abiertas · ${m.discarded} descartadas` : "Solo operaciones cerradas"} />
+            <Stat label="Señales ejecutadas" value={m.executed} sub={isAdmin ? `${m.open} abiertas · ${m.discarded} descartadas` : "Cerradas y descartadas"} />
           </div>
         </section>
 
@@ -2135,7 +2138,7 @@ export default function App() {
             <div>
               <h2 className="font-extrabold tracking-wider bx-accent">REGISTRO DE OPERACIONES</h2>
               <div className="text-xs bx-muted">{filtered.length} de {scoped.length} señales · {scopeLabel} · {periodLabel}</div>
-              {isAdmin && <div className="text-[11px] mt-1" style={{ color: "#ffb089" }}>Vista Admin: también ves señales abiertas y descartadas. El público solo ve las cerradas (TP / SL / BE).</div>}
+              {isAdmin && <div className="text-[11px] mt-1" style={{ color: "#ffb089" }}>Vista Admin: también ves señales abiertas y descartadas. El público ve las cerradas (TP / SL / BE) y las descartadas, nunca las abiertas.</div>}
             </div>
 
             <div className="flex flex-wrap gap-2 items-center">
