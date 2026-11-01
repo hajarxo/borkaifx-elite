@@ -17,7 +17,7 @@ import {
    ============================================================ */
 
 const BRAND = "BORKAIFX ELITE";
-const TELEGRAM_URL = "https://t.me/borkaifxoficial";
+const TELEGRAM_URL = "https://t.me/borkaifxelite";
 const ADMIN_KEY = "796586";
 const STORAGE_KEY = "borkaifx_elite_trades_v2";
 const LEGACY_KEY = "borkaifx_elite_trades_v1";
@@ -2365,7 +2365,7 @@ export default function App() {
         <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-2">
           <img src={LOGO} alt="" className="h-12 mx-auto" />
           <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-accent font-bold block">
-            t.me/borkaifxoficial
+            t.me/borkaifxelite
           </a>
           <p className="max-w-3xl mx-auto text-center leading-relaxed">
             Aviso de riesgo: operar CFDs e instrumentos sintéticos conlleva un alto riesgo de pérdida de capital. Los resultados pasados no garantizan resultados futuros. Este contenido es informativo y no constituye asesoría financiera.
