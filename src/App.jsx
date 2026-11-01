@@ -1257,7 +1257,7 @@ function HomePage({ setPage }) {
           </div>
         </div>
         <p className="mt-5 text-sm md:text-base font-medium max-w-2xl text-center mx-auto" style={{ color: "#3A362F" }}>
-          ¿Ya tienes una cuenta creada en DERIV, VANTAGE, WELTRADE o AXI? Puedes vincular tu cuenta existente con nosotros para activar tu acceso. Escríbenos por WhatsApp para guiarte en el proceso.
+          ¿Ya tienes una cuenta creada en DERIV O VANTAGE? Puedes vincular tu cuenta existente con nosotros para hacerlo. Escríbenos por TELEGRAM para guiarte en el proceso.
         </p>
       </section>
 
