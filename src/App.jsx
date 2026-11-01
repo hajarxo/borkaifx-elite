@@ -222,7 +222,8 @@ function guessPip(asset, category, sub) {
 }
 
 // Unidad según tipo de activo / broker
-const unitWord = (t) => (t.category === "CFD" ? "pips" : t.broker === "WELTRADE" ? "puntos WELTRADE" : "puntos");
+// Regla de unidades: WELTRADE = PUNTOS · todo lo demás (CFDs y DERIV) = PIPS
+const unitWord = (t) => (t.category === "SINTETICO" && t.broker === "WELTRADE" ? "puntos" : "pips");
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const unitName = (t) => cap(unitWord(t));
 
@@ -368,7 +369,7 @@ function parseSignal(raw) {
       if (hasEntry) {
         const d = slRaw.unit ? distPrice(slRaw.v, slRaw.unit) : slRaw.v;
         out.sl = r5(out.entry1 - sign * d);
-        if (!slRaw.unit) out.warnings.push(`SL interpretado como distancia de ${slRaw.v} puntos desde la entrada. Revísalo.`);
+        if (!slRaw.unit) out.warnings.push(`SL interpretado como distancia de ${slRaw.v} ${out.broker === "WELTRADE" ? "puntos" : "pips"} desde la entrada. Revísalo.`);
       } else out.warnings.push("El SL viene como distancia pero no se detectó la entrada.");
     } else out.sl = slRaw.v;
   }
@@ -377,7 +378,7 @@ function parseSignal(raw) {
       if (hasEntry) {
         const d = t.unit ? distPrice(t.v, t.unit) : t.v;
         out.tps.push(r5(out.entry1 + sign * d));
-        if (!t.unit) out.warnings.push(`TP interpretado como distancia de ${t.v} puntos desde la entrada. Revísalo.`);
+        if (!t.unit) out.warnings.push(`TP interpretado como distancia de ${t.v} ${out.broker === "WELTRADE" ? "puntos" : "pips"} desde la entrada. Revísalo.`);
       } else out.warnings.push("El TP viene como distancia pero no se detectó la entrada.");
     } else out.tps.push(t.v);
   });
@@ -1242,8 +1243,8 @@ function ReportModal({ trades, onClose }) {
             <select className="bx-input mt-1" value={scope} onChange={(e) => setScope(e.target.value)}>
               <option value="ALL">Todos</option>
               <option value="CFD">CFDs (pips)</option>
-              <option value="DERIV">Sintéticos · DERIV (puntos)</option>
-              <option value="WELTRADE">Sintéticos · WELTRADE (puntos WELTRADE)</option>
+              <option value="DERIV">Sintéticos · DERIV (pips)</option>
+              <option value="WELTRADE">Sintéticos · WELTRADE (puntos)</option>
             </select>
           </label>
         </div>
@@ -1336,7 +1337,7 @@ function HomePage({ setPage }) {
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">02</div>
             <h3 className="mt-1 text-lg font-extrabold">Señales VIP · Sintéticos</h3>
-            <p className="mt-2 text-sm bx-muted">Operativa en WELTRADE y DERIV, con el seguimiento medido en puntos de cada broker.</p>
+            <p className="mt-2 text-sm bx-muted">Operativa en WELTRADE y DERIV, con el seguimiento medido en pips (DERIV) y puntos (WELTRADE).</p>
           </div>
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">03</div>
@@ -1972,8 +1973,8 @@ export default function App() {
     setPeriod(monthSeq[j] === nowYM ? "cur" : `m:${monthSeq[j]}`);
   };
 
-  // Unidad dinámica: CFDs = Pips · DERIV = Puntos · WELTRADE = Puntos WELTRADE
-  const scopeUnit = tab === "CFD" ? "Pips" : broker === "WELTRADE" ? "Puntos WELTRADE" : "Puntos";
+  // Unidad dinámica: CFDs = Pips · DERIV = Pips · WELTRADE = Puntos
+  const scopeUnit = tab === "SINTETICO" && broker === "WELTRADE" ? "Puntos" : "Pips";
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
