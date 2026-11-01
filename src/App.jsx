@@ -22,7 +22,6 @@ const ADMIN_KEY = "796586";
 const STORAGE_KEY = "borkaifx_elite_trades_v2";
 const LEGACY_KEY = "borkaifx_elite_trades_v1";
 const SESSION_KEY = "borkaifx_elite_admin";
-const THEME_KEY = "borkaifx_elite_theme";
 const RES_KEY = "borkaifx_elite_resources_v1";
 
 /* ============================================================
@@ -85,15 +84,16 @@ const GREY = "#A8A39B";
 
 /* ----------------------------- Estilos del tema ----------------------------- */
 const CSS = `
+:where(.bx-root) :is(h1,h2,h3,h4){color:var(--ink)}
 :where(.bx-card) :is(h1,h2,h3,h4){color:#FFFFFF}
+.bx-input{color-scheme:dark}
 .bx-card .bx-accent{color:var(--accent)}
 a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#fff;text-decoration:none}
 .bx-nav{display:flex;gap:.25rem;flex-wrap:wrap}
 .bx-navbtn{padding:.5rem .875rem;border-radius:.75rem;font-size:.8125rem;font-weight:800;letter-spacing:.03em;color:var(--ink2);cursor:pointer;background:transparent;border:1px solid transparent;transition:all .15s}
 .bx-navbtn:hover{color:var(--ink)}
 .bx-navbtn.on{background:#161616;color:#fff}
-.bx-root{--bg:#F9F6F0;--ink:#111111;--ink2:#5F5A52;--line:#E5E0D8;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#FF5500;--field:#0F0F0F;background:var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-.bx-root.bx-dark{--bg:#0C0C0C;--ink:#FFFFFF;--ink2:#A8A39B;--line:#2A2A2A}
+.bx-root{color-scheme:light;--bg:#F9F6F0;--ink:#111111;--ink2:#5F5A52;--line:#E5E0D8;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#FF5500;--field:#0F0F0F;background:var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 .bx-header{background:var(--bg);border-bottom:1px solid var(--line)}
 .bx-ink2{color:var(--ink2)}
 .bx-accent{color:var(--accent)}
@@ -239,58 +239,146 @@ function parseTpsText(text) {
 // Etiqueta de TP: TP1, TP2… (el abierto se muestra como "TP4 OPEN")
 const tpLabel = (i, lvl) => (lvl === "OPEN" ? `TP${i + 1} OPEN` : `TP${i + 1}`);
 
-// Interpreta señales de CFDs (Pair/Side/Entry/TP/SL y BUY NOW / Take Profit n) con Entry 1 / Entry 2 y TP OPEN
+/* ----------------------------- Clasificación automática de activos ----------------------------- */
+// DERIV (sintéticos): BOOM, CRASH, VOLATILITY/VOLATILITYS/VIX, STEP/STEP INDEX/MULTI STEP, JUMP, DEX
+const SYNTH_DERIV = /\b(?:BOOM|CRASH|VOLATILITYS?|VIX|MULTI\s*STEP|STEP(?:\s*INDEX)?|JUMP|DEX)/i;
+// WELTRADE (sintéticos, en PUNTOS): PAINX, GAINX, FX VOL, SFX VOL, FLIPX, SWITCHX, BREAKX, TRENDX
+const SYNTH_WELTRADE = /\b(?:MAX\s*PAINX|MAX\s*GAINX|PAINX|GAINX|S?FX\s*VOL|FLIPX|SWITCHX|BREAKX|TRENDX)/i;
+
+// Para extraer el activo de un texto largo se exige el número del índice (evita falsos positivos como "step by step")
+const SYN_EXTRACT = [
+  /\b(?:MAX\s*)?(?:PAINX|GAINX)\s*\d{1,4}/i,
+  /\bS?FX\s*VOL\s*\d{1,4}/i,
+  /\b(?:FLIPX|SWITCHX|BREAKX|TRENDX)(?:\s*\d{1,4})?/i,
+  /\bVOLATILITYS?(?:\s*(?:CRASH|BOOM))?\s*\d{1,4}(?:\s*\(\s*1S\s*\))?/i,
+  /\b(?:BOOM|CRASH|JUMP|DEX|VIX)\s*\d{1,4}/i,
+  /\b(?:MULTI\s*STEP|STEP\s*INDEX)(?:\s*\d{1,4})?|\bSTEP\s*\d{1,4}/i,
+];
+
+function findSynthetic(text) {
+  let best = null;
+  SYN_EXTRACT.forEach((re) => {
+    const m = re.exec(text);
+    if (m && (best === null || m.index < best.index)) best = m;
+  });
+  return best ? best[0].toUpperCase().replace(/\s+/g, " ").replace(/\s*\(\s*1S\s*\)/, " (1S)").trim() : "";
+}
+
+// Devuelve { category, broker, sub } o null si no se reconoce el activo
+function classifyAsset(asset) {
+  const a = String(asset || "").toUpperCase().trim();
+  if (!a) return null;
+  if (SYNTH_WELTRADE.test(a)) return { category: "SINTETICO", broker: "WELTRADE", sub: "" };
+  if (SYNTH_DERIV.test(a)) return { category: "SINTETICO", broker: "DERIV", sub: "" };
+  const compact = a.replace(/[\s/._-]/g, "");
+  if (/XAU|XAG|GOLD|SILVER|NAS|US100|US30|US500|SPX|DJI|DAX|GER\d|UK100|JP225|NDX|USTEC/.test(a) || /^[A-Z]{6}$/.test(compact)) {
+    return { category: "CFD", broker: "", sub: guessSub(a) };
+  }
+  return null;
+}
+
+// Interpreta señales completas (Pair/Side/Entry/TP/SL, BUY NOW / Take Profit n) y formatos cortos
+// como "CRASH 900 SELL 16792". SL y TP pueden ser precios o distancias ("SL 20 PTS", "TP: 300 PTS").
 function parseSignal(raw) {
   const text = String(raw || "").replace(/\r/g, "");
-  const numRe = "([0-9][0-9,]*\\.?[0-9]*)";
+  const N = "([0-9][0-9,]*\\.?[0-9]*)";
+  const UNIT = "(?:[ \\t]*(pts?|points?|puntos?|ptos?|pips?)\\b)?";
   const sep = "[ \\t]*[:\\-]?[ \\t]*";
   const toNum = (s) => Number(String(s).replace(/,/g, ""));
-  const out = { raw: text.trim(), asset: "", sub: "Forex", direction: "BUY", entry1: "", entry2: "", sl: "", tps: [], chart: "", notes: "", warnings: [] };
+  const r5 = (x) => Number(x.toFixed(5));
+  const out = { raw: text.trim(), asset: "", category: "CFD", broker: "", sub: "Forex", direction: "BUY", entry1: "", entry2: "", sl: "", tps: [], chart: "", notes: "", warnings: [] };
 
-  let m = /pair\s*[:\-]\s*([A-Za-z0-9./_]+)/i.exec(text);
-  if (m) out.asset = m[1].replace(/[./_]/g, "").toUpperCase();
-  else {
+  // ---- Activo ----
+  let m = /pair\s*[:\-]\s*([^\n]+)/i.exec(text);
+  if (m) {
+    const clean = m[1].replace(/[^A-Za-z0-9 ()./_-]/g, "").trim();
+    out.asset = classifyAsset(clean)?.category === "SINTETICO" ? clean.toUpperCase().replace(/\s+/g, " ") : clean.replace(/[./_\s-]/g, "").toUpperCase();
+  }
+  if (!out.asset) out.asset = findSynthetic(text);
+  if (!out.asset) {
     const up = text.toUpperCase();
     const k = KNOWN_SYMBOLS.find((s) => up.includes(s));
     if (k) out.asset = k;
   }
+  const cls = classifyAsset(out.asset);
+  if (cls) { out.category = cls.category; out.broker = cls.broker; out.sub = cls.sub; }
 
-  // Entradas: "Entry 1 / Entry 2", rango "Entry: A - B" o una sola entrada
-  const e1m = new RegExp("(?:\\bentry|\\bE)[ \\t]*#?1\\b" + sep + numRe, "i").exec(text);
-  const e2m = new RegExp("(?:\\bentry|\\bE)[ \\t]*#?2\\b" + sep + numRe, "i").exec(text);
+  // ---- Entradas ----
+  const e1m = new RegExp("(?:\\bentry|\\bE)[ \\t]*#?1\\b" + sep + N, "i").exec(text);
+  const e2m = new RegExp("(?:\\bentry|\\bE)[ \\t]*#?2\\b" + sep + N, "i").exec(text);
   if (e1m || e2m) {
     if (e1m) out.entry1 = toNum(e1m[1]);
     if (e2m) out.entry2 = toNum(e2m[1]);
   } else {
-    const rg = new RegExp("\\bentry[ \\t]*(?:zone|range|price)?" + sep + numRe + "[ \\t]*(?:-|–|—|to|/)[ \\t]*" + numRe, "i").exec(text);
+    const rg = new RegExp("\\bentry[ \\t]*(?:zone|range|price)?" + sep + N + "[ \\t]*(?:-|–|—|to|/)[ \\t]*" + N, "i").exec(text);
     if (rg) {
       out.entry1 = toNum(rg[1]);
       out.entry2 = toNum(rg[2]);
     } else {
-      const g = new RegExp("\\bentry[ \\t]*(?:price)?" + sep + numRe, "i").exec(text);
+      const g = new RegExp("\\bentry[ \\t]*(?:price)?" + sep + N, "i").exec(text);
       if (g) out.entry1 = toNum(g[1]);
     }
   }
-
-  m = new RegExp("(?:stop\\s*loss|\\bSL)\\s*[:\\-]?\\s*" + numRe, "i").exec(text);
-  if (m) out.sl = toNum(m[1]);
-
-  const seen = {};
-  const re = new RegExp("(?:take\\s*profit|\\bTP)\\s*(\\d)\\s*[:\\-]?\\s*" + numRe, "gi");
-  while ((m = re.exec(text))) seen[Number(m[1])] = toNum(m[2]);
-  out.tps = Object.keys(seen).map(Number).sort((a, b) => a - b).map((k) => seen[k]);
-  if (!out.tps.length) {
-    m = new RegExp("\\bTP\\s*[:\\-]\\s*" + numRe, "i").exec(text);
-    if (m) out.tps = [toNum(m[1])];
+  // Formato corto: "CRASH 900 SELL 16792" → el precio que sigue a la dirección es la entrada
+  let shortDir = null;
+  if (out.entry1 === "") {
+    const sm = new RegExp("\\b(buy|sell|long|short)\\b(?:[ \\t]+(?:limit|stop|now))?[ \\t]*(?:@|at\\b)?[ \\t]*[:\\-]?[ \\t]*" + N, "i").exec(text);
+    if (sm) { out.entry1 = toNum(sm[2]); shortDir = /buy|long/i.test(sm[1]) ? "BUY" : "SELL"; }
   }
-  // TP abierto: "TP: Open", "TP4: OPEN", "Take Profit: Open"
-  if (/\b(?:tp|take[ \t]*profit)[ \t]*\d?[ \t]*[:\-]?[ \t]*open\b/i.test(text)) out.tps.push("OPEN");
 
-  if (/side\s*[:\-]?[^\n]*\b(short|sell)\b/i.test(text) || /\bsell\s+now\b/i.test(text)) out.direction = "SELL";
+  // ---- Dirección ----
+  let dirUnknown = false;
+  if (shortDir) out.direction = shortDir;
+  else if (/side\s*[:\-]?[^\n]*\b(short|sell)\b/i.test(text) || /\bsell\s+now\b/i.test(text)) out.direction = "SELL";
   else if (/side\s*[:\-]?[^\n]*\b(long|buy)\b/i.test(text) || /\bbuy\s+now\b/i.test(text)) out.direction = "BUY";
   else if (/\b(sell|short)\b/i.test(text)) out.direction = "SELL";
   else if (/\b(buy|long)\b/i.test(text)) out.direction = "BUY";
-  else if (out.entry1 !== "" && out.sl !== "") out.direction = out.sl > out.entry1 ? "SELL" : "BUY";
+  else dirUnknown = true;
+
+  // ---- SL y TP (precio absoluto o distancia) ----
+  const slm = new RegExp("(?:stop[ \\t]*loss|\\bSL)\\s*[:\\-]?\\s*" + N + UNIT, "i").exec(text);
+  const slRaw = slm ? { v: toNum(slm[1]), unit: slm[2] || "" } : null;
+
+  const tpRaw = [];
+  const seen = {};
+  const re = new RegExp("(?:take[ \\t]*profit|\\bTP)[ \\t]*(\\d)(?![\\d.,])[ \\t]*[:\\-]?[ \\t]*" + N + UNIT, "gi");
+  while ((m = re.exec(text))) seen[Number(m[1])] = { v: toNum(m[2]), unit: m[3] || "" };
+  Object.keys(seen).map(Number).sort((a, b) => a - b).forEach((k) => tpRaw.push(seen[k]));
+  if (!tpRaw.length) {
+    m = new RegExp("(?:take[ \\t]*profit|\\bTP)[ \\t]*[:\\-]?[ \\t]*" + N + UNIT, "i").exec(text);
+    if (m) tpRaw.push({ v: toNum(m[1]), unit: m[2] || "" });
+  }
+  const tpOpen = /\b(?:tp|take[ \t]*profit)[ \t]*\d?[ \t]*[:\-]?[ \t]*open\b/i.test(text);
+
+  // Sin palabra BUY/SELL: se deduce por la posición del SL respecto a la entrada
+  if (dirUnknown && out.entry1 !== "" && slRaw && !slRaw.unit && !(out.entry1 >= 100 && slRaw.v < out.entry1 * 0.1)) out.direction = slRaw.v > out.entry1 ? "SELL" : "BUY";
+
+  const ps = guessPip(out.asset, out.category, out.sub);
+  const sign = out.direction === "SELL" ? -1 : 1;
+  const hasEntry = out.entry1 !== "";
+  // Convierte una distancia a unidades de precio
+  const distPrice = (v, unit) => (/^pips?$/i.test(unit) ? v * ps : out.category === "SINTETICO" || out.sub === "Índices" ? v : v * ps);
+  const looksLikeDistance = (v) => hasEntry && out.entry1 >= 100 && v < out.entry1 * 0.1;
+
+  if (slRaw) {
+    if (slRaw.unit || looksLikeDistance(slRaw.v)) {
+      if (hasEntry) {
+        const d = slRaw.unit ? distPrice(slRaw.v, slRaw.unit) : slRaw.v;
+        out.sl = r5(out.entry1 - sign * d);
+        if (!slRaw.unit) out.warnings.push(`SL interpretado como distancia de ${slRaw.v} puntos desde la entrada. Revísalo.`);
+      } else out.warnings.push("El SL viene como distancia pero no se detectó la entrada.");
+    } else out.sl = slRaw.v;
+  }
+  tpRaw.forEach((t) => {
+    if (t.unit || looksLikeDistance(t.v)) {
+      if (hasEntry) {
+        const d = t.unit ? distPrice(t.v, t.unit) : t.v;
+        out.tps.push(r5(out.entry1 + sign * d));
+        if (!t.unit) out.warnings.push(`TP interpretado como distancia de ${t.v} puntos desde la entrada. Revísalo.`);
+      } else out.warnings.push("El TP viene como distancia pero no se detectó la entrada.");
+    } else out.tps.push(t.v);
+  });
+  if (tpOpen) out.tps.push("OPEN");
 
   m = /https?:\/\/[^\s]+/i.exec(text);
   if (m) out.chart = m[0].replace(/[).,;]+$/, "");
@@ -298,9 +386,8 @@ function parseSignal(raw) {
   m = /risk\s*[:\-]?\s*([0-9.\-\/ ]+%)/i.exec(text);
   if (m) out.notes = "Riesgo sugerido: " + m[1].trim();
 
-  out.sub = guessSub(out.asset);
-
   if (!out.asset) out.warnings.push("No se detectó el activo: escríbelo manualmente.");
+  else if (!cls) out.warnings.push("Activo no reconocido: elige categoría y broker manualmente.");
   if (out.entry1 === "") out.warnings.push("No se detectó la entrada.");
   if (out.sl === "") out.warnings.push("No se detectó el SL.");
   if (!out.tps.length) out.warnings.push("No se detectaron niveles de TP.");
@@ -564,6 +651,13 @@ function TradeForm({ initial, onCancel, onSave }) {
   const [pipTouched, setPipTouched] = useState(!!initial.id);
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
 
+  // Clasificación automática: Sintético (DERIV / WELTRADE) o CFD según el activo
+  useEffect(() => {
+    const c = classifyAsset(f.asset);
+    if (!c) return;
+    setF((p) => ({ ...p, category: c.category, sub: c.category === "CFD" ? c.sub || p.sub || "Forex" : "", broker: c.category === "SINTETICO" ? c.broker : "" }));
+  }, [f.asset]);
+
   // El tamaño del pip/punto se sugiere según el activo (editable)
   useEffect(() => {
     if (pipTouched) return;
@@ -612,6 +706,7 @@ function TradeForm({ initial, onCancel, onSave }) {
   };
 
   const showE2 = num(f.entry2) !== null;
+  const auto = classifyAsset(f.asset);
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4">
@@ -665,7 +760,12 @@ function TradeForm({ initial, onCancel, onSave }) {
           </Field>
 
           <Field label="Activo" className="col-span-2">
-            <input className="bx-input" placeholder="XAUUSD, NAS100, Volatility 75..." value={f.asset} onChange={(e) => set("asset", e.target.value)} />
+            <input className="bx-input" placeholder="XAUUSD, NAS100, CRASH 900, GAINX 400..." value={f.asset} onChange={(e) => set("asset", e.target.value)} />
+            {auto && (
+              <div className="text-[11px] mt-1" style={{ color: "#ffb089" }}>
+                Clasificación automática: {auto.category === "SINTETICO" ? `Sintético · ${auto.broker}` : `CFD · ${auto.sub}`}
+              </div>
+            )}
           </Field>
           <Field label={f.category === "CFD" ? "Valor de 1 pip (en precio)" : "Valor de 1 punto (en precio)"} className="col-span-2">
             <input
@@ -1047,7 +1147,7 @@ const fmtMoney = (n) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
 const SectionTitle = ({ kicker, title, text }) => (
   <div className="mb-6 text-center">
     <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">{kicker}</div>
-    <h2 className="mt-1 text-2xl md:text-3xl font-black tracking-tight">{title}</h2>
+    <h2 className="mt-1 text-2xl md:text-3xl font-black tracking-tight" style={{ color: "#111111" }}>{title}</h2>
     {text && <p className="mt-2 text-sm md:text-base bx-ink2 max-w-2xl text-center mx-auto">{text}</p>}
   </div>
 );
@@ -1061,7 +1161,7 @@ const BrokerBtn = ({ b, wa = false }) =>
   b.url ? (
     <a href={b.url} target="_blank" rel="noopener noreferrer sponsored" className="bx-btn text-center">{b.broker}</a>
   ) : (
-    <a href={wa ? waHref() : TELEGRAM_URL} target="_blank" rel="noopener noreferrer" title="Unirte al VIP" className="bx-ghost text-center">{b.broker}</a>
+    <a href={wa ? waHref() : TELEGRAM_URL} target="_blank" rel="noopener noreferrer" title="Pedir enlace" className="bx-ghost text-center">{b.broker}</a>
   );
 
 function HomePage({ setPage }) {
@@ -1148,15 +1248,15 @@ function HomePage({ setPage }) {
           </div>
           <div className="bx-card p-5">
             <StepDot n="3" />
-            <h3 className="mt-3 text-lg font-extrabold">Obten Acceso</h3>
+            <h3 className="mt-3 text-lg font-extrabold">Pide tu enlace</h3>
             <p className="mt-2 text-sm bx-muted">Contacta con soporte para hacer tu afiliación y tener acceso inmediato.</p>
             <div className="mt-4">
-              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-btn">Solicitar Acceso</a>
+              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-btn">Pedir mi enlace</a>
             </div>
           </div>
         </div>
-        <p className="mt-4 text-xs bx-ink2 max-w-3xl text-center mx-auto">
-          Transparencia: los enlaces son de afiliado y {BRAND} puede recibir una comisión del broker, sin costo adicional para ti. Las condiciones de acceso dependen de la verificación de tu cuenta.
+        <p className="mt-5 text-sm md:text-base font-medium max-w-2xl text-center mx-auto" style={{ color: "#3A362F" }}>
+          ¿Ya tienes una cuenta creada en DERIV, VANTAGE, WELTRADE o AXI? Puedes vincular tu cuenta existente con nosotros para activar tu acceso. Escríbenos por WhatsApp para guiarte en el proceso.
         </p>
       </section>
 
@@ -1369,6 +1469,269 @@ function LibraryPage({ isAdmin, resources, setResources }) {
   );
 }
 
+/* ----------------------------- Calendario & Métricas ----------------------------- */
+const WEEKDAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+const shiftMonth = (ym, d) => {
+  const [y, m] = ym.split("-").map(Number);
+  const dt = new Date(y, m - 1 + d, 1);
+  return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}`;
+};
+const curYM = () => localDate().slice(0, 7);
+
+// Resumen de un conjunto de señales de un mismo día
+function dayStats(list) {
+  const live = list.filter((t) => !t.discarded);
+  const closed = list.filter(isClosed);
+  const wins = closed.filter((t) => t.status === "TP").length;
+  const losses = closed.filter((t) => t.status === "SL").length;
+  const decisive = wins + losses;
+  return {
+    closed: closed.length,
+    open: list.filter((t) => t.status === "Abierta").length,
+    pips: round1(live.reduce((a, t) => a + (Number(t.pips) || 0), 0)),
+    wr: decisive ? Math.round((wins / decisive) * 100) : null,
+  };
+}
+
+const pnlColor = (v) => (v > 0 ? "text-emerald-400" : v < 0 ? "text-rose-400" : "text-white");
+
+function CalendarView({ trades, isAdmin, unit, onOpen }) {
+  const months = useMemo(() => Array.from(new Set(trades.map((t) => (t.date || "").slice(0, 7)).filter(Boolean))).sort().reverse(), [trades]);
+  const [ym, setYm] = useState(null);
+  const [selDay, setSelDay] = useState(null);
+
+  const cur = ym || months[0] || curYM();
+  const [y, mo] = cur.split("-").map(Number);
+  const unitL = unit.toLowerCase();
+  const today = localDate();
+
+  const monthTrades = useMemo(() => trades.filter((t) => (t.date || "").startsWith(cur)), [trades, cur]);
+  const byDay = useMemo(() => {
+    const map = {};
+    monthTrades.forEach((t) => { (map[t.date] = map[t.date] || []).push(t); });
+    return map;
+  }, [monthTrades]);
+  const m = useMemo(() => computeMetrics(monthTrades), [monthTrades]);
+  const closedTrades = useMemo(() => monthTrades.filter(isClosed), [monthTrades]);
+  const best = useMemo(() => closedTrades.reduce((b, t) => (!b || t.pips > b.pips ? t : b), null), [closedTrades]);
+  const worst = useMemo(() => closedTrades.reduce((b, t) => (!b || t.pips < b.pips ? t : b), null), [closedTrades]);
+
+  // Semanas (domingo a sábado) con sus totales
+  const weeks = useMemo(() => {
+    const first = new Date(y, mo - 1, 1).getDay();
+    const dim = new Date(y, mo, 0).getDate();
+    const cells = [...Array(first).fill(null), ...Array.from({ length: dim }, (_, i) => i + 1)];
+    while (cells.length % 7) cells.push(null);
+    const out = [];
+    for (let i = 0; i < cells.length; i += 7) {
+      const days = cells.slice(i, i + 7).map((d) => {
+        if (d === null) return null;
+        const key = `${cur}-${String(d).padStart(2, "0")}`;
+        return { d, key, st: dayStats(byDay[key] || []) };
+      });
+      const real = days.filter(Boolean);
+      out.push({
+        days,
+        pips: round1(real.reduce((a, x) => a + x.st.pips, 0)),
+        traded: real.filter((x) => x.st.closed > 0).length,
+      });
+    }
+    return out;
+  }, [y, mo, cur, byDay]);
+
+  const go = (d) => { setYm(shiftMonth(cur, d)); setSelDay(null); };
+  const dayList = selDay ? [...(byDay[selDay] || [])].sort((a, b) => (a.asset < b.asset ? -1 : 1)) : [];
+  const dec = m.wins + m.losses;
+  const pct = (n) => (m.executed ? Math.round((n / m.executed) * 100) : 0);
+  const cols = { gridTemplateColumns: "repeat(7, minmax(0, 1fr)) 124px" };
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+  return (
+    <section className="space-y-6">
+      {/* ---------- CALENDARIO ---------- */}
+      <div className="bx-card p-4 md:p-5">
+        <div className="flex items-center justify-center gap-3">
+          <button onClick={() => go(-1)} className="bx-ghost" aria-label="Mes anterior" title="Mes anterior">‹</button>
+          <div className="text-center" style={{ minWidth: 200 }}>
+            <div className="text-xl md:text-2xl font-black">{monthLabel(cur)}</div>
+            <div className="text-[11px] bx-muted tracking-widest uppercase">Resultados en {unit}</div>
+          </div>
+          <button onClick={() => go(1)} className="bx-ghost" aria-label="Mes siguiente" title="Mes siguiente">›</button>
+        </div>
+
+        <div className="mt-4 overflow-x-auto">
+          <div style={{ minWidth: 740 }}>
+            <div className="grid gap-1.5 text-center text-[11px] uppercase tracking-wider bx-muted mb-1.5" style={cols}>
+              {WEEKDAYS.map((d) => <div key={d}>{d}</div>)}
+              <div>Resumen</div>
+            </div>
+
+            {weeks.map((wk, wi) => (
+              <div key={wi} className="grid gap-1.5 mb-1.5" style={cols}>
+                {wk.days.map((c, di) => {
+                  if (!c) return <div key={di} />;
+                  const { st } = c;
+                  const has = st.closed > 0;
+                  const border = !has ? "#2A2A2A" : st.pips > 0 ? "rgba(16,185,129,.6)" : st.pips < 0 ? "rgba(244,63,94,.6)" : "#4A4A4A";
+                  const bg = !has ? "#0F0F0F" : st.pips > 0 ? "rgba(16,185,129,.13)" : st.pips < 0 ? "rgba(244,63,94,.13)" : "#1B1B1B";
+                  const sel = selDay === c.key;
+                  return (
+                    <button
+                      key={di}
+                      onClick={() => setSelDay(sel ? null : c.key)}
+                      aria-label={`Día ${c.d}`}
+                      className="rounded-xl p-1.5 flex flex-col text-left transition"
+                      style={{ minHeight: 88, background: bg, border: `1px solid ${border}`, outline: sel ? `2px solid ${ACCENT}` : "none", outlineOffset: 1 }}
+                    >
+                      <span className="text-[11px] font-bold" style={{ color: c.key === today ? ACCENT : GREY }}>{c.d}</span>
+                      {has && (
+                        <>
+                          <span className={`text-sm md:text-base font-extrabold text-center mt-1 ${pnlColor(st.pips)}`}>{fmtP(st.pips)}</span>
+                          <span className="text-[10px] bx-muted text-center leading-tight">
+                            {plural(st.closed, "trade", "trades")} | {st.wr === null ? "BE" : `${st.wr}% WR`}
+                          </span>
+                        </>
+                      )}
+                      {isAdmin && st.open > 0 && (
+                        <span className="text-[10px] text-center mt-auto" style={{ color: "#7dd3fc" }}>⏳ {plural(st.open, "abierta", "abiertas")}</span>
+                      )}
+                    </button>
+                  );
+                })}
+                <div className="rounded-xl p-2 flex flex-col justify-center text-center" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                  <div className="text-[10px] uppercase tracking-wider bx-muted">Semana {wi + 1}</div>
+                  <div className={`text-sm font-extrabold ${pnlColor(wk.pips)}`}>{fmtP(wk.pips)}</div>
+                  <div className="text-[10px] bx-muted">{wk.traded === 1 ? "1 día operado" : `${wk.traded} días operados`}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ---------- OPERACIONES DEL DÍA ---------- */}
+      {selDay && (
+        <div className="bx-card p-4 md:p-5">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="font-extrabold">Operaciones del {fmtDate(selDay)}</h3>
+            <button onClick={() => setSelDay(null)} className="bx-ghost">Cerrar</button>
+          </div>
+          {dayList.length === 0 ? (
+            <div className="mt-3 text-sm bx-muted">Sin operaciones este día.</div>
+          ) : (
+            <div className="mt-3 space-y-2">
+              {dayList.map((t) => {
+                const has = legResults(t).length > 0 && !t.discarded;
+                return (
+                  <button key={t.id} onClick={() => onOpen(t.id)} className="bx-row w-full text-left rounded-xl p-3 flex flex-wrap items-center justify-between gap-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold">{t.asset}</span>
+                      <DirBadge dir={t.direction} />
+                      <StatusBadge status={t.status} />
+                    </div>
+                    <div className="text-xs bx-muted">E1 {t.entry1}{hasE2(t) ? ` · E2 ${t.entry2}` : ""} · SL {t.sl === "" ? "—" : t.sl}</div>
+                    <div className={`font-extrabold ${has ? pnlColor(t.pips) : "bx-muted"}`}>{has ? `${fmtP(t.pips)} ${unitWord(t)}` : "—"}</div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ---------- DASHBOARD DEL MES ---------- */}
+      <div>
+        <div className="text-center mb-3">
+          <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">MÉTRICAS DEL MES</div>
+          <h2 className="mt-1 text-xl md:text-2xl font-black" style={{ color: "#111111" }}>Resumen de {monthLabel(cur)}</h2>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <Stat label="Win Rate" value={`${m.winRate.toFixed(0)}%`} sub={`${m.wins} Wins / ${m.executed} Trades · BE no cuenta`} tone={m.winRate >= 50 && dec ? "pos" : dec ? "neg" : undefined} />
+          <Stat label="R:R promedio" value={`${m.avgR >= 0 ? "+" : ""}${m.avgR.toFixed(2)}R`} sub={`Acumulado: ${m.totalR >= 0 ? "+" : ""}${m.totalR.toFixed(2)}R`} tone={m.avgR > 0 ? "pos" : m.avgR < 0 ? "neg" : undefined} />
+          <Stat label="Total trades" value={m.total} sub={isAdmin ? `${m.executed} cerrados · ${m.open} abiertos · ${m.discarded} descartados` : "Operaciones cerradas en el mes"} />
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-4 mt-4">
+          <div className="bx-card p-4 md:p-5">
+            <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">Desglose de operaciones</div>
+            <div className="h-3 rounded-full overflow-hidden flex" style={{ background: "#2A2A2A" }} role="img" aria-label={`${m.wins} ganadoras, ${m.losses} perdedoras`}>
+              {dec > 0 && (
+                <>
+                  <div data-testid="bar-wins" style={{ width: `${(m.wins / dec) * 100}%`, background: GREEN }} />
+                  <div data-testid="bar-losses" style={{ width: `${(m.losses / dec) * 100}%`, background: RED }} />
+                </>
+              )}
+            </div>
+            <div className="mt-1 flex justify-between text-xs">
+              <span className="text-emerald-400 font-bold">{m.wins} Wins</span>
+              <span className="text-rose-400 font-bold">{m.losses} Losses</span>
+            </div>
+            <div className="mt-4 space-y-2 text-sm">
+              {[
+                ["TP · Ganadoras", m.wins, `${pct(m.wins)}%`, "text-emerald-400"],
+                ["SL · Perdedoras", m.losses, `${pct(m.losses)}%`, "text-rose-400"],
+                ["Break Even (BE)", m.be, `${pct(m.be)}%`, "text-white"],
+              ].map(([label, n, p, cls]) => (
+                <div key={label} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                  <span className="bx-muted">{label}</span>
+                  <span className={`font-extrabold ${cls}`}>{n} <span className="bx-muted font-normal text-xs">({p})</span></span>
+                </div>
+              ))}
+              {isAdmin && (
+                <>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                    <span className="bx-muted">Descartadas / Canceladas</span>
+                    <span className="font-extrabold">{m.discarded}</span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                    <span className="bx-muted">Abiertas</span>
+                    <span className="font-extrabold">{m.open}</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          <div className="bx-card p-4 md:p-5">
+            <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">{unit} totales y extremos</div>
+            <div className="text-center rounded-xl py-4" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+              <div className="text-[11px] uppercase tracking-widest bx-muted">Neto del mes</div>
+              <div className={`text-4xl font-black ${pnlColor(m.totalPips)}`}>{fmtP(m.totalPips)}</div>
+              <div className="text-xs bx-muted">{unitL}</div>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              {[
+                ["Mejor trade", best && best.pips > 0 ? best : null, "text-emerald-400"],
+                ["Peor trade", worst && worst.pips < 0 ? worst : null, "text-rose-400"],
+              ].map(([label, t, cls]) => (
+                <button
+                  key={label}
+                  disabled={!t}
+                  onClick={() => t && onOpen(t.id)}
+                  className="rounded-xl p-3 text-center"
+                  style={{ background: "#0F0F0F", border: "1px solid #2A2A2A", cursor: t ? "pointer" : "default" }}
+                >
+                  <div className="text-[11px] uppercase tracking-widest bx-muted">{label}</div>
+                  {t ? (
+                    <>
+                      <div className={`mt-1 text-xl font-black ${cls}`}>{fmtP(t.pips)}</div>
+                      <div className="text-xs bx-muted">{t.asset} · {t.direction} · {fmtDate(t.date)}</div>
+                    </>
+                  ) : (
+                    <div className="mt-2 text-sm bx-muted">{label === "Peor trade" && closedTrades.length ? "Sin pérdidas" : "—"}</div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        {monthTrades.length === 0 && <p className="mt-3 text-xs bx-ink2 text-center">No hay operaciones registradas en este mes.</p>}
+      </div>
+    </section>
+  );
+}
+
 /* ============================== APP ============================== */
 export default function App() {
   const twReady = useTailwind();
@@ -1380,9 +1743,6 @@ export default function App() {
   const [page, setPage] = useState("home"); // home | journal | library
   const [isAdmin, setIsAdmin] = useState(() => {
     try { return sessionStorage.getItem(SESSION_KEY) === "1"; } catch (e) { return false; }
-  });
-  const [dark, setDark] = useState(() => {
-    try { return localStorage.getItem(THEME_KEY) === "dark"; } catch (e) { return false; }
   });
   const [showLogin, setShowLogin] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -1396,6 +1756,7 @@ export default function App() {
 
   // periodo y búsqueda
   const [period, setPeriod] = useState("all"); // all | y:2026 | m:2026-10
+  const [view, setView] = useState("list"); // list | calendar
   const [q, setQ] = useState("");
 
   const fileRef = useRef(null);
@@ -1415,9 +1776,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    document.body.style.background = dark ? "#0C0C0C" : "#F9F6F0";
-    try { localStorage.setItem(THEME_KEY, dark ? "dark" : "light"); } catch (e) {}
-  }, [dark]);
+    document.body.style.background = "#F9F6F0";
+  }, []);
 
   useEffect(() => {
     try { localStorage.setItem(RES_KEY, JSON.stringify(resources)); } catch (e) {}
@@ -1531,18 +1891,20 @@ export default function App() {
   const importSignal = () => {
     if (!signalText.trim()) return;
     const p = parseSignal(signalText);
-    const base = emptyForm("CFD", p.sub, "");
+    const base = emptyForm(p.category, p.sub, p.broker);
     setEditing({
       ...base,
       asset: p.asset,
+      category: p.category,
       sub: p.sub,
+      broker: p.broker,
       direction: p.direction,
       entry1: p.entry1,
       entry2: p.entry2,
       activation: "E1",
       sl: p.sl,
       tpsText: p.tps.join(", "),
-      pipSize: String(guessPip(p.asset, "CFD", p.sub)),
+      pipSize: String(guessPip(p.asset, p.category, p.sub)),
       chart: p.chart,
       notes: p.notes,
       raw: p.raw,
@@ -1590,7 +1952,7 @@ export default function App() {
   }
 
   return (
-    <div className={`bx-root ${dark ? "bx-dark" : ""}`}>
+    <div className="bx-root">
       <style>{CSS}</style>
 
       {/* ------------------------- HEADER ------------------------- */}
@@ -1611,9 +1973,6 @@ export default function App() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <button onClick={() => setDark((d) => !d)} className="bx-ghost-page" title="Cambiar tema claro / oscuro">
-              {dark ? "☀ Claro" : "☾ Oscuro"}
-            </button>
             <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-btn">
               ✈ Unirme al Telegram
             </a>
@@ -1677,7 +2036,7 @@ export default function App() {
               </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1" style={view === "calendar" ? { display: "none" } : undefined}>
               <div className="flex items-center gap-1">
                 <button onClick={() => stepPeriod(1)} className="bx-ghost" title="Mes anterior" aria-label="Mes anterior">‹</button>
                 <select className="bx-input" style={{ width: "auto", minWidth: 180 }} value={periodEff} onChange={(e) => setPeriod(e.target.value)} aria-label="Periodo">
@@ -1690,6 +2049,17 @@ export default function App() {
           </div>
         </section>
 
+        {/* ------------------------- SELECTOR DE VISTA ------------------------- */}
+        <div className="flex flex-wrap justify-center gap-2">
+          <button onClick={() => setView("list")} className={`bx-tab ${view === "list" ? "on" : ""}`}>📋 Lista de Operaciones</button>
+          <button onClick={() => setView("calendar")} className={`bx-tab ${view === "calendar" ? "on" : ""}`}>📅 Calendario & Métricas</button>
+        </div>
+
+        {view === "calendar" && (
+          <CalendarView key={`${tab}|${cfdSub}|${broker}`} trades={market} isAdmin={isAdmin} unit={scopeUnit} onOpen={(id) => setDetail(id)} />
+        )}
+
+        {view === "list" && (<>
         {/* ------------------------- MÉTRICAS ------------------------- */}
         <section>
           <div className="text-[11px] uppercase tracking-[0.2em] bx-ink2 mb-2 text-center">Métricas · {scopeLabel} · {periodLabel} · en {scopeUnit}</div>
@@ -1728,26 +2098,29 @@ export default function App() {
 
         </section>
 
+        </>)}
+
         {/* ------------------------- PEGAR SEÑAL (admin) ------------------------- */}
         {isAdmin && (
           <section className="bx-card p-4">
-            <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold mb-2">Pegar señal (CFDs)</div>
+            <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold mb-2">Pegar señal (CFDs y Sintéticos)</div>
             <textarea
               rows={6}
               className="bx-input"
-              placeholder={"Pega aquí la señal tal como la envías al canal VIP…\n\nPair: XAUUSD 📊\nSide: Short / Sell\nEntry 1: 4018\nEntry 2: 4022\nSL: 4030\nTP: Open\nTP1 4013 …"}
+              placeholder={"Pega aquí la señal tal como la envías al canal VIP…\n\nPair: XAUUSD 📊\nSide: Short / Sell\nEntry 1: 4018\nEntry 2: 4022\nSL: 4030\nTP: Open\nTP1 4013 …\n\nTambién acepta formato corto:\nCRASH 900 SELL 16792\nSL 20 PTS\nTP: 300 PTS"}
               value={signalText}
               onChange={(e) => setSignalText(e.target.value)}
             />
             <div className="mt-2 flex items-center justify-between gap-2 flex-wrap">
               <span className="text-xs bx-muted">
-                Detecta activo, dirección, Entry 1 / Entry 2, SL, TPs (incluido TP OPEN) y enlace de TradingView. Podrás revisar antes de guardar.
+                Detecta activo, categoría y broker (CFDs, DERIV y WELTRADE), dirección, Entry 1 / Entry 2, SL, TPs (precio o distancia en PTS, incluido TP OPEN) y enlace de TradingView. Podrás revisar antes de guardar.
               </span>
               <button onClick={importSignal} disabled={!signalText.trim()} className="bx-btn">Interpretar y revisar</button>
             </div>
           </section>
         )}
 
+        {view === "list" && (<>
         {/* ------------------------- TABLA ------------------------- */}
         <section className="bx-card">
           <div className="p-4 flex flex-wrap items-end justify-between gap-3 bx-bb">
@@ -1825,6 +2198,8 @@ export default function App() {
             </table>
           </div>
         </section>
+
+        </>)}
 
         {/* ------------------------- ADMIN TOOLS ------------------------- */}
         {isAdmin && (
