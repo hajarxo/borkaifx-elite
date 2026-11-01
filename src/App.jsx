@@ -1382,7 +1382,7 @@ function HomePage({ setPage }) {
             </div>
           ))}
         </div>
-        <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-2xl">El pago y la activación se coordinan por Telegram. Operar conlleva riesgo de pérdida de capital.</p>
+        <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-2xl">El pago y la activación se coordinan por Telegram.</p>
       </section>
     </div>
   );
