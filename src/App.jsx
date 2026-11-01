@@ -187,6 +187,7 @@ const monthLabel = (ym) => { const [y, m] = ym.split("-"); return `${MONTHS_ES[N
 const inPeriod = (date, period) => {
   if (!period || period === "all") return true;
   const d = date || "";
+  if (period === "cur") return d.startsWith(curYM());
   if (period.startsWith("y:")) return d.startsWith(period.slice(2) + "-");
   return d.startsWith(period.slice(2));
 };
@@ -1755,7 +1756,7 @@ export default function App() {
   const [broker, setBroker] = useState("WELTRADE");
 
   // periodo y búsqueda
-  const [period, setPeriod] = useState("all"); // all | y:2026 | m:2026-10
+  const [period, setPeriod] = useState("cur"); // cur (mes actual) | all | y:2026 | m:2026-10
   const [view, setView] = useState("list"); // list | calendar
   const [q, setQ] = useState("");
 
@@ -1818,23 +1819,27 @@ export default function App() {
   );
   const monthKeys = useMemo(() => Array.from(new Set(market.map((t) => (t.date || "").slice(0, 7)).filter(Boolean))).sort().reverse(), [market]);
   const yearKeys = useMemo(() => Array.from(new Set(monthKeys.map((k) => k.slice(0, 4)))), [monthKeys]);
+  const nowYM = curYM();
   const periodOptions = useMemo(
     () => [
+      { v: "cur", l: `Mes actual (${monthLabel(nowYM)})` },
+      ...monthKeys.filter((k) => k !== nowYM).map((k) => ({ v: `m:${k}`, l: monthLabel(k) })),
+      ...yearKeys.map((yy) => ({ v: `y:${yy}`, l: `Todo ${yy}` })),
       { v: "all", l: "Todo el histórico" },
-      ...yearKeys.map((y) => ({ v: `y:${y}`, l: `Todo ${y}` })),
-      ...monthKeys.map((k) => ({ v: `m:${k}`, l: monthLabel(k) })),
     ],
-    [yearKeys, monthKeys]
+    [yearKeys, monthKeys, nowYM]
   );
-  const periodEff = periodOptions.some((o) => o.v === period) ? period : "all";
-  const periodLabel = periodOptions.find((o) => o.v === periodEff)?.l || "Todo el histórico";
+  const periodEff = periodOptions.some((o) => o.v === period) ? period : "cur";
+  const periodLabel = periodEff === "cur" ? monthLabel(nowYM) : periodOptions.find((o) => o.v === periodEff)?.l || monthLabel(nowYM);
   const scoped = useMemo(() => market.filter((t) => inPeriod(t.date, periodEff)), [market, periodEff]);
+  // Meses navegables: el actual (aunque no tenga datos) y todos los que tengan operaciones
+  const monthSeq = useMemo(() => Array.from(new Set([nowYM, ...monthKeys])).sort().reverse(), [monthKeys, nowYM]);
   // dir = 1 → mes anterior (más antiguo) · dir = -1 → mes siguiente (más reciente)
   const stepPeriod = (dir) => {
-    if (!monthKeys.length) return;
-    const cur = periodEff.startsWith("m:") ? monthKeys.indexOf(periodEff.slice(2)) : -1;
-    const idx = cur === -1 ? 0 : Math.max(0, Math.min(monthKeys.length - 1, cur + dir));
-    setPeriod(`m:${monthKeys[idx]}`);
+    const at = periodEff.startsWith("m:") ? periodEff.slice(2) : nowYM;
+    const i = Math.max(0, monthSeq.indexOf(at));
+    const j = Math.max(0, Math.min(monthSeq.length - 1, i + dir));
+    setPeriod(monthSeq[j] === nowYM ? "cur" : `m:${monthSeq[j]}`);
   };
 
   // Unidad dinámica: CFDs = Pips · DERIV = Puntos · WELTRADE = Puntos WELTRADE
@@ -1876,7 +1881,8 @@ export default function App() {
     if (t.category === "CFD") setCfdSub("Todos");
     else setBroker(t.broker);
     setEditing(null);
-    setPeriod("all");
+    const tYM = (t.date || "").slice(0, 7);
+    setPeriod(!tYM || tYM === curYM() ? "cur" : `m:${tYM}`);
     // Señal nueva: abre el detalle para registrar de inmediato el resultado
     if (!existed && isAdmin) setDetail(t.id);
   };
@@ -2037,6 +2043,8 @@ export default function App() {
             )}
 
             <div className="flex flex-wrap items-center justify-center gap-2 pt-1" style={view === "calendar" ? { display: "none" } : undefined}>
+              <button onClick={() => setPeriod("cur")} className={`bx-pill ${periodEff === "cur" ? "on" : ""}`}>Mes actual</button>
+              <button onClick={() => setPeriod("all")} className={`bx-pill ${periodEff === "all" ? "on" : ""}`}>Todo el histórico</button>
               <div className="flex items-center gap-1">
                 <button onClick={() => stepPeriod(1)} className="bx-ghost" title="Mes anterior" aria-label="Mes anterior">‹</button>
                 <select className="bx-input" style={{ width: "auto", minWidth: 180 }} value={periodEff} onChange={(e) => setPeriod(e.target.value)} aria-label="Periodo">
@@ -2151,7 +2159,7 @@ export default function App() {
               <tbody>
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={10} className="text-center bx-muted py-10">Sin operaciones para estos filtros.</td>
+                    <td colSpan={10} className="text-center bx-muted py-10">{periodEff === "cur" && !q.trim() ? `Aún no hay operaciones cerradas en ${monthLabel(nowYM)}. Usa el selector para ver meses anteriores o todo el histórico.` : "Sin operaciones para estos filtros."}</td>
                   </tr>
                 )}
                 {filtered.map((t) => {
