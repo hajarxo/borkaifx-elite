@@ -18,11 +18,6 @@ import {
 
 const BRAND = "BORKAIFX ELITE";
 const TELEGRAM_URL = "https://t.me/borkaifxoficial";
-const ADMIN_KEY = "796586";
-const STORAGE_KEY = "borkaifx_elite_trades_v2";
-const LEGACY_KEY = "borkaifx_elite_trades_v1";
-const SESSION_KEY = "borkaifx_elite_admin";
-const RES_KEY = "borkaifx_elite_resources_v1";
 
 /* ============================================================
    CONFIGURACIÓN DE INICIO / SERVICIOS — EDITA AQUÍ TUS DATOS
@@ -517,15 +512,7 @@ function computeMetrics(list) {
   return { open, executed: closed.length, wins: wins.length, losses: losses.length, be: be.length, discarded, winRate, totalPips, profitFactor, totalR, avgR, total: list.length, legsCount: legs.length };
 }
 
-/* ----------------------------- Datos de ejemplo y migración ----------------------------- */
-const SEED = [
-  { id: "d1", date: "2026-10-20", category: "CFD", sub: "Oro/Metales", broker: "", asset: "XAUUSD", direction: "BUY", entry1: 3985.5, entry2: 3981, activation: "BOTH", sl: 3975, tps: [3990, 3995, "OPEN"], pipSize: 0.1, legs: { e1: { status: "BE", exit: 3985.8, pips: 3, tpIdx: null }, e2: { status: "TP", exit: "OPEN", pips: 212, tpIdx: 2 } }, discarded: false, chart: "", img: "", raw: "", notes: "E1 cerrada en BE+ (mini pips). E2 llegó al TP abierto. (Ejemplo demo)", tags: ["VIP Signal", "Demo"] },
-  { id: "d2", date: "2026-10-21", category: "CFD", sub: "Forex", broker: "", asset: "EURUSD", direction: "SELL", entry1: 1.0905, entry2: "", activation: "E1", sl: 1.0925, tps: [1.088, 1.085], pipSize: 0.0001, legs: { e1: { status: "SL", exit: 1.0925, pips: -20, tpIdx: null } }, discarded: false, chart: "", img: "", raw: "", notes: "Stop por noticias. (Ejemplo demo)", tags: ["VIP Signal", "Demo"] },
-  { id: "d3", date: "2026-10-22", category: "CFD", sub: "Índices", broker: "", asset: "US30", direction: "BUY", entry1: 42100, entry2: "", activation: "E1", sl: 42020, tps: [42200, 42300], pipSize: 1, legs: { e1: { status: "BE", exit: 42100, pips: 0, tpIdx: null } }, discarded: false, chart: "", img: "", raw: "", notes: "Movido a BE. (Ejemplo demo)", tags: ["Demo"] },
-  { id: "d4", date: "2026-10-23", category: "SINTETICO", sub: "", broker: "DERIV", asset: "Volatility 75", direction: "SELL", entry1: 98250, entry2: "", activation: "E1", sl: 98500, tps: [97900, 97600], pipSize: 1, legs: { e1: { status: "TP", exit: 97600, pips: 650, tpIdx: 1 } }, discarded: false, chart: "", img: "", raw: "", notes: "Ruptura de estructura M15. (Ejemplo demo)", tags: ["VIP Signal", "Demo"] },
-  { id: "d5", date: "2026-10-26", category: "SINTETICO", sub: "", broker: "WELTRADE", asset: "Boom 1000", direction: "BUY", entry1: 12450, entry2: "", activation: "E1", sl: 12400, tps: [12480, 12510], pipSize: 1, legs: { e1: { status: "TP", exit: 12480, pips: 30, tpIdx: 0 } }, discarded: false, chart: "", img: "", raw: "", notes: "(Ejemplo demo)", tags: ["VIP Signal", "Demo"] },
-  { id: "d6", date: "2026-10-27", category: "SINTETICO", sub: "", broker: "WELTRADE", asset: "Crash 500", direction: "SELL", entry1: 8800, entry2: "", activation: "E1", sl: 8860, tps: [8700], pipSize: 1, legs: {}, discarded: true, chart: "", img: "", raw: "", notes: "Señal cancelada antes de ejecutarse. (Ejemplo demo)", tags: ["Demo"] },
-];
+/* ----------------------------- Migración de formato anterior ----------------------------- */
 
 // Convierte operaciones del formato anterior (v1, con lotes y $) al nuevo
 function migrateLegacy(t) {
@@ -551,16 +538,155 @@ function migrateLegacy(t) {
 
 const normalizeAny = (t) => (t.entry1 === undefined ? migrateLegacy(t) : recompute(t));
 
-function loadTrades() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw).map(recompute);
-  } catch (e) {}
-  try {
-    const old = localStorage.getItem(LEGACY_KEY);
-    if (old) return JSON.parse(old).map(migrateLegacy);
-  } catch (e) {}
-  return SEED.map(recompute);
+
+/* ============================================================
+   ALMACENAMIENTO EN GITHUB (data/trades.json)
+   - Sin localStorage. La fuente de verdad es un JSON dentro del repositorio.
+   - Público: lee el archivo (raw.githubusercontent.com) y solo muestra cerradas/descartadas.
+   - Admin: entra pegando su TOKEN de GitHub (nunca va escrito en el código). El token
+     vive solo en sessionStorage (se borra al cerrar la pestaña) y se usa para
+     escribir el archivo con la API de contenidos de GitHub.
+   Guía y recomendaciones de seguridad: GITHUB_SETUP.md
+   ============================================================ */
+const GH = {
+  repo: "hajarxo/borkaifx-elite",
+  branch: "main",
+  tradesPath: "data/trades.json",
+  resourcesPath: "data/resources.json",
+  openPath: "data/open.enc.json", // señales abiertas, cifradas (solo el admin puede leerlas)
+};
+const cloudOn = () => true;
+const AUTH_KEY = "borkaifx_elite_gh_session";
+const PUBLIC_STATUSES = ["TP", "SL", "BE", "Descartada"];
+
+const readAuth = () => { try { return JSON.parse(sessionStorage.getItem(AUTH_KEY) || "null"); } catch (e) { return null; } };
+const writeAuth = (a) => { try { a ? sessionStorage.setItem(AUTH_KEY, JSON.stringify(a)) : sessionStorage.removeItem(AUTH_KEY); } catch (e) {} };
+
+const cloudErr = (msg, code) => Object.assign(new Error(msg), { code });
+const ghApi = (path) => `https://api.github.com/repos/${GH.repo}/contents/${path}`;
+const ghHeaders = (token) => ({ Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28", Authorization: `Bearer ${token}` });
+const b64decode = (b64) => { const bin = atob(String(b64).replace(/\s/g, "")); return new TextDecoder().decode(Uint8Array.from(bin, (c) => c.charCodeAt(0))); };
+const b64encode = (str) => { const bytes = new TextEncoder().encode(str); let bin = ""; bytes.forEach((b) => { bin += String.fromCharCode(b); }); return btoa(bin); };
+
+// Valida el token: debe poder ESCRIBIR en el repositorio
+async function cloudSignIn(token) {
+  token = String(token || "").trim();
+  if (!token) throw cloudErr("EMPTY", 401);
+  const r = await fetch(`https://api.github.com/repos/${GH.repo}`, { headers: ghHeaders(token), cache: "no-store" });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw cloudErr(j?.message || "AUTH", r.status === 404 ? 401 : r.status);
+  if (j.permissions && !j.permissions.push) throw cloudErr("SIN_PERMISO_DE_ESCRITURA", 401);
+  writeAuth({ token });
+}
+const authToken = () => { const a = readAuth(); if (!a?.token) throw cloudErr("NO_AUTH", 401); return a.token; };
+
+// Lee un JSON del repo. Admin: API con token (siempre fresco, devuelve sha). Público: raw (sin token).
+async function ghReadJson(path, admin, fallback = []) {
+  if (admin) {
+    const r = await fetch(`${ghApi(path)}?ref=${encodeURIComponent(GH.branch)}&t=${Date.now()}`, { headers: ghHeaders(authToken()), cache: "no-store" });
+    if (r.status === 404) return { data: fallback, sha: null };
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw cloudErr(j?.message || `HTTP ${r.status}`, r.status === 403 ? 401 : r.status);
+    let data = fallback;
+    try { data = JSON.parse(b64decode(j.content || "") || "null") ?? fallback; } catch (e) {}
+    return { data, sha: j.sha };
+  }
+  const r = await fetch(`https://raw.githubusercontent.com/${GH.repo}/${GH.branch}/${path}?t=${Date.now()}`, { cache: "no-store" });
+  if (r.status === 404) return { data: fallback, sha: null };
+  if (!r.ok) throw cloudErr(`HTTP ${r.status}`, r.status);
+  let data = fallback;
+  try { data = JSON.parse((await r.text()) || "null") ?? fallback; } catch (e) {}
+  return { data, sha: null };
+}
+
+async function ghWriteJson(path, list, sha, message) {
+  const body = { message, content: b64encode(JSON.stringify(list, null, 2) + "\n"), branch: GH.branch };
+  if (sha) body.sha = sha;
+  const r = await fetch(ghApi(path), { method: "PUT", headers: { ...ghHeaders(authToken()), "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw cloudErr(j?.message || `HTTP ${r.status}`, r.status === 403 || r.status === 401 ? 401 : r.status);
+  return j;
+}
+
+// ---- Señales ABIERTAS: nunca van en claro al repositorio (puede ser público).
+// Se guardan cifradas (AES-GCM) en data/open.enc.json con una clave derivada del TOKEN del admin.
+const subtle = () => (typeof crypto !== "undefined" && crypto.subtle) || null;
+const b64bytes = (b64) => Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+const bytesB64 = (u8) => { let bin = ""; u8.forEach((b) => { bin += String.fromCharCode(b); }); return btoa(bin); };
+async function openKey(token, salt) {
+  const base = await subtle().importKey("raw", new TextEncoder().encode(token), "PBKDF2", false, ["deriveKey"]);
+  return subtle().deriveKey({ name: "PBKDF2", salt, iterations: 150000, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+}
+async function encryptOpen(list, token) {
+  if (!subtle()) throw cloudErr("NO_CRYPTO", 500);
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await openKey(token, salt);
+  const buf = await subtle().encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify(list)));
+  return { v: 1, salt: bytesB64(salt), iv: bytesB64(iv), data: bytesB64(new Uint8Array(buf)) };
+}
+async function decryptOpen(env, token) {
+  const key = await openKey(token, b64bytes(env.salt));
+  const buf = await subtle().decrypt({ name: "AES-GCM", iv: b64bytes(env.iv) }, key, b64bytes(env.data));
+  const list = JSON.parse(new TextDecoder().decode(buf));
+  return Array.isArray(list) ? list : [];
+}
+// Lee las abiertas. Si no se pueden descifrar (token distinto al que las cifró) -> locked: no se sobrescribe nada.
+async function readOpen() {
+  const { data, sha } = await ghReadJson(GH.openPath, true, null);
+  if (!data || !data.data) return { list: [], sha, locked: false };
+  try { return { list: await decryptOpen(data, authToken()), sha, locked: false }; }
+  catch (e) { return { list: [], sha, locked: true }; }
+}
+const sortTrades = (a, b) => ((a.date || "") < (b.date || "") ? -1 : (a.date || "") > (b.date || "") ? 1 : String(a.id) < String(b.id) ? -1 : 1);
+
+// Descarga: el público lee solo data/trades.json (cerradas/descartadas). El admin además descifra las abiertas.
+let openLocked = false;
+async function cloudPull(admin) {
+  const { data } = await ghReadJson(GH.tradesPath, admin);
+  let raw = Array.isArray(data) ? data : [];
+  if (admin) {
+    const o = await readOpen();
+    openLocked = o.locked;
+    raw = raw.concat(o.list);
+  }
+  const out = [];
+  raw.forEach((t) => { try { const n = normalizeAny(t); if (admin || isPublic(n)) out.push(n); } catch (e) {} });
+  return out.sort(sortTrades);
+}
+
+// Un commit por archivo modificado (agregar/modificar/descartar/borrar). Reintenta si otro dispositivo escribió antes.
+async function cloudCommit(ups, dels) {
+  const msg = `Bitácora: ${ups.length ? `${ups.length} guardada(s)` : ""}${ups.length && dels.length ? ", " : ""}${dels.length ? `${dels.length} eliminada(s)` : ""}`;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const pub = await ghReadJson(GH.tradesPath, true);
+    const opn = await readOpen();
+    if (opn.locked) throw cloudErr("OPEN_LOCKED", 423);
+    const pm = new Map((Array.isArray(pub.data) ? pub.data : []).map((t) => [t.id, t]));
+    const om = new Map(opn.list.map((t) => [t.id, t]));
+    const before = [JSON.stringify([...pm.values()].sort(sortTrades)), JSON.stringify([...om.values()].sort(sortTrades))];
+    dels.forEach((id) => { pm.delete(id); om.delete(id); });
+    ups.forEach((t) => { if (isPublic(t)) { pm.set(t.id, t); om.delete(t.id); } else { om.set(t.id, t); pm.delete(t.id); } });
+    const pl = [...pm.values()].sort(sortTrades), ol = [...om.values()].sort(sortTrades);
+    try {
+      // primero se retira la señal de "abiertas" si pasó a pública, y se publica; el orden evita perderla
+      if (JSON.stringify(pl) !== before[0]) await ghWriteJson(GH.tradesPath, pl, pub.sha, msg);
+      if (JSON.stringify(ol) !== before[1]) await ghWriteJson(GH.openPath, await encryptOpen(ol, authToken()), opn.sha, `${msg} (abiertas, cifrado)`);
+      return true;
+    } catch (e) { if ((e.code === 409 || e.code === 422) && attempt < 3) continue; throw e; }
+  }
+  return null;
+}
+
+// Recursos & PDF (data/resources.json): lectura pública, escritura solo admin
+const cloudPullResources = async (admin) => (await ghReadJson(GH.resourcesPath, admin)).data;
+async function cloudSaveResources(list) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { sha } = await ghReadJson(GH.resourcesPath, true);
+    try { return await ghWriteJson(GH.resourcesPath, list, sha, "Recursos actualizados"); }
+    catch (e) { if ((e.code === 409 || e.code === 422) && attempt < 2) continue; throw e; }
+  }
+  return null;
 }
 
 /* ----------------------------- UI pieces ----------------------------- */
@@ -1099,23 +1225,26 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
 function LoginModal({ onClose, onOk }) {
   const [key, setKey] = useState("");
   const [err, setErr] = useState(false);
+  const [busy, setBusy] = useState(false);
   const ref = useRef(null);
   useEffect(() => ref.current?.focus(), []);
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    if (key === ADMIN_KEY) onOk();
-    else setErr(true);
+    // La "clave" es tu token de GitHub: GitHub lo valida y solo entra quien pueda escribir en el repositorio
+    setBusy(true);
+    try { await cloudSignIn(key); onOk(); } catch (er) { setErr(true); }
+    setBusy(false);
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" onClick={onClose}>
       <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="bx-card w-full max-w-sm p-6">
         <h3 className="text-lg font-extrabold bx-accent tracking-wide">ACCESO ADMIN</h3>
-        <p className="text-xs bx-muted mt-1">Ingresa tu clave de acceso para gestionar la bitácora.</p>
-        <input ref={ref} type="password" inputMode="numeric" className="bx-input mt-4" placeholder="Clave" value={key} onChange={(e) => { setKey(e.target.value); setErr(false); }} />
-        {err && <div className="text-sm text-rose-400 mt-2">Clave incorrecta.</div>}
+        <p className="text-xs bx-muted mt-1">Pega tu token de GitHub para gestionar la bitácora. Se guarda solo mientras la pestaña esté abierta.</p>
+        <input ref={ref} type="password" className="bx-input mt-4" placeholder="Token de GitHub (github_pat_…)" value={key} onChange={(e) => { setKey(e.target.value); setErr(false); }} />
+        {err && <div className="text-sm text-rose-400 mt-2">Token inválido o sin permiso de escritura en el repositorio.</div>}
         <div className="mt-4 flex justify-end gap-2">
           <button type="button" onClick={onClose} className="bx-ghost">Cancelar</button>
-          <button type="submit" className="bx-btn">Entrar</button>
+          <button type="submit" disabled={busy} className="bx-btn">{busy ? "Verificando…" : "Entrar"}</button>
         </div>
       </form>
     </div>
@@ -1856,14 +1985,11 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
 /* ============================== APP ============================== */
 export default function App() {
   const twReady = useTailwind();
-  const [trades, setTrades] = useState(loadTrades);
-  const [resources, setResources] = useState(() => {
-    try { const r = localStorage.getItem(RES_KEY); if (r) return JSON.parse(r); } catch (e) {}
-    return [];
-  });
+  const [trades, setTrades] = useState([]);
+  const [resources, setResources] = useState([]);
   const [page, setPage] = useState("home"); // home | journal | library
   const [isAdmin, setIsAdmin] = useState(() => {
-    try { return sessionStorage.getItem(SESSION_KEY) === "1"; } catch (e) { return false; }
+    try { return !!readAuth(); } catch (e) { return false; }
   });
   const [showLogin, setShowLogin] = useState(false);
   const [showReport, setShowReport] = useState(false);
@@ -1882,7 +2008,6 @@ export default function App() {
   const [q, setQ] = useState("");
 
   const fileRef = useRef(null);
-  const [storageErr, setStorageErr] = useState(false);
   const [signalText, setSignalText] = useState("");
 
   useEffect(() => {
@@ -1901,30 +2026,136 @@ export default function App() {
     document.body.style.background = "#F9F6F0";
   }, []);
 
-  useEffect(() => {
-    try { localStorage.setItem(RES_KEY, JSON.stringify(resources)); } catch (e) {}
-  }, [resources]);
-
   useEffect(() => { window.scrollTo(0, 0); }, [page]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(trades));
-      setStorageErr(false);
-    } catch (e) {
-      setStorageErr(true);
-    }
-  }, [trades]);
 
   const login = () => {
     setIsAdmin(true);
     setShowLogin(false);
-    try { sessionStorage.setItem(SESSION_KEY, "1"); } catch (e) {}
   };
   const logout = () => {
     setIsAdmin(false);
-    try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+    writeAuth(null);
+    setTrades((p) => p.filter(isPublic)); // al salir, no se queda ninguna señal abierta en pantalla
   };
+
+  // ---------- Sincronización con GitHub (data/trades.json) ----------
+  const cloud = cloudOn();
+  const [cloudState, setCloudState] = useState("loading"); // loading | ok | syncing | error
+  const tradesRef = useRef(trades);
+  tradesRef.current = trades;
+  const syncedRef = useRef(new Map()); // id -> json ya guardado en la nube
+  const readyRef = useRef(false);
+  const pushingRef = useRef(false);
+  const failedRef = useRef(false);
+  const adminRef = useRef(isAdmin);
+  adminRef.current = isAdmin;
+
+  const onCloudError = (e) => {
+    if (e && e.code === 401 && adminRef.current) { logout(); window.alert("Tu token de GitHub no es válido o caducó. Vuelve a entrar."); }
+    else if (e && e.code === 423) window.alert("No se pueden descifrar las señales abiertas guardadas (se cifraron con otro token). No se modificó nada en GitHub. Entra con el token original o elimina data/open.enc.json del repositorio.");
+    setCloudState("error");
+  };
+  const diffLocal = () => {
+    const cur = tradesRef.current;
+    const ids = new Set(cur.map((t) => t.id));
+    return {
+      ups: cur.filter((t) => syncedRef.current.get(t.id) !== JSON.stringify(t)),
+      dels: Array.from(syncedRef.current.keys()).filter((id) => !ids.has(id)),
+    };
+  };
+  const pushDiff = async () => {
+    if (!cloud || !adminRef.current || !readyRef.current || pushingRef.current) return;
+    pushingRef.current = true;
+    try {
+      for (;;) {
+        const { ups, dels } = diffLocal();
+        if (!ups.length && !dels.length) break;
+        setCloudState("syncing");
+        await cloudCommit(ups, dels);
+        ups.forEach((t) => syncedRef.current.set(t.id, JSON.stringify(t)));
+        dels.forEach((id) => syncedRef.current.delete(id));
+      }
+      failedRef.current = false;
+      setCloudState("ok");
+    } catch (e) {
+      failedRef.current = true;
+      onCloudError(e);
+    } finally {
+      pushingRef.current = false;
+    }
+  };
+  const pull = async () => {
+    if (!cloud || pushingRef.current || failedRef.current) return;
+    const admin = adminRef.current;
+    try {
+      const list = await cloudPull(admin);
+      if (admin !== adminRef.current || pushingRef.current) return;
+      if (readyRef.current) { const d = diffLocal(); if (d.ups.length || d.dels.length) return; } // hay cambios locales sin subir
+      const m = new Map(list.map((t) => [t.id, JSON.stringify(t)]));
+      let same = m.size === syncedRef.current.size;
+      if (same) m.forEach((v, k) => { if (syncedRef.current.get(k) !== v) same = false; });
+      if (!same || !readyRef.current) { setTrades(list); }
+      syncedRef.current = m;
+      readyRef.current = true;
+      setCloudState("ok");
+    } catch (e) {
+      onCloudError(e);
+    }
+  };
+  // descarga inicial, al cambiar de rol, cada 20 s y al volver a la pestaña
+  useEffect(() => {
+    if (!cloud) return undefined;
+    readyRef.current = false;
+    failedRef.current = false;
+    syncedRef.current = new Map();
+    setCloudState("loading");
+    let alive = true;
+    const tick = async () => {
+      if (!alive) return;
+      if (failedRef.current) await pushDiff();
+      await pull();
+    };
+    tick();
+    const iv = setInterval(tick, 20000);
+    const vis = () => { if (document.visibilityState === "visible") tick(); };
+    document.addEventListener("visibilitychange", vis);
+    return () => { alive = false; clearInterval(iv); document.removeEventListener("visibilitychange", vis); };
+    // eslint-disable-next-line
+  }, [isAdmin, cloud]);
+  // subida automática de cada cambio del admin
+  useEffect(() => { if (cloud && isAdmin) pushDiff(); /* eslint-disable-next-line */ }, [trades, isAdmin]);
+  // Recursos & PDF (data/resources.json): se cargan al abrir; el admin los guarda al cambiarlos
+  const resSynced = useRef(null);
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      try {
+        const list = await cloudPullResources(adminRef.current);
+        if (!alive || !Array.isArray(list)) return;
+        const j = JSON.stringify(list);
+        if (resSynced.current !== null && JSON.stringify(resourcesRef.current) !== resSynced.current) return; // cambios sin subir
+        resSynced.current = j;
+        if (j !== JSON.stringify(resourcesRef.current)) setResources(list);
+      } catch (e) {}
+    };
+    load();
+    const vis = () => { if (document.visibilityState === "visible") load(); };
+    document.addEventListener("visibilitychange", vis);
+    return () => { alive = false; document.removeEventListener("visibilitychange", vis); };
+    // eslint-disable-next-line
+  }, [isAdmin]);
+  const resourcesRef = useRef(resources);
+  resourcesRef.current = resources;
+  useEffect(() => {
+    if (!isAdmin || resSynced.current === null) return;
+    const j = JSON.stringify(resources);
+    if (j === resSynced.current) return;
+    resSynced.current = j;
+    cloudSaveResources(resources).catch(onCloudError);
+    // eslint-disable-next-line
+  }, [resources, isAdmin]);
+
+  const cloudLabel = { loading: "☁ Conectando…", ok: "☁ GitHub sincronizado", syncing: "☁ Guardando en GitHub…", error: "⚠ Sin conexión con GitHub" }[cloudState];
 
   // alcance según pestañas
   // El público ve cerradas (TP / SL / BE) y descartadas; las abiertas solo las ve el admin.
@@ -2112,14 +2343,14 @@ export default function App() {
         </div>
         {isAdmin && (
           <div className="text-center text-[11px] tracking-[0.25em] py-1 font-bold text-white" style={{ background: ACCENT }}>
-            MODO ADMINISTRADOR ACTIVO
+            MODO ADMINISTRADOR ACTIVO · {cloudLabel}
           </div>
         )}
       </header>
 
-      {storageErr && isAdmin && (
+      {cloudState === "error" && (
         <div className="text-center text-xs py-2 px-4 bg-rose-500/20 text-rose-500">
-          ⚠ No se pudo guardar: el almacenamiento del navegador está lleno (capturas pesadas). Exporta un respaldo y quita capturas antiguas.
+          ⚠ No se pudo comunicar con GitHub. {isAdmin ? "Tus cambios quedan pendientes y se reintentan solos." : "Reintentando…"}
         </div>
       )}
 
@@ -2344,7 +2575,7 @@ export default function App() {
             <button onClick={() => fileRef.current?.click()} className="bx-ghost">⬆ Importar respaldo</button>
             <input ref={fileRef} type="file" accept="application/json" className="hidden" onChange={importJson} />
             <button
-              onClick={() => { if (window.confirm("¿Eliminar TODAS las operaciones (incluidas las de ejemplo)?")) setTrades([]); }}
+              onClick={() => { if (window.confirm(cloud ? "¿Eliminar TODAS las operaciones? También se borrarán de la nube y de todos tus dispositivos." : "¿Eliminar TODAS las operaciones (incluidas las de ejemplo)?")) setTrades([]); }}
               className="bx-ghost danger"
             >
               Vaciar bitácora
