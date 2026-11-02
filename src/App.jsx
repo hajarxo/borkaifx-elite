@@ -17,7 +17,7 @@ import {
    ============================================================ */
 
 const BRAND = "BORKAIFX ELITE";
-const TELEGRAM_URL = "https://t.me/borkaifxelite";
+const TELEGRAM_URL = "https://t.me/borkaifxoficial";
 const ADMIN_KEY = "796586";
 const STORAGE_KEY = "borkaifx_elite_trades_v2";
 const LEGACY_KEY = "borkaifx_elite_trades_v1";
@@ -201,7 +201,8 @@ const tvImage = (u) => {
   const m = /tradingview\.com\/x\/([A-Za-z0-9]+)/i.exec(u || "");
   return m ? `https://s3.tradingview.com/snapshots/${m[1][0].toLowerCase()}/${m[1]}.png` : null;
 };
-const imgSrc = (t) => t.img || tvImage(t.chart) || (t.chart && isImageUrl(t.chart) ? t.chart : null);
+const urlImg = (u) => tvImage(u) || (u && isImageUrl(u) ? u : null);
+const imgSrc = (t) => t.img || urlImg(t.chart);
 
 function guessSub(asset) {
   const a = (asset || "").toUpperCase();
@@ -544,7 +545,7 @@ function migrateLegacy(t) {
     id: t.id, date: t.date, category: cat, sub: t.sub || "", broker: t.broker || "", asset: t.asset, direction: t.direction,
     entry1: t.entry ?? "", entry2: "", activation: "E1", sl: t.sl ?? "", tps: levels, pipSize,
     legs: { e1: { status: st, exit: t.exit ?? "", pips, tpIdx } },
-    discarded: t.status === "Descartada", chart: t.chart || "", img: t.img || "", raw: t.raw || "", notes: t.notes || "", tags: t.tags || [],
+    discarded: t.status === "Descartada", chart: t.chart || "", chartResult: t.chartResult || "", img: t.img || "", raw: t.raw || "", notes: t.notes || "", tags: t.tags || [],
   });
 }
 
@@ -633,6 +634,7 @@ function emptyForm(category, sub, broker) {
     pipSize: cat === "CFD" ? "0.0001" : "1",
     discarded: false,
     chart: "",
+    chartResult: "",
     img: "",
     raw: "",
     notes: "",
@@ -668,15 +670,6 @@ function TradeForm({ initial, onCancel, onSave }) {
     setF((p) => ({ ...p, pipSize: String(guessPip(p.asset, p.category, p.sub)) }));
   }, [f.asset, f.category, f.sub, pipTouched]);
 
-  const addImage = async (file) => {
-    if (!file || !file.type.startsWith("image/")) return;
-    try { set("img", await compressImage(file)); } catch (e) { setErr("No se pudo leer la imagen."); }
-  };
-  const onPasteImg = (e) => {
-    const it = Array.from(e.clipboardData?.items || []).find((i) => i.type.startsWith("image/"));
-    if (it) { e.preventDefault(); addImage(it.getAsFile()); }
-  };
-
   const submit = (e) => {
     e.preventDefault();
     if (!f.asset.trim()) return setErr("El activo es obligatorio.");
@@ -701,6 +694,7 @@ function TradeForm({ initial, onCancel, onSave }) {
       legs: f.legs || {},
       discarded: !!f.discarded,
       chart: (f.chart || "").trim(),
+      chartResult: (f.chartResult || "").trim(),
       img: f.img || "",
       raw: f.raw || "",
       notes: (f.notes || "").trim(),
@@ -714,7 +708,7 @@ function TradeForm({ initial, onCancel, onSave }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/70 p-4">
-      <form onSubmit={submit} onPaste={onPasteImg} className="bx-card w-full max-w-3xl p-5 md:p-6 my-6">
+      <form onSubmit={submit} className="bx-card w-full max-w-3xl p-5 md:p-6 my-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-extrabold bx-accent tracking-wide">{f.id ? "EDITAR SEÑAL" : "NUEVA SEÑAL"}</h3>
           <button type="button" onClick={onCancel} className="bx-muted hover:text-white text-2xl leading-none">×</button>
@@ -803,20 +797,12 @@ function TradeForm({ initial, onCancel, onSave }) {
             <input className="bx-input" placeholder="4013, 4008, 4003, OPEN" value={f.tpsText} onChange={(e) => set("tpsText", e.target.value)} />
           </Field>
 
-          <Field label="Enlace de gráfico (TradingView / imagen)" className="col-span-2 md:col-span-4">
+          <Field label="Link TradingView · Análisis inicial" className="col-span-2 md:col-span-4">
             <input className="bx-input" placeholder="https://www.tradingview.com/x/..." value={f.chart} onChange={(e) => set("chart", e.target.value)} />
           </Field>
 
-          <Field label="Captura (sube un archivo o pégala con Ctrl+V)" className="col-span-2 md:col-span-4">
-            <div className="flex items-center gap-3 flex-wrap">
-              <input type="file" accept="image/*" onChange={(e) => addImage(e.target.files?.[0])} className="bx-file" />
-              {f.img && (
-                <>
-                  <img src={f.img} alt="" className="h-16 rounded-lg" style={{ border: "1px solid #2A2A2A" }} />
-                  <button type="button" onClick={() => set("img", "")} className="text-xs text-rose-400">Quitar</button>
-                </>
-              )}
-            </div>
+          <Field label="Link TradingView · Resultado final (cuando toca TP, SL o BE)" className="col-span-2 md:col-span-4">
+            <input className="bx-input" placeholder="https://www.tradingview.com/x/..." value={f.chartResult} onChange={(e) => set("chartResult", e.target.value)} />
           </Field>
 
           <Field label="Señal original (texto)" className="col-span-2 md:col-span-4">
@@ -966,11 +952,6 @@ function ManagePanel({ t, onUpdate }) {
   const upd = (patch) => onUpdate(recompute({ ...t, ...patch }));
   const setLeg = (k, patch) => upd({ legs: { ...(t.legs || {}), [k]: { ...legOf(t, k), ...patch } } });
 
-  const onFile = async (file) => {
-    if (!file || !file.type.startsWith("image/")) return;
-    try { upd({ img: await compressImage(file) }); } catch (e) {}
-  };
-
   return (
     <div className="mt-5 rounded-xl p-4 space-y-4" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
       <div className="text-[11px] uppercase tracking-[0.18em] font-bold bx-accent">Gestión rápida (Admin)</div>
@@ -1003,9 +984,16 @@ function ManagePanel({ t, onUpdate }) {
         </>
       )}
 
-      <div className="flex items-center gap-3 flex-wrap">
-        <input type="file" accept="image/*" onChange={(e) => onFile(e.target.files?.[0])} className="bx-file" />
-        {t.img && <button type="button" onClick={() => upd({ img: "" })} className="text-xs text-rose-400">Quitar captura</button>}
+      <div className="grid gap-3">
+        <label className="text-xs bx-muted block">
+          Link TradingView · Análisis inicial
+          <input className="bx-input mt-1" placeholder="https://www.tradingview.com/x/..." defaultValue={t.chart || ""} key={"c1" + (t.chart || "")} onBlur={(e) => { const v = e.target.value.trim(); if (v !== (t.chart || "")) upd({ chart: v }); }} />
+        </label>
+        <label className="text-xs bx-muted block">
+          Link TradingView · Resultado final (TP / SL / BE)
+          <input className="bx-input mt-1" placeholder="https://www.tradingview.com/x/..." defaultValue={t.chartResult || ""} key={"c2" + (t.chartResult || "")} onBlur={(e) => { const v = e.target.value.trim(); if (v !== (t.chartResult || "")) upd({ chartResult: v }); }} />
+        </label>
+        {t.img && <button type="button" onClick={() => upd({ img: "" })} className="text-xs text-rose-400 text-left">Quitar captura antigua subida como archivo</button>}
       </div>
     </div>
   );
@@ -1076,21 +1064,23 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
 
         {t.notes && <p className="mt-4 text-sm whitespace-pre-wrap" style={{ color: "#D6D1C9" }}>{t.notes}</p>}
 
-        {imgSrc(t) && (
-          <img
-            src={imgSrc(t)}
-            alt="Captura de la operación"
-            className="mt-4 w-full rounded-xl"
-            style={{ border: "1px solid #2A2A2A" }}
-            onError={(e) => { e.currentTarget.style.display = "none"; }}
-          />
-        )}
-
-        {t.chart && (
-          <a href={t.chart} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-sm bx-accent underline">
-            Abrir gráfico en TradingView ↗
-          </a>
-        )}
+        {[["Análisis inicial", t.chart, t.img], ["Resultado final", t.chartResult, ""]].map(([label, url, legacy]) => {
+          const src = legacy || urlImg(url);
+          if (!src && !url) return null;
+          return (
+            <div key={label} className="mt-4">
+              <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold mb-2">{label}</div>
+              {src && (
+                <img src={src} alt={label} className="w-full rounded-xl" style={{ border: "1px solid #2A2A2A" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
+              )}
+              {url && (
+                <a href={url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm bx-accent underline">
+                  Abrir {label.toLowerCase()} en TradingView ↗
+                </a>
+              )}
+            </div>
+          );
+        })}
 
         {t.raw && (
           <details className="mt-4">
@@ -2324,7 +2314,10 @@ export default function App() {
                       <td className="px-3 py-3"><StatusBadge status={t.status} /></td>
                       <td className="px-3 py-3 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
                         {t.chart && (
-                          <a href={t.chart} target="_blank" rel="noopener noreferrer" title="Ver gráfico" className="mr-2">📈</a>
+                          <a href={t.chart} target="_blank" rel="noopener noreferrer" title="Análisis inicial" className="mr-2">📈</a>
+                        )}
+                        {t.chartResult && (
+                          <a href={t.chartResult} target="_blank" rel="noopener noreferrer" title="Resultado final" className="mr-2">🏁</a>
                         )}
                         {isAdmin && (
                           <>
@@ -2365,7 +2358,7 @@ export default function App() {
         <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-2">
           <img src={LOGO} alt="" className="h-12 mx-auto" />
           <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-accent font-bold block">
-            t.me/borkaifxelite
+            t.me/borkaifxoficial
           </a>
           <p className="max-w-3xl mx-auto text-center leading-relaxed">
             Aviso de riesgo: operar CFDs e instrumentos sintéticos conlleva un alto riesgo de pérdida de capital. Los resultados pasados no garantizan resultados futuros. Este contenido es informativo y no constituye asesoría financiera.
