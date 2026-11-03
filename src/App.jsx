@@ -1435,7 +1435,7 @@ function HomePage({ setPage }) {
           <span style={{ color: "#FFFFFF" }}>Señales claras.</span> <span style={{ color: ACCENT }}>Resultados</span> <span style={{ color: "#FFFFFF" }}>a la vista.</span>
         </h1>
         <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl mx-auto text-center">
-          Canal VIP de señales en CFDs y Sintéticos, con una bitácora pública donde cada operación cerrada queda registrada en pips o puntos.
+          Canal VIP de señales en CFDs y Sintéticos, con un calendario de rendimiento público donde cada resultado cerrado queda contabilizado en pips o puntos.
         </p>
         <div className="mt-6 bx-bt pt-4 flex flex-wrap justify-center gap-2">
           {anchors.map(([id, l]) => (
@@ -1467,7 +1467,7 @@ function HomePage({ setPage }) {
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">04</div>
             <h3 className="mt-1 text-lg font-extrabold">Bitácora transparente</h3>
-            <p className="mt-2 text-sm bx-muted">Cada señal cerrada (TP, SL o BE) se publica con su resultado real, sin esconder las pérdidas.</p>
+            <p className="mt-2 text-sm bx-muted">Cada resultado cerrado (TP, SL o BE) se contabiliza tal cual, sin esconder las pérdidas.</p>
             <button onClick={() => setPage("journal")} className="mt-3 text-sm bx-accent font-bold">Ver resultados →</button>
           </div>
         </div>
@@ -1749,6 +1749,8 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
   const months = useMemo(() => Array.from(new Set(trades.map((t) => (t.date || "").slice(0, 7)).filter(Boolean))).sort().reverse(), [trades]);
   const [ym, setYm] = useState(null);
   const [selDay, setSelDay] = useState(null);
+  const [mode, setMode] = useState("month"); // month | year
+  const [yearSel, setYearSel] = useState(null);
 
   const cur = ym || months[0] || curYM();
   const [y, mo] = cur.split("-").map(Number);
@@ -1790,6 +1792,33 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
   }, [y, mo, cur, byDay]);
 
   const go = (d) => { setYm(shiftMonth(cur, d)); setSelDay(null); };
+
+  // Curva de pips acumulados día a día del mes seleccionado
+  const dim = new Date(y, mo, 0).getDate();
+  const curve = useMemo(() => {
+    const todayKey = localDate();
+    const last = cur === todayKey.slice(0, 7) ? Number(todayKey.slice(8, 10)) : cur > todayKey.slice(0, 7) ? 0 : dim;
+    let acc = 0;
+    const pts = [];
+    for (let d = 1; d <= last; d++) {
+      const key = `${cur}-${String(d).padStart(2, "0")}`;
+      const dp = dayStats(byDay[key] || []).pips;
+      acc = round1(acc + dp);
+      pts.push({ name: `Día ${d}`, d, equity: acc, day: dp });
+    }
+    return pts;
+  }, [cur, dim, byDay]);
+
+  // Vista anual: todos los años con datos, meses Ene-Dic y total
+  const yearsAvail = useMemo(() => Array.from(new Set([curYM().slice(0, 4), ...trades.map((t) => (t.date || "").slice(0, 4)).filter(Boolean)])).sort().reverse(), [trades]);
+  const yearCur = yearSel || (yearsAvail.includes(String(y)) ? String(y) : yearsAvail[0]);
+  const yearTable = useMemo(() => yearsAvail.map((yy) => {
+    const monthsRow = Array.from({ length: 12 }, (_, i) => {
+      const key = `${yy}-${String(i + 1).padStart(2, "0")}`;
+      return { key, st: dayStats(trades.filter((t) => (t.date || "").startsWith(key))) };
+    });
+    return { yy, monthsRow, tot: dayStats(trades.filter((t) => (t.date || "").startsWith(yy))) };
+  }), [trades, yearsAvail]);
   const dayList = selDay ? [...(byDay[selDay] || [])].sort((a, b) => (a.asset < b.asset ? -1 : 1)) : [];
   const dec = m.wins + m.losses;
   const pct = (n) => (m.executed ? Math.round((n / m.executed) * 100) : 0);
@@ -1798,6 +1827,87 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
 
   return (
     <section className="space-y-6">
+      <div className="flex flex-wrap justify-center gap-2">
+        <button onClick={() => setMode("month")} className={`bx-pill ${mode === "month" ? "on" : ""}`}>📅 Vista mensual</button>
+        <button onClick={() => setMode("year")} className={`bx-pill ${mode === "year" ? "on" : ""}`}>🗓 Calendario anual</button>
+      </div>
+
+      {mode === "year" && (() => {
+        const row = yearTable.find((x) => x.yy === yearCur) || yearTable[0];
+        const posM = row ? row.monthsRow.filter((x) => x.st.shown > 0 && x.st.pips > 0).length : 0;
+        const actM = row ? row.monthsRow.filter((x) => x.st.shown > 0).length : 0;
+        return (
+          <div className="bx-card p-4 md:p-5" data-testid="year-view">
+            <div className="flex items-center justify-center gap-3">
+              <button onClick={() => { const i = yearsAvail.indexOf(yearCur); if (i < yearsAvail.length - 1) setYearSel(yearsAvail[i + 1]); }} className="bx-ghost" aria-label="Año anterior">‹</button>
+              <div className="text-center" style={{ minWidth: 200 }}>
+                <div className="text-xl md:text-2xl font-black">{yearCur}</div>
+                <div className="text-[11px] bx-muted tracking-widest uppercase">Resultados por mes en {unit}</div>
+              </div>
+              <button onClick={() => { const i = yearsAvail.indexOf(yearCur); if (i > 0) setYearSel(yearsAvail[i - 1]); }} className="bx-ghost" aria-label="Año siguiente">›</button>
+            </div>
+
+            {row && (
+              <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-3">
+                <Stat label={`Total ${yearCur}`} value={fmtP(row.tot.pips)} sub={unitL} tone={row.tot.pips > 0 ? "pos" : row.tot.pips < 0 ? "neg" : undefined} />
+                <Stat label="Operaciones" value={row.tot.shown} sub="Cerradas y descartadas" />
+                <Stat label="Win Rate anual" value={row.tot.wr === null ? "—" : `${row.tot.wr}%`} sub="BE no cuenta" tone={row.tot.wr !== null && row.tot.wr >= 50 ? "pos" : row.tot.wr !== null ? "neg" : undefined} />
+                <Stat label="Meses en verde" value={`${posM} / ${actM}`} sub="Meses con operaciones" />
+              </div>
+            )}
+
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full text-center text-sm" style={{ minWidth: 980, borderCollapse: "separate", borderSpacing: 4 }}>
+                <thead>
+                  <tr className="text-[11px] uppercase tracking-wider bx-muted">
+                    <th className="text-left px-2">Año</th>
+                    {MONTHS_ES.map((mn) => <th key={mn} className="font-bold">{mn.slice(0, 3)}</th>)}
+                    <th className="font-bold bx-accent">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {yearTable.map((rw) => (
+                    <tr key={rw.yy}>
+                      <td className="text-left px-2 font-black" style={{ color: rw.yy === yearCur ? ACCENT : undefined }}>{rw.yy}</td>
+                      {rw.monthsRow.map((c, i) => {
+                        const has = c.st.shown > 0;
+                        const bg = !has ? "#0F0F0F" : c.st.pips > 0 ? "rgba(16,185,129,.13)" : c.st.pips < 0 ? "rgba(244,63,94,.13)" : "#1B1B1B";
+                        const bd = !has ? "#2A2A2A" : c.st.pips > 0 ? "rgba(16,185,129,.6)" : c.st.pips < 0 ? "rgba(244,63,94,.6)" : "#4A4A4A";
+                        return (
+                          <td key={i} className="p-0">
+                            <button
+                              onClick={() => { setYm(c.key); setSelDay(null); setMode("month"); }}
+                              aria-label={`${MONTHS_ES[i]} ${rw.yy}`}
+                              className="w-full rounded-xl px-1 py-2 flex flex-col items-center"
+                              style={{ background: bg, border: `1px solid ${bd}`, minHeight: 58 }}
+                            >
+                              {has ? (
+                                <>
+                                  <span className={`font-extrabold ${pnlColor(c.st.pips)}`}>{fmtP(c.st.pips)}</span>
+                                  <span className="text-[10px] bx-muted leading-tight">{c.st.shown} {c.st.shown === 1 ? "trade" : "trades"}{c.st.wr !== null ? ` | ${c.st.wr}%` : ""}</span>
+                                </>
+                              ) : <span className="bx-muted text-xs">—</span>}
+                            </button>
+                          </td>
+                        );
+                      })}
+                      <td className="p-0">
+                        <div className="rounded-xl px-1 py-2 flex flex-col items-center" style={{ background: "#0F0F0F", border: `1px solid ${ACCENT}`, minHeight: 58 }}>
+                          <span className={`font-black ${pnlColor(rw.tot.pips)}`}>{fmtP(rw.tot.pips)}</span>
+                          <span className="text-[10px] bx-muted leading-tight">{rw.tot.shown} {rw.tot.shown === 1 ? "trade" : "trades"}{rw.tot.wr !== null ? ` | ${rw.tot.wr}%` : ""}</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mt-3 text-[11px] bx-muted text-center">Toca un mes para ver su calendario diario y su curva de {unitL} acumulados.</p>
+          </div>
+        );
+      })()}
+
+      {mode === "month" && (<>
       {/* ---------- CALENDARIO ---------- */}
       <div className="bx-card p-4 md:p-5">
         <div className="flex items-center justify-center gap-3">
@@ -1863,11 +1973,22 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
       {selDay && (
         <div className="bx-card p-4 md:p-5">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="font-extrabold">Operaciones del {fmtDate(selDay)}</h3>
+            <h3 className="font-extrabold">{isAdmin ? "Operaciones del" : "Resumen del"} {fmtDate(selDay)}</h3>
             <button onClick={() => setSelDay(null)} className="bx-ghost">Cerrar</button>
           </div>
           {dayList.length === 0 ? (
             <div className="mt-3 text-sm bx-muted">Sin operaciones este día.</div>
+          ) : !isAdmin ? (
+            (() => {
+              const ds = dayStats(dayList);
+              return (
+                <div className="mt-3 grid grid-cols-3 gap-3 text-center">
+                  <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
+                  <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
+                  <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
+                </div>
+              );
+            })()
           ) : (
             <div className="mt-3 space-y-2">
               {dayList.map((t) => {
@@ -1900,6 +2021,33 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
           <Stat label="Win Rate" value={`${m.winRate.toFixed(0)}%`} sub={`${m.wins} Wins / ${m.executed} Trades · BE no cuenta`} tone={m.winRate >= 50 && dec ? "pos" : dec ? "neg" : undefined} />
           <Stat label="R:R promedio" value={`${m.avgR >= 0 ? "+" : ""}${m.avgR.toFixed(2)}R`} sub={`Acumulado: ${m.totalR >= 0 ? "+" : ""}${m.totalR.toFixed(2)}R`} tone={m.avgR > 0 ? "pos" : m.avgR < 0 ? "neg" : undefined} />
           <Stat label="Total trades" value={m.total} sub={isAdmin ? `${m.executed} cerrados · ${m.open} abiertos · ${m.discarded} descartados` : "Cerradas y descartadas del mes"} />
+        </div>
+
+        <div className="bx-card p-4 md:p-5 mt-4" data-testid="month-curve">
+          <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">Curva de {unit} acumulados · {monthLabel(cur)}</div>
+          {curve.length === 0 || !monthTrades.some(isPublic) && !isAdmin ? (
+            <div className="text-sm bx-muted text-center py-8">Sin operaciones para dibujar la curva de este mes.</div>
+          ) : (
+            <div style={{ width: "100%", height: 260 }}>
+              <ResponsiveContainer>
+                <AreaChart data={curve} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+                  <defs>
+                    <linearGradient id="calFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor={ACCENT} stopOpacity={0.5} />
+                      <stop offset="100%" stopColor={ACCENT} stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
+                  <XAxis dataKey="d" tick={{ fill: GREY, fontSize: 10 }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
+                  <YAxis tick={{ fill: GREY, fontSize: 11 }} tickLine={false} axisLine={false} width={60} />
+                  <Tooltip content={<ChartTooltip unit={unitL} />} />
+                  <ReferenceLine y={0} stroke="#4A4A4A" strokeDasharray="4 4" />
+                  <Area type="monotone" dataKey="equity" name="Acumulado" stroke={ACCENT} strokeWidth={2.5} fill="url(#calFill)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+          <div className="mt-1 text-[11px] bx-muted text-center">Eje horizontal: día del mes · acumulado progresivo de {unitL}</div>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-4 mt-4">
@@ -1958,15 +2106,15 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
                 <button
                   key={label}
                   disabled={!t}
-                  onClick={() => t && onOpen(t.id)}
+                  onClick={() => t && isAdmin && onOpen(t.id)}
                   className="rounded-xl p-3 text-center"
-                  style={{ background: "#0F0F0F", border: "1px solid #2A2A2A", cursor: t ? "pointer" : "default" }}
+                  style={{ background: "#0F0F0F", border: "1px solid #2A2A2A", cursor: t && isAdmin ? "pointer" : "default" }}
                 >
                   <div className="text-[11px] uppercase tracking-widest bx-muted">{label}</div>
                   {t ? (
                     <>
                       <div className={`mt-1 text-xl font-black ${cls}`}>{fmtP(t.pips)}</div>
-                      <div className="text-xs bx-muted">{t.asset} · {t.direction} · {fmtDate(t.date)}</div>
+                      <div className="text-xs bx-muted">{isAdmin ? `${t.asset} · ${t.direction} · ` : ""}{fmtDate(t.date)}</div>
                     </>
                   ) : (
                     <div className="mt-2 text-sm bx-muted">{label === "Peor trade" && closedTrades.length ? "Sin pérdidas" : "—"}</div>
@@ -1978,6 +2126,7 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
         </div>
         {monthTrades.length === 0 && <p className="mt-3 text-xs bx-ink2 text-center">No hay operaciones registradas en este mes.</p>}
       </div>
+      </>)}
     </section>
   );
 }
@@ -2004,7 +2153,7 @@ export default function App() {
 
   // periodo y búsqueda
   const [period, setPeriod] = useState("cur"); // cur (mes actual) | all | y:2026 | m:2026-10
-  const [view, setView] = useState("list"); // list | calendar
+  const [view, setView] = useState("list"); // list | calendar (solo admin; el público siempre ve calendario)
   const [q, setQ] = useState("");
 
   const fileRef = useRef(null);
@@ -2299,6 +2448,7 @@ export default function App() {
 
   const pipsTone = m.totalPips > 0 ? "pos" : m.totalPips < 0 ? "neg" : undefined;
   const scopeLabel = tab === "CFD" ? `CFDs · ${cfdSub}` : `Sintéticos · ${broker}`;
+  const viewEff = isAdmin ? view : "calendar";
   const detailTrade = detail ? trades.find((x) => x.id === detail) : null;
 
   if (!twReady) {
@@ -2368,7 +2518,7 @@ export default function App() {
             <span style={{ color: "#FFFFFF" }}>Resultados</span> <span style={{ color: ACCENT }}>reales</span><span style={{ color: "#FFFFFF" }}>, sin filtros.</span>
           </h1>
           <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl mx-auto text-center">
-            Historial público de las señales del canal VIP de {BRAND}: cada entrada, cada TP, cada SL y cada señal descartada, medidos en pips y puntos y documentados con total transparencia.
+            Rendimiento público del canal VIP de {BRAND}: calendario diario y anual, métricas y curva de pips acumulados, con cada TP, SL y señal descartada contabilizados con total transparencia.
           </p>
 
           <div className="mt-6 bx-bt pt-5 space-y-3">
@@ -2394,7 +2544,7 @@ export default function App() {
               </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-center gap-2 pt-1" style={view === "calendar" ? { display: "none" } : undefined}>
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1" style={viewEff === "calendar" ? { display: "none" } : undefined}>
               <button onClick={() => setPeriod("cur")} className={`bx-pill ${periodEff === "cur" ? "on" : ""}`}>Mes actual</button>
               <button onClick={() => setPeriod("all")} className={`bx-pill ${periodEff === "all" ? "on" : ""}`}>Todo el histórico</button>
               <div className="flex items-center gap-1">
@@ -2410,16 +2560,18 @@ export default function App() {
         </section>
 
         {/* ------------------------- SELECTOR DE VISTA ------------------------- */}
+        {isAdmin && (
         <div className="flex flex-wrap justify-center gap-2">
           <button onClick={() => setView("list")} className={`bx-tab ${view === "list" ? "on" : ""}`}>📋 Lista de Operaciones</button>
           <button onClick={() => setView("calendar")} className={`bx-tab ${view === "calendar" ? "on" : ""}`}>📅 Calendario & Métricas</button>
         </div>
+        )}
 
-        {view === "calendar" && (
+        {viewEff === "calendar" && (
           <CalendarView key={`${tab}|${cfdSub}|${broker}`} trades={market} isAdmin={isAdmin} unit={scopeUnit} onOpen={(id) => setDetail(id)} />
         )}
 
-        {view === "list" && (<>
+        {viewEff === "list" && (<>
         {/* ------------------------- MÉTRICAS ------------------------- */}
         <section>
           <div className="text-[11px] uppercase tracking-[0.2em] bx-ink2 mb-2 text-center">Métricas · {scopeLabel} · {periodLabel} · en {scopeUnit}</div>
@@ -2483,7 +2635,7 @@ export default function App() {
           </section>
         )}
 
-        {view === "list" && (<>
+        {viewEff === "list" && (<>
         {/* ------------------------- TABLA ------------------------- */}
         <section className="bx-card">
           <div className="p-4 flex flex-wrap items-end justify-between gap-3 bx-bb">
@@ -2602,7 +2754,7 @@ export default function App() {
       {showReport && isAdmin && <ReportModal trades={trades} onClose={() => setShowReport(false)} />}
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} onOk={login} />}
       {editing && <TradeForm initial={editing} onCancel={() => setEditing(null)} onSave={saveTrade} />}
-      {detailTrade && <DetailModal t={detailTrade} onClose={() => setDetail(null)} isAdmin={isAdmin} onUpdate={updateTrade} />}
+      {detailTrade && isAdmin && <DetailModal t={detailTrade} onClose={() => setDetail(null)} isAdmin={isAdmin} onUpdate={updateTrade} />}
       {confirmDel && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">
           <div className="bx-card w-full max-w-sm p-6">
