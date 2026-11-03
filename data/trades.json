@@ -59,7 +59,7 @@
       "e1": {
         "status": "SL",
         "exit": 13534.457,
-        "pips": -48.6,
+        "pips": -20,
         "tpIdx": null
       }
     },
@@ -73,8 +73,8 @@
       "VIP Signal"
     ],
     "status": "SL",
-    "pips": -48.6,
-    "r": -1
+    "pips": -20,
+    "r": -0.41
   },
   {
     "id": "7wp81fsqmvzxfg2n",
