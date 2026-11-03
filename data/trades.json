@@ -259,9 +259,9 @@
     "legs": {
       "e1": {
         "status": "TP",
-        "exit": 1.12072,
-        "pips": 29,
-        "tpIdx": 0
+        "exit": 1.11782,
+        "pips": 38.3,
+        "tpIdx": 1
       }
     },
     "discarded": false,
@@ -274,8 +274,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 29,
-    "r": 3.12
+    "pips": 38.3,
+    "r": 4.12
   },
   {
     "id": "xcqzfo1zmvzxdnww",
