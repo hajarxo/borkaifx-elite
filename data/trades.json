@@ -61,7 +61,7 @@
       "e1": {
         "status": "TP",
         "exit": "OPEN",
-        "pips": "",
+        "pips": 750,
         "tpIdx": 3
       }
     },
@@ -74,8 +74,8 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "BE",
-    "pips": 0,
-    "r": 0
+    "status": "TP",
+    "pips": 750,
+    "r": 5
   }
 ]
