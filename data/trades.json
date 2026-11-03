@@ -421,10 +421,10 @@
         "tpIdx": 0
       },
       "e2": {
-        "status": "BE",
-        "exit": 3928,
-        "pips": 40,
-        "tpIdx": null
+        "status": "TP",
+        "exit": 3935,
+        "pips": 70,
+        "tpIdx": 0
       }
     },
     "discarded": false,
@@ -437,8 +437,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 90,
-    "r": 0.82
+    "pips": 120,
+    "r": 1.12
   },
   {
     "id": "jw6g36domw13xhr0",
