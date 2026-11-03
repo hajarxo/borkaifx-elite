@@ -1,0 +1,41 @@
+[
+  {
+    "id": "9s3vnjagmvzx9hn7",
+    "date": "2026-11-02",
+    "category": "CFD",
+    "sub": "Índices",
+    "broker": "",
+    "asset": "NAS100",
+    "direction": "SELL",
+    "entry1": 28656.59,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 28715.7,
+    "tps": [
+      28597.48,
+      28474.27,
+      "OPEN"
+    ],
+    "pipSize": 1,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 28597.48,
+        "pips": 59.1,
+        "tpIdx": 0
+      }
+    },
+    "discarded": false,
+    "chart": "",
+    "chartResult": "",
+    "img": "",
+    "raw": "Entendido. A partir de ahora se adapta la cabecera según el tipo de activo (por ejemplo, si es un índice bursátil se indica el tipo correspondiente en lugar de la palabra oro).\n\nGold 🏆\nPair: NAS100 📊\nSide: Short / Sell\nEntry: 28656.59\nTP: Open\nSL: 28715.70\nNote: past profits do not predict future profits\nRisk 0.5-1-2%\n\nTP1 28597.48 59pips ✅\nTP2 28474.27 182pips ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 59.1,
+    "r": 1
+  }
+]
