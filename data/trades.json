@@ -377,7 +377,7 @@
       "e1": {
         "status": "BE",
         "exit": 1.605,
-        "pips": 0,
+        "pips": 45,
         "tpIdx": null
       }
     },
@@ -391,7 +391,7 @@
       "VIP Signal"
     ],
     "status": "BE",
-    "pips": 0,
-    "r": 0
+    "pips": 45,
+    "r": 1.21
   }
 ]
