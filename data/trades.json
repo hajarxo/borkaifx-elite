@@ -162,6 +162,43 @@
     "r": 1
   },
   {
+    "id": "af04tzgpmvzxx4el",
+    "date": "2026-11-02",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "VOLATILITY 10 (1S)",
+    "direction": "SELL",
+    "entry1": 9543.89,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 9575.31,
+    "tps": [
+      9483.76
+    ],
+    "pipSize": 1,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 9483.76,
+        "pips": 60.1,
+        "tpIdx": 0
+      }
+    },
+    "discarded": false,
+    "chart": "",
+    "chartResult": "",
+    "img": "",
+    "raw": "VOLATILITY 10 (1S) SELL 9543.89 \nTP: 9483.76 \nSL: 9575.31",
+    "notes": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 60.1,
+    "r": 1.91
+  },
+  {
     "id": "lt9so9b2mvzxdzxk",
     "date": "2026-11-02",
     "category": "CFD",
