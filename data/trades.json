@@ -57,9 +57,9 @@
     "pipSize": 1,
     "legs": {
       "e1": {
-        "status": "SL",
-        "exit": 13534.457,
-        "pips": -20,
+        "status": "BE",
+        "exit": 13485.829,
+        "pips": 0,
         "tpIdx": null
       }
     },
@@ -72,9 +72,9 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "SL",
-    "pips": -20,
-    "r": -0.41
+    "status": "BE",
+    "pips": 0,
+    "r": 0
   },
   {
     "id": "7wp81fsqmvzxfg2n",
