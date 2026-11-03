@@ -165,6 +165,45 @@
     "r": -1
   },
   {
+    "id": "rtba4d7bmvzxbbnm",
+    "date": "2026-11-02",
+    "category": "CFD",
+    "sub": "Forex",
+    "broker": "",
+    "asset": "EURUSD",
+    "direction": "SELL",
+    "entry1": 1.12165,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 1.12072,
+    "tps": [
+      1.12072,
+      1.11782,
+      "OPEN"
+    ],
+    "pipSize": 0.0001,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 1.12072,
+        "pips": 9.3,
+        "tpIdx": 0
+      }
+    },
+    "discarded": false,
+    "chart": "",
+    "chartResult": "",
+    "img": "",
+    "raw": "Forex 💱\nPair: EURUSD 📊\nSide: Short / Sell\nEntry: 1.12165\nTP: Open\nSL: 1.12072\nNote: past profits do not predict future profits\nRisk 0.5-1-2%\n\nTP1 1.12072 9.3pips ✅\nTP2 1.11782 38.3pips ✅\n\nUse Proper Risk Management",
+    "notes": "Riesgo sugerido: 0.5-1-2%",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 9.3,
+    "r": 1
+  },
+  {
     "id": "xcqzfo1zmvzxdnww",
     "date": "2026-11-02",
     "category": "CFD",
