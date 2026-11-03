@@ -355,5 +355,43 @@
     "status": "Descartada",
     "pips": 0,
     "r": 0
+  },
+  {
+    "id": "rb1ekwdgmw0m5hlw",
+    "date": "2026-11-03",
+    "category": "CFD",
+    "sub": "Forex",
+    "broker": "",
+    "asset": "EURAUD",
+    "direction": "SELL",
+    "entry1": 1.605,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 1.60871,
+    "tps": [
+      1.5935,
+      "OPEN"
+    ],
+    "pipSize": 0.0001,
+    "legs": {
+      "e1": {
+        "status": "BE",
+        "exit": 1.605,
+        "pips": 0,
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "chart": "",
+    "chartResult": "",
+    "img": "",
+    "raw": "Forex 💱\nPair: EURAUD 📊\nSide: Short / Sell\nEntry: 1.60500\nTP: Open\nSL: 1.60871\nNote: past profits do not predict future profits\nRisk 0.5-1-2%\n\nTP1 1.59350 115pips ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "BE",
+    "pips": 0,
+    "r": 0
   }
 ]
