@@ -423,7 +423,7 @@
       "e2": {
         "status": "TP",
         "exit": 3935,
-        "pips": 70,
+        "pips": 40,
         "tpIdx": 0
       }
     },
@@ -437,8 +437,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 120,
-    "r": 1.12
+    "pips": 90,
+    "r": 0.82
   },
   {
     "id": "jw6g36domw13xhr0",
