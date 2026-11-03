@@ -470,7 +470,7 @@
     "chartResult": "",
     "img": "",
     "raw": "VOLATILITY 25 SELL 2922.2\nTP: 2860.984\nSL: 2951.1",
-    "notes": "",
+    "notes": "Al tocar TP1 se tomo parcial y el sl se bajo hasta el precio de entrada",
     "tags": [
       "VIP Signal"
     ],
