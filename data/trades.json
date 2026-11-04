@@ -395,6 +395,46 @@
     "r": 8.43
   },
   {
+    "id": "6ux7ge2wmw1fbfnn",
+    "date": "2026-11-03",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "CRASH 600",
+    "direction": "SELL",
+    "entry1": 23364,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 23349,
+    "tps": [
+      23314,
+      23264,
+      23214,
+      "OPEN"
+    ],
+    "pipSize": 1,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 23314,
+        "pips": 50,
+        "tpIdx": 0
+      }
+    },
+    "discarded": false,
+    "chart": "",
+    "chartResult": "",
+    "img": "",
+    "raw": "CRASH 600 SELL 23364\nTP1: 23314\nTP2: 23264\nTP3: 23214\nTP4: Open\nSL: 23349",
+    "notes": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 50,
+    "r": 3.33
+  },
+  {
     "id": "b1iipcoamw13y33t",
     "date": "2026-11-03",
     "category": "CFD",
