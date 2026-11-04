@@ -416,9 +416,9 @@
     "legs": {
       "e1": {
         "status": "TP",
-        "exit": 23314,
-        "pips": 50,
-        "tpIdx": 0
+        "exit": 23264,
+        "pips": 100,
+        "tpIdx": 1
       }
     },
     "discarded": false,
@@ -431,8 +431,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 50,
-    "r": 3.33
+    "pips": 100,
+    "r": 6.67
   },
   {
     "id": "b1iipcoamw13y33t",
