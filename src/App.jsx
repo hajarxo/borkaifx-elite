@@ -189,15 +189,6 @@ const inPeriod = (date, period) => {
 const isClosed = (t) => ["TP", "SL", "BE"].includes(t.status);
 // Visible al público: cerradas (TP/SL/BE) y descartadas. Las ABIERTAS quedan ocultas (solo admin).
 const isPublic = (t) => isClosed(t) || t.status === "Descartada" || !!t.discarded;
-const isImageUrl = (u) => /\.(png|jpe?g|webp|gif)(\?.*)?$/i.test(u) || u.includes("s3.tradingview.com/snapshots");
-
-// https://www.tradingview.com/x/ABC123/ -> imagen directa del snapshot
-const tvImage = (u) => {
-  const m = /tradingview\.com\/x\/([A-Za-z0-9]+)/i.exec(u || "");
-  return m ? `https://s3.tradingview.com/snapshots/${m[1][0].toLowerCase()}/${m[1]}.png` : null;
-};
-const urlImg = (u) => tvImage(u) || (u && isImageUrl(u) ? u : null);
-const imgSrc = (t) => t.img || urlImg(t.chart);
 
 function guessSub(asset) {
   const a = (asset || "").toUpperCase();
@@ -286,7 +277,7 @@ function parseSignal(raw) {
   const sep = "[ \\t]*[:\\-]?[ \\t]*";
   const toNum = (s) => Number(String(s).replace(/,/g, ""));
   const r5 = (x) => Number(x.toFixed(5));
-  const out = { raw: text.trim(), asset: "", category: "CFD", broker: "", sub: "Forex", direction: "BUY", entry1: "", entry2: "", sl: "", tps: [], chart: "", notes: "", warnings: [] };
+  const out = { raw: text.trim(), asset: "", category: "CFD", broker: "", sub: "Forex", direction: "BUY", entry1: "", entry2: "", sl: "", tps: [], notes: "", warnings: [] };
 
   // ---- Activo ----
   let m = /pair\s*[:\-]\s*([^\n]+)/i.exec(text);
@@ -380,9 +371,6 @@ function parseSignal(raw) {
   });
   if (tpOpen) out.tps.push("OPEN");
 
-  m = /https?:\/\/[^\s]+/i.exec(text);
-  if (m) out.chart = m[0].replace(/[).,;]+$/, "");
-
   m = /risk\s*[:\-]?\s*([0-9.\-\/ ]+%)/i.exec(text);
   if (m) out.notes = "Riesgo sugerido: " + m[1].trim();
 
@@ -424,6 +412,8 @@ function compressImage(file, maxW = 1280, quality = 0.72) {
 // Cada operación tiene Entry 1 y (opcional) Entry 2. "activation" indica cuáles se activaron.
 // Cada entrada activada es una "pata" (leg) con su propio resultado en pips/puntos.
 const hasE2 = (t) => num(t.entry2) !== null;
+// Parciales registrados (no cierran la operación: solo se anotan mientras la entrada sigue abierta)
+const partialsCount = (t) => ["e1", "e2"].reduce((a, k) => a + (Number(t.legs && t.legs[k] && t.legs[k].partials) || 0), 0);
 const legKeys = (t) => (hasE2(t) ? (t.activation === "BOTH" ? ["e1", "e2"] : t.activation === "E2" ? ["e2"] : ["e1"]) : ["e1"]);
 const entryOf = (t, k) => num(k === "e1" ? t.entry1 : t.entry2);
 const legOf = (t, k) => (t.legs && t.legs[k]) || { status: "Abierta", exit: "", pips: "", tpIdx: null };
@@ -487,7 +477,7 @@ const hitMax = (t) => {
 
 const legSummary = (t, k) => {
   const L = legOf(t, k);
-  if (!L.status || L.status === "Abierta") return "Abierta";
+  if (!L.status || L.status === "Abierta") return L.partials ? `Abierta · ${L.partials} ${L.partials === 1 ? "parcial" : "parciales"}` : "Abierta";
   const tp = L.status === "TP" && t.tps && t.tps[L.tpIdx] !== undefined ? tpLabel(L.tpIdx, t.tps[L.tpIdx]) : L.status === "MANUAL" ? "Cierre manual" : L.status;
   const p = num(L.pips);
   return p === null ? `${tp} · sin pips` : `${tp} · ${fmtP(p)} ${unitWord(t)}`;
@@ -533,7 +523,7 @@ function migrateLegacy(t) {
     id: t.id, date: t.date, category: cat, sub: t.sub || "", broker: t.broker || "", asset: t.asset, direction: t.direction,
     entry1: t.entry ?? "", entry2: "", activation: "E1", sl: t.sl ?? "", tps: levels, pipSize,
     legs: { e1: { status: st, exit: t.exit ?? "", pips, tpIdx } },
-    discarded: t.status === "Descartada", chart: t.chart || "", chartResult: t.chartResult || "", img: t.img || "", raw: t.raw || "", notes: t.notes || "", tags: t.tags || [],
+    discarded: t.status === "Descartada", raw: t.raw || "", notes: t.notes || "", tags: t.tags || [],
   });
 }
 
@@ -760,9 +750,6 @@ function emptyForm(category, sub, broker) {
     tpsText: "",
     pipSize: cat === "CFD" ? "0.0001" : "1",
     discarded: false,
-    chart: "",
-    chartResult: "",
-    img: "",
     raw: "",
     notes: "",
     tagsText: "VIP Signal",
@@ -820,11 +807,9 @@ function TradeForm({ initial, onCancel, onSave }) {
       pipSize: num(f.pipSize) || 1,
       legs: f.legs || {},
       discarded: !!f.discarded,
-      chart: (f.chart || "").trim(),
-      chartResult: (f.chartResult || "").trim(),
-      img: f.img || "",
       raw: f.raw || "",
       notes: (f.notes || "").trim(),
+      mgmt: (f.mgmt || "").trim(),
       tags: (f.tagsText || "").split(",").map((t) => t.trim()).filter(Boolean),
     });
     onSave(trade);
@@ -924,14 +909,6 @@ function TradeForm({ initial, onCancel, onSave }) {
             <input className="bx-input" placeholder="4013, 4008, 4003, OPEN" value={f.tpsText} onChange={(e) => set("tpsText", e.target.value)} />
           </Field>
 
-          <Field label="Link TradingView · Análisis inicial" className="col-span-2 md:col-span-4">
-            <input className="bx-input" placeholder="https://www.tradingview.com/x/..." value={f.chart} onChange={(e) => set("chart", e.target.value)} />
-          </Field>
-
-          <Field label="Link TradingView · Resultado final (cuando toca TP, SL o BE)" className="col-span-2 md:col-span-4">
-            <input className="bx-input" placeholder="https://www.tradingview.com/x/..." value={f.chartResult} onChange={(e) => set("chartResult", e.target.value)} />
-          </Field>
-
           <Field label="Señal original (texto)" className="col-span-2 md:col-span-4">
             <textarea rows={3} className="bx-input text-xs" value={f.raw} onChange={(e) => set("raw", e.target.value)} />
           </Field>
@@ -1012,6 +989,10 @@ function LegEditor({ t, k, onChange }) {
   };
   const pickBE = () => onChange(k, { status: "BE", tpIdx: null, exit: entry ?? "", pips: 0 });
   const pickOpen = () => onChange(k, { status: "Abierta", tpIdx: null, exit: "", pips: "" });
+  const isOpenLeg = !L.status || L.status === "Abierta";
+  // Parciales: solo se anota la acción; el estado NUNCA cambia (la entrada sigue Abierta)
+  const addPartial = () => { if (isOpenLeg) onChange(k, { status: "Abierta", partials: (Number(L.partials) || 0) + 1 }); };
+  const undoPartial = () => { if (isOpenLeg && L.partials) onChange(k, { status: "Abierta", partials: Math.max(0, Number(L.partials) - 1) }); };
   const pickManual = () => onChange(k, { status: "MANUAL", tpIdx: null, exit: "", pips: L.status === "MANUAL" ? L.pips : "" });
 
   const commitPips = () => {
@@ -1045,7 +1026,23 @@ function LegEditor({ t, k, onChange }) {
           </button>
         ))}
         <button type="button" onClick={pickManual} className={`bx-seg mid ${L.status === "MANUAL" ? "on" : ""}`}>Cierre Manual</button>
+        <button
+          type="button"
+          onClick={addPartial}
+          disabled={!isOpenLeg}
+          title={isOpenLeg ? "Registrar un parcial (la entrada sigue abierta)" : "Solo disponible mientras la entrada está abierta"}
+          className={`bx-seg open ${L.partials ? "on" : ""}`}
+          style={!isOpenLeg ? { opacity: 0.4, cursor: "not-allowed" } : undefined}
+        >
+          Parciales{L.partials ? ` ×${L.partials}` : ""}
+        </button>
       </div>
+      {L.partials > 0 && isOpenLeg && (
+        <div className="mt-2 text-xs bx-muted">
+          {L.partials} {L.partials === 1 ? "parcial registrado" : "parciales registrados"} · la entrada sigue <b className="text-white">abierta</b> hasta que toque SL, BE, TP o uses Cierre Manual.{" "}
+          <button type="button" onClick={undoPartial} className="underline" style={{ color: ACCENT }}>quitar el último</button>
+        </div>
+      )}
 
       {L.status !== "Abierta" && (
         <div className="mt-3 flex items-end gap-3 flex-wrap">
@@ -1113,17 +1110,17 @@ function ManagePanel({ t, onUpdate }) {
         </>
       )}
 
-      <div className="grid gap-3">
-        <label className="text-xs bx-muted block">
-          Link TradingView · Análisis inicial
-          <input className="bx-input mt-1" placeholder="https://www.tradingview.com/x/..." defaultValue={t.chart || ""} key={"c1" + (t.chart || "")} onBlur={(e) => { const v = e.target.value.trim(); if (v !== (t.chart || "")) upd({ chart: v }); }} />
-        </label>
-        <label className="text-xs bx-muted block">
-          Link TradingView · Resultado final (TP / SL / BE)
-          <input className="bx-input mt-1" placeholder="https://www.tradingview.com/x/..." defaultValue={t.chartResult || ""} key={"c2" + (t.chartResult || "")} onBlur={(e) => { const v = e.target.value.trim(); if (v !== (t.chartResult || "")) upd({ chartResult: v }); }} />
-        </label>
-        {t.img && <button type="button" onClick={() => upd({ img: "" })} className="text-xs text-rose-400 text-left">Quitar captura antigua subida como archivo</button>}
-      </div>
+      <label className="text-xs bx-muted block">
+        Notas de gestión (cómo se manejó el trade · se incluye en los resúmenes diario, semanal y mensual)
+        <textarea
+          rows={3}
+          className="bx-input mt-1"
+          placeholder="Ej.: Cerré 50% en TP1, moví SL a BE y dejé correr el resto hasta cierre manual."
+          defaultValue={t.mgmt || ""}
+          key={"mg" + t.id}
+          onBlur={(e) => { const v = e.target.value.trim(); if (v !== (t.mgmt || "")) upd({ mgmt: v }); }}
+        />
+      </label>
     </div>
   );
 }
@@ -1193,23 +1190,12 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
 
         {t.notes && <p className="mt-4 text-sm whitespace-pre-wrap" style={{ color: "#D6D1C9" }}>{t.notes}</p>}
 
-        {[["Análisis inicial", t.chart, t.img], ["Resultado final", t.chartResult, ""]].map(([label, url, legacy]) => {
-          const src = legacy || urlImg(url);
-          if (!src && !url) return null;
-          return (
-            <div key={label} className="mt-4">
-              <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold mb-2">{label}</div>
-              {src && (
-                <img src={src} alt={label} className="w-full rounded-xl" style={{ border: "1px solid #2A2A2A" }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
-              )}
-              {url && (
-                <a href={url} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-sm bx-accent underline">
-                  Abrir {label.toLowerCase()} en TradingView ↗
-                </a>
-              )}
-            </div>
-          );
-        })}
+        {t.mgmt && (
+          <div className="mt-4 rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+            <div className="text-[11px] uppercase tracking-[0.18em] font-bold bx-accent mb-1">Notas de gestión</div>
+            <p className="text-sm whitespace-pre-wrap" style={{ color: "#D6D1C9" }}>{t.mgmt}</p>
+          </div>
+        )}
 
         {t.raw && (
           <details className="mt-4">
@@ -1314,9 +1300,12 @@ function buildReport(trades, mode, ref, scope) {
   list.forEach((t, i) => {
     const has = !t.discarded && legResults(t).length > 0;
     const res = has ? `${fmtP(t.pips)} ${unitWord(t)}` : "—";
-    L.push(`${i + 1}. ${mode === "daily" ? "" : fmtDate(t.date) + " · "}${t.asset} · ${t.direction} · ${res} · ${stat(t)}`);
+    const pc = partialsCount(t);
+    L.push(`${i + 1}. ${mode === "daily" ? "" : fmtDate(t.date) + " · "}${t.asset} · ${t.direction} · ${res} · ${stat(t)}${pc && stat(t) === "ABIERTA" ? ` (parciales: ${pc})` : ""}`);
     const note = (t.notes || "").trim();
     if (note) L.push(`   📝 ${note.replace(/\s*\n\s*/g, " ")}`);
+    const mg = (t.mgmt || "").trim();
+    if (mg) L.push(`   🧭 Gestión: ${mg.replace(/\s*\n\s*/g, " ")}`);
   });
   L.push("");
   L.push("Telegram: " + TELEGRAM_URL);
@@ -2556,7 +2545,6 @@ export default function App() {
       sl: p.sl,
       tpsText: p.tps.join(", "),
       pipSize: String(guessPip(p.asset, p.category, p.sub)),
-      chart: p.chart,
       notes: p.notes,
       raw: p.raw,
       warnings: p.warnings,
@@ -2772,7 +2760,7 @@ export default function App() {
             />
             <div className="mt-2 flex items-center justify-between gap-2 flex-wrap">
               <span className="text-xs bx-muted">
-                Detecta activo, categoría y broker (CFDs, DERIV y WELTRADE), dirección, Entry 1 / Entry 2, SL, TPs (precio o distancia en PTS, incluido TP OPEN) y enlace de TradingView. Podrás revisar antes de guardar.
+                Detecta activo, categoría y broker (CFDs, DERIV y WELTRADE), dirección, Entry 1 / Entry 2, SL, TPs (precio o distancia en PTS, incluido TP OPEN). Podrás revisar antes de guardar.
               </span>
               <button onClick={importSignal} disabled={!signalText.trim()} className="bx-btn">Interpretar y revisar</button>
             </div>
@@ -2838,14 +2826,8 @@ export default function App() {
                         {t.discarded || res.length === 0 ? <span className="bx-muted font-normal">—</span> : `${fmtP(t.pips)} ${unitWord(t)}`}
                       </td>
                       <td className="px-3 py-3 bx-muted whitespace-nowrap">{t.discarded || res.length === 0 ? "—" : `${t.r >= 0 ? "+" : ""}${t.r}R`}</td>
-                      <td className="px-3 py-3"><StatusBadge status={t.status} /></td>
+                      <td className="px-3 py-3"><StatusBadge status={t.status} />{isAdmin && t.status === "Abierta" && partialsCount(t) > 0 && <span className="ml-1.5 text-[10px] font-bold" style={{ color: "#7dd3fc" }}>Parciales ×{partialsCount(t)}</span>}</td>
                       <td className="px-3 py-3 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
-                        {t.chart && (
-                          <a href={t.chart} target="_blank" rel="noopener noreferrer" title="Análisis inicial" className="mr-2">📈</a>
-                        )}
-                        {t.chartResult && (
-                          <a href={t.chartResult} target="_blank" rel="noopener noreferrer" title="Resultado final" className="mr-2">🏁</a>
-                        )}
                         {isAdmin && (
                           <>
                             <button title="Editar" onClick={() => setEditing(toForm(t))} className="bx-muted hover:text-white mr-2">✎</button>
