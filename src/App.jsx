@@ -123,6 +123,7 @@ select.bx-input option{background:#161616;color:#fff}
 .bx-seg.on.neg{background:rgba(244,63,94,.2);border-color:#f43f5e;color:#fda4af}
 .bx-seg.on.mid{background:rgba(168,163,155,.2);border-color:#A8A39B;color:#e7e5e4}
 .bx-seg.on.open{background:rgba(56,189,248,.18);border-color:#38bdf8;color:#7dd3fc}
+.bx-seg.on.wait{background:rgba(251,191,36,.18);border-color:#fbbf24;color:#fcd34d}
 .bx-seg.on.acc{background:rgba(255,85,0,.2);border-color:#FF5500;color:#ffb089}
 .bx-file{font-size:.75rem;color:var(--cardink2)}
 .bx-file::file-selector-button{margin-right:.75rem;border:0;border-radius:.5rem;background:var(--accent);color:#fff;font-weight:800;font-size:.75rem;padding:.375rem .75rem;cursor:pointer}
@@ -443,7 +444,7 @@ function legResults(t) {
   const out = [];
   legKeys(t).forEach((k) => {
     const L = legOf(t, k);
-    if (!L.status || L.status === "Abierta") return;
+    if (!L.status || L.status === "Abierta" || L.status === "Pendiente") return;
     if (L.status === "MANUAL" && num(L.pips) === null) return; // Cierre manual: se registra al escribir los pips/puntos
     const p = round1((num(L.pips) ?? 0) + partialSum(L));
     const risk = riskPips(t, k);
@@ -461,7 +462,7 @@ function recompute(t) {
   const total = res.reduce((a, x) => a + x.pips, 0);
   const r = res.reduce((a, x) => a + x.r, 0);
   let status;
-  if (open) status = "Abierta";
+  if (open) status = keys.every((k) => legOf(t, k).status === "Pendiente") ? "Pendiente" : "Abierta";
   else if (res.every((x) => x.status === "BE")) status = "BE";
   else status = total > 0 ? "TP" : total < 0 ? "SL" : "BE";
   return { ...t, status, pips: round1(total), r: Math.round(r * 100) / 100 };
@@ -480,7 +481,8 @@ const hitMax = (t) => {
 
 const legSummary = (t, k) => {
   const L = legOf(t, k);
-  if (!L.status || L.status === "Abierta") return L.partials ? `Abierta · ${L.partials} ${L.partials === 1 ? "parcial" : "parciales"}${partialSum(L) ? ` (${fmtP(partialSum(L))} ${unitWord(t)})` : ""}` : "Abierta";
+  if (L.status === "Pendiente") return "Orden pendiente";
+  if (!L.status || L.status === "Abierta") return L.partials ? `Activa · ${L.partials} ${L.partials === 1 ? "parcial" : "parciales"}${partialSum(L) ? ` (${fmtP(partialSum(L))} ${unitWord(t)})` : ""}` : "Activa";
   const tp = L.status === "TP" && t.tps && t.tps[L.tpIdx] !== undefined ? tpLabel(L.tpIdx, t.tps[L.tpIdx]) : L.status === "MANUAL" ? "Cierre manual" : L.status;
   const p = num(L.pips);
   const ps = partialSum(L);
@@ -496,6 +498,7 @@ function computeMetrics(list) {
   const losses = closed.filter((t) => t.status === "SL");
   const be = closed.filter((t) => t.status === "BE");
   const open = live.filter((t) => t.status === "Abierta").length;
+  const pending = live.filter((t) => t.status === "Pendiente").length;
   const discarded = list.length - live.length;
   const decisive = wins.length + losses.length;
   const winRate = decisive ? (wins.length / decisive) * 100 : 0;
@@ -505,7 +508,7 @@ function computeMetrics(list) {
   const profitFactor = grossLoss ? grossWin / grossLoss : grossWin ? Infinity : 0;
   const totalR = legs.reduce((a, x) => a + x.r, 0);
   const avgR = legs.length ? totalR / legs.length : 0;
-  return { open, executed: closed.length, wins: wins.length, losses: losses.length, be: be.length, discarded, winRate, totalPips, profitFactor, totalR, avgR, total: list.length, legsCount: legs.length };
+  return { open, pending, executed: closed.length, wins: wins.length, losses: losses.length, be: be.length, discarded, winRate, totalPips, profitFactor, totalR, avgR, total: list.length, legsCount: legs.length };
 }
 
 /* ----------------------------- Migración de formato anterior ----------------------------- */
@@ -693,10 +696,11 @@ const StatusBadge = ({ status }) => {
     BE: "bg-stone-400/15 text-stone-300 border-stone-400/40",
     Descartada: "bg-neutral-500/15 text-neutral-400 border-neutral-500/40",
     Abierta: "bg-sky-500/15 text-sky-300 border-sky-500/40",
+    Pendiente: "bg-amber-400/15 text-amber-300 border-amber-400/40",
   };
   return (
     <span className={`inline-block px-2 py-0.5 rounded-md border text-[11px] font-bold tracking-wide ${map[status]}`}>
-      {status === "Descartada" ? "DESCARTADA" : status === "Abierta" ? "ABIERTA" : status}
+      {status === "Descartada" ? "DESCARTADA" : status === "Abierta" ? "ACTIVA" : status === "Pendiente" ? "PENDIENTE" : status}
     </span>
   );
 };
@@ -758,7 +762,7 @@ function emptyForm(category, sub, broker) {
     raw: "",
     notes: "",
     tagsText: "VIP Signal",
-    legs: {},
+    legs: { e1: { status: "Pendiente", exit: "", pips: "", tpIdx: null }, e2: { status: "Pendiente", exit: "", pips: "", tpIdx: null } },
   };
 }
 
@@ -995,6 +999,7 @@ function LegEditor({ t, k, onChange }) {
   };
   const pickBE = () => onChange(k, { status: "BE", tpIdx: null, exit: entry ?? "", pips: 0 });
   const pickOpen = () => onChange(k, { status: "Abierta", tpIdx: null, exit: "", pips: "" });
+  const pickPending = () => onChange(k, { status: "Pendiente", tpIdx: null, exit: "", pips: "", partials: 0, partialPips: [] });
   const isOpenLeg = !L.status || L.status === "Abierta";
   // Parciales: solo se anota la acción; el estado NUNCA cambia (la entrada sigue Abierta)
   const addPartial = () => {
@@ -1021,7 +1026,7 @@ function LegEditor({ t, k, onChange }) {
   const p = num(L.pips);
   const r = p !== null && risk ? p / risk : null;
   const isOpenTp = L.status === "TP" && L.exit === "OPEN";
-  const needsPips = L.status !== "Abierta" && p === null;
+  const needsPips = L.status !== "Abierta" && L.status !== "Pendiente" && p === null;
 
   return (
     <div className="rounded-xl p-3" style={{ background: "#161616", border: "1px solid #2A2A2A" }}>
@@ -1051,7 +1056,8 @@ function LegEditor({ t, k, onChange }) {
         </div>
       )}
       <div className="flex flex-wrap gap-1.5">
-        <button type="button" onClick={pickOpen} className={`bx-seg open ${L.status === "Abierta" ? "on" : ""}`}>Abierta</button>
+        <button type="button" onClick={pickPending} className={`bx-seg wait ${L.status === "Pendiente" ? "on" : ""}`}>Orden Pendiente</button>
+        <button type="button" onClick={pickOpen} className={`bx-seg open ${L.status === "Abierta" ? "on" : ""}`}>Activa</button>
         <button type="button" onClick={pickSL} className={`bx-seg neg ${L.status === "SL" ? "on" : ""}`}>Tocó SL</button>
         <button type="button" onClick={pickBE} className={`bx-seg mid ${L.status === "BE" ? "on" : ""}`}>BE / BE+</button>
         {tps.map((lvl, i) => (
@@ -1064,7 +1070,7 @@ function LegEditor({ t, k, onChange }) {
           type="button"
           onClick={addPartial}
           disabled={!isOpenLeg}
-          title={isOpenLeg ? "Registrar un parcial (la entrada sigue abierta)" : "Solo disponible mientras la entrada está abierta"}
+          title={isOpenLeg ? "Registrar un parcial (la entrada sigue activa)" : "Solo disponible mientras la entrada está activa"}
           className={`bx-seg open ${L.partials ? "on" : ""}`}
           style={!isOpenLeg ? { opacity: 0.4, cursor: "not-allowed" } : undefined}
         >
@@ -1073,12 +1079,15 @@ function LegEditor({ t, k, onChange }) {
       </div>
       {L.partials > 0 && isOpenLeg && (
         <div className="mt-2 text-xs bx-muted">
-          {L.partials} {L.partials === 1 ? "parcial registrado" : "parciales registrados"}{partialSum(L) ? ` (${fmtP(partialSum(L))} ${unit.toLowerCase()} acumulados)` : ""} · la entrada sigue <b className="text-white">abierta</b> hasta que toque SL, BE, TP o uses Cierre Manual.{" "}
+          {L.partials} {L.partials === 1 ? "parcial registrado" : "parciales registrados"}{partialSum(L) ? ` (${fmtP(partialSum(L))} ${unit.toLowerCase()} acumulados)` : ""} · la entrada sigue <b className="text-white">activa</b> hasta que toque SL, BE, TP o uses Cierre Manual.{" "}
           <button type="button" onClick={undoPartial} className="underline" style={{ color: ACCENT }}>quitar el último</button>
         </div>
       )}
 
-      {L.status !== "Abierta" && (
+      {L.status === "Pendiente" && (
+        <div className="mt-2 text-xs" style={{ color: "#fcd34d" }}>Orden pendiente: aún no se activó en el mercado. Cuando el precio entre, pulsa <b>Activa</b>.</div>
+      )}
+      {L.status !== "Abierta" && L.status !== "Pendiente" && (
         <div className="mt-3 flex items-end gap-3 flex-wrap">
           <label className="block w-48">
             <span className="bx-label">{unit} reales</span>
@@ -1282,6 +1291,140 @@ const addDays = (ymd, n) => {
 };
 const DAYS_ES = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 
+const weekRange = (ymd) => {
+  const [y, m, d] = ymd.split("-").map(Number);
+  const dow = (new Date(y, m - 1, d).getDay() + 6) % 7; // lunes = 0
+  const from = addDays(ymd, -dow);
+  return { from, to: addDays(from, 6) };
+};
+const monthRange = (ym) => {
+  const [y, m] = ym.split("-").map(Number);
+  return { from: `${ym}-01`, to: `${ym}-${String(new Date(y, m, 0).getDate()).padStart(2, "0")}` };
+};
+const shiftYM = (ym, n) => {
+  const [y, m] = ym.split("-").map(Number);
+  const d = new Date(y, m - 1 + n, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+};
+
+// Matriz mensual (estilo mini calendario): clic en un día, en la flecha lateral de la semana o en el nombre del mes
+function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
+  const [y, m] = ym.split("-").map(Number);
+  const lead = (new Date(y, m - 1, 1).getDay() + 6) % 7;
+  const dim = new Date(y, m, 0).getDate();
+  const cells = [];
+  for (let i = 0; i < lead; i++) cells.push(null);
+  for (let d = 1; d <= dim; d++) cells.push(`${ym}-${String(d).padStart(2, "0")}`);
+  while (cells.length % 7) cells.push(null);
+  const rows = [];
+  for (let i = 0; i < cells.length; i += 7) rows.push(cells.slice(i, i + 7));
+  const today = localDate();
+  return (
+    <div className="select-none" data-testid="cal-grid">
+      <div className="flex items-center justify-between mb-2 gap-2">
+        <button type="button" className="bx-ghost" aria-label="Mes anterior" onClick={() => onNav(-1)}>‹</button>
+        {onMonth ? (
+          <button type="button" onClick={onMonth} title="Seleccionar el mes completo" className="text-sm font-extrabold tracking-wide" style={{ color: ACCENT }}>{monthLabel(ym)}</button>
+        ) : (
+          <span className="text-sm font-extrabold tracking-wide text-white">{monthLabel(ym)}</span>
+        )}
+        <button type="button" className="bx-ghost" aria-label="Mes siguiente" onClick={() => onNav(1)}>›</button>
+      </div>
+      <div className="grid gap-1" style={{ gridTemplateColumns: "28px repeat(7, minmax(0, 1fr))" }}>
+        <div />
+        {["L", "M", "X", "J", "V", "S", "D"].map((d, i) => (
+          <div key={i} className="text-center text-[10px] bx-muted font-bold">{d}</div>
+        ))}
+        {rows.map((row, ri) => {
+          const first = row.find(Boolean);
+          const wk = first ? weekRange(first) : null;
+          const wkSel = !!(wk && range && range.from === wk.from && range.to === wk.to);
+          return (
+            <React.Fragment key={ri}>
+              <button
+                type="button"
+                aria-label={`Semana ${ri + 1}`}
+                title="Seleccionar la semana completa"
+                onClick={() => wk && onWeek(wk.from)}
+                className="rounded-md text-xs font-bold"
+                style={{ background: wkSel ? ACCENT : "#1d1d1d", color: wkSel ? "#fff" : "#9a948a", border: "1px solid #2A2A2A" }}
+              >
+                ›
+              </button>
+              {row.map((d, ci) => {
+                if (!d) return <div key={ci} />;
+                const single = !!range && range.from === range.to && d === range.from;
+                const inR = !!range && d >= range.from && d <= range.to;
+                return (
+                  <button
+                    key={ci}
+                    type="button"
+                    aria-label={`Fecha ${d}`}
+                    onClick={() => onDay(d)}
+                    className="rounded-md text-xs font-bold relative"
+                    style={{
+                      height: 32,
+                      background: single ? ACCENT : inR ? "rgba(255,85,0,.28)" : "#161616",
+                      color: single ? "#fff" : "#E8E4DC",
+                      border: `1px solid ${d === today ? ACCENT : "#2A2A2A"}`,
+                    }}
+                  >
+                    {Number(d.slice(8))}
+                    {marked && marked.has(d) && (
+                      <span style={{ position: "absolute", left: "50%", bottom: 2, width: 4, height: 4, marginLeft: -2, borderRadius: 4, background: single ? "#fff" : ACCENT }} />
+                    )}
+                  </button>
+                );
+              })}
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Selector desplegable para filtrar la tabla por día o por semana
+function MiniCalendar({ marked, range, onChange }) {
+  const [open, setOpen] = useState(false);
+  const [ym, setYm] = useState(() => (range ? range.from.slice(0, 7) : curYM()));
+  const box = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const h = (e) => { if (box.current && !box.current.contains(e.target)) setOpen(false); };
+    document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+  const label = !range ? "Filtrar por fecha" : range.from === range.to ? fmtDate(range.from) : `${fmtDate(range.from)} – ${fmtDate(range.to)}`;
+  return (
+    <div ref={box} className="relative" data-testid="date-filter">
+      <div className="flex items-center gap-1">
+        <button type="button" onClick={() => setOpen((o) => !o)} className="bx-ghost" aria-haspopup="dialog" aria-expanded={open}>📅 {label} ▾</button>
+        {range && (
+          <button type="button" className="bx-ghost" onClick={() => onChange(null)} aria-label="Quitar filtro de fecha" title="Quitar filtro">✕</button>
+        )}
+      </div>
+      {open && (
+        <div className="absolute right-0 mt-2 z-40 bx-card p-3" style={{ width: 300, boxShadow: "0 18px 40px rgba(0,0,0,.6)" }} role="dialog" aria-label="Calendario de filtro">
+          <CalGrid
+            ym={ym}
+            onNav={(n) => setYm((v) => shiftYM(v, n))}
+            marked={marked}
+            range={range}
+            onDay={(d) => { onChange({ from: d, to: d }); setOpen(false); }}
+            onWeek={(d) => { onChange(weekRange(d)); setOpen(false); }}
+          />
+          <div className="mt-3 flex items-center justify-between gap-2 text-xs">
+            <button type="button" className="bx-ghost" onClick={() => { const t = localDate(); setYm(t.slice(0, 7)); onChange({ from: t, to: t }); setOpen(false); }}>Hoy</button>
+            <button type="button" className="bx-ghost" onClick={() => { onChange(null); setOpen(false); }}>Ver todo el período</button>
+          </div>
+          <div className="mt-2 text-[10px] bx-muted">Clic en un día = solo ese día · clic en › (izquierda) = semana completa</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function buildReport(trades, mode, ref, scope) {
   let from = ref, to = ref, title = "";
   const [y, m, d] = ref.split("-").map(Number);
@@ -1303,9 +1446,9 @@ function buildReport(trades, mode, ref, scope) {
     .filter((t) => scope === "ALL" || (scope === "CFD" ? t.category === "CFD" : scope === "DERIV" ? t.category === "SINTETICO" && t.broker !== "WELTRADE" : t.category === "SINTETICO" && t.broker === "WELTRADE"))
     .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 
-  const stat = (t) => (t.status === "Descartada" || t.discarded ? "DESCARTADA" : t.status === "Abierta" ? "ABIERTA" : t.status);
+  const stat = (t) => (t.status === "Descartada" || t.discarded ? "DESCARTADA" : t.status === "Abierta" ? "ACTIVA" : t.status === "Pendiente" ? "PENDIENTE" : t.status);
   const cnt = (k) => list.filter((t) => stat(t) === k).length;
-  const tp = cnt("TP"), sl = cnt("SL"), be = cnt("BE"), dis = cnt("DESCARTADA"), open = cnt("ABIERTA");
+  const tp = cnt("TP"), sl = cnt("SL"), be = cnt("BE"), dis = cnt("DESCARTADA"), open = cnt("ACTIVA"), pend = cnt("PENDIENTE");
   const dec = tp + sl;
   const wr = dec ? Math.round((tp / dec) * 100) : 0;
 
@@ -1327,7 +1470,7 @@ function buildReport(trades, mode, ref, scope) {
   L.push(`• Total de operaciones: ${list.length}`);
   L.push(`• Win Rate: ${wr}% (${tp} TP / ${dec} decisivas · BE no cuenta)`);
   L.push(`• Resultado neto: ${netLines.join("  |  ")}`);
-  L.push(`• TP: ${tp}  |  SL: ${sl}  |  BE: ${be}  |  Descartadas: ${dis}${open ? `  |  Abiertas: ${open}` : ""}`);
+  L.push(`• TP: ${tp}  |  SL: ${sl}  |  BE: ${be}  |  Descartadas: ${dis}${open ? `  |  Activas: ${open}` : ""}${pend ? `  |  Pendientes: ${pend}` : ""}`);
   L.push("");
   L.push("DETALLE DE OPERACIONES");
   if (!list.length) L.push("Sin operaciones en este período.");
@@ -1335,7 +1478,7 @@ function buildReport(trades, mode, ref, scope) {
     const has = !t.discarded && legResults(t).length > 0;
     const res = has ? `${fmtP(t.pips)} ${unitWord(t)}` : "—";
     const pc = partialsCount(t);
-    L.push(`${i + 1}. ${mode === "daily" ? "" : fmtDate(t.date) + " · "}${t.asset} · ${t.direction} · ${res} · ${stat(t)}${pc && stat(t) === "ABIERTA" ? ` (parciales: ${pc}${partialsTotal(t) ? ` · ${fmtP(partialsTotal(t))} ${unitWord(t)}` : ""})` : ""}`);
+    L.push(`${i + 1}. ${mode === "daily" ? "" : fmtDate(t.date) + " · "}${t.asset} · ${t.direction} · ${res} · ${stat(t)}${pc && stat(t) === "ACTIVA" ? ` (parciales: ${pc}${partialsTotal(t) ? ` · ${fmtP(partialsTotal(t))} ${unitWord(t)}` : ""})` : ""}`);
     const note = (t.notes || "").trim();
     if (note) L.push(`   📝 ${note.replace(/\s*\n\s*/g, " ")}`);
     const mg = (t.mgmt || "").trim();
@@ -1346,15 +1489,33 @@ function buildReport(trades, mode, ref, scope) {
   return { text: L.join("\n"), count: list.length };
 }
 
-function ReportModal({ trades, onClose }) {
+function ReportModal({ trades, onClose, defaultScope }) {
   const [mode, setMode] = useState("daily");
   const [ref, setRef] = useState(localDate());
-  const [scope, setScope] = useState("ALL");
+  const [ym, setYm] = useState(localDate().slice(0, 7));
+  const [scope, setScope] = useState(defaultScope || "ALL");
   const [copied, setCopied] = useState(false);
-  const rep = useMemo(() => buildReport(trades, mode, ref || localDate(), scope), [trades, mode, ref, scope]);
+  const refEff = ref || localDate();
+  const rep = useMemo(() => buildReport(trades, mode, refEff, scope), [trades, mode, refEff, scope]);
   const [text, setText] = useState(rep.text);
   useEffect(() => { setText(rep.text); setCopied(false); }, [rep.text]);
   const taRef = useRef(null);
+  const marked = useMemo(() => new Set(trades.map((t) => t.date)), [trades]);
+  const range = mode === "daily" ? { from: refEff, to: refEff } : mode === "weekly" ? weekRange(refEff) : monthRange(refEff.slice(0, 7));
+  const rangeLabel = range.from === range.to ? fmtDate(range.from) : `${fmtDate(range.from)} al ${fmtDate(range.to)}`;
+
+  const pickDay = (d) => { setMode("daily"); setRef(d); };
+  const pickWeek = (d) => { setMode("weekly"); setRef(d); };
+  const pickMonth = () => { setMode("monthly"); setRef(`${ym}-01`); };
+  const nav = (n) => {
+    const v = shiftYM(ym, n);
+    setYm(v);
+    if (mode === "monthly") setRef(`${v}-01`);
+  };
+  const setModeKeep = (k) => {
+    setMode(k);
+    if (k === "monthly") setYm(refEff.slice(0, 7));
+  };
 
   const copy = async () => {
     let ok = false;
@@ -1368,34 +1529,41 @@ function ReportModal({ trades, onClose }) {
   const modes = [["daily", "Diario"], ["weekly", "Semanal"], ["monthly", "Mensual"]];
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-black/75 p-4" onClick={onClose}>
-      <div onClick={(e) => e.stopPropagation()} className="bx-card w-full max-w-2xl p-5 mt-6" role="dialog" aria-label="Generar resumen en texto">
+      <div onClick={(e) => e.stopPropagation()} className="bx-card w-full max-w-3xl p-5 mt-6" role="dialog" aria-label="Generar resumen en texto">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-lg font-extrabold bx-accent tracking-wide">GENERAR RESUMEN EN TEXTO</h3>
           <button type="button" onClick={onClose} className="bx-ghost">Cerrar</button>
         </div>
-        <div className="mt-4 flex flex-wrap gap-2">
-          {modes.map(([k, l]) => (
-            <button key={k} type="button" onClick={() => setMode(k)} className={`bx-pill ${mode === k ? "on" : ""}`}>{l}</button>
-          ))}
-        </div>
-        <div className="mt-3 grid sm:grid-cols-2 gap-3">
-          <label className="text-xs bx-muted block">
-            {mode === "daily" ? "Día" : mode === "weekly" ? "Cualquier día de la semana" : "Cualquier día del mes"}
-            <input type="date" className="bx-input mt-1" value={ref} onChange={(e) => setRef(e.target.value)} />
-          </label>
-          <label className="text-xs bx-muted block">
-            Mercado
-            <select className="bx-input mt-1" value={scope} onChange={(e) => setScope(e.target.value)}>
-              <option value="ALL">Todos</option>
-              <option value="CFD">CFDs (pips)</option>
-              <option value="DERIV">Sintéticos · DERIV (pips)</option>
-              <option value="WELTRADE">Sintéticos · WELTRADE (puntos)</option>
-            </select>
-          </label>
+        <div className="mt-4 grid md:grid-cols-[300px_1fr] gap-4">
+          <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+            <CalGrid ym={ym} onNav={nav} marked={marked} range={range} onDay={pickDay} onWeek={pickWeek} onMonth={pickMonth} />
+            <div className="mt-2 text-[10px] bx-muted">Día = resumen diario · flecha › = semana completa · nombre del mes = mes completo</div>
+          </div>
+          <div>
+            <div className="flex flex-wrap gap-2">
+              {modes.map(([k, l]) => (
+                <button key={k} type="button" onClick={() => setModeKeep(k)} className={`bx-pill ${mode === k ? "on" : ""}`}>{l}</button>
+              ))}
+            </div>
+            <div className="mt-3 text-sm">
+              <span className="bx-muted">Rango: </span>
+              <b className="text-white" data-testid="report-range">{rangeLabel}</b>
+            </div>
+            <label className="text-xs bx-muted block mt-3">
+              Mercado
+              <select className="bx-input mt-1" value={scope} onChange={(e) => setScope(e.target.value)}>
+                <option value="ALL">Todos</option>
+                <option value="CFD">CFDs (pips)</option>
+                <option value="DERIV">Sintéticos · DERIV (pips)</option>
+                <option value="WELTRADE">Sintéticos · WELTRADE (puntos)</option>
+              </select>
+            </label>
+            <div className="mt-3 text-xs bx-muted">{rep.count} {rep.count === 1 ? "operación" : "operaciones"} en el rango</div>
+          </div>
         </div>
         <textarea ref={taRef} rows={16} className="bx-input mt-3 font-mono text-xs leading-relaxed" value={text} onChange={(e) => setText(e.target.value)} aria-label="Texto del resumen" />
         <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-          <span className="text-xs bx-muted">{rep.count} {rep.count === 1 ? "operación" : "operaciones"} en el rango · puedes editar el texto antes de copiar</span>
+          <span className="text-xs bx-muted">Puedes editar el texto antes de copiar</span>
           <button type="button" onClick={copy} className="bx-btn">{copied ? "✓ ¡Copiado!" : "Copiar al portapapeles"}</button>
         </div>
       </div>
@@ -1887,6 +2055,7 @@ function dayStats(list) {
     closed: closed.length,
     shown: list.filter(isPublic).length,
     open: list.filter((t) => t.status === "Abierta").length,
+    pending: list.filter((t) => t.status === "Pendiente").length,
     pips: round1(live.reduce((a, t) => a + (Number(t.pips) || 0), 0)),
     wr: decisive ? Math.round((wins / decisive) * 100) : null,
   };
@@ -2102,7 +2271,10 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
                         </>
                       )}
                       {isAdmin && st.open > 0 && (
-                        <span className="text-[10px] text-center mt-auto" style={{ color: "#7dd3fc" }}>⏳ {plural(st.open, "abierta", "abiertas")}</span>
+                        <span className="text-[10px] text-center mt-auto" style={{ color: "#7dd3fc" }}>⏳ {plural(st.open, "activa", "activas")}</span>
+                      )}
+                      {isAdmin && st.pending > 0 && (
+                        <span className="text-[10px] text-center" style={{ color: "#fcd34d" }}>🕓 {plural(st.pending, "pendiente", "pendientes")}</span>
                       )}
                     </button>
                   );
@@ -2232,8 +2404,12 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
                     <span className="font-extrabold">{m.discarded}</span>
                   </div>
                   <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
-                    <span className="bx-muted">Abiertas</span>
+                    <span className="bx-muted">Activas</span>
                     <span className="font-extrabold">{m.open}</span>
+                  </div>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                    <span className="bx-muted">Órdenes pendientes</span>
+                    <span className="font-extrabold">{m.pending}</span>
                   </div>
                 </>
               )}
@@ -2322,6 +2498,7 @@ export default function App() {
   const [period, setPeriod] = useState("cur"); // cur (mes actual) | all | y:2026 | m:2026-10
   const [view, setView] = useState("list"); // list | calendar (solo admin; el público siempre ve calendario)
   const [q, setQ] = useState("");
+  const [dateFilter, setDateFilter] = useState(null); // {from,to} · día o semana
 
   const fileRef = useRef(null);
   const [signalText, setSignalText] = useState("");
@@ -2513,12 +2690,15 @@ export default function App() {
   // Unidad dinámica: CFDs = Pips · DERIV = Pips · WELTRADE = Puntos
   const scopeUnit = tab === "SINTETICO" && broker === "WELTRADE" ? "Puntos" : "Pips";
 
+  const baseList = useMemo(() => (dateFilter ? market.filter((t) => t.date >= dateFilter.from && t.date <= dateFilter.to) : scoped), [dateFilter, market, scoped]);
+  const marked = useMemo(() => new Set(market.map((t) => t.date)), [market]);
+  const dateLabel = dateFilter ? (dateFilter.from === dateFilter.to ? fmtDate(dateFilter.from) : `${fmtDate(dateFilter.from)} – ${fmtDate(dateFilter.to)}`) : "";
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
-    return scoped
+    return baseList
       .filter((t) => (term ? (t.asset || "").toLowerCase().includes(term) : true))
       .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-  }, [scoped, q]);
+  }, [baseList, q]);
 
   const m = useMemo(() => computeMetrics(scoped), [scoped]);
 
@@ -2746,7 +2926,7 @@ export default function App() {
             <Stat label={`${scopeUnit} totales`} value={fmtP(m.totalPips)} sub="Acumulado de todas las entradas" tone={pipsTone} />
             <Stat label="Ratio R/R medio" value={`${m.avgR >= 0 ? "+" : ""}${m.avgR.toFixed(2)}R`} sub={`Acumulado: ${m.totalR >= 0 ? "+" : ""}${m.totalR.toFixed(2)}R`} tone={m.avgR > 0 ? "pos" : m.avgR < 0 ? "neg" : undefined} />
             <Stat label="Profit Factor" value={m.profitFactor === Infinity ? "∞" : m.profitFactor.toFixed(2)} sub={`${m.legsCount} entradas cerradas`} />
-            <Stat label="Señales ejecutadas" value={m.executed} sub={isAdmin ? `${m.open} abiertas · ${m.discarded} descartadas` : "Cerradas y descartadas"} />
+            <Stat label="Señales ejecutadas" value={m.executed} sub={isAdmin ? `${m.open} activas · ${m.pending} pendientes · ${m.discarded} descartadas` : "Cerradas y descartadas"} />
           </div>
         </section>
 
@@ -2778,12 +2958,22 @@ export default function App() {
 
         </>)}
 
-        {/* ------------------------- PEGAR SEÑAL (admin) ------------------------- */}
-        {isAdmin && (
+        {/* ------------------------- RESUMEN EN TEXTO (admin · solo Calendario y Métricas) ------------------------- */}
+        {isAdmin && viewEff === "calendar" && (
+          <section className="bx-card p-4 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Resumen en texto</div>
+              <div className="text-xs bx-muted mt-1">Elige un día, una semana o un mes en el calendario y copia el resumen listo para publicar.</div>
+            </div>
+            <button type="button" onClick={() => setShowReport(true)} className="bx-btn">📄 Generar Resumen en Texto</button>
+          </section>
+        )}
+
+        {/* ------------------------- PEGAR SEÑAL (admin · solo Lista de Operaciones) ------------------------- */}
+        {isAdmin && viewEff === "list" && (
           <section className="bx-card p-4">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
               <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Pegar señal (CFDs y Sintéticos)</div>
-              <button type="button" onClick={() => setShowReport(true)} className="bx-ghost text-xs">📄 Generar Resumen en Texto</button>
             </div>
             <textarea
               rows={6}
@@ -2807,16 +2997,12 @@ export default function App() {
           <div className="p-4 flex flex-wrap items-end justify-between gap-3 bx-bb">
             <div>
               <h2 className="font-extrabold tracking-wider bx-accent">REGISTRO DE OPERACIONES</h2>
-              <div className="text-xs bx-muted">{filtered.length} de {scoped.length} señales · {scopeLabel} · {periodLabel}</div>
-              {isAdmin && <div className="text-[11px] mt-1" style={{ color: "#ffb089" }}>Vista Admin: también ves señales abiertas y descartadas. El público ve las cerradas (TP / SL / BE) y las descartadas, nunca las abiertas.</div>}
+              <div className="text-xs bx-muted">{filtered.length} de {baseList.length} señales · {scopeLabel} · {dateFilter ? dateLabel : periodLabel}</div>
+              {isAdmin && <div className="text-[11px] mt-1" style={{ color: "#ffb089" }}>Vista Admin: también ves señales pendientes, activas y descartadas. El público ve las cerradas (TP / SL / BE) y las descartadas, nunca las pendientes ni las activas.</div>}
             </div>
 
             <div className="flex flex-wrap gap-2 items-center">
-              {isAdmin && (
-                <button onClick={() => setEditing(emptyForm(tab, cfdSub === "Todos" ? "Forex" : cfdSub, broker))} className="bx-btn">
-                  + Nueva señal
-                </button>
-              )}
+              <MiniCalendar marked={marked} range={dateFilter} onChange={setDateFilter} />
             </div>
           </div>
 
@@ -2832,7 +3018,7 @@ export default function App() {
               <tbody>
                 {filtered.length === 0 && (
                   <tr>
-                    <td colSpan={10} className="text-center bx-muted py-10">{periodEff === "cur" && !q.trim() ? `Aún no hay operaciones cerradas en ${monthLabel(nowYM)}. Usa el selector para ver meses anteriores o todo el histórico.` : "Sin operaciones para estos filtros."}</td>
+                    <td colSpan={10} className="text-center bx-muted py-10">{dateFilter ? "Sin operaciones en esta fecha. Elige otro día o semana, o quita el filtro." : periodEff === "cur" && !q.trim() ? `Aún no hay operaciones cerradas en ${monthLabel(nowYM)}. Usa el selector para ver meses anteriores o todo el histórico.` : "Sin operaciones para estos filtros."}</td>
                   </tr>
                 )}
                 {filtered.map((t) => {
@@ -2912,7 +3098,7 @@ export default function App() {
       </main>
 
       {/* ------------------------- MODALES ------------------------- */}
-      {showReport && isAdmin && <ReportModal trades={trades} onClose={() => setShowReport(false)} />}
+      {showReport && isAdmin && <ReportModal trades={trades} defaultScope={tab === "CFD" ? "CFD" : broker === "WELTRADE" ? "WELTRADE" : "DERIV"} onClose={() => setShowReport(false)} />}
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} onOk={login} />}
       {editing && <TradeForm initial={editing} onCancel={() => setEditing(null)} onSave={saveTrade} />}
       {detailTrade && isAdmin && <DetailModal t={detailTrade} onClose={() => setDetail(null)} isAdmin={isAdmin} onUpdate={updateTrade} />}
