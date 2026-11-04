@@ -723,7 +723,7 @@
     "discarded": false,
     "raw": "VOLATILITY 100 SELL 569.9\nTP1: 560.63\nTP2: 540.02\nSL: 587.00",
     "notes": "",
-    "mgmt": "Entrada con SL en BE. esperando por tp2",
+    "mgmt": "",
     "tags": [
       "VIP Signal"
     ],
