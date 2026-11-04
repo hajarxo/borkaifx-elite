@@ -444,7 +444,7 @@
     "direction": "BUY",
     "entry1": 3930,
     "entry2": 3928,
-    "activation": "BOTH",
+    "activation": "E1",
     "sl": 3918,
     "tps": [
       3935,
@@ -477,8 +477,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 410,
-    "r": 3.53
+    "pips": 340,
+    "r": 2.83
   },
   {
     "id": "ip251gtymw19x3em",
