@@ -60,7 +60,7 @@
       "e1": {
         "status": "BE",
         "exit": 0.70133,
-        "pips": 0,
+        "pips": 40,
         "tpIdx": null,
         "partials": 1,
         "partialPips": [
@@ -76,8 +76,8 @@
       "VIP Signal"
     ],
     "status": "BE",
-    "pips": 40,
-    "r": 1.72
+    "pips": 80,
+    "r": 3.43
   },
   {
     "id": "50trv31imvzxw62u",
