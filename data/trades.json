@@ -456,9 +456,9 @@
     "legs": {
       "e1": {
         "status": "TP",
-        "exit": "OPEN",
-        "pips": 340,
-        "tpIdx": 3
+        "exit": 3935,
+        "pips": 50,
+        "tpIdx": 0
       },
       "e2": {
         "status": "BE",
@@ -477,8 +477,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 410,
-    "r": 3.53
+    "pips": 120,
+    "r": 1.12
   },
   {
     "id": "ip251gtymw19x3em",
