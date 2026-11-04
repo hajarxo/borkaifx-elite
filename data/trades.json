@@ -528,7 +528,7 @@
     "direction": "BUY",
     "entry1": 3924,
     "entry2": 3918,
-    "activation": "BOTH",
+    "activation": "E1",
     "sl": 3904,
     "tps": [
       3934,
@@ -561,8 +561,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 260,
-    "r": 1.64
+    "pips": 100,
+    "r": 0.5
   },
   {
     "id": "odmyi24umw13yq1t",
