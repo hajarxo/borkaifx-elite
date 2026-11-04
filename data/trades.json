@@ -646,6 +646,7 @@
     ],
     "status": "TP",
     "pips": 45,
-    "r": 1.21
+    "r": 1.21,
+    "mgmt": "La entrada se cerro"
   }
 ]
