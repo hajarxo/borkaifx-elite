@@ -696,6 +696,54 @@
     "mgmt": "La entrada se cerro manualmente por decision del trader"
   },
   {
+    "id": "f0udbm80mw29e510",
+    "date": "2026-11-04",
+    "category": "CFD",
+    "sub": "Oro/Metales",
+    "broker": "",
+    "asset": "XAUUSD",
+    "direction": "SELL",
+    "entry1": 4064,
+    "entry2": 4066,
+    "activation": "BOTH",
+    "sl": 4080,
+    "tps": [
+      4059,
+      4054,
+      4049,
+      "OPEN"
+    ],
+    "pipSize": 0.1,
+    "legs": {
+      "e1": {
+        "status": "MANUAL",
+        "exit": "",
+        "pips": 50,
+        "tpIdx": null,
+        "partials": 0,
+        "partialPips": []
+      },
+      "e2": {
+        "status": "TP",
+        "exit": 4059,
+        "pips": 70,
+        "tpIdx": 0,
+        "partials": 0,
+        "partialPips": []
+      }
+    },
+    "discarded": false,
+    "raw": "Gold 🏆\nPair: XAUUSD 📊\nSide: Short / Sell Limit\nEntry: 4064 / 4066\nTP: Open\nSL: 4080\nNote: past profits do not predict future profits \nRisk 0.5-1-2% \n\nTP1 4059 100pips ✅\nTP2 4054 200pips ✅\nTP3 4049 300pips ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 120,
+    "r": 0.81
+  },
+  {
     "id": "nbgpkemcmw1lkcp7",
     "date": "2026-11-04",
     "category": "SINTETICO",
