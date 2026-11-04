@@ -462,9 +462,9 @@
       },
       "e2": {
         "status": "TP",
-        "exit": 3935,
-        "pips": 70,
-        "tpIdx": 0
+        "exit": 3945,
+        "pips": 170,
+        "tpIdx": 2
       }
     },
     "discarded": false,
@@ -477,8 +477,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 120,
-    "r": 1.12
+    "pips": 220,
+    "r": 2.12
   },
   {
     "id": "ip251gtymw19x3em",
