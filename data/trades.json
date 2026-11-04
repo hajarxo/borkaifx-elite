@@ -690,5 +690,41 @@
     "pips": 45,
     "r": 1.21,
     "mgmt": "La entrada se cerro manualmente por decision del trader"
+  },
+  {
+    "id": "nbgpkemcmw1lkcp7",
+    "date": "2026-11-04",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "VOLATILITY 100",
+    "direction": "SELL",
+    "entry1": 569.9,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 587,
+    "tps": [
+      560.63,
+      540.02
+    ],
+    "pipSize": 1,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 560.63,
+        "pips": 9.3,
+        "tpIdx": 0
+      }
+    },
+    "discarded": false,
+    "raw": "VOLATILITY 100 SELL 569.9\nTP1: 560.63\nTP2: 540.02\nSL: 587.00",
+    "notes": "",
+    "mgmt": "Entrada con SL en BE. esperando por tp2",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 9.3,
+    "r": 0.54
   }
 ]
