@@ -540,9 +540,9 @@
     "legs": {
       "e1": {
         "status": "TP",
-        "exit": "OPEN",
-        "pips": "",
-        "tpIdx": 3
+        "exit": 3934,
+        "pips": 100,
+        "tpIdx": 0
       },
       "e2": {
         "status": "TP",
@@ -560,9 +560,9 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "BE",
-    "pips": 0,
-    "r": 0
+    "status": "TP",
+    "pips": 100,
+    "r": 0.5
   },
   {
     "id": "odmyi24umw13yq1t",
