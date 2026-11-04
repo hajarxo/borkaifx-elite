@@ -414,6 +414,9 @@ function compressImage(file, maxW = 1280, quality = 0.72) {
 const hasE2 = (t) => num(t.entry2) !== null;
 // Parciales registrados (no cierran la operación: solo se anotan mientras la entrada sigue abierta)
 const partialsCount = (t) => ["e1", "e2"].reduce((a, k) => a + (Number(t.legs && t.legs[k] && t.legs[k].partials) || 0), 0);
+// Pips/puntos de los parciales de una pata (lista partialPips)
+const partialSum = (L) => round1(((L && L.partialPips) || []).reduce((a, x) => a + (Number(x) || 0), 0));
+const partialsTotal = (t) => round1(["e1", "e2"].reduce((a, k) => a + partialSum(t.legs && t.legs[k]), 0));
 const legKeys = (t) => (hasE2(t) ? (t.activation === "BOTH" ? ["e1", "e2"] : t.activation === "E2" ? ["e2"] : ["e1"]) : ["e1"]);
 const entryOf = (t, k) => num(k === "e1" ? t.entry1 : t.entry2);
 const legOf = (t, k) => (t.legs && t.legs[k]) || { status: "Abierta", exit: "", pips: "", tpIdx: null };
@@ -442,7 +445,7 @@ function legResults(t) {
     const L = legOf(t, k);
     if (!L.status || L.status === "Abierta") return;
     if (L.status === "MANUAL" && num(L.pips) === null) return; // Cierre manual: se registra al escribir los pips/puntos
-    const p = num(L.pips) ?? 0;
+    const p = round1((num(L.pips) ?? 0) + partialSum(L));
     const risk = riskPips(t, k);
     out.push({ key: k, status: L.status, pips: p, r: risk ? p / risk : 0 });
   });
@@ -477,10 +480,12 @@ const hitMax = (t) => {
 
 const legSummary = (t, k) => {
   const L = legOf(t, k);
-  if (!L.status || L.status === "Abierta") return L.partials ? `Abierta · ${L.partials} ${L.partials === 1 ? "parcial" : "parciales"}` : "Abierta";
+  if (!L.status || L.status === "Abierta") return L.partials ? `Abierta · ${L.partials} ${L.partials === 1 ? "parcial" : "parciales"}${partialSum(L) ? ` (${fmtP(partialSum(L))} ${unitWord(t)})` : ""}` : "Abierta";
   const tp = L.status === "TP" && t.tps && t.tps[L.tpIdx] !== undefined ? tpLabel(L.tpIdx, t.tps[L.tpIdx]) : L.status === "MANUAL" ? "Cierre manual" : L.status;
   const p = num(L.pips);
-  return p === null ? `${tp} · sin pips` : `${tp} · ${fmtP(p)} ${unitWord(t)}`;
+  const ps = partialSum(L);
+  if (p === null) return `${tp} · sin pips`;
+  return ps ? `${tp} · ${fmtP(round1(p + ps))} ${unitWord(t)} (cierre ${fmtP(p)} + parciales ${fmtP(ps)})` : `${tp} · ${fmtP(p)} ${unitWord(t)}`;
 };
 
 function computeMetrics(list) {
@@ -970,6 +975,7 @@ function LegEditor({ t, k, onChange }) {
   const unit = unitName(t);
   const tps = t.tps || [];
   const [pipsText, setPipsText] = useState("");
+  const [partText, setPartText] = useState("");
 
   useEffect(() => {
     setPipsText(L.pips === "" || L.pips === undefined || L.pips === null ? "" : String(L.pips));
@@ -991,8 +997,18 @@ function LegEditor({ t, k, onChange }) {
   const pickOpen = () => onChange(k, { status: "Abierta", tpIdx: null, exit: "", pips: "" });
   const isOpenLeg = !L.status || L.status === "Abierta";
   // Parciales: solo se anota la acción; el estado NUNCA cambia (la entrada sigue Abierta)
-  const addPartial = () => { if (isOpenLeg) onChange(k, { status: "Abierta", partials: (Number(L.partials) || 0) + 1 }); };
-  const undoPartial = () => { if (isOpenLeg && L.partials) onChange(k, { status: "Abierta", partials: Math.max(0, Number(L.partials) - 1) }); };
+  const addPartial = () => {
+    if (!isOpenLeg) return;
+    const v = num(partText);
+    const list = [...(L.partialPips || []), v === null ? 0 : v];
+    onChange(k, { status: "Abierta", partials: list.length, partialPips: list });
+    setPartText("");
+  };
+  const undoPartial = () => {
+    if (!isOpenLeg || !L.partials) return;
+    const list = (L.partialPips || []).slice(0, -1);
+    onChange(k, { status: "Abierta", partials: Math.max(0, Number(L.partials) - 1), partialPips: list });
+  };
   const pickManual = () => onChange(k, { status: "MANUAL", tpIdx: null, exit: "", pips: L.status === "MANUAL" ? L.pips : "" });
 
   const commitPips = () => {
@@ -1016,6 +1032,24 @@ function LegEditor({ t, k, onChange }) {
         <div className="text-xs bx-muted">{risk ? `Riesgo: ${Math.round(risk * 10) / 10} ${unit.toLowerCase()}` : "Sin SL"}</div>
       </div>
 
+      {isOpenLeg && (
+        <div className="mb-2 flex items-end gap-2 flex-wrap">
+          <label className="block w-44">
+            <span className="bx-label">{unit} del parcial</span>
+            <input
+              type="number"
+              step="any"
+              className="bx-input"
+              value={partText}
+              onChange={(e) => setPartText(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addPartial(); } }}
+              placeholder="Ej: 25"
+              aria-label="Pips del parcial"
+            />
+          </label>
+          <span className="text-xs bx-muted pb-2">escribe los {unit.toLowerCase()} y pulsa <b className="text-white">Parciales</b></span>
+        </div>
+      )}
       <div className="flex flex-wrap gap-1.5">
         <button type="button" onClick={pickOpen} className={`bx-seg open ${L.status === "Abierta" ? "on" : ""}`}>Abierta</button>
         <button type="button" onClick={pickSL} className={`bx-seg neg ${L.status === "SL" ? "on" : ""}`}>Tocó SL</button>
@@ -1039,7 +1073,7 @@ function LegEditor({ t, k, onChange }) {
       </div>
       {L.partials > 0 && isOpenLeg && (
         <div className="mt-2 text-xs bx-muted">
-          {L.partials} {L.partials === 1 ? "parcial registrado" : "parciales registrados"} · la entrada sigue <b className="text-white">abierta</b> hasta que toque SL, BE, TP o uses Cierre Manual.{" "}
+          {L.partials} {L.partials === 1 ? "parcial registrado" : "parciales registrados"}{partialSum(L) ? ` (${fmtP(partialSum(L))} ${unit.toLowerCase()} acumulados)` : ""} · la entrada sigue <b className="text-white">abierta</b> hasta que toque SL, BE, TP o uses Cierre Manual.{" "}
           <button type="button" onClick={undoPartial} className="underline" style={{ color: ACCENT }}>quitar el último</button>
         </div>
       )}
@@ -1059,7 +1093,7 @@ function LegEditor({ t, k, onChange }) {
               placeholder={isOpenTp ? "Obligatorio" : "Editable"}
             />
           </label>
-          <div className="text-xs bx-muted pb-2">{r !== null ? `${r >= 0 ? "+" : ""}${r.toFixed(2)}R` : ""}</div>
+          <div className="text-xs bx-muted pb-2">{r !== null ? `${r >= 0 ? "+" : ""}${r.toFixed(2)}R` : ""}{partialSum(L) && p !== null ? ` · + parciales ${fmtP(partialSum(L))} = total ${fmtP(round1(p + partialSum(L)))}` : ""}</div>
           {(isOpenTp || needsPips) && (
             <div className="text-xs pb-2" style={{ color: "#ffb089" }}>
               {isOpenTp ? "TP abierto: escribe los pips/puntos reales alcanzados." : L.status === "MANUAL" ? "Cierre manual: escribe los pips/puntos finales (con − si cerró en pérdida)." : "Escribe los pips/puntos reales."}
@@ -1301,7 +1335,7 @@ function buildReport(trades, mode, ref, scope) {
     const has = !t.discarded && legResults(t).length > 0;
     const res = has ? `${fmtP(t.pips)} ${unitWord(t)}` : "—";
     const pc = partialsCount(t);
-    L.push(`${i + 1}. ${mode === "daily" ? "" : fmtDate(t.date) + " · "}${t.asset} · ${t.direction} · ${res} · ${stat(t)}${pc && stat(t) === "ABIERTA" ? ` (parciales: ${pc})` : ""}`);
+    L.push(`${i + 1}. ${mode === "daily" ? "" : fmtDate(t.date) + " · "}${t.asset} · ${t.direction} · ${res} · ${stat(t)}${pc && stat(t) === "ABIERTA" ? ` (parciales: ${pc}${partialsTotal(t) ? ` · ${fmtP(partialsTotal(t))} ${unitWord(t)}` : ""})` : ""}`);
     const note = (t.notes || "").trim();
     if (note) L.push(`   📝 ${note.replace(/\s*\n\s*/g, " ")}`);
     const mg = (t.mgmt || "").trim();
