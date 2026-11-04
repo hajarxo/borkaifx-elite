@@ -451,6 +451,7 @@ function legResults(t) {
   legKeys(t).forEach((k) => {
     const L = legOf(t, k);
     if (!L.status || L.status === "Abierta") return;
+    if (L.status === "MANUAL" && num(L.pips) === null) return; // Cierre manual: se registra al escribir los pips/puntos
     const p = num(L.pips) ?? 0;
     const risk = riskPips(t, k);
     out.push({ key: k, status: L.status, pips: p, r: risk ? p / risk : 0 });
@@ -487,7 +488,7 @@ const hitMax = (t) => {
 const legSummary = (t, k) => {
   const L = legOf(t, k);
   if (!L.status || L.status === "Abierta") return "Abierta";
-  const tp = L.status === "TP" && t.tps && t.tps[L.tpIdx] !== undefined ? tpLabel(L.tpIdx, t.tps[L.tpIdx]) : L.status;
+  const tp = L.status === "TP" && t.tps && t.tps[L.tpIdx] !== undefined ? tpLabel(L.tpIdx, t.tps[L.tpIdx]) : L.status === "MANUAL" ? "Cierre manual" : L.status;
   const p = num(L.pips);
   return p === null ? `${tp} · sin pips` : `${tp} · ${fmtP(p)} ${unitWord(t)}`;
 };
@@ -1011,6 +1012,7 @@ function LegEditor({ t, k, onChange }) {
   };
   const pickBE = () => onChange(k, { status: "BE", tpIdx: null, exit: entry ?? "", pips: 0 });
   const pickOpen = () => onChange(k, { status: "Abierta", tpIdx: null, exit: "", pips: "" });
+  const pickManual = () => onChange(k, { status: "MANUAL", tpIdx: null, exit: "", pips: L.status === "MANUAL" ? L.pips : "" });
 
   const commitPips = () => {
     let v = num(pipsText);
@@ -1042,6 +1044,7 @@ function LegEditor({ t, k, onChange }) {
             {tpLabel(i, lvl)}{lvl !== "OPEN" ? ` · ${lvl}` : ""}
           </button>
         ))}
+        <button type="button" onClick={pickManual} className={`bx-seg mid ${L.status === "MANUAL" ? "on" : ""}`}>Cierre Manual</button>
       </div>
 
       {L.status !== "Abierta" && (
@@ -1062,7 +1065,7 @@ function LegEditor({ t, k, onChange }) {
           <div className="text-xs bx-muted pb-2">{r !== null ? `${r >= 0 ? "+" : ""}${r.toFixed(2)}R` : ""}</div>
           {(isOpenTp || needsPips) && (
             <div className="text-xs pb-2" style={{ color: "#ffb089" }}>
-              {isOpenTp ? "TP abierto: escribe los pips/puntos reales alcanzados." : "Escribe los pips/puntos reales."}
+              {isOpenTp ? "TP abierto: escribe los pips/puntos reales alcanzados." : L.status === "MANUAL" ? "Cierre manual: escribe los pips/puntos finales (con − si cerró en pérdida)." : "Escribe los pips/puntos reales."}
             </div>
           )}
         </div>
@@ -1402,7 +1405,7 @@ const SectionTitle = ({ kicker, title, text }) => (
 );
 
 const StepDot = ({ n }) => (
-  <div className="w-9 h-9 rounded-full flex items-center justify-center font-black text-white mx-auto" style={{ background: ACCENT }}>{n}</div>
+  <div className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center font-black text-white mx-auto" style={{ background: ACCENT }}>{n}</div>
 );
 
 // Botón de broker: si hay enlace de afiliado lo abre; si no, pide el enlace por WhatsApp
@@ -1413,9 +1416,165 @@ const BrokerBtn = ({ b, wa = false }) =>
     <a href={wa ? waHref() : TELEGRAM_URL} target="_blank" rel="noopener noreferrer" title="Pedir enlace" className="bx-ghost text-center">{b.broker}</a>
   );
 
-function HomePage({ setPage }) {
+/* ----------------------------- Página /vip-gratis ----------------------------- */
+const VIP_CONTACT = "ddazafx";
+const FAQ_ITEMS = [
+  {
+    q: "¿Puedo afiliarme si ya tengo cuenta en Weltrade?",
+    a: [
+      { t: "p", x: "Sí, puedes afiliarte con tu cuenta existente de Weltrade si cumples con los requisitos:" },
+      { t: "ul", x: [
+        ["Sin actividad (nunca depositaste ni operaste):", "Tienes hasta 6 meses desde la creación."],
+        ["Con actividad (ya operaste o depositaste):", "Máximo 3 meses desde la creación."],
+      ] },
+      { t: "note", x: ["Importante:", "Solo se permite 1 cambio de socio en la vida del perfil."] },
+      { t: "h", x: "Cómo solicitarlo" },
+      { t: "p", x: "Entra a tu Área Personal de Weltrade, abre el chat de soporte y envía este mensaje:" },
+      { t: "msg", x: "Hola, quisiera solicitar formalmente el cambio/vinculación de Partner (IB) para mi perfil en Weltrade.\n\nNombre completo: [Tu Nombre]\nCorreo registrado: [Tu Correo]\nMotivo del cambio: Registré mi perfil con un código incorrecto y deseo afiliarme a mi Partner actual.\nEnlace completo del nuevo Partner: https://es.gowt.net/ib62502" },
+      { t: "p", x: "Al recibir la confirmación de Weltrade, toma captura y envíala junto a tu número de cuenta a @" + VIP_CONTACT + ".", gap: true },
+    ],
+  },
+  {
+    q: "¿Puedo afiliarme si ya tengo cuenta en Deriv?",
+    a: [
+      { t: "p", x: "Sí, puedes afiliarte con tu cuenta existente solicitando la vinculación directamente al soporte." },
+      { t: "h", x: "Cómo solicitarlo" },
+      { t: "p", x: "Inicia sesión en Deriv, ve al chat en vivo o WhatsApp y envía el siguiente formato:" },
+      { t: "msg", x: "Hola Soporte de Deriv, quisiera solicitar que mi cuenta sea vinculada bajo este enlace de socio: https://t.deriv.link?t=BTTB98WZMRTQ\n\nCódigo de referido: A73EU5D43YNV\nMi correo registrado en Deriv es: [Tu Correo]" },
+      { t: "p", x: "Envía la captura de confirmación a @" + VIP_CONTACT + " para recibir acceso inmediato.", gap: true },
+    ],
+  },
+  {
+    q: "¿Puedo afiliarme si ya tengo cuenta en Vantage?",
+    a: [
+      { t: "p", x: "Sí, puedes transferir tu cuenta existente o solicitar la vinculación a nuestro código de socio." },
+      { t: "h", x: "Cómo solicitarlo" },
+      { t: "p", x: "Inicia sesión en Vantage, toca el icono de Perfil ➔ Transferir IB/CPA, cambia el tipo de cuenta a IB e ingresa el número: 24004368. Una vez completado, envía tu Correo / UID / Nombre a @" + VIP_CONTACT + "." },
+    ],
+  },
+  {
+    q: "¿Puedo afiliarme si ya tengo cuenta en AXI?",
+    a: [{ t: "p", x: "No, AXI no permite la reasignación de IB ni el cambio de socio en cuentas que ya existen en su sistema." }],
+  },
+];
+
+// Convierte "@usuario" en enlace a Telegram
+const withHandle = (txt) =>
+  String(txt).split(/(@[A-Za-z0-9_]+)/g).map((part, i) =>
+    /^@[A-Za-z0-9_]+$/.test(part)
+      ? <a key={i} href={`https://t.me/${part.slice(1)}`} target="_blank" rel="noopener noreferrer" className="font-bold underline" style={{ color: ACCENT }}>{part}</a>
+      : part
+  );
+
+function FaqMessage({ text }) {
+  const [copied, setCopied] = useState(false);
+  const copy = async () => {
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {}
+    setCopied(ok);
+    if (ok) setTimeout(() => setCopied(false), 2000);
+  };
+  return (
+    <div className="mt-3 rounded-xl p-3 text-left" style={{ background: "#0B0B0B", border: "1px solid #2A2A2A" }}>
+      <div className="whitespace-pre-wrap text-[13px] leading-relaxed" style={{ color: "#E8E3DB" }}>“{text}”</div>
+      <div className="mt-2 text-right">
+        <button type="button" onClick={copy} className="bx-ghost text-xs">{copied ? "✓ Copiado" : "Copiar mensaje"}</button>
+      </div>
+    </div>
+  );
+}
+
+function FaqBlock({ b }) {
+  if (b.t === "p") return <p className={`${b.gap ? "mt-3 " : "mt-2 "}text-sm leading-relaxed`} style={{ color: "#D6D1C9" }}>{withHandle(b.x)}</p>;
+  if (b.t === "h") return <div className="mt-4 text-[11px] font-black tracking-[0.2em] uppercase" style={{ color: ACCENT }}>{b.x}</div>;
+  if (b.t === "note") return <p className="mt-3 text-sm leading-relaxed rounded-lg px-3 py-2" style={{ background: "rgba(255,85,0,.12)", border: "1px solid rgba(255,85,0,.45)", color: "#FFFFFF" }}><b style={{ color: ACCENT }}>{b.x[0]}</b> {b.x[1]}</p>;
+  if (b.t === "msg") return <FaqMessage text={b.x} />;
+  return (
+    <ul className="mt-3 space-y-2 text-sm leading-relaxed text-left list-disc pl-5" style={{ color: "#D6D1C9" }}>
+      {b.x.map(([lead, rest], i) => (<li key={i}><b className="text-white">{lead}</b> {rest}</li>))}
+    </ul>
+  );
+}
+
+function FaqVip() {
+  const [openIdx, setOpenIdx] = useState(-1); // una pregunta abierta a la vez
+  return (
+    <div data-testid="faq-vip">
+      <div className="text-[11px] font-bold tracking-[0.3em] mb-3" style={{ color: "#3A362F" }}>PREGUNTAS FRECUENTES</div>
+      <div className="space-y-3">
+        {FAQ_ITEMS.map((it, i) => {
+          const isOpen = openIdx === i;
+          return (
+            <div key={i} className="overflow-hidden" style={{ background: "#161616", border: `1px solid ${isOpen ? "rgba(255,85,0,.55)" : "#2A2A2A"}`, borderRadius: 18, transition: "border-color .2s" }}>
+              <button
+                type="button"
+                onClick={() => setOpenIdx(isOpen ? -1 : i)}
+                aria-expanded={isOpen}
+                aria-controls={`faq-${i}`}
+                className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+              >
+                <span className="font-extrabold text-[15px] tracking-tight text-white">{it.q}</span>
+                <span aria-hidden="true" className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xl font-bold leading-none" style={{ background: isOpen ? ACCENT : "#262626", color: isOpen ? "#fff" : "#CFCAC1", transition: "transform .2s, background .2s", transform: isOpen ? "rotate(45deg)" : "none" }}>+</span>
+              </button>
+              {isOpen && (
+                <div id={`faq-${i}`} className="px-5 pb-5">
+                  <div className="pt-2" style={{ borderTop: "1px solid #2A2A2A" }}>
+                    {it.a.map((b, bi) => <FaqBlock key={bi} b={b} />)}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function VipPage() {
+  return (
+    <div className="max-w-6xl mx-auto" data-testid="vip-page">
+      <SectionTitle
+        kicker="PASO A PASO"
+        title="Acceso VIP gratis"
+        text="Si prefieres no pagar el pase, puedes acceder al canal VIP abriendo tu cuenta en uno de nuestros brokers recomendados con nuestro enlace y realizando tu depósito."
+      />
+      <div className="grid md:grid-cols-3 gap-4 text-center" data-testid="vip-steps">
+        <div className="bx-card p-5">
+          <StepDot n="1" />
+          <h3 className="mt-3 text-lg font-extrabold">Regístrate con nuestro enlace</h3>
+          <p className="mt-2 text-sm bx-muted">Crea tu cuenta en uno de los brokers afiliados oficiales:</p>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {SITE.affiliates.map((b) => <BrokerBtn key={b.broker} b={b} />)}
+          </div>
+        </div>
+        <div className="bx-card p-5">
+          <StepDot n="2" />
+          <h3 className="mt-3 text-lg font-extrabold">Realiza tu depósito</h3>
+          <p className="mt-2 text-sm bx-muted">El depósito mínimo requerido en tu cuenta de trading para acceder al VIP GRATIS es de</p>
+          <div className="mt-2 text-3xl font-black bx-accent">{SITE.vipMinDeposit}</div>
+        </div>
+        <div className="bx-card p-5">
+          <StepDot n="3" />
+          <h3 className="mt-3 text-lg font-extrabold">Verifica tu cuenta</h3>
+          <p className="mt-2 text-sm bx-muted">Una vez enviado tu depósito, contáctanos para verificar tu cuenta y activarte el acceso VIP de inmediato.</p>
+          <div className="mt-4">
+            <a href={waHref("Hola, ya me registré y realicé mi depósito. Quiero verificar mi cuenta para el acceso VIP gratis.")} target="_blank" rel="noopener noreferrer" className="bx-btn">Verificar por WhatsApp</a>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-10 max-w-3xl mx-auto">
+        <FaqVip />
+      </div>
+    </div>
+  );
+}
+
+function HomeSections({ setPage }) {
   const [cpStep, setCpStep] = useState(0);
   const anchors = [["servicios", "Servicios"], ["vip-gratis", "VIP gratis"], ["copytrading", "Copytrading"], ["curso", "Curso"], ["precios", "Precios"]];
+  const jump = (id) => (id === "vip-gratis" ? setPage("vip") : goTo(id));
 
   const cpSteps = [
     { title: "Registro en broker afiliado", text: "Abre tu cuenta mediante los enlaces oficiales de afiliado en una de las plataformas soportadas:", brokers: true },
@@ -1437,12 +1596,15 @@ function HomePage({ setPage }) {
         <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl mx-auto text-center">
           Canal VIP de señales en CFDs y Sintéticos, con un calendario de rendimiento público donde cada resultado cerrado queda contabilizado en pips o puntos.
         </p>
-        <div className="mt-6 bx-bt pt-4 flex flex-wrap justify-center gap-2">
-          {anchors.map(([id, l]) => (
-            <button key={id} onClick={() => goTo(id)} className="bx-pill">{l}</button>
-          ))}
-        </div>
       </section>
+
+
+      {/* ATAJOS */}
+      <div className="flex flex-wrap justify-center gap-2">
+        {anchors.map(([id, l]) => (
+          <button key={id} onClick={() => jump(id)} className="bx-pill">{l}</button>
+        ))}
+      </div>
 
       {/* SERVICIOS & OFERTA */}
       <section id="servicios" className="scroll-mt-24">
@@ -1468,45 +1630,9 @@ function HomePage({ setPage }) {
             <div className="text-xs bx-accent font-bold tracking-widest">04</div>
             <h3 className="mt-1 text-lg font-extrabold">Bitácora transparente</h3>
             <p className="mt-2 text-sm bx-muted">Cada resultado cerrado (TP, SL o BE) se contabiliza tal cual, sin esconder las pérdidas.</p>
-            <button onClick={() => setPage("journal")} className="mt-3 text-sm bx-accent font-bold">Ver resultados →</button>
+            <button onClick={() => { try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) {} }} className="mt-3 text-sm bx-accent font-bold">Ver resultados →</button>
           </div>
         </div>
-      </section>
-
-      {/* PASO A PASO VIP GRATIS */}
-      <section id="vip-gratis" className="scroll-mt-24">
-        <SectionTitle
-          kicker="PASO A PASO"
-          title="Acceso VIP gratis"
-          text="Si prefieres no pagar el pase, puedes acceder al canal VIP abriendo tu cuenta en uno de nuestros brokers recomendados con nuestro enlace y realizando tu depósito."
-        />
-        <div className="grid md:grid-cols-3 gap-4 text-center">
-          <div className="bx-card p-5">
-            <StepDot n="1" />
-            <h3 className="mt-3 text-lg font-extrabold">Regístrate con nuestro enlace</h3>
-            <p className="mt-2 text-sm bx-muted">Crea tu cuenta en uno de los brokers afiliados oficiales:</p>
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              {SITE.affiliates.map((b) => <BrokerBtn key={b.broker} b={b} />)}
-            </div>
-          </div>
-          <div className="bx-card p-5">
-            <StepDot n="2" />
-            <h3 className="mt-3 text-lg font-extrabold">Realiza tu depósito</h3>
-            <p className="mt-2 text-sm bx-muted">El depósito mínimo requerido en tu cuenta de trading para acceder al VIP GRATIS es de</p>
-            <div className="mt-2 text-3xl font-black bx-accent">{SITE.vipMinDeposit}</div>
-          </div>
-          <div className="bx-card p-5">
-            <StepDot n="3" />
-            <h3 className="mt-3 text-lg font-extrabold">Pide tu enlace</h3>
-            <p className="mt-2 text-sm bx-muted">Contacta con soporte para hacer tu afiliación y tener acceso inmediato.</p>
-            <div className="mt-4">
-              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-btn">Pedir mi enlace</a>
-            </div>
-          </div>
-        </div>
-        <p className="mt-5 text-sm md:text-base font-medium max-w-2xl text-center mx-auto" style={{ color: "#3A362F" }}>
-          ¿Ya tienes una cuenta creada en DERIV, VANTAGE, WELTRADE o AXI? Puedes vincular tu cuenta existente con nosotros para activar tu acceso. Escríbenos por WhatsApp para guiarte en el proceso.
-        </p>
       </section>
 
       {/* COPYTRADING */}
@@ -1602,7 +1728,7 @@ function HomePage({ setPage }) {
           </p>
           <div className="mt-4 flex flex-wrap justify-center gap-2">
             <button onClick={() => goTo("precios")} className="bx-btn">Ver precios del pase</button>
-            <button onClick={() => goTo("vip-gratis")} className="bx-ghost">Acceso VIP gratis</button>
+            <button onClick={() => setPage("vip")} className="bx-ghost">Acceso VIP gratis</button>
           </div>
         </div>
       </section>
@@ -2132,11 +2258,29 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
 }
 
 /* ============================== APP ============================== */
+const PAGE_PATHS = { home: "/", vip: "/vip-gratis", journal: "/bitacora", library: "/recursos" };
+const pageFromPath = () => {
+  try {
+    const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
+    const hit = Object.entries(PAGE_PATHS).find(([, v]) => v === p);
+    return hit ? hit[0] : "home";
+  } catch (e) { return "journal"; }
+};
 export default function App() {
   const twReady = useTailwind();
   const [trades, setTrades] = useState([]);
   const [resources, setResources] = useState([]);
-  const [page, setPage] = useState("home"); // home | journal | library
+  // Rutas: "/" (métricas, calendario, curva y servicios), "/vip-gratis", "/bitacora", "/recursos"
+  const [page, setPageState] = useState(pageFromPath); // home | vip | journal | library
+  const setPage = (k) => {
+    setPageState(k);
+    try { if (window.location.pathname !== PAGE_PATHS[k]) window.history.pushState({ page: k }, "", PAGE_PATHS[k]); } catch (e) {}
+  };
+  useEffect(() => {
+    const onPop = () => setPageState(pageFromPath());
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
   const [isAdmin, setIsAdmin] = useState(() => {
     try { return !!readAuth(); } catch (e) { return false; }
   });
@@ -2475,7 +2619,7 @@ export default function App() {
           </div>
 
           <nav className="bx-nav order-last w-full md:order-none md:w-auto">
-            {[["home", "Inicio"], ["journal", "Bitácora"], ["library", "Recursos & PDF"]].map(([k, l]) => (
+            {[["home", "Inicio"], ["vip", "VIP Gratis"], ["journal", "Bitácora"], ["library", "Recursos & PDF"]].map(([k, l]) => (
               <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`}>{l}</button>
             ))}
           </nav>
@@ -2505,7 +2649,7 @@ export default function App() {
       )}
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {page === "home" && <HomePage setPage={setPage} />}
+        {page === "vip" && <VipPage />}
         {page === "library" && <LibraryPage isAdmin={isAdmin} resources={resources} setResources={setResources} />}
         {page === "journal" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
@@ -2736,6 +2880,7 @@ export default function App() {
         )}
 
         </>)}
+        {page === "home" && <HomeSections setPage={setPage} />}
 
         {/* ------------------------- FOOTER ------------------------- */}
         <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-2">
