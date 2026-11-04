@@ -503,7 +503,7 @@
       "e2": {
         "status": "TP",
         "exit": "OPEN",
-        "pips": "",
+        "pips": 350,
         "tpIdx": 3
       }
     },
@@ -517,8 +517,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 50,
-    "r": 0.42
+    "pips": 400,
+    "r": 3.92
   },
   {
     "id": "ip251gtymw19x3em",
