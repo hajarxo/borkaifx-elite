@@ -539,10 +539,10 @@
     "pipSize": 0.1,
     "legs": {
       "e1": {
-        "status": "MANUAL",
-        "exit": "",
+        "status": "TP",
+        "exit": 3934,
         "pips": 100,
-        "tpIdx": null
+        "tpIdx": 0
       },
       "e2": {
         "status": "TP",
