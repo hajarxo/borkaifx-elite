@@ -914,7 +914,7 @@
     "discarded": false,
     "raw": "Index 📈\nPair: NAS100 📊\nSide: Long / Buy\nEntry: 28211.70\nTP: Open\nSL: 28185.46\nNote: past profits do not predict future profits\nRisk 0.5-1-2%\n\nTP1 28238.04 263.4pips ✅\nTP2 28305.82 941.2pips ✅\n\nUse Proper Risk Management",
     "notes": "",
-    "mgmt": "70% del profit tomado en TP1 |",
+    "mgmt": "70% del profit tomado en TP1",
     "tags": [
       "VIP Signal"
     ],
