@@ -895,10 +895,10 @@
     "pipSize": 1,
     "legs": {
       "e1": {
-        "status": "TP",
-        "exit": 28238.04,
-        "pips": 26.3,
-        "tpIdx": 0,
+        "status": "BE",
+        "exit": 28211.7,
+        "pips": 0,
+        "tpIdx": null,
         "partials": 1,
         "partialPips": [
           26.3
@@ -918,8 +918,8 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "TP",
-    "pips": 52.6,
-    "r": 2
+    "status": "BE",
+    "pips": 26.3,
+    "r": 1
   }
 ]
