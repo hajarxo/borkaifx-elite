@@ -11,7 +11,7 @@ import {
 } from "recharts";
 
 /* ============================================================
-   BORKAIFX ELITE — Bitácora & Portafolio de Trading
+   BORKAIFX ELITE — Track Record & Portafolio de Trading
    Tema "Warm Modern" (crema + antracita + naranja)
    Componente único. Requiere: react, recharts (Tailwind se auto-carga)
    ============================================================ */
@@ -551,7 +551,6 @@ const GH = {
   repo: "hajarxo/borkaifx-elite",
   branch: "main",
   tradesPath: "data/trades.json",
-  resourcesPath: "data/resources.json",
   openPath: "data/open.enc.json", // señales abiertas, cifradas (solo el admin puede leerlas)
 };
 const cloudOn = () => true;
@@ -656,7 +655,7 @@ async function cloudPull(admin) {
 
 // Un commit por archivo modificado (agregar/modificar/descartar/borrar). Reintenta si otro dispositivo escribió antes.
 async function cloudCommit(ups, dels) {
-  const msg = `Bitácora: ${ups.length ? `${ups.length} guardada(s)` : ""}${ups.length && dels.length ? ", " : ""}${dels.length ? `${dels.length} eliminada(s)` : ""}`;
+  const msg = `Track Record: ${ups.length ? `${ups.length} guardada(s)` : ""}${ups.length && dels.length ? ", " : ""}${dels.length ? `${dels.length} eliminada(s)` : ""}`;
   for (let attempt = 0; attempt < 4; attempt++) {
     const pub = await ghReadJson(GH.tradesPath, true);
     const opn = await readOpen();
@@ -673,17 +672,6 @@ async function cloudCommit(ups, dels) {
       if (JSON.stringify(ol) !== before[1]) await ghWriteJson(GH.openPath, await encryptOpen(ol, authToken()), opn.sha, `${msg} (abiertas, cifrado)`);
       return true;
     } catch (e) { if ((e.code === 409 || e.code === 422) && attempt < 3) continue; throw e; }
-  }
-  return null;
-}
-
-// Recursos & PDF (data/resources.json): lectura pública, escritura solo admin
-const cloudPullResources = async (admin) => (await ghReadJson(GH.resourcesPath, admin)).data;
-async function cloudSaveResources(list) {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    const { sha } = await ghReadJson(GH.resourcesPath, true);
-    try { return await ghWriteJson(GH.resourcesPath, list, sha, "Recursos actualizados"); }
-    catch (e) { if ((e.code === 409 || e.code === 422) && attempt < 2) continue; throw e; }
   }
   return null;
 }
@@ -1271,7 +1259,7 @@ function LoginModal({ onClose, onOk }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" onClick={onClose}>
       <form onSubmit={submit} onClick={(e) => e.stopPropagation()} className="bx-card w-full max-w-sm p-6">
         <h3 className="text-lg font-extrabold bx-accent tracking-wide">ACCESO ADMIN</h3>
-        <p className="text-xs bx-muted mt-1">Pega tu token de GitHub para gestionar la bitácora. Se guarda solo mientras la pestaña esté abierta.</p>
+        <p className="text-xs bx-muted mt-1">Pega tu token de GitHub para gestionar el Track Record. Se guarda solo mientras la pestaña esté abierta.</p>
         <input ref={ref} type="password" className="bx-input mt-4" placeholder="Token de GitHub (github_pat_…)" value={key} onChange={(e) => { setKey(e.target.value); setErr(false); }} />
         {err && <div className="text-sm text-rose-400 mt-2">Token inválido o sin permiso de escritura en el repositorio.</div>}
         <div className="mt-4 flex justify-end gap-2">
@@ -1762,41 +1750,31 @@ function VipPage() {
   );
 }
 
-function HomeSections({ setPage }) {
-  const [cpStep, setCpStep] = useState(0);
-  const anchors = [["servicios", "Servicios"], ["vip-gratis", "VIP gratis"], ["copytrading", "Copytrading"], ["curso", "Curso"], ["precios", "Precios"]];
-  const jump = (id) => (id === "vip-gratis" ? setPage("vip") : goTo(id));
+// Bloque de oferta exclusiva (VIP gratis): se usa en Señales y en Educación
+function VipOfferCta({ setPage }) {
+  return (
+    <div
+      className="mt-8 rounded-2xl p-6 md:p-8 text-center"
+      style={{ background: "radial-gradient(600px circle at 50% 0%, rgba(255,85,0,.30), transparent 65%), #161616", border: `2px solid ${ACCENT}`, boxShadow: "0 0 40px rgba(255,85,0,.25)" }}
+    >
+      <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">OFERTA EXCLUSIVA</div>
+      <h3 className="mt-2 text-xl md:text-3xl font-black leading-tight text-white">¿Quieres ser parte del VIP sin pagar mensualidad?</h3>
+      <p className="mt-2 text-sm bx-muted max-w-xl mx-auto">Accede gratis registrándote en uno de nuestros brokers afiliados.</p>
+      <button
+        type="button"
+        onClick={() => setPage("vip")}
+        className="bx-btn mt-5"
+        style={{ padding: "1rem 2.25rem", fontSize: "1.05rem", letterSpacing: ".04em" }}
+      >
+        🔥 Oferta exclusiva · Clic aquí →
+      </button>
+    </div>
+  );
+}
 
-  const cpSteps = [
-    { title: "Registro en broker afiliado", text: "Abre tu cuenta mediante los enlaces oficiales de afiliado en una de las plataformas soportadas:", brokers: true },
-    { title: "Depósito de capital de trabajo", text: `Deposita un mínimo de ${SITE.copyMinDeposit} directamente en tu cuenta de trading.`, note: "El dinero permanece a tu nombre, con control total para retirar tu capital y tus ganancias en cualquier momento." },
-    { title: "Verificación y confirmación de cuenta", text: "Envía tu número de ID/CR de trading únicamente por el WhatsApp oficial para validar la vinculación a la red." },
-    { title: "Conexión MT5 y validación", text: "Te enviamos las instrucciones para vincular tu cuenta MT5 a la cuenta maestra y replicar las operaciones en tiempo real." },
-    { title: "Monitoreo y disfrute de beneficios 24/5", text: "Sigue tus operaciones en vivo desde la aplicación de MT5, con 0% de comisión sobre las ganancias." },
-  ];
-  const cs = cpSteps[cpStep];
-
+function ServicesPricing({ setPage }) {
   return (
     <div className="space-y-16">
-      {/* HERO INICIO */}
-      <section className="bx-card p-6 md:p-10 text-center" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}>
-        <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">ECOSISTEMA {BRAND}</div>
-        <h1 className="mt-2 text-3xl md:text-5xl font-black tracking-tight leading-tight">
-          <span style={{ color: "#FFFFFF" }}>Señales claras.</span> <span style={{ color: ACCENT }}>Resultados</span> <span style={{ color: "#FFFFFF" }}>a la vista.</span>
-        </h1>
-        <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl mx-auto text-center">
-          Canal VIP de señales en CFDs y Sintéticos, con un calendario de rendimiento público donde cada resultado cerrado queda contabilizado en pips o puntos.
-        </p>
-      </section>
-
-
-      {/* ATAJOS */}
-      <div className="flex flex-wrap justify-center gap-2">
-        {anchors.map(([id, l]) => (
-          <button key={id} onClick={() => jump(id)} className="bx-pill">{l}</button>
-        ))}
-      </div>
-
       {/* SERVICIOS & OFERTA */}
       <section id="servicios" className="scroll-mt-24">
         <SectionTitle kicker="SERVICIOS & OFERTA" title="Qué ofrece BORKAIFX ELITE" text="Una propuesta enfocada en señales con niveles definidos y resultados que puedes comprobar." />
@@ -1815,17 +1793,60 @@ function HomeSections({ setPage }) {
             <div className="text-xs bx-accent font-bold tracking-widest">03</div>
             <h3 className="mt-1 text-lg font-extrabold">Copytrading en MT5</h3>
             <p className="mt-2 text-sm bx-muted">Operaciones replicadas en automático en tu cuenta, sin mensualidades ni comisión sobre ganancias.</p>
-            <button onClick={() => goTo("copytrading")} className="mt-3 text-sm bx-accent font-bold">Ver cómo funciona →</button>
+            <button onClick={() => setPage("copytrading")} className="mt-3 text-sm bx-accent font-bold">Ver cómo funciona →</button>
           </div>
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">04</div>
-            <h3 className="mt-1 text-lg font-extrabold">Bitácora transparente</h3>
+            <h3 className="mt-1 text-lg font-extrabold">Track Record transparente</h3>
             <p className="mt-2 text-sm bx-muted">Cada resultado cerrado (TP, SL o BE) se contabiliza tal cual, sin esconder las pérdidas.</p>
-            <button onClick={() => { try { window.scrollTo({ top: 0, behavior: "smooth" }); } catch (e) {} }} className="mt-3 text-sm bx-accent font-bold">Ver resultados →</button>
+            <button onClick={() => setPage("home")} className="mt-3 text-sm bx-accent font-bold">Ver resultados →</button>
           </div>
         </div>
       </section>
 
+      {/* TABLA DE PRECIOS */}
+      <section id="precios" className="scroll-mt-24">
+        <SectionTitle kicker="PASE VIP" title="Tabla de precios" text="Compra directa del pase VIP, para quienes prefieren no afiliarse a un broker." />
+        <div className="grid md:grid-cols-3 gap-4 text-center">
+          {SITE.plans.map((p) => (
+            <div key={p.name} className="bx-card p-5 flex flex-col">
+              <h3 className="text-lg font-extrabold">{p.name}</h3>
+              <div className="mt-3">
+                <span className="text-4xl font-black">{fmtMoney(p.amount)}</span> <span className="text-sm bx-muted">USD</span>
+              </div>
+              <div className="text-xs bx-muted mt-1">{p.label}</div>
+              {p.months > 1 && <div className="mt-2 text-xs font-bold bx-accent">Equivale a {fmtMoney(p.amount / p.months)} USD al mes</div>}
+              <ul className="mt-4 space-y-2 text-sm bx-muted flex-1 text-left mx-auto w-fit">
+                {SITE.planFeatures.map((f, i) => (
+                  <li key={i} className="flex gap-2"><span className="bx-accent">✓</span>{f}</li>
+                ))}
+              </ul>
+              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="mt-5 text-center bx-btn">
+                Comprar por Telegram
+              </a>
+            </div>
+          ))}
+        </div>
+        <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-2xl">El pago y la activación se coordinan por Telegram.</p>
+
+        <VipOfferCta setPage={setPage} />
+      </section>
+    </div>
+  );
+}
+
+function CopytradingPage({ setPage }) {
+  const [cpStep, setCpStep] = useState(0);
+  const cpSteps = [
+    { title: "Registro en broker afiliado", text: "Abre tu cuenta mediante los enlaces oficiales de afiliado en una de las plataformas soportadas:", brokers: true },
+    { title: "Depósito de capital de trabajo", text: `Deposita un mínimo de ${SITE.copyMinDeposit} directamente en tu cuenta de trading.`, note: "El dinero permanece a tu nombre, con control total para retirar tu capital y tus ganancias en cualquier momento." },
+    { title: "Verificación y confirmación de cuenta", text: "Envía tu número de ID/CR de trading únicamente por el WhatsApp oficial para validar la vinculación a la red." },
+    { title: "Conexión MT5 y validación", text: "Te enviamos las instrucciones para vincular tu cuenta MT5 a la cuenta maestra y replicar las operaciones en tiempo real." },
+    { title: "Monitoreo y disfrute de beneficios 24/5", text: "Sigue tus operaciones en vivo desde la aplicación de MT5, con 0% de comisión sobre las ganancias." },
+  ];
+  const cs = cpSteps[cpStep];
+  return (
+    <div className="space-y-16">
       {/* COPYTRADING */}
       <section id="copytrading" className="scroll-mt-24">
         <SectionTitle
@@ -1891,11 +1912,15 @@ function HomeSections({ setPage }) {
             ACTIVAR MI CUENTA AHORA
           </a>
         </div>
-        <p className="mt-4 text-xs bx-ink2 max-w-3xl text-center mx-auto">
-          Aviso de riesgo: el copytrading no garantiza ganancias. Operar con CFDs e instrumentos sintéticos conlleva riesgo de pérdida, incluso de todo el capital depositado. Los resultados pasados no garantizan resultados futuros. Los enlaces de registro son de afiliado.
-        </p>
       </section>
 
+    </div>
+  );
+}
+
+function EducationPage({ setPage }) {
+  return (
+    <div className="space-y-16">
       {/* CURSO & ENTRENAMIENTO */}
       <section id="curso" className="scroll-mt-24">
         <SectionTitle
@@ -1912,125 +1937,9 @@ function HomeSections({ setPage }) {
             </div>
           ))}
         </div>
-        <div className="mt-5 bx-card p-5 text-center max-w-3xl mx-auto" style={{ border: `2px solid ${ACCENT}` }}>
-          <div className="text-xs font-bold tracking-widest bx-accent">ACCESO EXCLUSIVO PARA MIEMBROS VIP</div>
-          <p className="mt-2 text-sm bx-muted max-w-2xl mx-auto text-center">
-            Al curso únicamente se obtiene acceso mediante la membresía VIP: ya sea comprando el pase de forma directa o accediendo gratis registrándote y depositando en los brokers afiliados.
-          </p>
-          <div className="mt-4 flex flex-wrap justify-center gap-2">
-            <button onClick={() => goTo("precios")} className="bx-btn">Ver precios del pase</button>
-            <button onClick={() => setPage("vip")} className="bx-ghost">Acceso VIP gratis</button>
-          </div>
-        </div>
+        <VipOfferCta setPage={setPage} />
       </section>
 
-      {/* TABLA DE PRECIOS */}
-      <section id="precios" className="scroll-mt-24">
-        <SectionTitle kicker="PASE VIP" title="Tabla de precios" text="Compra directa del pase VIP, para quienes prefieren no afiliarse a un broker." />
-        <div className="grid md:grid-cols-3 gap-4 text-center">
-          {SITE.plans.map((p) => (
-            <div key={p.name} className="bx-card p-5 flex flex-col">
-              <h3 className="text-lg font-extrabold">{p.name}</h3>
-              <div className="mt-3">
-                <span className="text-4xl font-black">{fmtMoney(p.amount)}</span> <span className="text-sm bx-muted">USD</span>
-              </div>
-              <div className="text-xs bx-muted mt-1">{p.label}</div>
-              {p.months > 1 && <div className="mt-2 text-xs font-bold bx-accent">Equivale a {fmtMoney(p.amount / p.months)} USD al mes</div>}
-              <ul className="mt-4 space-y-2 text-sm bx-muted flex-1 text-left mx-auto w-fit">
-                {SITE.planFeatures.map((f, i) => (
-                  <li key={i} className="flex gap-2"><span className="bx-accent">✓</span>{f}</li>
-                ))}
-              </ul>
-              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="mt-5 text-center bx-btn">
-                Comprar por Telegram
-              </a>
-            </div>
-          ))}
-        </div>
-        <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-2xl">El pago y la activación se coordinan por Telegram. Operar conlleva riesgo de pérdida de capital.</p>
-      </section>
-    </div>
-  );
-}
-
-/* ----------------------------- Biblioteca & Recursos ----------------------------- */
-const RES_TYPES = ["PDF", "Ebook", "Guía de riesgo", "Plantilla"];
-
-function LibraryPage({ isAdmin, resources, setResources }) {
-  const [typeF, setTypeF] = useState("Todos");
-  const [form, setForm] = useState({ title: "", type: "PDF", url: "", desc: "" });
-  const [err, setErr] = useState("");
-
-  const list = resources.filter((r) => typeF === "Todos" || r.type === typeF);
-
-  const add = (e) => {
-    e.preventDefault();
-    if (!form.title.trim()) return setErr("El título es obligatorio.");
-    if (!/^https?:\/\//i.test(form.url.trim())) return setErr("El enlace debe empezar por http:// o https://");
-    setResources((p) => [{ id: uid(), title: form.title.trim(), type: form.type, url: form.url.trim(), desc: form.desc.trim() }, ...p]);
-    setForm({ title: "", type: form.type, url: "", desc: "" });
-    setErr("");
-  };
-
-  return (
-    <div className="space-y-6">
-      <section className="bx-card p-6 md:p-8 text-center" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}>
-        <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">RECURSOS & PDF</div>
-        <h1 className="mt-2 text-3xl md:text-4xl font-black tracking-tight"><span style={{ color: "#FFFFFF" }}>Material educativo para</span> <span style={{ color: ACCENT }}>descargar</span></h1>
-        <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl mx-auto text-center">PDFs, ebooks de trading, guías de gestión de riesgo y plantillas para tu operativa.</p>
-        <div className="mt-5 flex flex-wrap justify-center gap-2">
-          {["Todos", ...RES_TYPES].map((t) => (
-            <button key={t} onClick={() => setTypeF(t)} className={`bx-pill ${typeF === t ? "on" : ""}`}>{t}</button>
-          ))}
-        </div>
-      </section>
-
-      {isAdmin && (
-        <form onSubmit={add} className="bx-card p-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="col-span-2 md:col-span-4 text-xs uppercase tracking-[0.18em] bx-accent font-bold">Agregar recurso</div>
-          <Field label="Título" className="col-span-2">
-            <input className="bx-input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="Guía de gestión de riesgo" />
-          </Field>
-          <Field label="Tipo">
-            <select className="bx-input" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
-              {RES_TYPES.map((t) => <option key={t}>{t}</option>)}
-            </select>
-          </Field>
-          <Field label="Enlace de descarga">
-            <input className="bx-input" value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://drive.google.com/…" />
-          </Field>
-          <Field label="Descripción (opcional)" className="col-span-2 md:col-span-4">
-            <input className="bx-input" value={form.desc} onChange={(e) => setForm({ ...form, desc: e.target.value })} />
-          </Field>
-          <div className="col-span-2 md:col-span-4 flex items-center justify-between gap-3 flex-wrap">
-            <span className="text-xs bx-muted">Sube el archivo a Google Drive, Dropbox o similar (con acceso público) y pega aquí el enlace.</span>
-            <button type="submit" className="bx-btn">+ Agregar</button>
-          </div>
-          {err && <div className="col-span-2 md:col-span-4 text-sm text-rose-400">{err}</div>}
-        </form>
-      )}
-
-      {list.length === 0 ? (
-        <div className="bx-card p-8 text-center bx-muted">
-          {resources.length === 0 ? "Pronto publicaremos material descargable aquí." : "No hay recursos de este tipo."}
-        </div>
-      ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {list.map((r) => (
-            <div key={r.id} className="bx-card p-5 flex flex-col">
-              <span className="self-start text-[11px] font-bold px-2 py-0.5 rounded-md" style={{ background: "rgba(255,85,0,.15)", color: "#ffb089", border: "1px solid rgba(255,85,0,.4)" }}>{r.type}</span>
-              <h3 className="mt-3 font-extrabold">{r.title}</h3>
-              {r.desc && <p className="mt-1 text-sm bx-muted flex-1">{r.desc}</p>}
-              <div className="mt-4 flex items-center gap-2">
-                <a href={r.url} target="_blank" rel="noopener noreferrer" className="bx-btn">Descargar ↓</a>
-                {isAdmin && (
-                  <button onClick={() => { if (window.confirm(`¿Eliminar "${r.title}"?`)) setResources((p) => p.filter((x) => x.id !== r.id)); }} className="bx-ghost danger">🗑</button>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
@@ -2063,7 +1972,9 @@ function dayStats(list) {
 
 const pnlColor = (v) => (v > 0 ? "text-emerald-400" : v < 0 ? "text-rose-400" : "text-white");
 
-function CalendarView({ trades, isAdmin, unit, onOpen }) {
+function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
+  // Las órdenes pendientes (aún no activadas) no cuentan: solo se muestran entradas ejecutadas
+  const trades = useMemo(() => allTrades.filter((t) => t.status !== "Pendiente"), [allTrades]);
   const months = useMemo(() => Array.from(new Set(trades.map((t) => (t.date || "").slice(0, 7)).filter(Boolean))).sort().reverse(), [trades]);
   const [ym, setYm] = useState(null);
   const [selDay, setSelDay] = useState(null);
@@ -2341,7 +2252,7 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Stat label="Win Rate" value={`${m.winRate.toFixed(0)}%`} sub={`${m.wins} Wins / ${m.executed} Trades · BE no cuenta`} tone={m.winRate >= 50 && dec ? "pos" : dec ? "neg" : undefined} />
           <Stat label="R:R promedio" value={`${m.avgR >= 0 ? "+" : ""}${m.avgR.toFixed(2)}R`} sub={`Acumulado: ${m.totalR >= 0 ? "+" : ""}${m.totalR.toFixed(2)}R`} tone={m.avgR > 0 ? "pos" : m.avgR < 0 ? "neg" : undefined} />
-          <Stat label="Total trades" value={m.total} sub={isAdmin ? `${m.executed} cerrados · ${m.open} abiertos · ${m.discarded} descartados` : "Cerradas y descartadas del mes"} />
+          <Stat label="Total trades" value={m.total} sub={isAdmin ? `${m.executed} cerrados · ${m.open} activos · ${m.discarded} descartados` : "Cerradas y descartadas del mes"} />
         </div>
 
         <div className="bx-card p-4 md:p-5 mt-4" data-testid="month-curve">
@@ -2457,20 +2368,19 @@ function CalendarView({ trades, isAdmin, unit, onOpen }) {
 }
 
 /* ============================== APP ============================== */
-const PAGE_PATHS = { home: "/", vip: "/vip-gratis", journal: "/bitacora", library: "/recursos" };
+const PAGE_PATHS = { home: "/", signals: "/senales", vip: "/vip-gratis", copytrading: "/copytrading", education: "/educacion" };
 const pageFromPath = () => {
   try {
     const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
     const hit = Object.entries(PAGE_PATHS).find(([, v]) => v === p);
     return hit ? hit[0] : "home";
-  } catch (e) { return "journal"; }
+  } catch (e) { return "home"; }
 };
 export default function App() {
   const twReady = useTailwind();
   const [trades, setTrades] = useState([]);
-  const [resources, setResources] = useState([]);
-  // Rutas: "/" (métricas, calendario, curva y servicios), "/vip-gratis", "/bitacora", "/recursos"
-  const [page, setPageState] = useState(pageFromPath); // home | vip | journal | library
+  // Rutas: "/" (Track Record), "/senales", "/vip-gratis" (sin pestaña: se entra desde Señales), "/copytrading", "/educacion"
+  const [page, setPageState] = useState(pageFromPath); // home | signals | vip | copytrading | education
   const setPage = (k) => {
     setPageState(k);
     try { if (window.location.pathname !== PAGE_PATHS[k]) window.history.pushState({ page: k }, "", PAGE_PATHS[k]); } catch (e) {}
@@ -2504,7 +2414,7 @@ export default function App() {
   const [signalText, setSignalText] = useState("");
 
   useEffect(() => {
-    document.title = "BORKAIFX ELITE · Bitácora & Portafolio";
+    document.title = "BORKAIFX ELITE · Track Record & Portafolio";
     document.body.style.margin = "0";
     let link = document.querySelector("link[rel='icon']");
     if (!link) {
@@ -2617,37 +2527,6 @@ export default function App() {
   }, [isAdmin, cloud]);
   // subida automática de cada cambio del admin
   useEffect(() => { if (cloud && isAdmin) pushDiff(); /* eslint-disable-next-line */ }, [trades, isAdmin]);
-  // Recursos & PDF (data/resources.json): se cargan al abrir; el admin los guarda al cambiarlos
-  const resSynced = useRef(null);
-  useEffect(() => {
-    let alive = true;
-    const load = async () => {
-      try {
-        const list = await cloudPullResources(adminRef.current);
-        if (!alive || !Array.isArray(list)) return;
-        const j = JSON.stringify(list);
-        if (resSynced.current !== null && JSON.stringify(resourcesRef.current) !== resSynced.current) return; // cambios sin subir
-        resSynced.current = j;
-        if (j !== JSON.stringify(resourcesRef.current)) setResources(list);
-      } catch (e) {}
-    };
-    load();
-    const vis = () => { if (document.visibilityState === "visible") load(); };
-    document.addEventListener("visibilitychange", vis);
-    return () => { alive = false; document.removeEventListener("visibilitychange", vis); };
-    // eslint-disable-next-line
-  }, [isAdmin]);
-  const resourcesRef = useRef(resources);
-  resourcesRef.current = resources;
-  useEffect(() => {
-    if (!isAdmin || resSynced.current === null) return;
-    const j = JSON.stringify(resources);
-    if (j === resSynced.current) return;
-    resSynced.current = j;
-    cloudSaveResources(resources).catch(onCloudError);
-    // eslint-disable-next-line
-  }, [resources, isAdmin]);
-
   const cloudLabel = { loading: "☁ Conectando…", ok: "☁ GitHub sincronizado", syncing: "☁ Guardando en GitHub…", error: "⚠ Sin conexión con GitHub" }[cloudState];
 
   // alcance según pestañas
@@ -2770,7 +2649,7 @@ export default function App() {
     const blob = new Blob([JSON.stringify(trades, null, 2)], { type: "application/json" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = `borkaifx-elite-bitacora-${localDate()}.json`;
+    a.download = `borkaifx-elite-track-record-${localDate()}.json`;
     a.click();
     URL.revokeObjectURL(a.href);
   };
@@ -2783,7 +2662,7 @@ export default function App() {
       try {
         const data = JSON.parse(reader.result);
         if (!Array.isArray(data)) throw new Error();
-        if (window.confirm(`¿Reemplazar la bitácora actual por ${data.length} operaciones importadas?`)) setTrades(data.map(normalizeAny));
+        if (window.confirm(`¿Reemplazar el Track Record actual por ${data.length} operaciones importadas?`)) setTrades(data.map(normalizeAny));
       } catch (err) {
         window.alert("Archivo inválido.");
       }
@@ -2816,20 +2695,17 @@ export default function App() {
             <img src={LOGO} alt="BORKAIFX ELITE" className="w-11 h-11 object-contain" />
             <div>
               <div className="font-black tracking-[0.2em] leading-none text-lg">{BRAND}</div>
-              <div className="text-[10px] tracking-[0.28em] bx-ink2 mt-1">BITÁCORA & PORTAFOLIO · CANAL VIP</div>
+              <div className="text-[10px] tracking-[0.28em] bx-ink2 mt-1">TRACK RECORD & PORTAFOLIO · CANAL VIP</div>
             </div>
           </div>
 
           <nav className="bx-nav order-last w-full md:order-none md:w-auto">
-            {[["home", "Inicio"], ["vip", "VIP Gratis"], ["journal", "Bitácora"], ["library", "Recursos & PDF"]].map(([k, l]) => (
-              <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`}>{l}</button>
+            {[["home", "Inicio"], ["signals", "Señales"], ["copytrading", "Copytrading"], ["education", "Educación"]].map(([k, l]) => (
+              <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k || (k === "signals" && page === "vip") ? "on" : ""}`}>{l}</button>
             ))}
           </nav>
 
           <div className="flex items-center gap-2">
-            <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-btn">
-              ✈ Unirme al Telegram
-            </a>
             {isAdmin ? (
               <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>
             ) : (
@@ -2852,14 +2728,15 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {page === "vip" && <VipPage />}
-        {page === "library" && <LibraryPage isAdmin={isAdmin} resources={resources} setResources={setResources} />}
-        {page === "journal" && (<>
+        {page === "copytrading" && <CopytradingPage setPage={setPage} />}
+        {page === "education" && <EducationPage setPage={setPage} />}
+        {page === "home" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section
           className="bx-card p-5 md:p-8 text-center"
           style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}
         >
-          <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">BITÁCORA PÚBLICA · CANAL VIP</div>
+          <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">TRACK RECORD PÚBLICO · CANAL VIP</div>
           <h1 className="mt-2 text-3xl md:text-5xl font-black tracking-tight leading-tight">
             <span style={{ color: "#FFFFFF" }}>Resultados</span> <span style={{ color: ACCENT }}>reales</span><span style={{ color: "#FFFFFF" }}>, sin filtros.</span>
           </h1>
@@ -3076,23 +2953,16 @@ export default function App() {
               onClick={() => { if (window.confirm(cloud ? "¿Eliminar TODAS las operaciones? También se borrarán de la nube y de todos tus dispositivos." : "¿Eliminar TODAS las operaciones (incluidas las de ejemplo)?")) setTrades([]); }}
               className="bx-ghost danger"
             >
-              Vaciar bitácora
+              Vaciar Track Record
             </button>
           </section>
         )}
 
         </>)}
-        {page === "home" && <HomeSections setPage={setPage} />}
+        {page === "signals" && <ServicesPricing setPage={setPage} />}
 
         {/* ------------------------- FOOTER ------------------------- */}
         <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-2">
-          <img src={LOGO} alt="" className="h-12 mx-auto" />
-          <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-accent font-bold block">
-            t.me/borkaifxoficial
-          </a>
-          <p className="max-w-3xl mx-auto text-center leading-relaxed">
-            Aviso de riesgo: operar CFDs e instrumentos sintéticos conlleva un alto riesgo de pérdida de capital. Los resultados pasados no garantizan resultados futuros. Este contenido es informativo y no constituye asesoría financiera.
-          </p>
           <div className="tracking-[0.25em]">© {new Date().getFullYear()} {BRAND}</div>
         </footer>
       </main>
