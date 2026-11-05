@@ -874,5 +874,52 @@
     "status": "BE",
     "pips": 9.3,
     "r": 0.54
+  },
+  {
+    "id": "lbqzkbdxmw3l429q",
+    "date": "2026-11-05",
+    "category": "CFD",
+    "sub": "Índices",
+    "broker": "",
+    "asset": "NAS100",
+    "direction": "BUY",
+    "entry1": 28211.7,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 28185.46,
+    "tps": [
+      28238.04,
+      28305.82,
+      "OPEN"
+    ],
+    "pipSize": 1,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 28238.04,
+        "pips": 26.3,
+        "tpIdx": 0,
+        "partials": 1,
+        "partialPips": [
+          26.3
+        ]
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "Index 📈\nPair: NAS100 📊\nSide: Long / Buy\nEntry: 28211.70\nTP: Open\nSL: 28185.46\nNote: past profits do not predict future profits\nRisk 0.5-1-2%\n\nTP1 28238.04 263.4pips ✅\nTP2 28305.82 941.2pips ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "mgmt": "70% del profit tomado en TP1 |",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 52.6,
+    "r": 2
   }
 ]
