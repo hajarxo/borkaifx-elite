@@ -1972,6 +1972,57 @@ function dayStats(list) {
 
 const pnlColor = (v) => (v > 0 ? "text-emerald-400" : v < 0 ? "text-rose-400" : "text-white");
 
+// Tarjeta de una operación dentro del panel del día: activo, dirección, señal exacta, resultado y notas
+function DayTradeCard({ t, onOpen }) {
+  const disc = !!t.discarded || t.status === "Descartada";
+  const has = !disc && legResults(t).length > 0;
+  const keys = legKeys(t);
+  const note = (t.notes || "").trim();
+  const mg = (t.mgmt || "").trim();
+  const click = onOpen ? { role: "button", tabIndex: 0, onClick: () => onOpen(t.id), style: { cursor: "pointer" } } : {};
+  return (
+    <div {...click} data-testid="day-trade" className="bx-row w-full text-left rounded-xl p-4" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A", ...(click.style || {}) }}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="font-extrabold text-base text-white">{t.asset}</span>
+          <DirBadge dir={t.direction} />
+          <StatusBadge status={t.status} />
+        </div>
+        <div className={`text-lg font-black ${has ? pnlColor(t.pips) : "bx-muted"}`}>{has ? `${fmtP(t.pips)} ${unitWord(t)}` : "—"}</div>
+      </div>
+      <div className="mt-3 grid sm:grid-cols-3 gap-3 text-xs">
+        <div>
+          <div className="bx-muted uppercase tracking-wider text-[10px]">Entrada</div>
+          <div className="font-bold text-white mt-0.5">E1 {t.entry1}{hasE2(t) ? ` · E2 ${t.entry2}` : ""}</div>
+        </div>
+        <div>
+          <div className="bx-muted uppercase tracking-wider text-[10px]">Stop Loss</div>
+          <div className="font-bold text-rose-300 mt-0.5">{t.sl === "" || t.sl === undefined ? "—" : t.sl}</div>
+        </div>
+        <div>
+          <div className="bx-muted uppercase tracking-wider text-[10px] mb-0.5">Take Profit</div>
+          <TpChips t={t} />
+        </div>
+      </div>
+      {has && keys.length > 1 && (
+        <div className="mt-2 text-xs bx-muted space-y-0.5">
+          {keys.map((k) => <div key={k}>Entry {k === "e1" ? 1 : 2}: <span className="text-white">{legSummary(t, k)}</span></div>)}
+        </div>
+      )}
+      {note && (
+        <div className="mt-3 rounded-lg px-3 py-2 text-sm whitespace-pre-line" style={{ background: "rgba(255,85,0,.10)", border: "1px solid rgba(255,85,0,.35)", color: "#ffd2b8" }}>
+          📝 <b>Nota:</b> {note}
+        </div>
+      )}
+      {mg && (
+        <div className="mt-2 rounded-lg px-3 py-2 text-sm whitespace-pre-line" style={{ background: "rgba(56,189,248,.08)", border: "1px solid rgba(56,189,248,.3)", color: "#bae6fd" }}>
+          🧭 <b>Gestión:</b> {mg}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
   // Las órdenes pendientes (aún no activadas) no cuentan: solo se muestran entradas ejecutadas
   const trades = useMemo(() => allTrades.filter((t) => t.status !== "Pendiente"), [allTrades]);
@@ -2210,34 +2261,23 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
           </div>
           {dayList.length === 0 ? (
             <div className="mt-3 text-sm bx-muted">Sin operaciones este día.</div>
-          ) : !isAdmin ? (
-            (() => {
-              const ds = dayStats(dayList);
-              return (
-                <div className="mt-3 grid grid-cols-3 gap-3 text-center">
-                  <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
-                  <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
-                  <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
-                </div>
-              );
-            })()
           ) : (
-            <div className="mt-3 space-y-2">
-              {dayList.map((t) => {
-                const has = legResults(t).length > 0 && !t.discarded;
+            <>
+              {(() => {
+                const ds = dayStats(dayList);
                 return (
-                  <button key={t.id} onClick={() => onOpen(t.id)} className="bx-row w-full text-left rounded-xl p-3 flex flex-wrap items-center justify-between gap-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-bold">{t.asset}</span>
-                      <DirBadge dir={t.direction} />
-                      <StatusBadge status={t.status} />
-                    </div>
-                    <div className="text-xs bx-muted">E1 {t.entry1}{hasE2(t) ? ` · E2 ${t.entry2}` : ""} · SL {t.sl === "" ? "—" : t.sl}</div>
-                    <div className={`font-extrabold ${has ? pnlColor(t.pips) : "bx-muted"}`}>{has ? `${fmtP(t.pips)} ${unitWord(t)}` : "—"}</div>
-                  </button>
+                  <div className="mt-3 grid grid-cols-3 gap-3 text-center">
+                    <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
+                    <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
+                    <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
+                  </div>
                 );
-              })}
-            </div>
+              })()}
+              <div className="mt-5 text-[11px] uppercase tracking-[0.18em] bx-muted">Detalle de operaciones · {dayList.length}</div>
+              <div className="mt-2 space-y-3" data-testid="day-trades">
+                {dayList.map((t) => <DayTradeCard key={t.id} t={t} onOpen={isAdmin ? onOpen : null} />)}
+              </div>
+            </>
           )}
         </div>
       )}
