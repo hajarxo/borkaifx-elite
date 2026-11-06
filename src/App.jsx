@@ -468,16 +468,32 @@ function recompute(t) {
   return { ...t, status, pips: round1(total), r: Math.round(r * 100) / 100 };
 }
 
-// Mayor TP alcanzado por alguna pata (para marcar los TPs en verde)
+// Mayor TP alcanzado por alguna pata (para marcar los TPs en verde).
+// Cuenta tanto el cierre en TP como los parciales etiquetados con un nivel de TP (partialTps),
+// así una operación que tocó TP2, cobró parcial y cerró en BE sigue figurando como "TP2 alcanzado".
 const hitMax = (t) => {
   if (t.discarded) return -1;
   let best = -1;
   legKeys(t).forEach((k) => {
     const L = legOf(t, k);
     if (L.status === "TP" && L.tpIdx !== null && L.tpIdx !== undefined) best = Math.max(best, L.tpIdx);
+    (L.partialTps || []).forEach((i) => {
+      if (i !== null && i !== undefined && i !== "" && Number.isFinite(Number(i))) best = Math.max(best, Number(i));
+    });
   });
   return best;
 };
+// Parciales: los de patas ya cerradas ya están dentro del neto (legResults); los de patas aún activas no
+const legClosed = (L) => !!L.status && L.status !== "Abierta" && L.status !== "Pendiente" && !(L.status === "MANUAL" && num(L.pips) === null);
+const partialsInNet = (t) => (t.discarded ? 0 : legKeys(t).reduce((a, k) => (legClosed(legOf(t, k)) ? a + partialSum(legOf(t, k)) : a), 0));
+const partialsOutsideNet = (t) => (t.discarded ? 0 : legKeys(t).reduce((a, k) => (legClosed(legOf(t, k)) ? a : a + partialSum(legOf(t, k))), 0));
+// Parciales registrados sin nivel de TP (no se pueden asignar a TP1/TP2/TP3)
+const partialsUntagged = (t) => (t.discarded ? 0 : legKeys(t).reduce((a, k) => {
+  const L = legOf(t, k);
+  const n = (L.partialPips || []).length;
+  const tagged = (L.partialTps || []).filter((i) => i !== null && i !== undefined && i !== "").length;
+  return a + Math.max(0, n - tagged);
+}, 0));
 
 const legSummary = (t, k) => {
   const L = legOf(t, k);
@@ -968,6 +984,7 @@ function LegEditor({ t, k, onChange }) {
   const tps = t.tps || [];
   const [pipsText, setPipsText] = useState("");
   const [partText, setPartText] = useState("");
+  const [partTp, setPartTp] = useState(""); // nivel de TP del parcial ("" = detectar automáticamente)
 
   useEffect(() => {
     setPipsText(L.pips === "" || L.pips === undefined || L.pips === null ? "" : String(L.pips));
@@ -987,20 +1004,34 @@ function LegEditor({ t, k, onChange }) {
   };
   const pickBE = () => onChange(k, { status: "BE", tpIdx: null, exit: entry ?? "", pips: 0 });
   const pickOpen = () => onChange(k, { status: "Abierta", tpIdx: null, exit: "", pips: "" });
-  const pickPending = () => onChange(k, { status: "Pendiente", tpIdx: null, exit: "", pips: "", partials: 0, partialPips: [] });
+  const pickPending = () => onChange(k, { status: "Pendiente", tpIdx: null, exit: "", pips: "", partials: 0, partialPips: [], partialTps: [] });
   const isOpenLeg = !L.status || L.status === "Abierta";
   // Parciales: solo se anota la acción; el estado NUNCA cambia (la entrada sigue Abierta)
   const addPartial = () => {
     if (!isOpenLeg) return;
     const v = num(partText);
     const list = [...(L.partialPips || []), v === null ? 0 : v];
-    onChange(k, { status: "Abierta", partials: list.length, partialPips: list });
+    // nivel de TP: el elegido a mano o, si coincide con la distancia de algún TP, el detectado
+    let idx = partTp === "" ? null : Number(partTp);
+    if (idx === null && v !== null && v > 0) {
+      let bestD = Infinity;
+      tps.forEach((lvl, i) => {
+        if (lvl === "OPEN") return;
+        const d = calcPips(t, k, lvl);
+        if (d === null || d <= 0) return;
+        const diff = Math.abs(v - d);
+        if (diff <= Math.max(0.5, d * 0.02) && diff < bestD) { bestD = diff; idx = i; }
+      });
+    }
+    const tl = [...list.slice(0, -1).map((_, i) => ((L.partialTps || [])[i] ?? null)), idx];
+    onChange(k, { status: "Abierta", partials: list.length, partialPips: list, partialTps: tl });
     setPartText("");
+    setPartTp("");
   };
   const undoPartial = () => {
     if (!isOpenLeg || !L.partials) return;
     const list = (L.partialPips || []).slice(0, -1);
-    onChange(k, { status: "Abierta", partials: Math.max(0, Number(L.partials) - 1), partialPips: list });
+    onChange(k, { status: "Abierta", partials: Math.max(0, Number(L.partials) - 1), partialPips: list, partialTps: (L.partialTps || []).slice(0, list.length) });
   };
   const pickManual = () => onChange(k, { status: "MANUAL", tpIdx: null, exit: "", pips: L.status === "MANUAL" ? L.pips : "" });
 
@@ -1040,7 +1071,14 @@ function LegEditor({ t, k, onChange }) {
               aria-label="Pips del parcial"
             />
           </label>
-          <span className="text-xs bx-muted pb-2">escribe los {unit.toLowerCase()} y pulsa <b className="text-white">Parciales</b></span>
+          <label className="block w-36">
+            <span className="bx-label">Nivel de TP</span>
+            <select className="bx-input" value={partTp} onChange={(e) => setPartTp(e.target.value)} aria-label="Nivel de TP del parcial">
+              <option value="">Auto / ninguno</option>
+              {tps.map((lvl, i) => <option key={i} value={i}>{tpLabel(i, lvl)}</option>)}
+            </select>
+          </label>
+          <span className="text-xs bx-muted pb-2">escribe los {unit.toLowerCase()}, elige el TP que tocó (opcional) y pulsa <b className="text-white">Parciales</b></span>
         </div>
       )}
       <div className="flex flex-wrap gap-1.5">
@@ -1440,33 +1478,81 @@ function buildReport(trades, mode, ref, scope) {
   const dec = tp + sl;
   const wr = dec ? Math.round((tp / dec) * 100) : 0;
 
-  const units = {};
+  // Operaciones cerradas = TP + SL + BE (se excluyen activas, pendientes y descartadas)
+  const closed = list.filter((t) => ["TP", "SL", "BE"].includes(stat(t)));
+  const profitable = closed.filter((t) => (Number(t.pips) || 0) > 0).length;
+  const pctProf = closed.length ? Math.round((profitable / closed.length) * 100) : null;
+  const pctBE = closed.length ? Math.round((be / closed.length) * 100) : null;
+
+  // Objetivos alcanzados: una operación cuenta UNA vez por nivel (alcanzar TP2 implica haber pasado TP1)
+  const scored = list.filter((t) => !t.discarded && t.status !== "Pendiente");
+  const maxLv = Math.max(3, ...scored.map((t) => (t.tps || []).length));
+  const reach = Array.from({ length: maxLv }, (_, i) => scored.filter((t) => hitMax(t) >= i).length);
+  const untagged = scored.filter((t) => partialsUntagged(t) > 0 && hitMax(t) < 0).length;
+
+  // Resultados por unidad (pips = CFDs/DERIV · puntos = WELTRADE). Los parciales se suman UNA sola vez (vía legResults)
+  const U = {};
+  const ub = (u) => (U[u] = U[u] || { net: 0, part: 0, outside: 0, closedSum: 0, closedN: 0 });
   list.forEach((t) => {
-    if (t.discarded || !legResults(t).length) return;
+    if (t.discarded) return;
     const u = unitWord(t);
-    units[u] = round1((units[u] || 0) + (Number(t.pips) || 0));
+    if (legResults(t).length) { ub(u).net += Number(t.pips) || 0; ub(u).part += partialsInNet(t); }
+    const out = partialsOutsideNet(t);
+    if (out) ub(u).outside += out;
+    if (["TP", "SL", "BE"].includes(t.status)) { ub(u).closedSum += Number(t.pips) || 0; ub(u).closedN += 1; }
   });
-  const netLines = Object.keys(units).length ? Object.entries(units).map(([u, v]) => `${fmtP(v)} ${u}`) : ["0"];
+  const uKeys = Object.keys(U);
+  const perUnit = (fn) => (uKeys.length ? uKeys.map((u) => fn(U[u], u)).join("  |  ") : "0");
   const scopeName = { ALL: "Todos los mercados", CFD: "CFDs", DERIV: "Sintéticos · DERIV", WELTRADE: "Sintéticos · WELTRADE" }[scope];
+  const pc0 = (v) => (v === null ? "—" : `${v}%`);
 
   const L = [];
   L.push("📊 BORKAIFX ELITE");
   L.push(title);
   L.push(`Mercado: ${scopeName}`);
   L.push("");
-  L.push("MÉTRICAS CLAVE");
+  L.push("RESUMEN DE OPERACIONES");
   L.push(`• Total de operaciones: ${list.length}`);
-  L.push(`• Win Rate: ${wr}% (${tp} TP / ${dec} decisivas · BE no cuenta)`);
-  L.push(`• Resultado neto: ${netLines.join("  |  ")}`);
-  L.push(`• TP: ${tp}  |  SL: ${sl}  |  BE: ${be}  |  Descartadas: ${dis}${open ? `  |  Activas: ${open}` : ""}${pend ? `  |  Pendientes: ${pend}` : ""}`);
+  L.push(`• TP: ${tp}  |  SL: ${sl}  |  BE: ${be}`);
+  L.push(`• Activas: ${open}  |  Pendientes: ${pend}  |  Descartadas: ${dis}`);
+  L.push("");
+  L.push("OBJETIVOS ALCANZADOS (operaciones que llegaron a cada nivel)");
+  L.push(`• ${reach.map((n, i) => `TP${i + 1}: ${n}`).join("  |  ")}`);
+  L.push("  Una operación cuenta una sola vez por nivel; si llegó a TP2 también cuenta en TP1, aunque haya cerrado en BE.");
+  if (untagged) L.push(`  ⚠ ${untagged} ${untagged === 1 ? "operación tiene" : "operaciones tienen"} parciales sin nivel de TP registrado y no se asignan a ningún TP.`);
+  L.push("");
+  L.push("RESULTADO ECONÓMICO");
+  L.push(`• Resultado neto total: ${perUnit((x, u) => `${fmtP(round1(x.net))} ${u}`)}`);
+  L.push(`• Beneficio por parciales (ya incluido en el neto): ${perUnit((x, u) => `${fmtP(round1(x.part))} ${u}`)}`);
+  L.push(`• Resultado de los cierres finales (neto − parciales): ${perUnit((x, u) => `${fmtP(round1(x.net - x.part))} ${u}`)}`);
+  L.push(`• Promedio por operación cerrada: ${uKeys.length ? uKeys.map((u) => (U[u].closedN ? `${fmtP(round1(U[u].closedSum / U[u].closedN))} ${u}` : `— ${u}`)).join("  |  ") : "—"}`);
+  if (uKeys.some((u) => U[u].outside)) L.push(`• Parciales en entradas aún activas (no incluidos en el neto): ${uKeys.filter((u) => U[u].outside).map((u) => `${fmtP(round1(U[u].outside))} ${u}`).join("  |  ")}`);
+  L.push("");
+  L.push("EFECTIVIDAD (sobre operaciones cerradas: TP + SL + BE)");
+  L.push(`• Win Rate convencional: ${wr}% (${tp} TP / ${dec} decisivas · BE no cuenta)`);
+  L.push(`• Operaciones rentables: ${pc0(pctProf)} (${profitable} de ${closed.length} con resultado neto mayor a cero; un BE con parciales positivos cuenta)`);
+  L.push(`• Operaciones con BE: ${pc0(pctBE)} (${be} de ${closed.length})`);
   L.push("");
   L.push("DETALLE DE OPERACIONES");
   if (!list.length) L.push("Sin operaciones en este período.");
   list.forEach((t, i) => {
+    const st = stat(t);
     const has = !t.discarded && legResults(t).length > 0;
-    const res = has ? `${fmtP(t.pips)} ${unitWord(t)}` : "—";
-    const pc = partialsCount(t);
-    L.push(`${i + 1}. ${mode === "daily" ? "" : fmtDate(t.date) + " · "}${t.asset} · ${t.direction} · ${res} · ${stat(t)}${pc && stat(t) === "ACTIVA" ? ` (parciales: ${pc}${partialsTotal(t) ? ` · ${fmtP(partialsTotal(t))} ${unitWord(t)}` : ""})` : ""}`);
+    const u = unitWord(t);
+    L.push(`${i + 1}. ${t.asset} | ${t.direction} | ${fmtDate(t.date)}`);
+    L.push(`   • Estado final: ${st}`);
+    const hm = hitMax(t);
+    const pcs = partialsCount(t);
+    if (hm >= 0) L.push(`   • Objetivo máximo alcanzado: TP${hm + 1}`);
+    else if (st === "SL" && !pcs) L.push("   • Objetivo máximo alcanzado: ninguno");
+    else if (st === "BE" || (st === "SL" && pcs)) L.push("   • Objetivo máximo alcanzado: No disponible");
+    if (pcs) {
+      const ps = partialsInNet(t) + partialsOutsideNet(t);
+      L.push(`   • Parciales ejecutados: ${pcs}${ps ? ` (${fmtP(round1(ps))} ${u})` : ""}`);
+      if (ps) L.push(`   • Beneficio asegurado: ${fmtP(round1(ps))} ${u}`);
+    }
+    if (has) L.push(`   • Resultado neto final: ${fmtP(t.pips)} ${u}`);
+    else if (st !== "DESCARTADA") L.push(`   • Resultado neto final: ${st === "ACTIVA" || st === "PENDIENTE" ? "en curso" : "No disponible"}`);
     const note = (t.notes || "").trim();
     if (note) L.push(`   📝 ${note.replace(/\s*\n\s*/g, " ")}`);
     const mg = (t.mgmt || "").trim();
@@ -1972,8 +2058,61 @@ function dayStats(list) {
 
 const pnlColor = (v) => (v > 0 ? "text-emerald-400" : v < 0 ? "text-rose-400" : "text-white");
 
+/* ----------------------------- Señal original (formato del canal VIP) ----------------------------- */
+const RISK_LINE = "Risk 0.5-1-2%";
+function buildSignalText(t) {
+  const vals = [t.entry1, t.entry2, t.sl, ...(t.tps || [])].filter((v) => v !== "" && v !== "OPEN" && num(v) !== null).map(String);
+  const dec = Math.min(5, vals.reduce((m, v) => Math.max(m, (v.split(".")[1] || "").length), 0));
+  const px = (v) => (num(v) === null ? String(v) : Number(v).toFixed(dec));
+  const head = t.category === "CFD" ? ({ Forex: "Forex", "Oro/Metales": "Metals", "Índices": "Index" }[t.sub] || t.sub || "CFD") : "Synthetic";
+  const buy = t.direction !== "SELL";
+  const tps = t.tps || [];
+  const hm = hitMax(t);
+  const base = legKeys(t)[0];
+  const L = [];
+  L.push(`${head} ${buy ? "📈" : "📉"}`);
+  L.push(`Pair: ${t.asset} 📊`);
+  L.push(`Side: ${buy ? "Long / Buy" : "Short / Sell"}`);
+  if (hasE2(t)) { L.push(`Entry 1: ${px(t.entry1)}`); L.push(`Entry 2: ${px(t.entry2)}`); }
+  else L.push(`Entry: ${px(t.entry1)}`);
+  if (tps.includes("OPEN")) L.push("TP: Open");
+  if (t.sl !== "" && t.sl !== undefined) L.push(`SL: ${px(t.sl)}`);
+  const note = (t.notes || "").trim().replace(/\s*\n\s*/g, " ");
+  if (note) L.push(`Note: ${note}`);
+  L.push(RISK_LINE);
+  if (tps.length) {
+    L.push("");
+    tps.forEach((x, i) => {
+      const hit = !t.discarded && i <= hm ? " ✅" : "";
+      if (x === "OPEN") { L.push(`TP${i + 1} Open${hit}`); return; }
+      const d = calcPips(t, base, x);
+      L.push(`TP${i + 1} ${px(x)}${d === null ? "" : ` ${Math.abs(d)}${unitWord(t)}`}${hit}`);
+    });
+  }
+  return L.join("\n");
+}
+
+function SignalModal({ t, onClose }) {
+  useEffect(() => {
+    const h = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", h);
+    return () => document.removeEventListener("keydown", h);
+  }, [onClose]);
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" onClick={onClose} data-testid="signal-modal">
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl p-5" role="dialog" aria-label="Señal original" style={{ background: "#0F0F0F", border: `1px solid ${ACCENT}`, boxShadow: "0 20px 60px rgba(0,0,0,.7)" }}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="text-[11px] tracking-[0.25em] font-bold bx-accent">SEÑAL ORIGINAL · {fmtDate(t.date)}</div>
+          <button type="button" onClick={onClose} aria-label="Cerrar" className="bx-ghost" style={{ padding: ".25rem .6rem" }}>✕</button>
+        </div>
+        <pre className="mt-4 rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap break-words" style={{ background: "#161616", border: "1px solid #2A2A2A", color: "#F2EEE6", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }}>{buildSignalText(t)}</pre>
+      </div>
+    </div>
+  );
+}
+
 // Tarjeta de una operación dentro del panel del día: activo, dirección, señal exacta, resultado y notas
-function DayTradeCard({ t, onOpen }) {
+function DayTradeCard({ t, onOpen, onSignal }) {
   const disc = !!t.discarded || t.status === "Descartada";
   const has = !disc && legResults(t).length > 0;
   const keys = legKeys(t);
@@ -2004,11 +2143,27 @@ function DayTradeCard({ t, onOpen }) {
           <TpChips t={t} />
         </div>
       </div>
+      {partialsCount(t) > 0 && (
+        <div className="mt-2 text-xs bx-muted">
+          Parciales ×{partialsCount(t)}{partialsTotal(t) ? <> · <span className="text-white">{fmtP(partialsTotal(t))} {unitWord(t)}</span></> : null}
+          {hitMax(t) >= 0 ? <> · Objetivo máx.: <span className="text-white">TP{hitMax(t) + 1}</span></> : null}
+        </div>
+      )}
       {has && keys.length > 1 && (
         <div className="mt-2 text-xs bx-muted space-y-0.5">
           {keys.map((k) => <div key={k}>Entry {k === "e1" ? 1 : 2}: <span className="text-white">{legSummary(t, k)}</span></div>)}
         </div>
       )}
+      <div className="mt-3">
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onSignal(t); }}
+          className="text-xs font-bold underline underline-offset-4"
+          style={{ color: "#ffb089" }}
+        >
+          📡 Ver señal original
+        </button>
+      </div>
       {note && (
         <div className="mt-3 rounded-lg px-3 py-2 text-sm whitespace-pre-line" style={{ background: "rgba(255,85,0,.10)", border: "1px solid rgba(255,85,0,.35)", color: "#ffd2b8" }}>
           📝 <b>Nota:</b> {note}
@@ -2029,6 +2184,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
   const months = useMemo(() => Array.from(new Set(trades.map((t) => (t.date || "").slice(0, 7)).filter(Boolean))).sort().reverse(), [trades]);
   const [ym, setYm] = useState(null);
   const [selDay, setSelDay] = useState(null);
+  const [sigTrade, setSigTrade] = useState(null); // señal original abierta en ventana flotante
   const [mode, setMode] = useState("month"); // month | year
   const [yearSel, setYearSel] = useState(null);
 
@@ -2275,12 +2431,14 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
               })()}
               <div className="mt-5 text-[11px] uppercase tracking-[0.18em] bx-muted">Detalle de operaciones · {dayList.length}</div>
               <div className="mt-2 space-y-3" data-testid="day-trades">
-                {dayList.map((t) => <DayTradeCard key={t.id} t={t} onOpen={isAdmin ? onOpen : null} />)}
+                {dayList.map((t) => <DayTradeCard key={t.id} t={t} onOpen={isAdmin ? onOpen : null} onSignal={setSigTrade} />)}
               </div>
             </>
           )}
         </div>
       )}
+
+      {sigTrade && <SignalModal t={sigTrade} onClose={() => setSigTrade(null)} />}
 
       {/* ---------- DASHBOARD DEL MES ---------- */}
       <div>
