@@ -1142,6 +1142,50 @@
     "r": 1
   },
   {
+    "id": "elo1nnifmw57nz4a",
+    "date": "2026-11-06",
+    "category": "CFD",
+    "sub": "Oro/Metales",
+    "broker": "",
+    "asset": "XAUUSD",
+    "direction": "BUY",
+    "entry1": 4057,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 4047,
+    "tps": [
+      4062,
+      4067,
+      4072,
+      "OPEN"
+    ],
+    "pipSize": 0.1,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 4062,
+        "pips": 50,
+        "tpIdx": 0
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "Gold 🏆\nPair: XAUUSD 📊\nSide: Long / Buy Limit\nEntry: 4057\nTP: Open\nSL: 4047\nNote: past profits do not predict future profits \nRisk 0.5-1-2% \n\nTP1 4062 50pips ✅\nTP2 4067 100pips ✅\nTP3 4072 150pips ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 50,
+    "r": 0.5
+  },
+  {
     "id": "jvh3sm5cmw57my4b",
     "date": "2026-11-06",
     "category": "CFD",
