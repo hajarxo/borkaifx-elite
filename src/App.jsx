@@ -1255,6 +1255,7 @@ const addDays = (ymd, n) => {
   return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}-${String(dt.getDate()).padStart(2, "0")}`;
 };
 const DAYS_ES = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+const dayName = (ymd) => { const [y, m, d] = ymd.split("-").map(Number); return DAYS_ES[new Date(y, m - 1, d).getDay()]; };
 
 const weekRange = (ymd) => {
   const [y, m, d] = ymd.split("-").map(Number);
@@ -1350,7 +1351,7 @@ function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
 }
 
 // Selector desplegable para filtrar la tabla por día o por semana
-function MiniCalendar({ marked, range, onChange }) {
+function MiniCalendar({ marked, range, onChange, noClear }) {
   const [open, setOpen] = useState(false);
   const [ym, setYm] = useState(() => (range ? range.from.slice(0, 7) : curYM()));
   const box = useRef(null);
@@ -1364,8 +1365,8 @@ function MiniCalendar({ marked, range, onChange }) {
   return (
     <div ref={box} className="relative" data-testid="date-filter">
       <div className="flex items-center gap-1">
-        <button type="button" onClick={() => setOpen((o) => !o)} className="bx-ghost" aria-haspopup="dialog" aria-expanded={open}>📅 {label} ▾</button>
-        {range && (
+        <button type="button" onClick={() => { if (!open) setYm(range ? range.from.slice(0, 7) : curYM()); setOpen(!open); }} className="bx-ghost" aria-haspopup="dialog" aria-expanded={open}>📅 {label} ▾</button>
+        {range && !noClear && (
           <button type="button" className="bx-ghost" onClick={() => onChange(null)} aria-label="Quitar filtro de fecha" title="Quitar filtro">✕</button>
         )}
       </div>
@@ -2061,7 +2062,7 @@ function SignalModal({ t, onClose }) {
 }
 
 // Tarjeta de una operación dentro del panel del día: activo, dirección, señal exacta, resultado y notas
-function DayTradeCard({ t, onOpen, onSignal }) {
+function DayTradeCard({ t, onOpen, onSignal, onEdit, onDelete }) {
   const disc = !!t.discarded || t.status === "Descartada";
   const has = !disc && legResults(t).length > 0;
   const keys = legKeys(t);
@@ -2076,7 +2077,11 @@ function DayTradeCard({ t, onOpen, onSignal }) {
           <DirBadge dir={t.direction} />
           <StatusBadge status={t.status} />
         </div>
-        <div className={`text-lg font-black ${has ? pnlColor(t.pips) : "bx-muted"}`}>{has ? `${fmtP(t.pips)} ${unitWord(t)}` : "—"}</div>
+        <div className="flex items-center gap-3">
+          <div className={`text-lg font-black ${has ? pnlColor(t.pips) : "bx-muted"}`}>{has ? `${fmtP(t.pips)} ${unitWord(t)}` : "—"}</div>
+          {onEdit && <button type="button" title="Editar" aria-label="Editar" onClick={(e) => { e.stopPropagation(); onEdit(t); }} className="bx-muted hover:text-white">✎</button>}
+          {onDelete && <button type="button" title="Eliminar" aria-label="Eliminar" onClick={(e) => { e.stopPropagation(); onDelete(t); }} className="bx-muted hover:text-rose-400">🗑</button>}
+        </div>
       </div>
       <div className="mt-3 grid sm:grid-cols-3 gap-3 text-xs">
         <div>
@@ -2512,7 +2517,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
 }
 
 /* ============================== APP ============================== */
-const PAGE_PATHS = { home: "/", signals: "/senales", vip: "/vip-gratis", copytrading: "/copytrading", education: "/educacion" };
+const PAGE_PATHS = { home: "/", signals: "/senales", vip: "/vip-gratis", copytrading: "/copytrading", education: "/educacion", admin: "/admin" };
 const pageFromPath = () => {
   try {
     const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
@@ -2524,7 +2529,7 @@ export default function App() {
   const twReady = useTailwind();
   const [trades, setTrades] = useState([]);
   // Rutas: "/" (Track Record), "/senales", "/vip-gratis" (sin pestaña: se entra desde Señales), "/copytrading", "/educacion"
-  const [page, setPageState] = useState(pageFromPath); // home | signals | vip | copytrading | education
+  const [page, setPageState] = useState(pageFromPath); // home | signals | vip | copytrading | education | admin
   const setPage = (k) => {
     setPageState(k);
     try { if (window.location.pathname !== PAGE_PATHS[k]) window.history.pushState({ page: k }, "", PAGE_PATHS[k]); } catch (e) {}
@@ -2553,6 +2558,8 @@ export default function App() {
   const [view, setView] = useState("list"); // list | calendar (solo admin; el público siempre ve calendario)
   const [q, setQ] = useState("");
   const [dateFilter, setDateFilter] = useState(null); // {from,to} · día o semana
+  const [adminRange, setAdminRange] = useState(() => { const d = localDate(); return { from: d, to: d }; }); // Panel Admin: por defecto, hoy
+  const [sigTrade, setSigTrade] = useState(null); // señal original (ventana flotante) en el Panel Admin
 
   const fileRef = useRef(null);
   const [signalText, setSignalText] = useState("");
@@ -2578,11 +2585,15 @@ export default function App() {
   const login = () => {
     setIsAdmin(true);
     setShowLogin(false);
+    const d = localDate();
+    setAdminRange({ from: d, to: d }); // el panel arranca siempre en el día en que inicias sesión
+    setPage("admin"); // con la clave correcta entras directo al Panel de administración
   };
   const logout = () => {
     setIsAdmin(false);
     writeAuth(null);
     setTrades((p) => p.filter(isPublic)); // al salir, no se queda ninguna señal abierta en pantalla
+    if (page === "admin") setPage("home");
   };
 
   // ---------- Sincronización con GitHub (data/trades.json) ----------
@@ -2748,6 +2759,7 @@ export default function App() {
       }
       return [t, ...prev];
     });
+    setAdminRange({ from: t.date, to: t.date });
     setTab(t.category);
     if (t.category === "CFD") setCfdSub("Todos");
     else setBroker(t.broker);
@@ -2820,6 +2832,23 @@ export default function App() {
   const viewEff = isAdmin ? view : "calendar";
   const detailTrade = detail ? trades.find((x) => x.id === detail) : null;
 
+  // ---- Panel Admin: día seleccionado (por defecto hoy), órdenes pendientes y activación ----
+  const todayStr = localDate();
+  const adminSingle = adminRange.from === adminRange.to;
+  const adminLabel = adminSingle ? fmtDate(adminRange.from) : `${fmtDate(adminRange.from)} – ${fmtDate(adminRange.to)}`;
+  const adminList = trades
+    .filter((t) => t.date >= adminRange.from && t.date <= adminRange.to)
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  const pendingList = trades.filter((t) => t.status === "Pendiente").sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  const aStats = (() => {
+    const live = adminList.filter((t) => !t.discarded);
+    const net = {};
+    live.forEach((t) => { if (legResults(t).length) { const u = unitWord(t); net[u] = round1((net[u] || 0) + (Number(t.pips) || 0)); } });
+    return { total: adminList.length, act: live.filter((t) => t.status !== "Pendiente").length, pend: adminList.filter((t) => t.status === "Pendiente").length, closed: adminList.filter(isClosed).length, net };
+  })();
+  const shiftAdmin = (n) => { const step = (adminSingle ? 1 : 7) * n; setAdminRange({ from: addDays(adminRange.from, step), to: addDays(adminRange.to, step) }); };
+  const activateTrade = (t) => updateTrade(recompute({ ...t, legs: { ...(t.legs || {}), ...Object.fromEntries(legKeys(t).map((k) => [k, { ...legOf(t, k), status: "Abierta", tpIdx: null, exit: "", pips: "" }])) } }));
+
   if (!twReady) {
     return (
       <div style={{ minHeight: "100vh", background: "#F9F6F0", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -2844,7 +2873,7 @@ export default function App() {
           </div>
 
           <nav className="bx-nav order-last w-full md:order-none md:w-auto">
-            {[["home", "Inicio"], ["signals", "Señales"], ["copytrading", "Copytrading"], ["education", "Educación"]].map(([k, l]) => (
+            {[["home", "Inicio"], ["signals", "Señales"], ["copytrading", "Copytrading"], ["education", "Educación"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => (
               <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k || (k === "signals" && page === "vip") ? "on" : ""}`}>{l}</button>
             ))}
           </nav>
@@ -2990,28 +3019,6 @@ export default function App() {
           </section>
         )}
 
-        {/* ------------------------- PEGAR SEÑAL (admin · solo Lista de Operaciones) ------------------------- */}
-        {isAdmin && viewEff === "list" && (
-          <section className="bx-card p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Pegar señal (CFDs y Sintéticos)</div>
-            </div>
-            <textarea
-              rows={6}
-              className="bx-input"
-              placeholder={"Pega aquí la señal tal como la envías al canal VIP…\n\nPair: XAUUSD 📊\nSide: Short / Sell\nEntry 1: 4018\nEntry 2: 4022\nSL: 4030\nTP: Open\nTP1 4013 …\n\nTambién acepta formato corto:\nCRASH 900 SELL 16792\nSL 20 PTS\nTP: 300 PTS"}
-              value={signalText}
-              onChange={(e) => setSignalText(e.target.value)}
-            />
-            <div className="mt-2 flex items-center justify-between gap-2 flex-wrap">
-              <span className="text-xs bx-muted">
-                Detecta activo, categoría y broker (CFDs, DERIV y WELTRADE), dirección, Entry 1 / Entry 2, SL, TPs (precio o distancia en PTS, incluido TP OPEN). Podrás revisar antes de guardar.
-              </span>
-              <button onClick={importSignal} disabled={!signalText.trim()} className="bx-btn">Interpretar y revisar</button>
-            </div>
-          </section>
-        )}
-
         {viewEff === "list" && (<>
         {/* ------------------------- TABLA ------------------------- */}
         <section className="bx-card">
@@ -3023,6 +3030,7 @@ export default function App() {
             </div>
 
             <div className="flex flex-wrap gap-2 items-center">
+              {isAdmin && <button type="button" onClick={() => setPage("admin")} className="bx-ghost">🛠 Panel Admin</button>}
               <MiniCalendar marked={marked} range={dateFilter} onChange={setDateFilter} />
             </div>
           </div>
@@ -3086,9 +3094,121 @@ export default function App() {
 
         </>)}
 
-        {/* ------------------------- ADMIN TOOLS ------------------------- */}
-        {isAdmin && (
-          <section className="bx-card p-4 flex flex-wrap items-center gap-3">
+        </>)}
+        {/* ------------------------- PANEL DE ADMINISTRACIÓN ------------------------- */}
+        {page === "admin" && !isAdmin && (
+          <section className="bx-card p-8 text-center" data-testid="admin-locked">
+            <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">ACCESO PROTEGIDO</div>
+            <h1 className="mt-2 text-2xl md:text-3xl font-black text-white">Panel de administración</h1>
+            <p className="mt-2 text-sm bx-muted">Entra con tu token de GitHub para registrar y gestionar las señales.</p>
+            <button type="button" onClick={() => setShowLogin(true)} className="bx-btn mt-5">🔒 Entrar</button>
+          </section>
+        )}
+        {page === "admin" && isAdmin && (
+          <div className="space-y-6" data-testid="admin-panel">
+            <section className="bx-card p-5 md:p-6" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">PANEL DE ADMINISTRACIÓN</div>
+                  <h1 className="mt-1 text-2xl md:text-3xl font-black text-white">Hoy · {dayName(todayStr)} {fmtDate(todayStr)}</h1>
+                  <div className="text-xs bx-muted mt-1">{cloudLabel}</div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button type="button" onClick={() => setShowReport(true)} className="bx-ghost">📄 Generar Resumen en Texto</button>
+                  <button type="button" onClick={() => setPage("home")} className="bx-ghost">Ver Track Record</button>
+                </div>
+              </div>
+            </section>
+
+            <div className="grid lg:grid-cols-2 gap-6 items-start">
+              <section className="bx-card p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Pegar señal (CFDs y Sintéticos)</div>
+            </div>
+            <textarea
+              rows={6}
+              className="bx-input"
+              placeholder={"Pega aquí la señal tal como la envías al canal VIP…\n\nPair: XAUUSD 📊\nSide: Short / Sell\nEntry 1: 4018\nEntry 2: 4022\nSL: 4030\nTP: Open\nTP1 4013 …\n\nTambién acepta formato corto:\nCRASH 900 SELL 16792\nSL 20 PTS\nTP: 300 PTS"}
+              value={signalText}
+              onChange={(e) => setSignalText(e.target.value)}
+            />
+            <div className="mt-2 flex items-center justify-between gap-2 flex-wrap">
+              <span className="text-xs bx-muted">
+                Detecta activo, categoría y broker (CFDs, DERIV y WELTRADE), dirección, Entry 1 / Entry 2, SL, TPs (precio o distancia en PTS, incluido TP OPEN). Podrás revisar antes de guardar.
+              </span>
+              <button onClick={importSignal} disabled={!signalText.trim()} className="bx-btn">Interpretar y revisar</button>
+            </div>
+          </section>
+
+              <section
+                className="bx-card p-4"
+                data-testid="pending-box"
+                style={{ border: "2px solid #fbbf24", background: "radial-gradient(500px circle at 0% 0%, rgba(251,191,36,.14), transparent 60%), #161616", boxShadow: "0 0 30px rgba(251,191,36,.12)" }}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="text-xs uppercase tracking-[0.18em] font-bold" style={{ color: "#fcd34d" }}>🕓 Órdenes pendientes</div>
+                  <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: "rgba(251,191,36,.18)", border: "1px solid #fbbf24", color: "#fcd34d" }}>{pendingList.length}</span>
+                </div>
+                <div className="text-xs bx-muted mt-1">Entradas enviadas que aún no se activan. Cuando el precio entre, pulsa <b className="text-white">Activar</b>.</div>
+                {pendingList.length === 0 ? (
+                  <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "#0F0F0F", border: "1px dashed #3a3a3a" }}>No tienes órdenes pendientes.</div>
+                ) : (
+                  <div className="mt-3 space-y-2 overflow-y-auto" style={{ maxHeight: 360 }}>
+                    {pendingList.map((t) => (
+                      <div key={t.id} data-testid="pending-item" className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid rgba(251,191,36,.35)" }}>
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-extrabold text-white">{t.asset}</span>
+                            <DirBadge dir={t.direction} />
+                            <span className="text-[11px] bx-muted">{t.category === "CFD" ? `CFD · ${t.sub}` : `Sintético · ${t.broker}`} · {fmtDate(t.date)}</span>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-xs bx-muted">
+                          E1 <b className="text-white">{t.entry1}</b>{hasE2(t) ? <> · E2 <b className="text-white">{t.entry2}</b></> : null} · SL <b className="text-rose-300">{t.sl === "" ? "—" : t.sl}</b>
+                          {(t.tps || []).length ? <> · {(t.tps || []).map((x, i) => (x === "OPEN" ? tpLabel(i, x) : `${tpLabel(i, x)} ${x}`)).join(" · ")}</> : null}
+                        </div>
+                        <div className="mt-2 flex flex-wrap items-center gap-2">
+                          <button type="button" onClick={() => activateTrade(t)} className="bx-btn" style={{ padding: ".4rem .9rem" }}>▶ Activar</button>
+                          <button type="button" onClick={() => setDetail(t.id)} className="bx-ghost">Gestionar</button>
+                          <button type="button" title="Editar" aria-label="Editar" onClick={() => setEditing(toForm(t))} className="bx-muted hover:text-white">✎</button>
+                          <button type="button" title="Eliminar" aria-label="Eliminar" onClick={() => setConfirmDel(t)} className="bx-muted hover:text-rose-400">🗑</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
+            </div>
+
+            <section className="bx-card p-4 md:p-5" data-testid="admin-day">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="font-extrabold tracking-wider bx-accent">OPERACIONES · {adminSingle ? (adminRange.from === todayStr ? "HOY" : dayName(adminRange.from).toUpperCase()) : "SEMANA"} · {adminLabel}</h2>
+                  <div className="text-xs bx-muted mt-0.5">
+                    {aStats.total} {aStats.total === 1 ? "entrada" : "entradas"} · {aStats.act} activadas · {aStats.pend} pendientes · {aStats.closed} cerradas{Object.keys(aStats.net).length ? ` · Neto: ${Object.entries(aStats.net).map(([u, v]) => `${fmtP(v)} ${u}`).join(" | ")}` : ""}
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-1">
+                  <button type="button" className="bx-ghost" aria-label="Anterior" title={adminSingle ? "Día anterior" : "Semana anterior"} onClick={() => shiftAdmin(-1)}>‹</button>
+                  <MiniCalendar marked={marked} range={adminRange} onChange={(r) => setAdminRange(r || { from: todayStr, to: todayStr })} noClear />
+                  <button type="button" className="bx-ghost" aria-label="Siguiente" title={adminSingle ? "Día siguiente" : "Semana siguiente"} onClick={() => shiftAdmin(1)}>›</button>
+                  <button type="button" className="bx-ghost" onClick={() => setAdminRange({ from: todayStr, to: todayStr })}>Hoy</button>
+                </div>
+              </div>
+              {adminList.length === 0 ? (
+                <div className="mt-4 rounded-xl p-6 text-center text-sm bx-muted" style={{ background: "#0F0F0F", border: "1px dashed #3a3a3a" }}>
+                  No hay operaciones registradas en esta fecha. Pega una señal arriba o elige otro día en el calendario.
+                </div>
+              ) : (
+                <div className="mt-4 space-y-3" data-testid="admin-day-list">
+                  {adminList.map((t) => (
+                    <DayTradeCard key={t.id} t={t} onOpen={setDetail} onSignal={setSigTrade} onEdit={(x) => setEditing(toForm(x))} onDelete={setConfirmDel} />
+                  ))}
+                </div>
+              )}
+            </section>
+
+            <section className="bx-card p-4 flex flex-wrap items-center gap-3">
             <div className="text-xs uppercase tracking-[0.18em] bx-muted mr-auto">Herramientas de administración</div>
             <button onClick={exportJson} className="bx-ghost">⬇ Exportar respaldo (JSON)</button>
             <button onClick={() => fileRef.current?.click()} className="bx-ghost">⬆ Importar respaldo</button>
@@ -3100,9 +3220,8 @@ export default function App() {
               Vaciar Track Record
             </button>
           </section>
+          </div>
         )}
-
-        </>)}
         {page === "signals" && <ServicesPricing setPage={setPage} />}
 
         {/* ------------------------- FOOTER ------------------------- */}
@@ -3112,6 +3231,7 @@ export default function App() {
       </main>
 
       {/* ------------------------- MODALES ------------------------- */}
+      {sigTrade && <SignalModal t={sigTrade} onClose={() => setSigTrade(null)} />}
       {showReport && isAdmin && <ReportModal trades={trades} defaultScope={tab === "CFD" ? "CFD" : broker === "WELTRADE" ? "WELTRADE" : "DERIV"} onClose={() => setShowReport(false)} />}
       {showLogin && <LoginModal onClose={() => setShowLogin(false)} onOk={login} />}
       {editing && <TradeForm initial={editing} onCancel={() => setEditing(null)} onSave={saveTrade} />}
