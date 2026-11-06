@@ -372,9 +372,6 @@ function parseSignal(raw) {
   });
   if (tpOpen) out.tps.push("OPEN");
 
-  m = /risk\s*[:\-]?\s*([0-9.\-\/ ]+%)/i.exec(text);
-  if (m) out.notes = "Riesgo sugerido: " + m[1].trim();
-
   if (!out.asset) out.warnings.push("No se detectó el activo: escríbelo manualmente.");
   else if (!cls) out.warnings.push("Activo no reconocido: elige categoría y broker manualmente.");
   if (out.entry1 === "") out.warnings.push("No se detectó la entrada.");
@@ -413,11 +410,27 @@ function compressImage(file, maxW = 1280, quality = 0.72) {
 // Cada operación tiene Entry 1 y (opcional) Entry 2. "activation" indica cuáles se activaron.
 // Cada entrada activada es una "pata" (leg) con su propio resultado en pips/puntos.
 const hasE2 = (t) => num(t.entry2) !== null;
-// Parciales registrados (no cierran la operación: solo se anotan mientras la entrada sigue abierta)
-const partialsCount = (t) => ["e1", "e2"].reduce((a, k) => a + (Number(t.legs && t.legs[k] && t.legs[k].partials) || 0), 0);
-// Pips/puntos de los parciales de una pata (lista partialPips)
-const partialSum = (L) => round1(((L && L.partialPips) || []).reduce((a, x) => a + (Number(x) || 0), 0));
-const partialsTotal = (t) => round1(["e1", "e2"].reduce((a, k) => a + partialSum(t.legs && t.legs[k]), 0));
+// Compatibilidad con datos antiguos: el journal ya no registra parciales. Si una entrada cerrada traía
+// parciales guardados, se pliegan en su resultado (el total de la operación NO cambia) y el nivel de TP
+// etiquetado queda como "reached" (solo lectura, para no perder el objetivo alcanzado histórico).
+const legacyLeg = (L) => {
+  if (!L || (L.partials === undefined && L.partialPips === undefined && L.partialTps === undefined)) return L;
+  const { partials, partialPips, partialTps, ...rest } = L;
+  const closed = !!rest.status && rest.status !== "Abierta" && rest.status !== "Pendiente" && !(rest.status === "MANUAL" && num(rest.pips) === null);
+  const sum = round1((partialPips || []).reduce((a, x) => a + (Number(x) || 0), 0));
+  const tags = (partialTps || []).filter((i) => i !== null && i !== undefined && i !== "").map(Number).filter(Number.isFinite);
+  const out = { ...rest };
+  if (closed && sum) out.pips = round1((num(rest.pips) ?? 0) + sum);
+  if (tags.length) out.reached = Math.max(...tags, num(rest.reached) ?? -1);
+  return out;
+};
+const stripLegacy = (t) => {
+  if (!t.legs) return t;
+  let changed = false;
+  const legs = {};
+  Object.keys(t.legs).forEach((k) => { const n = legacyLeg(t.legs[k]); if (n !== t.legs[k]) changed = true; legs[k] = n; });
+  return changed ? { ...t, legs } : t;
+};
 const legKeys = (t) => (hasE2(t) ? (t.activation === "BOTH" ? ["e1", "e2"] : t.activation === "E2" ? ["e2"] : ["e1"]) : ["e1"]);
 const entryOf = (t, k) => num(k === "e1" ? t.entry1 : t.entry2);
 const legOf = (t, k) => (t.legs && t.legs[k]) || { status: "Abierta", exit: "", pips: "", tpIdx: null };
@@ -446,7 +459,7 @@ function legResults(t) {
     const L = legOf(t, k);
     if (!L.status || L.status === "Abierta" || L.status === "Pendiente") return;
     if (L.status === "MANUAL" && num(L.pips) === null) return; // Cierre manual: se registra al escribir los pips/puntos
-    const p = round1((num(L.pips) ?? 0) + partialSum(L));
+    const p = num(L.pips) ?? 0;
     const risk = riskPips(t, k);
     out.push({ key: k, status: L.status, pips: p, r: risk ? p / risk : 0 });
   });
@@ -454,7 +467,8 @@ function legResults(t) {
 }
 
 // Calcula estado, pips totales y R de la operación a partir de sus patas
-function recompute(t) {
+function recompute(t0) {
+  const t = stripLegacy(t0);
   if (t.discarded) return { ...t, status: "Descartada", pips: 0, r: 0 };
   const keys = legKeys(t);
   const res = legResults(t);
@@ -468,42 +482,39 @@ function recompute(t) {
   return { ...t, status, pips: round1(total), r: Math.round(r * 100) / 100 };
 }
 
-// Mayor TP alcanzado por alguna pata (para marcar los TPs en verde).
-// Cuenta tanto el cierre en TP como los parciales etiquetados con un nivel de TP (partialTps),
-// así una operación que tocó TP2, cobró parcial y cerró en BE sigue figurando como "TP2 alcanzado".
+// Mayor TP alcanzado por alguna pata (para marcar los TPs en verde): el TP en que cerró cada entrada
+// (o "reached", solo en datos antiguos que traían parciales etiquetados con un TP).
 const hitMax = (t) => {
   if (t.discarded) return -1;
   let best = -1;
   legKeys(t).forEach((k) => {
     const L = legOf(t, k);
     if (L.status === "TP" && L.tpIdx !== null && L.tpIdx !== undefined) best = Math.max(best, L.tpIdx);
-    (L.partialTps || []).forEach((i) => {
-      if (i !== null && i !== undefined && i !== "" && Number.isFinite(Number(i))) best = Math.max(best, Number(i));
-    });
+    const r = num(L.reached);
+    if (r !== null) best = Math.max(best, r);
   });
   return best;
 };
-// Parciales: los de patas ya cerradas ya están dentro del neto (legResults); los de patas aún activas no
-const legClosed = (L) => !!L.status && L.status !== "Abierta" && L.status !== "Pendiente" && !(L.status === "MANUAL" && num(L.pips) === null);
-const partialsInNet = (t) => (t.discarded ? 0 : legKeys(t).reduce((a, k) => (legClosed(legOf(t, k)) ? a + partialSum(legOf(t, k)) : a), 0));
-const partialsOutsideNet = (t) => (t.discarded ? 0 : legKeys(t).reduce((a, k) => (legClosed(legOf(t, k)) ? a : a + partialSum(legOf(t, k))), 0));
-// Parciales registrados sin nivel de TP (no se pueden asignar a TP1/TP2/TP3)
-const partialsUntagged = (t) => (t.discarded ? 0 : legKeys(t).reduce((a, k) => {
-  const L = legOf(t, k);
-  const n = (L.partialPips || []).length;
-  const tagged = (L.partialTps || []).filter((i) => i !== null && i !== undefined && i !== "").length;
-  return a + Math.max(0, n - tagged);
-}, 0));
+// Cómo terminó una operación cerrada, para el reporte: MANUAL | OPEN (TP abierto, dejada correr) | TP | BE | SL
+const isRun = (L) => L.status === "TP" && L.exit === "OPEN";
+const outcomeOf = (t) => {
+  if (t.discarded || !isClosed(t)) return null;
+  const ls = legKeys(t).map((k) => legOf(t, k));
+  if (ls.some((L) => L.status === "MANUAL")) return "MANUAL";
+  if (ls.some(isRun)) return "OPEN";
+  return t.status;
+};
+// Pips de las entradas que cerraron de una forma concreta (cierre manual / TP abierto)
+const legPipsWhere = (t, pred) => round1(legKeys(t).reduce((a, k) => (pred(legOf(t, k)) ? a + (num(legOf(t, k).pips) ?? 0) : a), 0));
 
 const legSummary = (t, k) => {
   const L = legOf(t, k);
   if (L.status === "Pendiente") return "Orden pendiente";
-  if (!L.status || L.status === "Abierta") return L.partials ? `Activa · ${L.partials} ${L.partials === 1 ? "parcial" : "parciales"}${partialSum(L) ? ` (${fmtP(partialSum(L))} ${unitWord(t)})` : ""}` : "Activa";
+  if (!L.status || L.status === "Abierta") return "Activa";
   const tp = L.status === "TP" && t.tps && t.tps[L.tpIdx] !== undefined ? tpLabel(L.tpIdx, t.tps[L.tpIdx]) : L.status === "MANUAL" ? "Cierre manual" : L.status;
   const p = num(L.pips);
-  const ps = partialSum(L);
   if (p === null) return `${tp} · sin pips`;
-  return ps ? `${tp} · ${fmtP(round1(p + ps))} ${unitWord(t)} (cierre ${fmtP(p)} + parciales ${fmtP(ps)})` : `${tp} · ${fmtP(p)} ${unitWord(t)}`;
+  return `${tp} · ${fmtP(p)} ${unitWord(t)}`;
 };
 
 function computeMetrics(list) {
@@ -983,8 +994,6 @@ function LegEditor({ t, k, onChange }) {
   const unit = unitName(t);
   const tps = t.tps || [];
   const [pipsText, setPipsText] = useState("");
-  const [partText, setPartText] = useState("");
-  const [partTp, setPartTp] = useState(""); // nivel de TP del parcial ("" = detectar automáticamente)
 
   useEffect(() => {
     setPipsText(L.pips === "" || L.pips === undefined || L.pips === null ? "" : String(L.pips));
@@ -1004,35 +1013,7 @@ function LegEditor({ t, k, onChange }) {
   };
   const pickBE = () => onChange(k, { status: "BE", tpIdx: null, exit: entry ?? "", pips: 0 });
   const pickOpen = () => onChange(k, { status: "Abierta", tpIdx: null, exit: "", pips: "" });
-  const pickPending = () => onChange(k, { status: "Pendiente", tpIdx: null, exit: "", pips: "", partials: 0, partialPips: [], partialTps: [] });
-  const isOpenLeg = !L.status || L.status === "Abierta";
-  // Parciales: solo se anota la acción; el estado NUNCA cambia (la entrada sigue Abierta)
-  const addPartial = () => {
-    if (!isOpenLeg) return;
-    const v = num(partText);
-    const list = [...(L.partialPips || []), v === null ? 0 : v];
-    // nivel de TP: el elegido a mano o, si coincide con la distancia de algún TP, el detectado
-    let idx = partTp === "" ? null : Number(partTp);
-    if (idx === null && v !== null && v > 0) {
-      let bestD = Infinity;
-      tps.forEach((lvl, i) => {
-        if (lvl === "OPEN") return;
-        const d = calcPips(t, k, lvl);
-        if (d === null || d <= 0) return;
-        const diff = Math.abs(v - d);
-        if (diff <= Math.max(0.5, d * 0.02) && diff < bestD) { bestD = diff; idx = i; }
-      });
-    }
-    const tl = [...list.slice(0, -1).map((_, i) => ((L.partialTps || [])[i] ?? null)), idx];
-    onChange(k, { status: "Abierta", partials: list.length, partialPips: list, partialTps: tl });
-    setPartText("");
-    setPartTp("");
-  };
-  const undoPartial = () => {
-    if (!isOpenLeg || !L.partials) return;
-    const list = (L.partialPips || []).slice(0, -1);
-    onChange(k, { status: "Abierta", partials: Math.max(0, Number(L.partials) - 1), partialPips: list, partialTps: (L.partialTps || []).slice(0, list.length) });
-  };
+  const pickPending = () => onChange(k, { status: "Pendiente", tpIdx: null, exit: "", pips: "" });
   const pickManual = () => onChange(k, { status: "MANUAL", tpIdx: null, exit: "", pips: L.status === "MANUAL" ? L.pips : "" });
 
   const commitPips = () => {
@@ -1056,31 +1037,6 @@ function LegEditor({ t, k, onChange }) {
         <div className="text-xs bx-muted">{risk ? `Riesgo: ${Math.round(risk * 10) / 10} ${unit.toLowerCase()}` : "Sin SL"}</div>
       </div>
 
-      {isOpenLeg && (
-        <div className="mb-2 flex items-end gap-2 flex-wrap">
-          <label className="block w-44">
-            <span className="bx-label">{unit} del parcial</span>
-            <input
-              type="number"
-              step="any"
-              className="bx-input"
-              value={partText}
-              onChange={(e) => setPartText(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addPartial(); } }}
-              placeholder="Ej: 25"
-              aria-label="Pips del parcial"
-            />
-          </label>
-          <label className="block w-36">
-            <span className="bx-label">Nivel de TP</span>
-            <select className="bx-input" value={partTp} onChange={(e) => setPartTp(e.target.value)} aria-label="Nivel de TP del parcial">
-              <option value="">Auto / ninguno</option>
-              {tps.map((lvl, i) => <option key={i} value={i}>{tpLabel(i, lvl)}</option>)}
-            </select>
-          </label>
-          <span className="text-xs bx-muted pb-2">escribe los {unit.toLowerCase()}, elige el TP que tocó (opcional) y pulsa <b className="text-white">Parciales</b></span>
-        </div>
-      )}
       <div className="flex flex-wrap gap-1.5">
         <button type="button" onClick={pickPending} className={`bx-seg wait ${L.status === "Pendiente" ? "on" : ""}`}>Orden Pendiente</button>
         <button type="button" onClick={pickOpen} className={`bx-seg open ${L.status === "Abierta" ? "on" : ""}`}>Activa</button>
@@ -1092,24 +1048,7 @@ function LegEditor({ t, k, onChange }) {
           </button>
         ))}
         <button type="button" onClick={pickManual} className={`bx-seg mid ${L.status === "MANUAL" ? "on" : ""}`}>Cierre Manual</button>
-        <button
-          type="button"
-          onClick={addPartial}
-          disabled={!isOpenLeg}
-          title={isOpenLeg ? "Registrar un parcial (la entrada sigue activa)" : "Solo disponible mientras la entrada está activa"}
-          className={`bx-seg open ${L.partials ? "on" : ""}`}
-          style={!isOpenLeg ? { opacity: 0.4, cursor: "not-allowed" } : undefined}
-        >
-          Parciales{L.partials ? ` ×${L.partials}` : ""}
-        </button>
       </div>
-      {L.partials > 0 && isOpenLeg && (
-        <div className="mt-2 text-xs bx-muted">
-          {L.partials} {L.partials === 1 ? "parcial registrado" : "parciales registrados"}{partialSum(L) ? ` (${fmtP(partialSum(L))} ${unit.toLowerCase()} acumulados)` : ""} · la entrada sigue <b className="text-white">activa</b> hasta que toque SL, BE, TP o uses Cierre Manual.{" "}
-          <button type="button" onClick={undoPartial} className="underline" style={{ color: ACCENT }}>quitar el último</button>
-        </div>
-      )}
-
       {L.status === "Pendiente" && (
         <div className="mt-2 text-xs" style={{ color: "#fcd34d" }}>Orden pendiente: aún no se activó en el mercado. Cuando el precio entre, pulsa <b>Activa</b>.</div>
       )}
@@ -1128,7 +1067,7 @@ function LegEditor({ t, k, onChange }) {
               placeholder={isOpenTp ? "Obligatorio" : "Editable"}
             />
           </label>
-          <div className="text-xs bx-muted pb-2">{r !== null ? `${r >= 0 ? "+" : ""}${r.toFixed(2)}R` : ""}{partialSum(L) && p !== null ? ` · + parciales ${fmtP(partialSum(L))} = total ${fmtP(round1(p + partialSum(L)))}` : ""}</div>
+          <div className="text-xs bx-muted pb-2">{r !== null ? `${r >= 0 ? "+" : ""}${r.toFixed(2)}R` : ""}</div>
           {(isOpenTp || needsPips) && (
             <div className="text-xs pb-2" style={{ color: "#ffb089" }}>
               {isOpenTp ? "TP abierto: escribe los pips/puntos reales alcanzados." : L.status === "MANUAL" ? "Cierre manual: escribe los pips/puntos finales (con − si cerró en pérdida)." : "Escribe los pips/puntos reales."}
@@ -1484,54 +1423,70 @@ function buildReport(trades, mode, ref, scope) {
   const pctProf = closed.length ? Math.round((profitable / closed.length) * 100) : null;
   const pctBE = closed.length ? Math.round((be / closed.length) * 100) : null;
 
-  // Objetivos alcanzados: una operación cuenta UNA vez por nivel (alcanzar TP2 implica haber pasado TP1)
+  // Entradas enviadas / activadas (activada = ya entró al mercado: cualquier estado salvo Pendiente y Descartada)
   const scored = list.filter((t) => !t.discarded && t.status !== "Pendiente");
+  const activated = scored.length;
+
+  // Objetivos alcanzados: una operación cuenta UNA vez por nivel (llegar a TP2 implica haber pasado TP1)
   const maxLv = Math.max(3, ...scored.map((t) => (t.tps || []).length));
   const reach = Array.from({ length: maxLv }, (_, i) => scored.filter((t) => hitMax(t) >= i).length);
-  const untagged = scored.filter((t) => partialsUntagged(t) > 0 && hitMax(t) < 0).length;
 
-  // Resultados por unidad (pips = CFDs/DERIV · puntos = WELTRADE). Los parciales se suman UNA sola vez (vía legResults)
+  // Resultados finales por categoría (cada operación cerrada cae en UNA sola categoría)
+  const kinds = { TP: [], OPEN: [], MANUAL: [], BE: [], SL: [] };
+  closed.forEach((t) => { const o = outcomeOf(t); if (o && kinds[o]) kinds[o].push(t); });
+  const addU = (o, t, v) => { const u = unitWord(t); o[u] = round1((o[u] || 0) + v); };
+  const fmtU = (o) => (Object.keys(o).length ? Object.entries(o).map(([u, v]) => `${fmtP(v)} ${u}`).join("  |  ") : "0");
+  const sumKind = (arr, fn) => { const o = {}; arr.forEach((t) => addU(o, t, fn(t))); return o; };
+  const tpPips = sumKind(kinds.TP, (t) => Number(t.pips) || 0);
+  const slPips = sumKind(kinds.SL, (t) => Number(t.pips) || 0);
+  const runPips = sumKind(kinds.OPEN, (t) => legPipsWhere(t, isRun));
+  const manPips = sumKind(kinds.MANUAL, (t) => legPipsWhere(t, (L) => L.status === "MANUAL"));
+
+  // Resultado neto por unidad (pips = CFDs/DERIV · puntos = WELTRADE)
   const U = {};
-  const ub = (u) => (U[u] = U[u] || { net: 0, part: 0, outside: 0, closedSum: 0, closedN: 0 });
+  const ub = (u) => (U[u] = U[u] || { net: 0, closedSum: 0, closedN: 0 });
   list.forEach((t) => {
     if (t.discarded) return;
     const u = unitWord(t);
-    if (legResults(t).length) { ub(u).net += Number(t.pips) || 0; ub(u).part += partialsInNet(t); }
-    const out = partialsOutsideNet(t);
-    if (out) ub(u).outside += out;
+    if (legResults(t).length) ub(u).net += Number(t.pips) || 0;
     if (["TP", "SL", "BE"].includes(t.status)) { ub(u).closedSum += Number(t.pips) || 0; ub(u).closedN += 1; }
   });
   const uKeys = Object.keys(U);
   const perUnit = (fn) => (uKeys.length ? uKeys.map((u) => fn(U[u], u)).join("  |  ") : "0");
   const scopeName = { ALL: "Todos los mercados", CFD: "CFDs", DERIV: "Sintéticos · DERIV", WELTRADE: "Sintéticos · WELTRADE" }[scope];
   const pc0 = (v) => (v === null ? "—" : `${v}%`);
+  const withPips = (n, o) => `${n}${n ? ` · ${fmtU(o)}` : ""}`;
 
   const L = [];
   L.push("📊 BORKAIFX ELITE");
   L.push(title);
   L.push(`Mercado: ${scopeName}`);
   L.push("");
-  L.push("RESUMEN DE OPERACIONES");
-  L.push(`• Total de operaciones: ${list.length}`);
-  L.push(`• TP: ${tp}  |  SL: ${sl}  |  BE: ${be}`);
-  L.push(`• Activas: ${open}  |  Pendientes: ${pend}  |  Descartadas: ${dis}`);
+  L.push("RESUMEN DE ENTRADAS");
+  L.push(`• Total de entradas enviadas: ${list.length}`);
+  L.push(`• Entradas activadas: ${activated} de ${list.length}`);
+  L.push(`• Pendientes (sin activar): ${pend}  |  Descartadas: ${dis}`);
+  if (open) L.push(`• Aún en curso (activas sin cerrar): ${open}`);
   L.push("");
-  L.push("OBJETIVOS ALCANZADOS (operaciones que llegaron a cada nivel)");
+  L.push("OBJETIVOS ALCANZADOS (entradas que llegaron a cada nivel)");
   L.push(`• ${reach.map((n, i) => `TP${i + 1}: ${n}`).join("  |  ")}`);
-  L.push("  Una operación cuenta una sola vez por nivel; si llegó a TP2 también cuenta en TP1, aunque haya cerrado en BE.");
-  if (untagged) L.push(`  ⚠ ${untagged} ${untagged === 1 ? "operación tiene" : "operaciones tienen"} parciales sin nivel de TP registrado y no se asignan a ningún TP.`);
+  L.push("  Una entrada cuenta una sola vez por nivel; si llegó a TP2 también cuenta en TP1.");
+  L.push("");
+  L.push(`RESULTADOS FINALES (entradas cerradas: ${closed.length})`);
+  L.push(`• TP (objetivo fijo): ${withPips(kinds.TP.length, tpPips)}`);
+  L.push(`• TP open (dejadas correr): ${withPips(kinds.OPEN.length, runPips)}${kinds.OPEN.length ? " · balance acumulado" : ""}`);
+  L.push(`• Cierre manual: ${withPips(kinds.MANUAL.length, manPips)}`);
+  L.push(`• BE: ${kinds.BE.length}`);
+  L.push(`• SL: ${withPips(kinds.SL.length, slPips)}`);
   L.push("");
   L.push("RESULTADO ECONÓMICO");
   L.push(`• Resultado neto total: ${perUnit((x, u) => `${fmtP(round1(x.net))} ${u}`)}`);
-  L.push(`• Beneficio por parciales (ya incluido en el neto): ${perUnit((x, u) => `${fmtP(round1(x.part))} ${u}`)}`);
-  L.push(`• Resultado de los cierres finales (neto − parciales): ${perUnit((x, u) => `${fmtP(round1(x.net - x.part))} ${u}`)}`);
-  L.push(`• Promedio por operación cerrada: ${uKeys.length ? uKeys.map((u) => (U[u].closedN ? `${fmtP(round1(U[u].closedSum / U[u].closedN))} ${u}` : `— ${u}`)).join("  |  ") : "—"}`);
-  if (uKeys.some((u) => U[u].outside)) L.push(`• Parciales en entradas aún activas (no incluidos en el neto): ${uKeys.filter((u) => U[u].outside).map((u) => `${fmtP(round1(U[u].outside))} ${u}`).join("  |  ")}`);
+  L.push(`• Promedio por entrada cerrada: ${uKeys.length ? uKeys.map((u) => (U[u].closedN ? `${fmtP(round1(U[u].closedSum / U[u].closedN))} ${u}` : `— ${u}`)).join("  |  ") : "—"}`);
   L.push("");
-  L.push("EFECTIVIDAD (sobre operaciones cerradas: TP + SL + BE)");
+  L.push("EFECTIVIDAD (sobre entradas cerradas: TP + SL + BE)");
   L.push(`• Win Rate convencional: ${wr}% (${tp} TP / ${dec} decisivas · BE no cuenta)`);
-  L.push(`• Operaciones rentables: ${pc0(pctProf)} (${profitable} de ${closed.length} con resultado neto mayor a cero; un BE con parciales positivos cuenta)`);
-  L.push(`• Operaciones con BE: ${pc0(pctBE)} (${be} de ${closed.length})`);
+  L.push(`• Entradas rentables: ${pc0(pctProf)} (${profitable} de ${closed.length} con resultado neto mayor a cero)`);
+  L.push(`• Entradas con BE: ${pc0(pctBE)} (${be} de ${closed.length})`);
   L.push("");
   L.push("DETALLE DE OPERACIONES");
   if (!list.length) L.push("Sin operaciones en este período.");
@@ -1539,18 +1494,12 @@ function buildReport(trades, mode, ref, scope) {
     const st = stat(t);
     const has = !t.discarded && legResults(t).length > 0;
     const u = unitWord(t);
-    L.push(`${i + 1}. ${t.asset} | ${t.direction} | ${fmtDate(t.date)}`);
-    L.push(`   • Estado final: ${st}`);
+    const o = outcomeOf(t);
     const hm = hitMax(t);
-    const pcs = partialsCount(t);
+    const label = o === "MANUAL" ? "Cierre manual" : o === "OPEN" ? "TP open (dejada correr)" : o === "TP" && hm >= 0 ? `TP${hm + 1}` : st;
+    L.push(`${i + 1}. ${t.asset} | ${t.direction} | ${fmtDate(t.date)}`);
+    L.push(`   • Estado final: ${label}`);
     if (hm >= 0) L.push(`   • Objetivo máximo alcanzado: TP${hm + 1}`);
-    else if (st === "SL" && !pcs) L.push("   • Objetivo máximo alcanzado: ninguno");
-    else if (st === "BE" || (st === "SL" && pcs)) L.push("   • Objetivo máximo alcanzado: No disponible");
-    if (pcs) {
-      const ps = partialsInNet(t) + partialsOutsideNet(t);
-      L.push(`   • Parciales ejecutados: ${pcs}${ps ? ` (${fmtP(round1(ps))} ${u})` : ""}`);
-      if (ps) L.push(`   • Beneficio asegurado: ${fmtP(round1(ps))} ${u}`);
-    }
     if (has) L.push(`   • Resultado neto final: ${fmtP(t.pips)} ${u}`);
     else if (st !== "DESCARTADA") L.push(`   • Resultado neto final: ${st === "ACTIVA" || st === "PENDIENTE" ? "en curso" : "No disponible"}`);
     const note = (t.notes || "").trim();
@@ -2143,11 +2092,8 @@ function DayTradeCard({ t, onOpen, onSignal }) {
           <TpChips t={t} />
         </div>
       </div>
-      {partialsCount(t) > 0 && (
-        <div className="mt-2 text-xs bx-muted">
-          Parciales ×{partialsCount(t)}{partialsTotal(t) ? <> · <span className="text-white">{fmtP(partialsTotal(t))} {unitWord(t)}</span></> : null}
-          {hitMax(t) >= 0 ? <> · Objetivo máx.: <span className="text-white">TP{hitMax(t) + 1}</span></> : null}
-        </div>
+      {hitMax(t) >= 0 && (
+        <div className="mt-2 text-xs bx-muted">Objetivo máx. alcanzado: <span className="text-white">TP{hitMax(t) + 1}</span></div>
       )}
       {has && keys.length > 1 && (
         <div className="mt-2 text-xs bx-muted space-y-0.5">
@@ -3121,7 +3067,7 @@ export default function App() {
                         {t.discarded || res.length === 0 ? <span className="bx-muted font-normal">—</span> : `${fmtP(t.pips)} ${unitWord(t)}`}
                       </td>
                       <td className="px-3 py-3 bx-muted whitespace-nowrap">{t.discarded || res.length === 0 ? "—" : `${t.r >= 0 ? "+" : ""}${t.r}R`}</td>
-                      <td className="px-3 py-3"><StatusBadge status={t.status} />{isAdmin && t.status === "Abierta" && partialsCount(t) > 0 && <span className="ml-1.5 text-[10px] font-bold" style={{ color: "#7dd3fc" }}>Parciales ×{partialsCount(t)}</span>}</td>
+                      <td className="px-3 py-3"><StatusBadge status={t.status} /></td>
                       <td className="px-3 py-3 whitespace-nowrap text-right" onClick={(e) => e.stopPropagation()}>
                         {isAdmin && (
                           <>
