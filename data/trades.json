@@ -1099,6 +1099,49 @@
     "r": 3.09
   },
   {
+    "id": "e2h6kob7mw57n9wc",
+    "date": "2026-11-06",
+    "category": "CFD",
+    "sub": "Índices",
+    "broker": "",
+    "asset": "NAS100",
+    "direction": "BUY",
+    "entry1": 27008.02,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 26932.54,
+    "tps": [
+      27083.5,
+      27328.13,
+      "OPEN"
+    ],
+    "pipSize": 1,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 27083.5,
+        "pips": 75.5,
+        "tpIdx": 0
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "Index 📈\nPair: NAS100 📊\nSide: Long / Buy\nEntry: 27008.02\nTP: Open\nSL: 26932.54\nNote: past profits do not predict future profits\nRisk 0.5-1-2%\n\nTP1 27083.50 754.8pips ✅\nTP2 27328.13 3201.1pips ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 75.5,
+    "r": 1
+  },
+  {
     "id": "jvh3sm5cmw57my4b",
     "date": "2026-11-06",
     "category": "CFD",
