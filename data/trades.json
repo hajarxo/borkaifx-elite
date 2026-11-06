@@ -1119,9 +1119,9 @@
     "legs": {
       "e1": {
         "status": "TP",
-        "exit": 27172.09,
-        "pips": 76.5,
-        "tpIdx": 0
+        "exit": 27067.93,
+        "pips": 180.6,
+        "tpIdx": 1
       },
       "e2": {
         "status": "Pendiente",
@@ -1138,7 +1138,7 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 76.5,
-    "r": 0.98
+    "pips": 180.6,
+    "r": 2.3
   }
 ]
