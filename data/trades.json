@@ -1143,6 +1143,47 @@
     "r": 0.95
   },
   {
+    "id": "czxfe6s8mw5r7c88",
+    "date": "2026-11-06",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "STEP INDEX 200",
+    "direction": "SELL",
+    "entry1": 11154.1,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 11159.5,
+    "tps": [
+      11119
+    ],
+    "pipSize": 1,
+    "legs": {
+      "e1": {
+        "status": "BE",
+        "exit": 11154.1,
+        "pips": 0,
+        "tpIdx": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "STEP INDEX 200 SELL 11154.1\nTP1: 11119\nSL: 11159.5",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "BE",
+    "pips": 0,
+    "r": 0
+  },
+  {
     "id": "e2h6kob7mw57n9wc",
     "date": "2026-11-06",
     "category": "CFD",
