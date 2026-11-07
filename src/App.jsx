@@ -1926,7 +1926,6 @@ function SignalShowcase({ kind }) {
   return (
     <section id="ejemplo-senal" className="scroll-mt-24" data-testid="signal-showcase">
       <SectionTitle kicker="DENTRO DEL CANAL VIP" title="Así se ve una señal" text="Cada señal llega con sus niveles definidos y se actualiza en vivo: entrada activa, objetivos alcanzados y cierre." />
-      <div className="text-center mb-4"><span className="bx-pill on" data-testid="signal-kind-label">{kind === "CFD" ? "CFDS" : "SINTÉTICOS"}</span></div>
       <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center max-w-5xl mx-auto">
         <div className="bx-card w-full max-w-md mx-auto md:mx-0 md:ml-auto overflow-hidden">
           <div className="flex items-center gap-3 px-4 py-3 bx-bb">
@@ -1967,26 +1966,24 @@ function SignalShowcase({ kind }) {
               <p className="text-sm bx-muted mt-0.5">{d}</p>
             </div>
           ))}
-        </div>
-      </div>
-      <div className="max-w-3xl mx-auto mt-10" data-testid="vip-rules">
-        <div className="text-center mb-3">
-          <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">DISCIPLINA</div>
-          <h3 className="mt-1 text-xl md:text-2xl font-black" style={{ color: "var(--ink)" }}>Gestión de riesgo &amp; reglas VIP</h3>
-        </div>
-        <div className="bx-card divide-y" style={{ borderColor: "rgba(245,158,11,.2)" }}>
-          {VIP_RULES.map((r, i) => {
-            const open = openRule === i && !!r.text;
-            return (
-              <div key={r.t} style={{ borderTop: i ? "1px solid rgba(100,116,139,.3)" : "none" }}>
-                <button onClick={() => r.text && setOpenRule(open ? null : i)} aria-expanded={open} className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left" style={{ cursor: r.text ? "pointer" : "default" }}>
-                  <span><span className="bx-accent font-black mr-2">{i + 1}.</span><span className="font-bold text-white">{r.t}</span></span>
-                  {r.text ? <span className="bx-accent text-lg leading-none">{open ? "–" : "+"}</span> : null}
-                </button>
-                {open && <p className="px-4 pb-3 text-sm bx-muted">{r.text}</p>}
-              </div>
-            );
-          })}
+
+          <div className="pt-4 mt-2" style={{ borderTop: "1px solid rgba(100,116,139,.3)" }} data-testid="vip-rules">
+            <div className="font-extrabold text-white mb-2">Gestión de riesgo &amp; reglas VIP</div>
+            <div className="space-y-1.5">
+              {VIP_RULES.map((r, i) => {
+                const open = openRule === i && !!r.text;
+                return (
+                  <div key={r.t} className="rounded-xl" style={{ background: "rgba(2,6,23,.45)", border: "1px solid rgba(100,116,139,.3)" }}>
+                    <button onClick={() => r.text && setOpenRule(open ? null : i)} aria-expanded={open} className="w-full flex items-center justify-between gap-3 px-3 py-2 text-left" style={{ cursor: r.text ? "pointer" : "default" }}>
+                      <span className="text-sm"><span className="bx-accent font-black mr-1.5">{i + 1}.</span><span className="font-bold text-white">{r.t}</span></span>
+                      {r.text ? <span className="bx-accent text-lg leading-none">{open ? "–" : "+"}</span> : null}
+                    </button>
+                    {open && <p className="px-3 pb-2 text-sm bx-muted">{r.text}</p>}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         </div>
       </div>
       <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-xl">Ejemplo de señal publicada en el canal, a modo ilustrativo; no muestra un resultado real.</p>
