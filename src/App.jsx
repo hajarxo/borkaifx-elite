@@ -54,15 +54,9 @@ const SITE = {
 
   // Planes del pase VIP (amount en USD, months = duración)
   plans: [
-    { name: "Plan Mensual", amount: 70, months: 1, label: "Pago mensual" },
-    { name: "Plan Trimestral", amount: 150, months: 3, label: "Pago cada 3 meses" },
-    { name: "Plan Anual", amount: 300, months: 12, label: "Pago anual" },
-  ],
-  planFeatures: [
-    "Acceso al canal VIP de Telegram",
-    "Señales de CFDs y Sintéticos",
-    "Acceso al Curso & Entrenamiento",
-    "Gestión de riesgo sugerida",
+    { name: "1 Mes", amount: 70, months: 1, label: "Pago mensual", features: ["Acceso únicamente al canal de señales"] },
+    { name: "3 Meses", amount: 150, months: 3, label: "Pago cada 3 meses", features: ["Canal de señales", "Estrategia Institucional"] },
+    { name: "Anual", amount: 300, months: 12, label: "Pago anual", features: ["Canal de señales", "Ebook “Domina tu Mente”", "Curso Estratégico (XAUUSD e Índices)"] },
   ],
 
   courseModules: [
@@ -2009,7 +2003,7 @@ function ServicesPricing({ setPage }) {
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">01</div>
             <h3 className="mt-1 text-lg font-extrabold">Señales VIP · CFDs</h3>
-            <p className="mt-2 text-sm bx-muted">Forex, Oro/Metales e Índices con Entry, Stop Loss y múltiples Take Profit definidos antes de entrar.</p>
+            <p className="mt-2 text-sm bx-muted">XAUUSD y NAS100 con punto de entrada, Stop Loss y múltiples Take Profit definidos antes de entrar.</p>
           </div>
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">02</div>
@@ -2030,6 +2024,33 @@ function ServicesPricing({ setPage }) {
         </div>
       </section>
 
+      {/* CANAL DE SEÑALES VIP */}
+      <section id="canal-vip" className="scroll-mt-24" data-testid="canal-vip">
+        <SectionTitle kicker="CANAL DE SEÑALES VIP" title="XAUUSD & NAS100 🏆📊" text="Operamos los dos activos más volátiles y lucrativos del mercado con precisión quirúrgica." />
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="bx-card p-5">
+            <div className="text-xs bx-accent font-bold tracking-widest">📌 ¿QUÉ INCLUYE EL SERVICIO VIP?</div>
+            <h3 className="mt-2 font-extrabold">De 2 a 3 señales diarias</h3>
+            <p className="text-sm bx-muted mt-1">Con parámetros exactos:</p>
+            <ul className="mt-2 space-y-1.5 text-sm bx-muted">
+              {["Punto de entrada", "Stop Loss", "Múltiples Take Profits"].map((x) => <li key={x} className="flex gap-2"><span className="bx-accent">✓</span>{x}</li>)}
+            </ul>
+          </div>
+          <div className="bx-card p-5">
+            <div className="text-xs bx-accent font-bold tracking-widest">⏱ SEGUIMIENTO</div>
+            <h3 className="mt-2 font-extrabold">Seguimiento en tiempo real</h3>
+            <ul className="mt-2 space-y-1.5 text-sm bx-muted">
+              {["Avisos para tomar parciales", "Indicación para mover el SL a Breakeven", "Cierres anticipados según la estructura del mercado", "Gestión de riesgo recomendada"].map((x) => <li key={x} className="flex gap-2"><span className="bx-accent">✓</span>{x}</li>)}
+            </ul>
+          </div>
+          <div className="bx-card p-5">
+            <div className="text-xs bx-accent font-bold tracking-widest">🌐 SESIONES OPERATIVAS</div>
+            <h3 className="mt-2 font-extrabold">Asia y New York</h3>
+            <p className="text-sm bx-muted mt-2">Operamos principalmente la sesión de Asia y New York. Si hay un cambio para operar Londres, se les informará con anticipación.</p>
+          </div>
+        </div>
+      </section>
+
       <SignalShowcase />
 
       {/* TABLA DE PRECIOS */}
@@ -2045,7 +2066,7 @@ function ServicesPricing({ setPage }) {
               <div className="text-xs bx-muted mt-1">{p.label}</div>
               {p.months > 1 && <div className="mt-2 text-xs font-bold bx-accent">Equivale a {fmtMoney(p.amount / p.months)} USD al mes</div>}
               <ul className="mt-4 space-y-2 text-sm bx-muted flex-1 text-left mx-auto w-fit">
-                {SITE.planFeatures.map((f, i) => (
+                {p.features.map((f, i) => (
                   <li key={i} className="flex gap-2"><span className="bx-accent">✓</span>{f}</li>
                 ))}
               </ul>
