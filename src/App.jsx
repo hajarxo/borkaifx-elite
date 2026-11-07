@@ -210,8 +210,8 @@ function guessPip(asset, category, sub) {
 }
 
 // Unidad según tipo de activo / broker
-// Regla de unidades: WELTRADE = PUNTOS · todo lo demás (CFDs y DERIV) = PIPS
-const unitWord = (t) => (t.category === "SINTETICO" && t.broker === "WELTRADE" ? "puntos" : "pips");
+// Regla de unidades: WELTRADE = PUNTOS (fijo) · CFDs = PIPS · DERIV = lo que se elija en la señal (t.unit), PIPS por defecto
+const unitWord = (t) => (t.category === "SINTETICO" ? (t.broker === "WELTRADE" ? "puntos" : t.unit === "puntos" ? "puntos" : "pips") : "pips");
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const unitName = (t) => cap(unitWord(t));
 
@@ -777,6 +777,7 @@ function emptyForm(category, sub, broker) {
     raw: "",
     notes: "",
     tagsText: "VIP Signal",
+    unit: "pips", // solo DERIV: "pips" | "puntos" (Step Index = puntos)
     legs: { e1: { status: "Pendiente", exit: "", pips: "", tpIdx: null }, e2: { status: "Pendiente", exit: "", pips: "", tpIdx: null } },
   };
 }
@@ -793,6 +794,9 @@ function TradeForm({ initial, onCancel, onSave }) {
   const [f, setF] = useState(initial);
   const [err, setErr] = useState("");
   const [pipTouched, setPipTouched] = useState(!!initial.id);
+  const [unitTouched, setUnitTouched] = useState(!!initial.id);
+  // Sintéticos: una sola entrada. Solo se conserva la Entry 2 si la señal que se edita ya la tenía (datos históricos).
+  const legacyE2 = !!initial.id && num(initial.entry2) !== null;
   const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
 
   // Clasificación automática: Sintético (DERIV / WELTRADE) o CFD según el activo
@@ -801,6 +805,12 @@ function TradeForm({ initial, onCancel, onSave }) {
     if (!c) return;
     setF((p) => ({ ...p, category: c.category, sub: c.category === "CFD" ? c.sub || p.sub || "Forex" : "", broker: c.category === "SINTETICO" ? c.broker : "" }));
   }, [f.asset]);
+
+  // DERIV: sugerencia de unidad según el activo (Step Index = puntos; el resto = pips). Editable.
+  useEffect(() => {
+    if (unitTouched) return;
+    if (f.category === "SINTETICO" && f.broker !== "WELTRADE") setF((p) => ({ ...p, unit: /\bSTEP/i.test(p.asset || "") ? "puntos" : "pips" }));
+  }, [f.asset, f.category, f.broker, unitTouched]);
 
   // El tamaño del pip/punto se sugiere según el activo (editable)
   useEffect(() => {
@@ -814,7 +824,8 @@ function TradeForm({ initial, onCancel, onSave }) {
     if (!f.date) return setErr("La fecha es obligatoria.");
     const e1 = num(f.entry1);
     if (e1 === null) return setErr("Entry 1 es obligatoria.");
-    const e2 = num(f.entry2);
+    const single = f.category === "SINTETICO" && !legacyE2;
+    const e2 = single ? null : num(f.entry2);
     const trade = recompute({
       id: f.id || uid(),
       date: f.date,
@@ -829,6 +840,7 @@ function TradeForm({ initial, onCancel, onSave }) {
       sl: num(f.sl) ?? "",
       tps: parseTpsText(f.tpsText),
       pipSize: num(f.pipSize) || 1,
+      ...(f.category === "SINTETICO" && f.broker === "DERIV" ? { unit: f.unit === "puntos" ? "puntos" : "pips" } : {}),
       legs: f.legs || {},
       discarded: !!f.discarded,
       raw: f.raw || "",
@@ -839,7 +851,10 @@ function TradeForm({ initial, onCancel, onSave }) {
     onSave(trade);
   };
 
-  const showE2 = num(f.entry2) !== null;
+  const singleEntry = f.category === "SINTETICO" && !legacyE2;
+  const showE2 = !singleEntry && num(f.entry2) !== null;
+  const isDeriv = f.category === "SINTETICO" && f.broker !== "WELTRADE";
+  const fUnit = f.category === "SINTETICO" ? (f.broker === "WELTRADE" ? "puntos" : f.unit === "puntos" ? "puntos" : "pips") : "pips";
   const auto = classifyAsset(f.asset);
 
   return (
@@ -901,7 +916,7 @@ function TradeForm({ initial, onCancel, onSave }) {
               </div>
             )}
           </Field>
-          <Field label={f.category === "CFD" ? "Valor de 1 pip (en precio)" : "Valor de 1 punto (en precio)"} className="col-span-2">
+          <Field label={fUnit === "pips" ? "Valor de 1 pip (en precio)" : "Valor de 1 punto (en precio)"} className="col-span-2">
             <input
               type="number"
               step="any"
@@ -915,19 +930,43 @@ function TradeForm({ initial, onCancel, onSave }) {
           <Field label="Entry 1">
             <input type="number" step="any" className="bx-input" value={f.entry1} onChange={(e) => set("entry1", e.target.value)} />
           </Field>
-          <Field label="Entry 2 (opcional)">
-            <input type="number" step="any" className="bx-input" value={f.entry2} onChange={(e) => set("entry2", e.target.value)} />
-          </Field>
-          <Field label="Stop Loss">
-            <input type="number" step="any" className="bx-input" value={f.sl} onChange={(e) => set("sl", e.target.value)} />
-          </Field>
-          <Field label="Entradas activadas">
-            <select className="bx-input" value={showE2 ? f.activation : "E1"} disabled={!showE2} onChange={(e) => set("activation", e.target.value)}>
-              <option value="E1">Solo E1</option>
-              <option value="E2">Solo E2</option>
-              <option value="BOTH">Ambas (E1 + E2)</option>
-            </select>
-          </Field>
+          {singleEntry ? (
+            <>
+              <Field label="Stop Loss">
+                <input type="number" step="any" className="bx-input" value={f.sl} onChange={(e) => set("sl", e.target.value)} />
+              </Field>
+              <Field label="Unidad de medida">
+                {isDeriv ? (
+                  <select className="bx-input" value={fUnit} onChange={(e) => { setUnitTouched(true); set("unit", e.target.value); }} aria-label="Unidad de medida">
+                    <option value="pips">Pips</option>
+                    <option value="puntos">Puntos</option>
+                  </select>
+                ) : (
+                  <div className="bx-input flex items-center" style={{ opacity: 0.85 }}>Puntos (WELTRADE)</div>
+                )}
+              </Field>
+              <Field label="Entradas">
+                <div className="bx-input flex items-center" style={{ opacity: 0.85 }}>Una sola entrada</div>
+              </Field>
+              {isDeriv && <div className="col-span-2 md:col-span-4 -mt-1 text-[11px] bx-muted">Los activos como Step Index se miden en <b className="text-white">puntos</b>; Boom, Crash y similares, normalmente en pips. Esta unidad se usa en los resultados y en los reportes.</div>}
+            </>
+          ) : (
+            <>
+              <Field label="Entry 2 (opcional)">
+                <input type="number" step="any" className="bx-input" value={f.entry2} onChange={(e) => set("entry2", e.target.value)} />
+              </Field>
+              <Field label="Stop Loss">
+                <input type="number" step="any" className="bx-input" value={f.sl} onChange={(e) => set("sl", e.target.value)} />
+              </Field>
+              <Field label="Entradas activadas">
+                <select className="bx-input" value={showE2 ? f.activation : "E1"} disabled={!showE2} onChange={(e) => set("activation", e.target.value)}>
+                  <option value="E1">Solo E1</option>
+                  <option value="E2">Solo E2</option>
+                  <option value="BOTH">Ambas (E1 + E2)</option>
+                </select>
+              </Field>
+            </>
+          )}
 
           <Field label="Take Profits (separados por coma; usa OPEN para TP abierto)" className="col-span-2 md:col-span-4">
             <input className="bx-input" placeholder="4013, 4008, 4003, OPEN" value={f.tpsText} onChange={(e) => set("tpsText", e.target.value)} />
@@ -1578,7 +1617,7 @@ function ReportModal({ trades, onClose, defaultScope }) {
               <select className="bx-input mt-1" value={scope} onChange={(e) => setScope(e.target.value)}>
                 <option value="ALL">Todos</option>
                 <option value="CFD">CFDs (pips)</option>
-                <option value="DERIV">Sintéticos · DERIV (pips)</option>
+                <option value="DERIV">Sintéticos · DERIV (pips o puntos)</option>
                 <option value="WELTRADE">Sintéticos · WELTRADE (puntos)</option>
               </select>
             </label>
@@ -1823,7 +1862,7 @@ function ServicesPricing({ setPage }) {
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">02</div>
             <h3 className="mt-1 text-lg font-extrabold">Señales VIP · Sintéticos</h3>
-            <p className="mt-2 text-sm bx-muted">Operativa en WELTRADE y DERIV, con el seguimiento medido en pips (DERIV) y puntos (WELTRADE).</p>
+            <p className="mt-2 text-sm bx-muted">Operativa en WELTRADE y DERIV, con el seguimiento medido en pips o puntos (DERIV, según el activo) y puntos (WELTRADE).</p>
           </div>
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">03</div>
@@ -2721,8 +2760,9 @@ export default function App() {
     setPeriod(monthSeq[j] === nowYM ? "cur" : `m:${monthSeq[j]}`);
   };
 
-  // Unidad dinámica: CFDs = Pips · DERIV = Pips · WELTRADE = Puntos
-  const scopeUnit = tab === "SINTETICO" && broker === "WELTRADE" ? "Puntos" : "Pips";
+  // Unidad dinámica: CFDs = Pips · DERIV = Pips o Puntos (según cada señal) · WELTRADE = Puntos
+  const scopeUnits = Array.from(new Set(market.map(unitWord)));
+  const scopeUnit = scopeUnits.length === 1 ? cap(scopeUnits[0]) : scopeUnits.length > 1 ? "Pips/Puntos" : tab === "SINTETICO" && broker === "WELTRADE" ? "Puntos" : "Pips";
 
   const baseList = useMemo(() => (dateFilter ? market.filter((t) => t.date >= dateFilter.from && t.date <= dateFilter.to) : scoped), [dateFilter, market, scoped]);
   const marked = useMemo(() => new Set(market.map((t) => t.date)), [market]);
