@@ -1879,116 +1879,94 @@ const Chip = ({ tone, children }) => {
   const c = tone === "entry" ? ["rgba(56,189,248,.16)", "#7dd3fc"] : tone === "tp" ? ["rgba(16,185,129,.16)", "#6ee7b7"] : ["rgba(244,63,94,.16)", "#fda4af"];
   return <span className="font-mono px-1.5 py-0.5 rounded-md text-[0.9em]" style={{ background: c[0], color: c[1] }}>{children}</span>;
 };
-function SignalChart() {
-  // Niveles de la señal de ejemplo (XAUUSD · Buy Limit)
-  const lv = [
-    { k: "Take Profit 3", p: 4115, c: GREEN },
-    { k: "Take Profit 2", p: 4110, c: GREEN },
-    { k: "Take Profit 1", p: 4105, c: GREEN },
-    { k: "Entry", p: 4100, c: "#38bdf8" },
-    { k: "Entry 2", p: 4096, c: "#38bdf8" },
-    { k: "Stop Loss", p: 4083, c: RED },
-  ];
-  const top = 4116, bot = 4081, y = (p) => 18 + ((top - p) / (top - bot)) * 192;
-  const candles = Array.from({ length: 15 }, (_, i) => {
-    const o = 4113 - i * 0.85 + (i % 3 === 0 ? 0.6 : 0);
-    const c = o - 0.9 + (i % 4 === 1 ? 0.7 : 0);
-    return { o, c, h: Math.max(o, c) + 0.7, l: Math.min(o, c) - 0.6 };
-  });
-  return (
-    <div className="rounded-2xl p-2" style={{ background: "rgba(2,6,23,.55)", border: "1px solid rgba(100,116,139,.35)" }}>
-      <svg viewBox="0 0 360 230" width="100%" role="img" aria-label="Ilustración de los niveles de la señal XAUUSD" style={{ display: "block" }}>
-        <text x="8" y="12" fill="#6B6760" fontSize="8" letterSpacing="2" fontFamily="monospace">ILUSTRACIÓN</text>
-        <text x="12" y="205" fill="rgba(255,255,255,.07)" fontSize="34" fontWeight="800">XAUUSD</text>
-        {[1, 2, 3].map((g) => <line key={g} x1="0" x2="360" y1={g * 55} y2={g * 55} stroke="rgba(255,255,255,.05)" />)}
-        <rect x="170" y={y(4100)} width="108" height={y(4083) - y(4100)} fill="rgba(244,63,94,.07)" />
-        {candles.map((cd, i) => {
-          const x = 12 + i * 9.5, up = cd.c >= cd.o, col = up ? "#10b981" : "#9ca3af";
-          return (
-            <g key={i}>
-              <line x1={x + 2} x2={x + 2} y1={y(cd.h)} y2={y(cd.l)} stroke={col} strokeOpacity=".8" />
-              <rect x={x} y={y(Math.max(cd.o, cd.c))} width="4" height={Math.max(2, Math.abs(y(cd.o) - y(cd.c)))} fill={col} fillOpacity=".85" />
-            </g>
-          );
-        })}
-        {lv.map((l) => (
-          <g key={l.k}>
-            <text x="274" y={y(l.p) - 3} textAnchor="end" fill={l.c} fontSize="9" fontWeight="700">{l.k}</text>
-            <line x1="170" x2="278" y1={y(l.p)} y2={y(l.p)} stroke={l.c} strokeWidth="1.2" />
-            <rect x="284" y={y(l.p) - 8} width="70" height="16" rx="4" fill="rgba(30,41,59,.9)" stroke={l.c} strokeOpacity=".5" />
-            <text x="319" y={y(l.p) + 3.5} textAnchor="middle" fill={l.c} fontSize="9.5" fontFamily="monospace">{l.p}</text>
-          </g>
-        ))}
-      </svg>
-    </div>
-  );
-}
+const SIGNAL_EXAMPLES = {
+  CFD: {
+    head: "Gold 🏆", pair: "XAUUSD", side: "Long / Buy Limit", entries: ["4100", "4096"], sl: "4083", unit: "pips",
+    tps: [["4105", "50"], ["4110", "100"], ["4115", "150"]],
+    updates: ["XAUUSD 4100 ENTRADA ACTIVA", "XAUUSD HIT TP1 ✅"],
+    legend: [
+      ["Par", ["XAUUSD"], "entry", "El mercado y el movimiento que buscamos: compra (Long) en el Oro."],
+      ["Entrada", ["4100", "4096"], "entry", "Buy Limit: la orden espera a que el precio llegue al nivel. Hay dos entradas."],
+      ["Objetivos", ["4105", "4110", "4115"], "tp", "Tres niveles para tomar ganancia (50, 100 y 150 pips) y un TP abierto que sigue corriendo."],
+      ["Stop", ["4083"], "sl", "La salida si el precio se gira en contra de la idea."],
+      ["Actualizaciones", [], "", "Seguimos cada operación en vivo, con ganancia o pérdida: entrada activa, objetivo alcanzado, stop o cierre. Aquí: la entrada activa y el TP1."],
+    ],
+  },
+  SINTETICO: {
+    // Ejemplo ilustrativo: cámbialo por una señal real de sintéticos cuando quieras
+    head: "Synthetic 📈", pair: "STEP INDEX 200", side: "Long / Buy", entries: ["11167.0"], sl: "11162.0", unit: "puntos",
+    tps: [["11172.0", "50"], ["11177.0", "100"], ["11182.0", "150"]],
+    updates: ["STEP INDEX 200 ENTRADA ACTIVA", "STEP INDEX 200 HIT TP1 ✅"],
+    legend: [
+      ["Par", ["STEP INDEX 200"], "entry", "El índice sintético y el movimiento que buscamos: compra (Long)."],
+      ["Entrada", ["11167.0"], "entry", "Una sola entrada, clara y directa."],
+      ["Objetivos", ["11172.0", "11177.0", "11182.0"], "tp", "Tres niveles para tomar ganancia (50, 100 y 150 puntos) y un TP abierto que sigue corriendo."],
+      ["Stop", ["11162.0"], "sl", "La salida si el precio se gira en contra de la idea."],
+      ["Actualizaciones", [], "", "Seguimos cada operación en vivo, medida en puntos: entrada activa, objetivo alcanzado, stop o cierre."],
+    ],
+  },
+};
 function SignalShowcase() {
+  const [kind, setKind] = useState("CFD");
+  const ex = SIGNAL_EXAMPLES[kind];
   const bubble = { background: "rgba(30,41,59,.75)", border: "1px solid rgba(100,116,139,.3)" };
   const quote = (
     <div className="rounded-lg px-3 py-1.5 text-xs" style={{ background: "rgba(56,189,248,.10)", borderLeft: "3px solid #38bdf8" }}>
       <div className="font-bold" style={{ color: "#7dd3fc" }}>{CHANNEL_NAME}</div>
-      <div className="bx-muted truncate">Gold 🏆 · Pair: XAUUSD 📊 · Long / Buy Limit …</div>
+      <div className="bx-muted truncate">{ex.head} · Pair: {ex.pair} 📊 · {ex.side} …</div>
     </div>
   );
   return (
     <section id="ejemplo-senal" className="scroll-mt-24" data-testid="signal-showcase">
       <SectionTitle kicker="DENTRO DEL CANAL VIP" title="Así se ve una señal" text="Cada señal llega con sus niveles definidos y se actualiza en vivo: entrada activa, objetivos alcanzados y cierre." />
-      <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center max-w-5xl mx-auto">
-      <div className="bx-card w-full max-w-md mx-auto md:mx-0 md:ml-auto overflow-hidden">
-        <div className="flex items-center gap-3 px-4 py-3 bx-bb">
-          <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(245,158,11,.3)" }} />
-          <div>
-            <div className="font-extrabold text-white leading-tight">{CHANNEL_NAME}</div>
-            <div className="text-xs bx-muted">Sala de señales VIP</div>
-          </div>
-        </div>
-        <div className="p-3 md:p-4 space-y-3">
-          <div className="rounded-2xl px-4 py-3 text-[15px] leading-relaxed text-white w-fit max-w-full" style={bubble}>
-            <div>Gold 🏆</div>
-            <div>Pair: XAUUSD 📊</div>
-            <div>Side: Long / Buy Limit</div>
-            <div>Entry: <Chip tone="entry">4100</Chip> <Chip tone="entry">4096</Chip></div>
-            <div>TP: Open</div>
-            <div>SL: <Chip tone="sl">4083</Chip></div>
-            <div className="mt-1 bx-muted text-sm">Note: past profits do not predict future profits</div>
-            <div>Risk 0.5-1-2%</div>
-            <div className="mt-2">TP1 <Chip tone="tp">4105</Chip> 50pips ✅</div>
-            <div>TP2 <Chip tone="tp">4110</Chip> 100pips ✅</div>
-            <div>TP3 <Chip tone="tp">4115</Chip> 150pips ✅</div>
-            <div className="mt-2">Use Proper Risk Management</div>
-          </div>
-
-          <div className="w-full" style={{ maxWidth: 360 }}><SignalChart /></div>
-
-          <div className="rounded-2xl p-2 space-y-2" style={bubble}>
-            {quote}
-            <div className="px-2 pb-1 text-[15px] text-white font-semibold">XAUUSD 4100 ENTRADA ACTIVA <span style={{ color: "#fbbf24" }}>⚠️</span></div>
-          </div>
-          <div className="rounded-2xl p-2 space-y-2" style={bubble}>
-            {quote}
-            <div className="px-2 pb-1 text-[15px] text-white font-semibold">XAUUSD HIT TP1 ✅</div>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-4 px-1" data-testid="signal-legend">
-        {[
-          ["Par", <Chip tone="entry">XAUUSD</Chip>, "El mercado y el movimiento que buscamos: compra (Long) en el Oro."],
-          ["Entrada", <><Chip tone="entry">4100</Chip> <Chip tone="entry">4096</Chip></>, "Buy Limit: la orden espera a que el precio llegue al nivel. Hay dos entradas."],
-          ["Objetivos", <><Chip tone="tp">4105</Chip> <Chip tone="tp">4110</Chip> <Chip tone="tp">4115</Chip></>, "Tres niveles para tomar ganancia (50, 100 y 150 pips) y un TP abierto que sigue corriendo."],
-          ["Stop", <Chip tone="sl">4083</Chip>, "La salida si el precio se gira en contra de la idea."],
-          ["Gráfico", null, "Se publica justo después de la señal: las entradas, los objetivos y el stop dibujados sobre el precio."],
-          ["Actualizaciones", null, "Seguimos cada operación en vivo, con ganancia o pérdida: entrada activa, objetivo alcanzado, stop o cierre. Aquí: la entrada activa y el TP1."],
-        ].map(([t, chip, d]) => (
-          <div key={t}>
-            <div className="flex flex-wrap items-center gap-2"><span className="font-extrabold text-white">{t}</span>{chip}</div>
-            <p className="text-sm bx-muted mt-0.5">{d}</p>
-          </div>
+      <div className="flex justify-center gap-2 mb-5" data-testid="signal-kind">
+        {[["CFD", "CFDS"], ["SINTETICO", "SINTÉTICOS"]].map(([k, l]) => (
+          <button key={k} onClick={() => setKind(k)} className={`bx-tab ${kind === k ? "on" : ""}`}>{l}</button>
         ))}
       </div>
+      <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center max-w-5xl mx-auto">
+        <div className="bx-card w-full max-w-md mx-auto md:mx-0 md:ml-auto overflow-hidden">
+          <div className="flex items-center gap-3 px-4 py-3 bx-bb">
+            <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(245,158,11,.3)" }} />
+            <div>
+              <div className="font-extrabold text-white leading-tight">{CHANNEL_NAME}</div>
+              <div className="text-xs bx-muted">Sala de señales VIP</div>
+            </div>
+          </div>
+          <div className="p-3 md:p-4 space-y-3">
+            <div className="rounded-2xl px-4 py-3 text-[15px] leading-relaxed text-white w-fit max-w-full" style={bubble} data-testid="signal-bubble">
+              <div>{ex.head}</div>
+              <div>Pair: {ex.pair} 📊</div>
+              <div>Side: {ex.side}</div>
+              <div>Entry: {ex.entries.map((e) => <React.Fragment key={e}><Chip tone="entry">{e}</Chip> </React.Fragment>)}</div>
+              <div>TP: Open</div>
+              <div>SL: <Chip tone="sl">{ex.sl}</Chip></div>
+              <div className="mt-1 bx-muted text-sm">Note: past profits do not predict future profits</div>
+              <div>Risk 0.5-1-2%</div>
+              <div className="mt-2">
+                {ex.tps.map(([p, n], i) => <div key={p}>TP{i + 1} <Chip tone="tp">{p}</Chip> {n}{ex.unit} ✅</div>)}
+              </div>
+              <div className="mt-2">Use Proper Risk Management</div>
+            </div>
+            {ex.updates.map((u, i) => (
+              <div key={u} className="rounded-2xl p-2 space-y-2" style={bubble}>
+                {quote}
+                <div className="px-2 pb-1 text-[15px] text-white font-semibold">{u}{i === 0 ? <span style={{ color: "#fbbf24" }}> ⚠️</span> : null}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="space-y-4 px-1" data-testid="signal-legend">
+          {ex.legend.map(([t, chips, tone, d]) => (
+            <div key={t}>
+              <div className="flex flex-wrap items-center gap-2"><span className="font-extrabold text-white">{t}</span>{chips.map((c) => <Chip key={c} tone={tone}>{c}</Chip>)}</div>
+              <p className="text-sm bx-muted mt-0.5">{d}</p>
+            </div>
+          ))}
+        </div>
       </div>
-      <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-xl">Ejemplo de señal publicada en el canal. La gráfica es una ilustración dibujada a partir de sus niveles; no muestra el resultado real.</p>
+      <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-xl">Ejemplo de señal publicada en el canal, a modo ilustrativo; no muestra un resultado real.</p>
     </section>
   );
 }
@@ -1996,37 +1974,9 @@ function SignalShowcase() {
 function ServicesPricing({ setPage }) {
   return (
     <div className="space-y-16">
-      {/* SERVICIOS & OFERTA */}
-      <section id="servicios" className="scroll-mt-24">
-        <SectionTitle kicker="SERVICIOS & OFERTA" title="Qué ofrece BORKAIFX ELITE" text="Una propuesta enfocada en señales con niveles definidos y resultados que puedes comprobar." />
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-center">
-          <div className="bx-card p-5">
-            <div className="text-xs bx-accent font-bold tracking-widest">01</div>
-            <h3 className="mt-1 text-lg font-extrabold">Señales VIP · CFDs</h3>
-            <p className="mt-2 text-sm bx-muted">XAUUSD y NAS100 con punto de entrada, Stop Loss y múltiples Take Profit definidos antes de entrar.</p>
-          </div>
-          <div className="bx-card p-5">
-            <div className="text-xs bx-accent font-bold tracking-widest">02</div>
-            <h3 className="mt-1 text-lg font-extrabold">Señales VIP · Sintéticos</h3>
-            <p className="mt-2 text-sm bx-muted">Operativa en WELTRADE y DERIV, con el seguimiento medido en pips o puntos (DERIV, según el activo) y puntos (WELTRADE).</p>
-          </div>
-          <div className="bx-card p-5">
-            <div className="text-xs bx-accent font-bold tracking-widest">03</div>
-            <h3 className="mt-1 text-lg font-extrabold">Copytrading en MT5</h3>
-            <p className="mt-2 text-sm bx-muted">Operaciones replicadas en automático en tu cuenta, sin mensualidades ni comisión sobre ganancias.</p>
-          </div>
-          <div className="bx-card p-5">
-            <div className="text-xs bx-accent font-bold tracking-widest">04</div>
-            <h3 className="mt-1 text-lg font-extrabold">Track Record transparente</h3>
-            <p className="mt-2 text-sm bx-muted">Cada resultado cerrado (TP, SL o BE) se contabiliza tal cual, sin esconder las pérdidas.</p>
-            <button onClick={() => setPage("home")} className="mt-3 text-sm bx-accent font-bold">Ver resultados →</button>
-          </div>
-        </div>
-      </section>
-
       {/* CANAL DE SEÑALES VIP */}
       <section id="canal-vip" className="scroll-mt-24" data-testid="canal-vip">
-        <SectionTitle kicker="CANAL DE SEÑALES VIP" title="XAUUSD & NAS100 🏆📊" text="Operamos los dos activos más volátiles y lucrativos del mercado con precisión quirúrgica." />
+        <SectionTitle kicker="CANAL DE SEÑALES VIP" title="ELITE VIP FX 🏆" text="Operamos los activos más volátiles y lucrativos del mercado con precisión quirúrgica: XAUUSD, NAS100 y algunos pares de divisas." />
         <div className="grid md:grid-cols-3 gap-4">
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">📌 ¿QUÉ INCLUYE EL SERVICIO VIP?</div>
