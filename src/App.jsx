@@ -3,6 +3,10 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
+  ComposedChart,
+  Bar,
+  Line,
+  Cell,
   XAxis,
   YAxis,
   Tooltip,
@@ -91,7 +95,7 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#fff;text-decoration:none}
 .bx-navbtn{padding:.5rem .875rem;border-radius:.75rem;font-size:.8125rem;font-weight:800;letter-spacing:.03em;color:var(--ink2);cursor:pointer;background:transparent;border:1px solid transparent;transition:all .15s}
 .bx-navbtn:hover{color:var(--ink)}
 .bx-navbtn.on{background:var(--accent);color:#fff}
-.bx-root{color-scheme:dark;--bg:#0A0A0B;--ink:#F4F1EA;--ink2:#9A958C;--line:#232325;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#FF5500;--field:#0F0F0F;background:var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.bx-root{color-scheme:dark;--bg:#0A0A0B;--ink:#F4F1EA;--ink2:#9A958C;--line:#232325;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#FF5500;--field:#0F0F0F;background:radial-gradient(900px circle at 85% -10%,rgba(255,85,0,.10),transparent 60%),radial-gradient(700px circle at 0% 35%,rgba(245,158,11,.06),transparent 60%),var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
 .bx-header{background:rgba(10,10,11,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 @keyframes bxpulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}70%{box-shadow:0 0 0 8px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
 .bx-dot{width:9px;height:9px;border-radius:9999px;display:inline-block;flex:none}
@@ -100,11 +104,13 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#fff;text-decoration:none}
 .bx-live{display:flex;align-items:center;gap:.625rem;background:#141415;border:1px solid var(--cardline);border-radius:9999px;padding:.4rem .9rem;font-size:.75rem}
 .bx-ink2{color:var(--ink2)}
 .bx-accent{color:var(--accent)}
-.bx-card{background:var(--card);color:var(--cardink);border:1px solid var(--cardline);border-radius:1rem}
+.bx-card{background:rgba(15,23,42,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--cardink);border:1px solid rgba(245,158,11,.2);border-radius:.875rem;box-shadow:0 1px 0 rgba(255,255,255,.03) inset}
+.bx-day{background:rgba(15,23,42,.55);border:1px solid rgba(100,116,139,.35);border-radius:.9rem;transition:box-shadow .15s,transform .15s}
+.bx-day:hover{box-shadow:0 0 14px rgba(245,158,11,.22)}
 .bx-muted{color:var(--cardink2)}
 .bx-bt{border-top:1px solid var(--cardline)}
 .bx-bb{border-bottom:1px solid var(--cardline)}
-.bx-row:hover{background:#1F1F1F}
+.bx-row:hover{background:rgba(148,163,184,.08)}
 .bx-label{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cardink2);margin-bottom:.25rem}
 .bx-input{width:100%;background:var(--field);border:1px solid var(--cardline);color:#fff;border-radius:.75rem;padding:.5rem .75rem;font-size:.875rem}
 .bx-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -756,10 +762,10 @@ const DirBadge = ({ dir }) => (
 const Stat = ({ label, value, sub, tone }) => {
   const color = tone === "pos" ? "text-emerald-400" : tone === "neg" ? "text-rose-400" : "text-white";
   return (
-    <div className="bx-card p-4" style={{ borderTop: `3px solid ${ACCENT}` }}>
-      <div className="text-[11px] uppercase tracking-[0.16em] bx-muted">{label}</div>
-      <div className={`mt-1 text-2xl md:text-3xl font-extrabold ${color}`}>{value}</div>
-      {sub && <div className="mt-1 text-xs bx-muted">{sub}</div>}
+    <div className="bx-card px-3 py-2" style={{ borderTop: `2px solid ${ACCENT}` }}>
+      <div className="text-[10px] uppercase tracking-[0.14em] bx-muted">{label}</div>
+      <div className={`text-xl md:text-2xl font-extrabold leading-tight ${color}`}>{value}</div>
+      {sub && <div className="text-[11px] bx-muted leading-tight">{sub}</div>}
     </div>
   );
 };
@@ -774,7 +780,7 @@ const Field = ({ label, children, className = "" }) => (
 const ChartTooltip = ({ active, payload, label, unit }) => {
   if (!active || !payload || !payload.length) return null;
   return (
-    <div className="rounded-lg px-3 py-2 text-xs" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A", color: "#fff" }}>
+    <div className="rounded-lg px-3 py-2 text-xs" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)", color: "#fff" }}>
       <div style={{ color: GREY }}>{label}</div>
       {payload.map((p, i) => (
         <div key={i} className="font-bold" style={{ color: p.payload.fill || ACCENT }}>
@@ -1039,7 +1045,7 @@ const TpChips = ({ t }) => {
             style={
               hit
                 ? { background: "rgba(16,185,129,.15)", border: "1px solid rgba(16,185,129,.5)", color: "#6ee7b7", fontWeight: 700 }
-                : { border: "1px solid #2A2A2A", color: GREY }
+                : { border: "1px solid rgba(100,116,139,.35)", color: GREY }
             }
           >
             {hit ? "✓ " : ""}{x === "OPEN" ? tpLabel(i, x) : `${tpLabel(i, x)} ${x}`}
@@ -1092,7 +1098,7 @@ function LegEditor({ t, k, onChange }) {
   const needsPips = L.status !== "Abierta" && L.status !== "Pendiente" && p === null;
 
   return (
-    <div className="rounded-xl p-3" style={{ background: "#161616", border: "1px solid #2A2A2A" }}>
+    <div className="rounded-xl p-3" style={{ background: "rgba(15,23,42,.55)", border: "1px solid rgba(100,116,139,.35)" }}>
       <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
         <div className="text-sm font-bold">
           Entry {k === "e1" ? 1 : 2} <span className="bx-muted font-normal">@ {entry ?? "—"}</span>
@@ -1150,7 +1156,7 @@ function ManagePanel({ t, onUpdate }) {
   const setLeg = (k, patch) => upd({ legs: { ...(t.legs || {}), [k]: { ...legOf(t, k), ...patch } } });
 
   return (
-    <div className="mt-5 rounded-xl p-4 space-y-4" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+    <div className="mt-5 rounded-xl p-4 space-y-4" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
       <div className="text-[11px] uppercase tracking-[0.18em] font-bold bx-accent">Gestión rápida (Admin)</div>
 
       {t.discarded ? (
@@ -1170,7 +1176,7 @@ function ManagePanel({ t, onUpdate }) {
 
           {keys.map((k) => <LegEditor key={k} t={t} k={k} onChange={setLeg} />)}
 
-          <div className="flex items-center justify-between flex-wrap gap-2 rounded-xl px-3 py-2" style={{ background: "#161616", border: "1px solid #2A2A2A" }}>
+          <div className="flex items-center justify-between flex-wrap gap-2 rounded-xl px-3 py-2" style={{ background: "rgba(15,23,42,.55)", border: "1px solid rgba(100,116,139,.35)" }}>
             <div className="text-xs bx-muted uppercase tracking-wider">Total de la señal</div>
             <div className={`text-lg font-extrabold ${t.pips > 0 ? "text-emerald-400" : t.pips < 0 ? "text-rose-400" : "text-white"}`}>
               {fmtP(t.pips)} {unit.toLowerCase()} <span className="text-xs bx-muted font-normal">· {t.r >= 0 ? "+" : ""}{t.r}R</span>
@@ -1231,7 +1237,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
 
         <div className="grid grid-cols-3 gap-2 mt-4">
           {rows.map(([k, v]) => (
-            <div key={k} className="rounded-lg p-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+            <div key={k} className="rounded-lg p-2" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
               <div className="text-[10px] uppercase tracking-wider bx-muted">{k}</div>
               <div className={`text-sm font-semibold ${k === "Resultado" ? (t.pips > 0 ? "text-emerald-400" : t.pips < 0 ? "text-rose-400" : "text-white") : "text-white"}`}>{v}</div>
             </div>
@@ -1239,7 +1245,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
         </div>
 
         {!t.discarded && hasE2(t) && keys.length > 1 && (
-          <div className="mt-3 rounded-xl p-3 text-sm space-y-1" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+          <div className="mt-3 rounded-xl p-3 text-sm space-y-1" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
             {keys.map((k) => (
               <div key={k} className="flex justify-between gap-2">
                 <span className="bx-muted">Entry {k === "e1" ? 1 : 2} @ {entryOf(t, k)}</span>
@@ -1262,7 +1268,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
         {t.notes && <p className="mt-4 text-sm whitespace-pre-wrap" style={{ color: "#D6D1C9" }}>{t.notes}</p>}
 
         {t.mgmt && (
-          <div className="mt-4 rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+          <div className="mt-4 rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
             <div className="text-[11px] uppercase tracking-[0.18em] font-bold bx-accent mb-1">Notas de gestión</div>
             <p className="text-sm whitespace-pre-wrap" style={{ color: "#D6D1C9" }}>{t.mgmt}</p>
           </div>
@@ -1271,7 +1277,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
         {t.raw && (
           <details className="mt-4">
             <summary className="cursor-pointer text-xs uppercase tracking-wider bx-muted">Señal original</summary>
-            <pre className="mt-2 whitespace-pre-wrap text-xs rounded-xl p-3" style={{ background: "#0F0F0F", color: GREY, border: "1px solid #2A2A2A" }}>{t.raw}</pre>
+            <pre className="mt-2 whitespace-pre-wrap text-xs rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", color: GREY, border: "1px solid rgba(100,116,139,.35)" }}>{t.raw}</pre>
           </details>
         )}
 
@@ -1376,7 +1382,7 @@ function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
                 title="Seleccionar la semana completa"
                 onClick={() => wk && onWeek(wk.from)}
                 className="rounded-md text-xs font-bold"
-                style={{ background: wkSel ? ACCENT : "#1d1d1d", color: wkSel ? "#fff" : "#9a948a", border: "1px solid #2A2A2A" }}
+                style={{ background: wkSel ? ACCENT : "#1d1d1d", color: wkSel ? "#fff" : "#9a948a", border: "1px solid rgba(100,116,139,.35)" }}
               >
                 ›
               </button>
@@ -1622,7 +1628,7 @@ function ReportModal({ trades, onClose, defaultScope }) {
           <button type="button" onClick={onClose} className="bx-ghost">Cerrar</button>
         </div>
         <div className="mt-4 grid md:grid-cols-[300px_1fr] gap-4">
-          <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+          <div className="rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
             <CalGrid ym={ym} onNav={nav} marked={marked} range={range} onDay={pickDay} onWeek={pickWeek} onMonth={pickMonth} />
             <div className="mt-2 text-[10px] bx-muted">Día = resumen diario · flecha › = semana completa · nombre del mes = mes completo</div>
           </div>
@@ -1753,7 +1759,7 @@ function FaqMessage({ text }) {
     if (ok) setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div className="mt-3 rounded-xl p-3 text-left" style={{ background: "#0B0B0B", border: "1px solid #2A2A2A" }}>
+    <div className="mt-3 rounded-xl p-3 text-left" style={{ background: "#0B0B0B", border: "1px solid rgba(100,116,139,.35)" }}>
       <div className="whitespace-pre-wrap text-[13px] leading-relaxed" style={{ color: "#E8E3DB" }}>“{text}”</div>
       <div className="mt-2 text-right">
         <button type="button" onClick={copy} className="bx-ghost text-xs">{copied ? "✓ Copiado" : "Copiar mensaje"}</button>
@@ -1796,7 +1802,7 @@ function FaqVip() {
               </button>
               {isOpen && (
                 <div id={`faq-${i}`} className="px-5 pb-5">
-                  <div className="pt-2" style={{ borderTop: "1px solid #2A2A2A" }}>
+                  <div className="pt-2" style={{ borderTop: "1px solid rgba(100,116,139,.35)" }}>
                     {it.a.map((b, bi) => <FaqBlock key={bi} b={b} />)}
                   </div>
                 </div>
@@ -2051,6 +2057,13 @@ const shiftMonth = (ym, d) => {
   return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, "0")}`;
 };
 const curYM = () => localDate().slice(0, 7);
+// Pips del día en la casilla del calendario: "+2,5k pips" · "-50 pips"
+const fmtDayPips = (v, unitL) => {
+  const n = round1(Number(v) || 0);
+  const lab = unitL && !unitL.includes("/") ? ` ${unitL}` : "";
+  if (Math.abs(n) >= 1000) return `${n > 0 ? "+" : "-"}${(Math.abs(n) / 1000).toFixed(1).replace(".", ",")}k${lab}`;
+  return `${fmtP(n)}${lab}`;
+};
 
 // Resumen de un conjunto de señales de un mismo día
 function dayStats(list) {
@@ -2113,12 +2126,12 @@ function SignalModal({ t, onClose }) {
   }, [onClose]);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" onClick={onClose} data-testid="signal-modal">
-      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl p-5" role="dialog" aria-label="Señal original" style={{ background: "#0F0F0F", border: `1px solid ${ACCENT}`, boxShadow: "0 20px 60px rgba(0,0,0,.7)" }}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl p-5" role="dialog" aria-label="Señal original" style={{ background: "rgba(2,6,23,.5)", border: `1px solid ${ACCENT}`, boxShadow: "0 20px 60px rgba(0,0,0,.7)" }}>
         <div className="flex items-center justify-between gap-2">
           <div className="text-[11px] tracking-[0.25em] font-bold bx-accent">SEÑAL ORIGINAL · {fmtDate(t.date)}</div>
           <button type="button" onClick={onClose} aria-label="Cerrar" className="bx-ghost" style={{ padding: ".25rem .6rem" }}>✕</button>
         </div>
-        <pre className="mt-4 rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap break-words" style={{ background: "#161616", border: "1px solid #2A2A2A", color: "#F2EEE6", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }}>{buildSignalText(t)}</pre>
+        <pre className="mt-4 rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap break-words" style={{ background: "rgba(15,23,42,.55)", border: "1px solid rgba(100,116,139,.35)", color: "#F2EEE6", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }}>{buildSignalText(t)}</pre>
       </div>
     </div>
   );
@@ -2133,7 +2146,7 @@ function DayTradeCard({ t, onOpen, onSignal, onEdit, onDelete }) {
   const mg = (t.mgmt || "").trim();
   const click = onOpen ? { role: "button", tabIndex: 0, onClick: () => onOpen(t.id), style: { cursor: "pointer" } } : {};
   return (
-    <div {...click} data-testid="day-trade" className="bx-row w-full text-left rounded-xl p-4" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A", ...(click.style || {}) }}>
+    <div {...click} data-testid="day-trade" className="bx-row w-full text-left rounded-xl p-4" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)", ...(click.style || {}) }}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-extrabold text-base text-white">{t.asset}</span>
@@ -2275,7 +2288,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
   const dayList = isMonthSel ? [...monthTrades].sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.asset < b.asset ? -1 : 1)) : selDay ? [...(byDay[selDay] || [])].sort((a, b) => (a.asset < b.asset ? -1 : 1)) : [];
   const dec = m.wins + m.losses;
   const pct = (n) => (m.executed ? Math.round((n / m.executed) * 100) : 0);
-  const cols = { gridTemplateColumns: "repeat(7, minmax(0, 1fr)) 124px" };
+  const cols = { gridTemplateColumns: "repeat(7, minmax(0, 1fr)) 100px" };
   const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
   return (
@@ -2290,7 +2303,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
         const posM = row ? row.monthsRow.filter((x) => x.st.shown > 0 && x.st.pips > 0).length : 0;
         const actM = row ? row.monthsRow.filter((x) => x.st.shown > 0).length : 0;
         return (
-          <div className="bx-card p-4 md:p-5" data-testid="year-view">
+          <div className="bx-card p-3 md:p-4" data-testid="year-view">
             <div className="flex items-center justify-center gap-3">
               <button onClick={() => { const i = yearsAvail.indexOf(yearCur); if (i < yearsAvail.length - 1) setYearSel(yearsAvail[i + 1]); }} className="bx-ghost" aria-label="Año anterior">‹</button>
               <div className="text-center" style={{ minWidth: 200 }}>
@@ -2324,7 +2337,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                       <td className="text-left px-2 font-black" style={{ color: rw.yy === yearCur ? ACCENT : undefined }}>{rw.yy}</td>
                       {rw.monthsRow.map((c, i) => {
                         const has = c.st.shown > 0;
-                        const bg = !has ? "#0F0F0F" : c.st.pips > 0 ? "rgba(16,185,129,.13)" : c.st.pips < 0 ? "rgba(244,63,94,.13)" : "#1B1B1B";
+                        const bg = !has ? "rgba(2,6,23,.5)" : c.st.pips > 0 ? "rgba(16,185,129,.13)" : c.st.pips < 0 ? "rgba(244,63,94,.13)" : "#1B1B1B";
                         const bd = !has ? "#2A2A2A" : c.st.pips > 0 ? "rgba(16,185,129,.6)" : c.st.pips < 0 ? "rgba(244,63,94,.6)" : "#4A4A4A";
                         return (
                           <td key={i} className="p-0">
@@ -2345,7 +2358,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                         );
                       })}
                       <td className="p-0">
-                        <div className="rounded-xl px-1 py-2 flex flex-col items-center" style={{ background: "#0F0F0F", border: `1px solid ${ACCENT}`, minHeight: 58 }}>
+                        <div className="rounded-xl px-1 py-2 flex flex-col items-center" style={{ background: "rgba(2,6,23,.5)", border: `1px solid ${ACCENT}`, minHeight: 58 }}>
                           <span className={`font-black ${pnlColor(rw.tot.pips)}`}>{fmtP(rw.tot.pips)}</span>
                           <span className="text-[10px] bx-muted leading-tight">{rw.tot.shown} {rw.tot.shown === 1 ? "trade" : "trades"}{rw.tot.wr !== null ? ` | ${rw.tot.wr}%` : ""}</span>
                         </div>
@@ -2362,11 +2375,11 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
 
       {mode === "month" && (<>
       {/* ---------- CALENDARIO ---------- */}
-      <div className="bx-card p-4 md:p-5">
+      <div className="bx-card p-3 md:p-4">
         <div className="flex items-center justify-center gap-3">
           <button onClick={() => go(-1)} className="bx-ghost" aria-label="Mes anterior" title="Mes anterior">‹</button>
           <div className="text-center" style={{ minWidth: 200 }}>
-            <div className="text-xl md:text-2xl font-black">{monthLabel(cur)}</div>
+            <div className="text-lg md:text-xl font-black">{monthLabel(cur)}</div>
             <div className="text-[11px] bx-muted tracking-widest uppercase">Resultados en {unit}</div>
           </div>
           <button onClick={() => go(1)} className="bx-ghost" aria-label="Mes siguiente" title="Mes siguiente">›</button>
@@ -2378,8 +2391,8 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
           <button onClick={() => setSelDay(isMonthSel ? null : "__month__")} className={`bx-pill ${isMonthSel ? "on" : ""}`} data-testid="month-summary-btn">📊 Resumen del mes completo</button>
         </div>
 
-        <div className="mt-4 overflow-x-auto">
-          <div style={{ minWidth: 740 }}>
+        <div className="mt-3 overflow-x-auto">
+          <div style={{ minWidth: 640 }}>
             <div className="grid gap-1.5 text-center text-[11px] uppercase tracking-wider bx-muted mb-1.5" style={cols}>
               {WEEKDAYS.map((d) => <div key={d}>{d}</div>)}
               <div>Resumen</div>
@@ -2391,36 +2404,31 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                   if (!c) return <div key={di} />;
                   const { st } = c;
                   const has = st.shown > 0;
-                  const border = !has ? "#2A2A2A" : st.pips > 0 ? "rgba(16,185,129,.6)" : st.pips < 0 ? "rgba(244,63,94,.6)" : "#4A4A4A";
-                  const bg = !has ? "#0F0F0F" : st.pips > 0 ? "rgba(16,185,129,.13)" : st.pips < 0 ? "rgba(244,63,94,.13)" : "#1B1B1B";
+                  const border = !has ? "rgba(100,116,139,.3)" : st.pips > 0 ? "rgba(16,185,129,.55)" : st.pips < 0 ? "rgba(244,63,94,.55)" : "rgba(148,163,184,.4)";
+                  const bg = !has ? "rgba(15,23,42,.45)" : st.pips > 0 ? "rgba(16,185,129,.12)" : st.pips < 0 ? "rgba(244,63,94,.12)" : "rgba(30,41,59,.5)";
                   const sel = selDay === c.key;
                   return (
                     <button
                       key={di}
                       onClick={() => setSelDay(sel ? null : c.key)}
                       aria-label={`Día ${c.d}`}
-                      className="rounded-xl p-1.5 flex flex-col text-left transition"
-                      style={{ minHeight: 88, background: bg, border: `1px solid ${border}`, outline: sel ? `2px solid ${ACCENT}` : "none", outlineOffset: 1 }}
+                      className="bx-day p-1.5 flex flex-col text-left"
+                      style={{ aspectRatio: "1 / 1", background: bg, border: `1px solid ${border}`, boxShadow: has ? `0 0 12px ${st.pips > 0 ? "rgba(16,185,129,.18)" : st.pips < 0 ? "rgba(244,63,94,.18)" : "rgba(148,163,184,.12)"}` : undefined, outline: sel ? `2px solid ${ACCENT}` : "none", outlineOffset: 1 }}
                     >
                       <span className="text-[11px] font-bold" style={{ color: c.key === today ? ACCENT : GREY }}>{c.d}</span>
                       {has && (
-                        <>
-                          <span className={`text-sm md:text-base font-extrabold text-center mt-1 ${pnlColor(st.pips)}`}>{fmtP(st.pips)}</span>
-                          <span className="text-[10px] bx-muted text-center leading-tight">
-                            {plural(st.shown, "trade", "trades")} | {st.wr === null ? (st.closed ? "BE" : "Desc.") : `${st.wr}% WR`}
-                          </span>
-                        </>
+                        <span className={`text-xs md:text-sm font-extrabold text-center my-auto leading-tight ${pnlColor(st.pips)}`}>{fmtDayPips(st.pips, unitL)}</span>
                       )}
                       {isAdmin && st.open > 0 && (
-                        <span className="text-[10px] text-center mt-auto" style={{ color: "#7dd3fc" }}>⏳ {plural(st.open, "activa", "activas")}</span>
+                        <span className="text-[9px] text-center" style={{ color: "#7dd3fc" }}>⏳ {st.open}</span>
                       )}
                       {isAdmin && st.pending > 0 && (
-                        <span className="text-[10px] text-center" style={{ color: "#fcd34d" }}>🕓 {plural(st.pending, "pendiente", "pendientes")}</span>
+                        <span className="text-[9px] text-center" style={{ color: "#fcd34d" }}>🕓 {st.pending}</span>
                       )}
                     </button>
                   );
                 })}
-                <div className="rounded-xl p-2 flex flex-col justify-center text-center" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                <div className="bx-day p-2 flex flex-col justify-center text-center">
                   <div className="text-[10px] uppercase tracking-wider bx-muted">Semana {wi + 1}</div>
                   <div className={`text-sm font-extrabold ${pnlColor(wk.pips)}`}>{fmtP(wk.pips)}</div>
                   <div className="text-[10px] bx-muted">{wk.traded === 1 ? "1 día operado" : `${wk.traded} días operados`}</div>
@@ -2433,7 +2441,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
 
       {/* ---------- OPERACIONES DEL DÍA ---------- */}
       {selDay && (
-        <div className="bx-card p-4 md:p-5">
+        <div className="bx-card p-3 md:p-4">
           <div className="flex items-center justify-between gap-2">
             <h3 className="font-extrabold">{isMonthSel ? `Resumen consolidado de ${monthLabel(cur)}` : `${isAdmin ? "Operaciones del" : "Resumen del"} ${fmtDate(selDay)}`}</h3>
             <button onClick={() => setSelDay(null)} className="bx-ghost">Cerrar</button>
@@ -2446,9 +2454,9 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                 const ds = dayStats(dayList);
                 return (
                   <div className="mt-3 grid grid-cols-3 gap-3 text-center">
-                    <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
-                    <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
-                    <div className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
+                    <div className="rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
+                    <div className="rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
+                    <div className="rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
                   </div>
                 );
               })()}
@@ -2483,7 +2491,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
           <Stat label="Total trades" value={m.total} sub={isAdmin ? `${m.executed} cerrados · ${m.open} activos · ${m.discarded} descartados` : "Cerradas y descartadas del mes"} />
         </div>
 
-        <div className="bx-card p-4 md:p-5 mt-4" data-testid="month-curve">
+        <div className="bx-card p-3 md:p-4 mt-4" data-testid="month-curve">
           <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">Curva de {unit} acumulados · {monthLabel(cur)}</div>
           {curve.length === 0 || !monthTrades.some(isPublic) && !isAdmin ? (
             <div className="text-sm bx-muted text-center py-8">Sin operaciones para dibujar la curva de este mes.</div>
@@ -2511,7 +2519,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-4 mt-4">
-          <div className="bx-card p-4 md:p-5">
+          <div className="bx-card p-3 md:p-4">
             <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">Desglose de operaciones</div>
             <div className="h-3 rounded-full overflow-hidden flex" style={{ background: "#2A2A2A" }} role="img" aria-label={`${m.wins} ganadoras, ${m.losses} perdedoras`}>
               {dec > 0 && (
@@ -2531,22 +2539,22 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                 ["SL · Perdedoras", m.losses, `${pct(m.losses)}%`, "text-rose-400"],
                 ["Break Even (BE)", m.be, `${pct(m.be)}%`, "text-white"],
               ].map(([label, n, p, cls]) => (
-                <div key={label} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                <div key={label} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
                   <span className="bx-muted">{label}</span>
                   <span className={`font-extrabold ${cls}`}>{n} <span className="bx-muted font-normal text-xs">({p})</span></span>
                 </div>
               ))}
               {isAdmin && (
                 <>
-                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
                     <span className="bx-muted">Descartadas / Canceladas</span>
                     <span className="font-extrabold">{m.discarded}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
                     <span className="bx-muted">Activas</span>
                     <span className="font-extrabold">{m.open}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
                     <span className="bx-muted">Órdenes pendientes</span>
                     <span className="font-extrabold">{m.pending}</span>
                   </div>
@@ -2555,9 +2563,9 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
             </div>
           </div>
 
-          <div className="bx-card p-4 md:p-5">
+          <div className="bx-card p-3 md:p-4">
             <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">{unit} totales y extremos</div>
-            <div className="text-center rounded-xl py-4" style={{ background: "#0F0F0F", border: "1px solid #2A2A2A" }}>
+            <div className="text-center rounded-xl py-4" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
               <div className="text-[11px] uppercase tracking-widest bx-muted">Neto del mes</div>
               <div className={`text-4xl font-black ${pnlColor(m.totalPips)}`}>{fmtP(m.totalPips)}</div>
               <div className="text-xs bx-muted">{unitL}</div>
@@ -2572,7 +2580,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                   disabled={!t}
                   onClick={() => t && isAdmin && onOpen(t.id)}
                   className="rounded-xl p-3 text-center"
-                  style={{ background: "#0F0F0F", border: "1px solid #2A2A2A", cursor: t && isAdmin ? "pointer" : "default" }}
+                  style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)", cursor: t && isAdmin ? "pointer" : "default" }}
                 >
                   <div className="text-[11px] uppercase tracking-widest bx-muted">{label}</div>
                   {t ? (
@@ -2636,28 +2644,29 @@ function LiveStatus() {
 
 /* ----------------------------- Estadísticas principales (4 cajas) ----------------------------- */
 function MainStats({ trades, unit }) {
-  const list = useMemo(() => trades.filter(isClosed), [trades]);
-  const disc = useMemo(() => trades.filter((t) => t.discarded || t.status === "Descartada").length, [trades]);
-  const mt = useMemo(() => computeMetrics(list), [list]);
-  const net = useMemo(() => round1(list.filter((t) => !t.discarded).reduce((a, t) => a + (Number(t.pips) || 0), 0)), [list]);
+  // list = todas las señales enviadas al VIP (cerradas + descartadas); closedL = solo cerradas (para pips y Win Rate)
+  const list = trades;
+  const closedL = useMemo(() => trades.filter(isClosed), [trades]);
+  const mt = useMemo(() => computeMetrics(closedL), [closedL]);
+  const net = useMemo(() => round1(closedL.reduce((a, t) => a + (Number(t.pips) || 0), 0)), [closedL]);
   const top = useMemo(() => {
-    const c = {};
+    const c = {}; // frecuencia: cantidad de señales enviadas por activo (no el profit)
     list.forEach((t) => { const k = (t.asset || "").trim().toUpperCase(); if (k) c[k] = (c[k] || 0) + 1; });
     const e = Object.entries(c).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1));
     return e[0] || null;
   }, [list]);
   const dec = mt.wins + mt.losses;
   return (
-    <section className="grid grid-cols-2 lg:grid-cols-4 gap-3" data-testid="main-stats">
-      <Stat label="Entradas registradas" value={list.length} sub={disc ? `Cerradas · ${disc} descartadas aparte` : "Total en el journal"} />
+    <section className="grid grid-cols-2 lg:grid-cols-4 gap-2" data-testid="main-stats">
+      <Stat label="Entradas Registradas" value={list.length} sub="Enviadas al VIP" />
       <Stat label={`${unit} totales`} value={fmtP(net)} sub="Ganancias − pérdidas" tone={net > 0 ? "pos" : net < 0 ? "neg" : undefined} />
       <Stat label="Win Rate" value={dec ? `${mt.winRate.toFixed(1)}%` : "—"} sub={`${mt.wins} TP · ${mt.losses} SL · ${mt.be} BE`} tone={dec && mt.winRate >= 50 ? "pos" : dec ? "neg" : undefined} />
-      <Stat label="Activo más operado" value={top ? top[0] : "—"} sub={top ? `${top[1]} ${top[1] === 1 ? "entrada" : "entradas"} · comunidad` : "Sin datos aún"} />
+      <Stat label="Activo más operado" value={top ? top[0] : "—"} sub={top ? `${top[1]} ${top[1] === 1 ? "señal enviada" : "señales enviadas"}` : "Sin datos aún"} />
     </section>
   );
 }
 
-/* ----------------------------- Evolución anual (acumulado por meses) ----------------------------- */
+/* ----------------------------- Evolución anual (mixto: barras por mes + línea acumulada) ----------------------------- */
 function AnnualEvolution({ trades, unit }) {
   const list = useMemo(() => trades.filter(isClosed), [trades]);
   const years = useMemo(() => Array.from(new Set([curYM().slice(0, 4), ...list.map((t) => (t.date || "").slice(0, 4)).filter(Boolean)])).sort().reverse(), [list]);
@@ -2667,62 +2676,60 @@ function AnnualEvolution({ trades, unit }) {
   const data = useMemo(() => {
     const nowYM = curYM();
     let acc = 0;
-    const out = [];
-    for (let i = 1; i <= 12; i++) {
-      const key = `${yy}-${String(i).padStart(2, "0")}`;
-      if (key > nowYM) break;
+    return Array.from({ length: 12 }, (_, i) => {
+      const key = `${yy}-${String(i + 1).padStart(2, "0")}`;
+      const base = { name: MONTHS_ES[i].slice(0, 3), full: `${MONTHS_ES[i]} ${yy}` };
+      if (key > nowYM) return { ...base, month: null, equity: null, n: 0 };
       const st = dayStats(list.filter((t) => (t.date || "").startsWith(key)));
       acc = round1(acc + st.pips);
-      out.push({ name: MONTHS_ES[i - 1].slice(0, 3), full: `${MONTHS_ES[i - 1]} ${yy}`, equity: acc, month: st.pips, n: st.shown });
-    }
-    return out;
+      return { ...base, month: st.pips, equity: acc, n: st.shown };
+    });
   }, [list, yy]);
-  const total = data.length ? data[data.length - 1].equity : 0;
+  const last = [...data].reverse().find((d) => d.equity !== null);
+  const total = last ? last.equity : 0;
   const Tip = ({ active, payload }) => {
     if (!active || !payload || !payload.length) return null;
     const p = payload[0].payload;
+    if (p.equity === null) return null;
     return (
       <div className="bx-card px-3 py-2 text-xs" style={{ boxShadow: "0 4px 18px rgba(0,0,0,.5)" }}>
         <div className="font-bold text-white">{p.full}</div>
-        <div className="bx-muted">Acumulado: <b className="text-white">{fmtP(p.equity)} {unitL}</b></div>
         <div className="bx-muted">Del mes: <b className={pnlColor(p.month)}>{fmtP(p.month)} {unitL}</b> · {p.n} {p.n === 1 ? "trade" : "trades"}</div>
+        <div className="bx-muted">Acumulado: <b className="text-white">{fmtP(p.equity)} {unitL}</b></div>
       </div>
     );
   };
   return (
-    <section className="bx-card p-4 md:p-5" data-testid="annual-chart">
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+    <section className="bx-card px-3 py-3 md:px-4" data-testid="annual-chart">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
         <div>
-          <div className="text-xs uppercase tracking-[0.18em] bx-muted">Evolución anual · {unit} acumulados por mes</div>
-          <div className={`text-2xl font-black mt-1 ${pnlColor(total)}`}>{fmtP(total)} <span className="text-sm bx-muted font-normal">{unitL} en {yy}</span></div>
+          <div className="text-[10px] uppercase tracking-[0.16em] bx-muted">Evolución anual · {unit} por mes y acumulado</div>
+          <div className={`text-xl font-black leading-tight ${pnlColor(total)}`}>{fmtP(total)} <span className="text-xs bx-muted font-normal">{unitL} en {yy}</span></div>
         </div>
         <div className="flex items-center gap-1">
-          <button className="bx-ghost" aria-label="Año anterior" onClick={() => { const i = years.indexOf(yy); if (i < years.length - 1) setYSel(years[i + 1]); }}>‹</button>
-          <select className="bx-input" style={{ width: "auto" }} value={yy} onChange={(e) => setYSel(e.target.value)} aria-label="Año">
+          <button className="bx-ghost" style={{ padding: ".25rem .6rem" }} aria-label="Año anterior" onClick={() => { const i = years.indexOf(yy); if (i < years.length - 1) setYSel(years[i + 1]); }}>‹</button>
+          <select className="bx-input" style={{ width: "auto", padding: ".25rem .6rem" }} value={yy} onChange={(e) => setYSel(e.target.value)} aria-label="Año">
             {years.map((y2) => <option key={y2} value={y2}>{y2}</option>)}
           </select>
-          <button className="bx-ghost" aria-label="Año siguiente" onClick={() => { const i = years.indexOf(yy); if (i > 0) setYSel(years[i - 1]); }}>›</button>
+          <button className="bx-ghost" style={{ padding: ".25rem .6rem" }} aria-label="Año siguiente" onClick={() => { const i = years.indexOf(yy); if (i > 0) setYSel(years[i - 1]); }}>›</button>
         </div>
       </div>
-      <div style={{ width: "100%", height: 280 }}>
+      <div style={{ width: "100%", height: 200 }}>
         <ResponsiveContainer>
-          <AreaChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-            <defs>
-              <linearGradient id="annFill" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={ACCENT} stopOpacity={0.5} />
-                <stop offset="100%" stopColor={ACCENT} stopOpacity={0.02} />
-              </linearGradient>
-            </defs>
-            <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
+          <ComposedChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+            <CartesianGrid stroke="rgba(255,255,255,0.07)" vertical={false} />
             <XAxis dataKey="name" tick={{ fill: GREY, fontSize: 11 }} tickLine={false} axisLine={false} />
-            <YAxis tick={{ fill: GREY, fontSize: 11 }} tickLine={false} axisLine={false} width={60} />
-            <Tooltip content={<Tip />} />
+            <YAxis tick={{ fill: GREY, fontSize: 10 }} tickLine={false} axisLine={false} width={52} />
+            <Tooltip content={<Tip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
             <ReferenceLine y={0} stroke="#4A4A4A" strokeDasharray="4 4" />
-            <Area type="monotone" dataKey="equity" name="Acumulado" stroke={ACCENT} strokeWidth={2.5} fill="url(#annFill)" />
-          </AreaChart>
+            <Bar dataKey="month" name="Mes" radius={[4, 4, 0, 0]} maxBarSize={28}>
+              {data.map((d, i) => <Cell key={i} fill={(d.month || 0) < 0 ? RED : GREEN} fillOpacity={0.75} />)}
+            </Bar>
+            <Line type="monotone" dataKey="equity" name="Acumulado" stroke={ACCENT} strokeWidth={2} dot={{ r: 4, fill: ACCENT, stroke: "#0A0A0B", strokeWidth: 1.5 }} activeDot={{ r: 6 }} connectNulls={false} />
+          </ComposedChart>
         </ResponsiveContainer>
       </div>
-      <div className="mt-1 text-[11px] bx-muted text-center">Eje horizontal: meses del año · cada punto suma el resultado de ese mes al acumulado</div>
+      <div className="text-[10px] bx-muted text-center">Barras: resultado de cada mes · línea con puntos: acumulado del año (Enero–Diciembre)</div>
     </section>
   );
 }
@@ -3067,7 +3074,6 @@ export default function App() {
             <img src={LOGO} alt="BORKAIFX ELITE" className="w-11 h-11 object-contain" />
             <div>
               <div className="font-black tracking-[0.2em] leading-none text-lg">{BRAND}</div>
-              <div className="text-[10px] tracking-[0.28em] bx-ink2 mt-1">TRACK RECORD & PORTAFOLIO · CANAL VIP</div>
             </div>
           </div>
 
@@ -3121,8 +3127,8 @@ export default function App() {
         {page === "home" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section
-          className="bx-card p-5 md:p-8 text-center"
-          style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}
+          className="bx-card p-4 md:p-5 text-center"
+          style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), rgba(15,23,42,.6)" }}
         >
           <h1 className="text-2xl md:text-4xl font-black tracking-[0.08em] leading-tight uppercase" style={{ color: "#FFFFFF" }}>
             TRACK RECORD PÚBLICO <span style={{ color: ACCENT }}>·</span> CANAL VIP
@@ -3143,13 +3149,13 @@ export default function App() {
             {tab === "CFD" ? (
               <div className="flex flex-wrap justify-center gap-2">
                 {["Todos", ...CFD_SUBS].map((s) => (
-                  <button key={s} onClick={() => setCfdSub(s)} className={`bx-pill ${cfdSub === s ? "on" : ""}`}>{s}</button>
+                  <button key={s} onClick={() => setCfdSub(s)} className={`bx-pill ${cfdSub === s ? "on" : ""}`}>{s === "Todos" ? "Todo" : s === "Oro/Metales" ? "Oro" : s}</button>
                 ))}
               </div>
             ) : (
               <div className="flex flex-wrap justify-center gap-2">
                 {BROKERS.map((b) => (
-                  <button key={b} onClick={() => setBroker(b)} className={`bx-pill ${broker === b ? "on" : ""}`}>{b}</button>
+                  <button key={b} onClick={() => setBroker(b)} className={`bx-pill ${broker === b ? "on" : ""}`}>{cap(b.toLowerCase())}</button>
                 ))}
               </div>
             )}
@@ -3297,7 +3303,7 @@ export default function App() {
         )}
         {page === "admin" && isAdmin && (
           <div className="space-y-6" data-testid="admin-panel">
-            <section className="bx-card p-5 md:p-6" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}>
+            <section className="bx-card p-5 md:p-6" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), rgba(15,23,42,.6)" }}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">PANEL DE ADMINISTRACIÓN</div>
@@ -3334,7 +3340,7 @@ export default function App() {
               <section
                 className="bx-card p-4"
                 data-testid="pending-box"
-                style={{ border: "2px solid #fbbf24", background: "radial-gradient(500px circle at 0% 0%, rgba(251,191,36,.14), transparent 60%), #161616", boxShadow: "0 0 30px rgba(251,191,36,.12)" }}
+                style={{ border: "2px solid #fbbf24", background: "radial-gradient(500px circle at 0% 0%, rgba(251,191,36,.14), transparent 60%), rgba(15,23,42,.6)", boxShadow: "0 0 30px rgba(251,191,36,.12)" }}
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-xs uppercase tracking-[0.18em] font-bold" style={{ color: "#fcd34d" }}>🕓 Órdenes pendientes</div>
@@ -3342,11 +3348,11 @@ export default function App() {
                 </div>
                 <div className="text-xs bx-muted mt-1">Entradas enviadas que aún no se activan. Cuando el precio entre, pulsa <b className="text-white">Activar</b>.</div>
                 {pendingList.length === 0 ? (
-                  <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "#0F0F0F", border: "1px dashed #3a3a3a" }}>No tienes órdenes pendientes.</div>
+                  <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(2,6,23,.5)", border: "1px dashed #3a3a3a" }}>No tienes órdenes pendientes.</div>
                 ) : (
                   <div className="mt-3 space-y-2 overflow-y-auto" style={{ maxHeight: 360 }}>
                     {pendingList.map((t) => (
-                      <div key={t.id} data-testid="pending-item" className="rounded-xl p-3" style={{ background: "#0F0F0F", border: "1px solid rgba(251,191,36,.35)" }}>
+                      <div key={t.id} data-testid="pending-item" className="rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(251,191,36,.35)" }}>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-extrabold text-white">{t.asset}</span>
@@ -3371,7 +3377,7 @@ export default function App() {
               </section>
             </div>
 
-            <section className="bx-card p-4 md:p-5" data-testid="admin-day">
+            <section className="bx-card p-3 md:p-4" data-testid="admin-day">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <h2 className="font-extrabold tracking-wider bx-accent">OPERACIONES · {adminSingle ? (adminRange.from === todayStr ? "HOY" : dayName(adminRange.from).toUpperCase()) : "SEMANA"} · {adminLabel}</h2>
@@ -3387,7 +3393,7 @@ export default function App() {
                 </div>
               </div>
               {adminList.length === 0 ? (
-                <div className="mt-4 rounded-xl p-6 text-center text-sm bx-muted" style={{ background: "#0F0F0F", border: "1px dashed #3a3a3a" }}>
+                <div className="mt-4 rounded-xl p-6 text-center text-sm bx-muted" style={{ background: "rgba(2,6,23,.5)", border: "1px dashed #3a3a3a" }}>
                   No hay operaciones registradas en esta fecha. Pega una señal arriba o elige otro día en el calendario.
                 </div>
               ) : (
