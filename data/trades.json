@@ -1273,48 +1273,6 @@
     "r": 2.3
   },
   {
-    "id": "kgivjskjmw5rpmh3",
-    "date": "2026-11-06",
-    "category": "SINTETICO",
-    "sub": "",
-    "broker": "DERIV",
-    "asset": "STEP INDEX 200",
-    "direction": "BUY",
-    "entry1": 11167,
-    "entry2": "",
-    "activation": "E1",
-    "sl": 11162.1,
-    "tps": [
-      11267.1
-    ],
-    "pipSize": 1,
-    "unit": "puntos",
-    "legs": {
-      "e1": {
-        "status": "TP",
-        "exit": 11267.1,
-        "pips": 1000,
-        "tpIdx": 0
-      },
-      "e2": {
-        "status": "Pendiente",
-        "exit": "",
-        "pips": "",
-        "tpIdx": null
-      }
-    },
-    "discarded": false,
-    "raw": "STEP INDEX 200 BUY 11167.0\nTP1: 11267.10\nSL: 11162.10",
-    "notes": "",
-    "mgmt": "",
-    "tags": [
-      "VIP Signal"
-    ],
-    "status": "TP",
-    "pips": 1000,
-    "r": 204.08
-  },
-  {
     "id": "ynwfa4ugmw5rqkba",
     "date": "2026-11-06",
     "category": "SINTETICO",
