@@ -23,6 +23,9 @@ const TELEGRAM_URL = "https://t.me/borkaifxoficial";
    CONFIGURACIÓN DE INICIO / SERVICIOS — EDITA AQUÍ TUS DATOS
    ============================================================ */
 const SITE = {
+  // Botón "Únete a Borkaifx" de la cabecera (cambia aquí el texto y el enlace)
+  join: { label: "Únete a Borkaifx", url: TELEGRAM_URL },
+
   // WhatsApp oficial: se usa SOLO en el Copytrading (botón "ACTIVAR MI CUENTA AHORA").
   // Acepta enlace corto (wa.link, ya trae su mensaje) o "https://wa.me/58XXXXXXXXXX".
   whatsapp: "https://wa.link/2myrg1",
@@ -87,9 +90,14 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#fff;text-decoration:none}
 .bx-nav{display:flex;gap:.25rem;flex-wrap:wrap}
 .bx-navbtn{padding:.5rem .875rem;border-radius:.75rem;font-size:.8125rem;font-weight:800;letter-spacing:.03em;color:var(--ink2);cursor:pointer;background:transparent;border:1px solid transparent;transition:all .15s}
 .bx-navbtn:hover{color:var(--ink)}
-.bx-navbtn.on{background:#161616;color:#fff}
-.bx-root{color-scheme:light;--bg:#F9F6F0;--ink:#111111;--ink2:#5F5A52;--line:#E5E0D8;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#FF5500;--field:#0F0F0F;background:var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-.bx-header{background:var(--bg);border-bottom:1px solid var(--line)}
+.bx-navbtn.on{background:var(--accent);color:#fff}
+.bx-root{color-scheme:dark;--bg:#0A0A0B;--ink:#F4F1EA;--ink2:#9A958C;--line:#232325;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#FF5500;--field:#0F0F0F;background:var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+.bx-header{background:rgba(10,10,11,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+@keyframes bxpulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}70%{box-shadow:0 0 0 8px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+.bx-dot{width:9px;height:9px;border-radius:9999px;display:inline-block;flex:none}
+.bx-dot.live{background:#10b981;animation:bxpulse 1.8s infinite}
+.bx-dot.off{background:#f43f5e}
+.bx-live{display:flex;align-items:center;gap:.625rem;background:#141415;border:1px solid var(--cardline);border-radius:9999px;padding:.4rem .9rem;font-size:.75rem}
 .bx-ink2{color:var(--ink2)}
 .bx-accent{color:var(--accent)}
 .bx-card{background:var(--card);color:var(--cardink);border:1px solid var(--cardline);border-radius:1rem}
@@ -1669,7 +1677,7 @@ const fmtMoney = (n) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
 const SectionTitle = ({ kicker, title, text }) => (
   <div className="mb-6 text-center">
     <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">{kicker}</div>
-    <h2 className="mt-1 text-2xl md:text-3xl font-black tracking-tight" style={{ color: "#111111" }}>{title}</h2>
+    <h2 className="mt-1 text-2xl md:text-3xl font-black tracking-tight" style={{ color: "var(--ink)" }}>{title}</h2>
     {text && <p className="mt-2 text-sm md:text-base bx-ink2 max-w-2xl text-center mx-auto">{text}</p>}
   </div>
 );
@@ -2233,7 +2241,9 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
     return out;
   }, [y, mo, cur, byDay]);
 
-  const go = (d) => { setYm(shiftMonth(cur, d)); setSelDay(null); };
+  const keepMonthSel = () => (selDay === "__month__" ? "__month__" : null);
+  const go = (d) => { setYm(shiftMonth(cur, d)); setSelDay(keepMonthSel()); };
+  const monthOptions = useMemo(() => Array.from(new Set([...months, curYM(), cur])).sort().reverse(), [months, cur]);
 
   // Curva de pips acumulados día a día del mes seleccionado
   const dim = new Date(y, mo, 0).getDate();
@@ -2261,7 +2271,8 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
     });
     return { yy, monthsRow, tot: dayStats(trades.filter((t) => (t.date || "").startsWith(yy))) };
   }), [trades, yearsAvail]);
-  const dayList = selDay ? [...(byDay[selDay] || [])].sort((a, b) => (a.asset < b.asset ? -1 : 1)) : [];
+  const isMonthSel = selDay === "__month__";
+  const dayList = isMonthSel ? [...monthTrades].sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.asset < b.asset ? -1 : 1)) : selDay ? [...(byDay[selDay] || [])].sort((a, b) => (a.asset < b.asset ? -1 : 1)) : [];
   const dec = m.wins + m.losses;
   const pct = (n) => (m.executed ? Math.round((n / m.executed) * 100) : 0);
   const cols = { gridTemplateColumns: "repeat(7, minmax(0, 1fr)) 124px" };
@@ -2360,6 +2371,12 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
           </div>
           <button onClick={() => go(1)} className="bx-ghost" aria-label="Mes siguiente" title="Mes siguiente">›</button>
         </div>
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+          <select className="bx-input" style={{ width: "auto", minWidth: 170 }} value={cur} onChange={(e) => { setYm(e.target.value); setSelDay(keepMonthSel()); }} aria-label="Elegir mes">
+            {monthOptions.map((k) => <option key={k} value={k}>{monthLabel(k)}</option>)}
+          </select>
+          <button onClick={() => setSelDay(isMonthSel ? null : "__month__")} className={`bx-pill ${isMonthSel ? "on" : ""}`} data-testid="month-summary-btn">📊 Resumen del mes completo</button>
+        </div>
 
         <div className="mt-4 overflow-x-auto">
           <div style={{ minWidth: 740 }}>
@@ -2418,11 +2435,11 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
       {selDay && (
         <div className="bx-card p-4 md:p-5">
           <div className="flex items-center justify-between gap-2">
-            <h3 className="font-extrabold">{isAdmin ? "Operaciones del" : "Resumen del"} {fmtDate(selDay)}</h3>
+            <h3 className="font-extrabold">{isMonthSel ? `Resumen consolidado de ${monthLabel(cur)}` : `${isAdmin ? "Operaciones del" : "Resumen del"} ${fmtDate(selDay)}`}</h3>
             <button onClick={() => setSelDay(null)} className="bx-ghost">Cerrar</button>
           </div>
           {dayList.length === 0 ? (
-            <div className="mt-3 text-sm bx-muted">Sin operaciones este día.</div>
+            <div className="mt-3 text-sm bx-muted">{isMonthSel ? "Sin operaciones este mes." : "Sin operaciones este día."}</div>
           ) : (
             <>
               {(() => {
@@ -2437,7 +2454,14 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
               })()}
               <div className="mt-5 text-[11px] uppercase tracking-[0.18em] bx-muted">Detalle de operaciones · {dayList.length}</div>
               <div className="mt-2 space-y-3" data-testid="day-trades">
-                {dayList.map((t) => <DayTradeCard key={t.id} t={t} onOpen={isAdmin ? onOpen : null} onSignal={setSigTrade} />)}
+                {dayList.map((t, i) => (
+                  <React.Fragment key={t.id}>
+                    {isMonthSel && (i === 0 || dayList[i - 1].date !== t.date) && (
+                      <div className="pt-2 text-[11px] uppercase tracking-[0.18em] bx-accent font-bold">{dayName(t.date)} {fmtDate(t.date)}</div>
+                    )}
+                    <DayTradeCard t={t} onOpen={isAdmin ? onOpen : null} onSignal={setSigTrade} />
+                  </React.Fragment>
+                ))}
               </div>
             </>
           )}
@@ -2450,7 +2474,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
       <div>
         <div className="text-center mb-3">
           <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">MÉTRICAS DEL MES</div>
-          <h2 className="mt-1 text-xl md:text-2xl font-black" style={{ color: "#111111" }}>Resumen de {monthLabel(cur)}</h2>
+          <h2 className="mt-1 text-xl md:text-2xl font-black" style={{ color: "var(--ink)" }}>Resumen de {monthLabel(cur)}</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -2572,6 +2596,137 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
 }
 
 /* ============================== APP ============================== */
+/* ----------------------------- Estado de mercados en vivo ----------------------------- */
+// CFDs: abierto de domingo 17:00 a viernes 17:00 (hora de Nueva York). Sintéticos: 24/7.
+function cfdMarketOpen(now) {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", hour: "numeric", hourCycle: "h23" }).formatToParts(now);
+    const wd = parts.find((p) => p.type === "weekday").value;
+    const hr = Number(parts.find((p) => p.type === "hour").value) % 24;
+    if (wd === "Sat") return false;
+    if (wd === "Sun") return hr >= 17;
+    if (wd === "Fri") return hr < 17;
+    return true;
+  } catch (e) {
+    const d = now.getUTCDay(), h = now.getUTCHours();
+    return d === 6 ? false : d === 0 ? h >= 22 : d === 5 ? h < 22 : true;
+  }
+}
+function LiveStatus() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const iv = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(iv); }, []);
+  const cfd = cfdMarketOpen(now);
+  return (
+    <div className="max-w-7xl mx-auto px-4 pt-4 flex flex-wrap justify-center gap-3" data-testid="live-status">
+      <div className="bx-live" data-testid="live-cfd">
+        <span className={`bx-dot ${cfd ? "live" : "off"}`} />
+        <span className="font-black tracking-widest text-white">CFD</span>
+        <span className={cfd ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>{cfd ? "EN VIVO · Mercado abierto" : "Mercado cerrado"}</span>
+        <span className="bx-muted hidden sm:inline">Forex · Oro · Índices{cfd ? "" : " · abre el domingo 5:00 PM (NY)"}</span>
+      </div>
+      <div className="bx-live" data-testid="live-synth">
+        <span className="bx-dot live" />
+        <span className="font-black tracking-widest text-white">SINTÉTICOS</span>
+        <span className="text-emerald-400 font-bold">EN VIVO · Abierto 24/7</span>
+        <span className="bx-muted hidden sm:inline">Deriv · Weltrade</span>
+      </div>
+    </div>
+  );
+}
+
+/* ----------------------------- Estadísticas principales (4 cajas) ----------------------------- */
+function MainStats({ trades, unit }) {
+  const list = useMemo(() => trades.filter(isClosed), [trades]);
+  const disc = useMemo(() => trades.filter((t) => t.discarded || t.status === "Descartada").length, [trades]);
+  const mt = useMemo(() => computeMetrics(list), [list]);
+  const net = useMemo(() => round1(list.filter((t) => !t.discarded).reduce((a, t) => a + (Number(t.pips) || 0), 0)), [list]);
+  const top = useMemo(() => {
+    const c = {};
+    list.forEach((t) => { const k = (t.asset || "").trim().toUpperCase(); if (k) c[k] = (c[k] || 0) + 1; });
+    const e = Object.entries(c).sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1));
+    return e[0] || null;
+  }, [list]);
+  const dec = mt.wins + mt.losses;
+  return (
+    <section className="grid grid-cols-2 lg:grid-cols-4 gap-3" data-testid="main-stats">
+      <Stat label="Entradas registradas" value={list.length} sub={disc ? `Cerradas · ${disc} descartadas aparte` : "Total en el journal"} />
+      <Stat label={`${unit} totales`} value={fmtP(net)} sub="Ganancias − pérdidas" tone={net > 0 ? "pos" : net < 0 ? "neg" : undefined} />
+      <Stat label="Win Rate" value={dec ? `${mt.winRate.toFixed(1)}%` : "—"} sub={`${mt.wins} TP · ${mt.losses} SL · ${mt.be} BE`} tone={dec && mt.winRate >= 50 ? "pos" : dec ? "neg" : undefined} />
+      <Stat label="Activo más operado" value={top ? top[0] : "—"} sub={top ? `${top[1]} ${top[1] === 1 ? "entrada" : "entradas"} · comunidad` : "Sin datos aún"} />
+    </section>
+  );
+}
+
+/* ----------------------------- Evolución anual (acumulado por meses) ----------------------------- */
+function AnnualEvolution({ trades, unit }) {
+  const list = useMemo(() => trades.filter(isClosed), [trades]);
+  const years = useMemo(() => Array.from(new Set([curYM().slice(0, 4), ...list.map((t) => (t.date || "").slice(0, 4)).filter(Boolean)])).sort().reverse(), [list]);
+  const [ySel, setYSel] = useState(null);
+  const yy = ySel && years.includes(ySel) ? ySel : years[0];
+  const unitL = unit.toLowerCase();
+  const data = useMemo(() => {
+    const nowYM = curYM();
+    let acc = 0;
+    const out = [];
+    for (let i = 1; i <= 12; i++) {
+      const key = `${yy}-${String(i).padStart(2, "0")}`;
+      if (key > nowYM) break;
+      const st = dayStats(list.filter((t) => (t.date || "").startsWith(key)));
+      acc = round1(acc + st.pips);
+      out.push({ name: MONTHS_ES[i - 1].slice(0, 3), full: `${MONTHS_ES[i - 1]} ${yy}`, equity: acc, month: st.pips, n: st.shown });
+    }
+    return out;
+  }, [list, yy]);
+  const total = data.length ? data[data.length - 1].equity : 0;
+  const Tip = ({ active, payload }) => {
+    if (!active || !payload || !payload.length) return null;
+    const p = payload[0].payload;
+    return (
+      <div className="bx-card px-3 py-2 text-xs" style={{ boxShadow: "0 4px 18px rgba(0,0,0,.5)" }}>
+        <div className="font-bold text-white">{p.full}</div>
+        <div className="bx-muted">Acumulado: <b className="text-white">{fmtP(p.equity)} {unitL}</b></div>
+        <div className="bx-muted">Del mes: <b className={pnlColor(p.month)}>{fmtP(p.month)} {unitL}</b> · {p.n} {p.n === 1 ? "trade" : "trades"}</div>
+      </div>
+    );
+  };
+  return (
+    <section className="bx-card p-4 md:p-5" data-testid="annual-chart">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <div>
+          <div className="text-xs uppercase tracking-[0.18em] bx-muted">Evolución anual · {unit} acumulados por mes</div>
+          <div className={`text-2xl font-black mt-1 ${pnlColor(total)}`}>{fmtP(total)} <span className="text-sm bx-muted font-normal">{unitL} en {yy}</span></div>
+        </div>
+        <div className="flex items-center gap-1">
+          <button className="bx-ghost" aria-label="Año anterior" onClick={() => { const i = years.indexOf(yy); if (i < years.length - 1) setYSel(years[i + 1]); }}>‹</button>
+          <select className="bx-input" style={{ width: "auto" }} value={yy} onChange={(e) => setYSel(e.target.value)} aria-label="Año">
+            {years.map((y2) => <option key={y2} value={y2}>{y2}</option>)}
+          </select>
+          <button className="bx-ghost" aria-label="Año siguiente" onClick={() => { const i = years.indexOf(yy); if (i > 0) setYSel(years[i - 1]); }}>›</button>
+        </div>
+      </div>
+      <div style={{ width: "100%", height: 280 }}>
+        <ResponsiveContainer>
+          <AreaChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+            <defs>
+              <linearGradient id="annFill" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor={ACCENT} stopOpacity={0.5} />
+                <stop offset="100%" stopColor={ACCENT} stopOpacity={0.02} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
+            <XAxis dataKey="name" tick={{ fill: GREY, fontSize: 11 }} tickLine={false} axisLine={false} />
+            <YAxis tick={{ fill: GREY, fontSize: 11 }} tickLine={false} axisLine={false} width={60} />
+            <Tooltip content={<Tip />} />
+            <ReferenceLine y={0} stroke="#4A4A4A" strokeDasharray="4 4" />
+            <Area type="monotone" dataKey="equity" name="Acumulado" stroke={ACCENT} strokeWidth={2.5} fill="url(#annFill)" />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
+      <div className="mt-1 text-[11px] bx-muted text-center">Eje horizontal: meses del año · cada punto suma el resultado de ese mes al acumulado</div>
+    </section>
+  );
+}
+
 const PAGE_PATHS = { home: "/", signals: "/senales", vip: "/vip-gratis", copytrading: "/copytrading", education: "/educacion", admin: "/admin" };
 const pageFromPath = () => {
   try {
@@ -2632,7 +2787,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    document.body.style.background = "#F9F6F0";
+    document.body.style.background = "#0A0A0B";
   }, []);
 
   useEffect(() => { window.scrollTo(0, 0); }, [page]);
@@ -2792,18 +2947,6 @@ export default function App() {
 
   const m = useMemo(() => computeMetrics(scoped), [scoped]);
 
-  const equity = useMemo(() => {
-    const ex = scoped.filter((t) => !t.discarded && legResults(t).length > 0).sort((a, b) => (a.date < b.date ? -1 : 1));
-    let acc = 0;
-    const pts = [{ name: "Inicio", equity: 0 }];
-    ex.forEach((t, i) => {
-      acc += Number(t.pips) || 0;
-      pts.push({ name: `${fmtDate(t.date)} #${i + 1}`, equity: round1(acc) });
-    });
-    return pts;
-  }, [scoped]);
-
-
   const saveTrade = (t) => {
     const existed = trades.some((x) => x.id === t.id);
     setTrades((prev) => {
@@ -2907,7 +3050,7 @@ export default function App() {
 
   if (!twReady) {
     return (
-      <div style={{ minHeight: "100vh", background: "#F9F6F0", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100vh", background: "#0A0A0B", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <img src={LOGO} alt="" style={{ height: 96 }} />
       </div>
     );
@@ -2928,17 +3071,20 @@ export default function App() {
             </div>
           </div>
 
-          <nav className="bx-nav order-last w-full md:order-none md:w-auto">
+          {isAdmin && (
+          <nav className="bx-nav order-last w-full md:order-none md:w-auto" data-testid="admin-nav">
             {[["home", "Inicio"], ["signals", "Señales"], ["copytrading", "Copytrading"], ["education", "Educación"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => (
               <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k || (k === "signals" && page === "vip") ? "on" : ""}`}>{l}</button>
             ))}
           </nav>
+          )}
 
           <div className="flex items-center gap-2">
+            <a href={SITE.join.url} target="_blank" rel="noopener noreferrer" className="bx-btn text-center" data-testid="join-btn">{SITE.join.label}</a>
             {isAdmin ? (
               <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>
             ) : (
-              <button onClick={() => setShowLogin(true)} className="bx-ghost-page">🔒 Admin</button>
+              <button onClick={() => setShowLogin(true)} className="bx-ghost-page" aria-label="Acceso de administrador" title="Acceso de administrador">🔒 Admin</button>
             )}
           </div>
         </div>
@@ -2949,6 +3095,8 @@ export default function App() {
         )}
       </header>
 
+      <LiveStatus />
+
       {cloudState === "error" && (
         <div className="text-center text-xs py-2 px-4 bg-rose-500/20 text-rose-500">
           ⚠ No se pudo comunicar con GitHub. {isAdmin ? "Tus cambios quedan pendientes y se reintentan solos." : "Reintentando…"}
@@ -2957,20 +3105,30 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {page === "vip" && <VipPage />}
-        {page === "copytrading" && <CopytradingPage setPage={setPage} />}
-        {page === "education" && <EducationPage setPage={setPage} />}
+        {["signals", "copytrading", "education"].includes(page) && !isAdmin && (
+          <section className="bx-card p-8 text-center" data-testid="page-locked">
+            <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">ACCESO PROTEGIDO</div>
+            <h1 className="mt-2 text-2xl md:text-3xl font-black text-white">Sección privada</h1>
+            <p className="mt-2 text-sm bx-muted">Esta sección solo está disponible para el administrador.</p>
+            <div className="mt-5 flex flex-wrap justify-center gap-2">
+              <button type="button" onClick={() => setShowLogin(true)} className="bx-btn">🔒 Entrar como administrador</button>
+              <button type="button" onClick={() => setPage("home")} className="bx-ghost">Ir al Track Record</button>
+            </div>
+          </section>
+        )}
+        {page === "copytrading" && isAdmin && <CopytradingPage setPage={setPage} />}
+        {page === "education" && isAdmin && <EducationPage setPage={setPage} />}
         {page === "home" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section
           className="bx-card p-5 md:p-8 text-center"
           style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), #161616" }}
         >
-          <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">TRACK RECORD PÚBLICO · CANAL VIP</div>
-          <h1 className="mt-2 text-3xl md:text-5xl font-black tracking-tight leading-tight">
-            <span style={{ color: "#FFFFFF" }}>Resultados</span> <span style={{ color: ACCENT }}>reales</span><span style={{ color: "#FFFFFF" }}>, sin filtros.</span>
+          <h1 className="text-2xl md:text-4xl font-black tracking-[0.08em] leading-tight uppercase" style={{ color: "#FFFFFF" }}>
+            TRACK RECORD PÚBLICO <span style={{ color: ACCENT }}>·</span> CANAL VIP
           </h1>
-          <p className="mt-3 text-sm md:text-base bx-muted max-w-2xl mx-auto text-center">
-            Rendimiento público del canal VIP de {BRAND}: calendario diario y anual, métricas y curva de pips acumulados, con cada TP, SL y señal descartada contabilizados con total transparencia.
+          <p className="mt-2 text-base md:text-xl font-semibold" style={{ color: "#D9D5CC" }}>
+            Resultados <span style={{ color: ACCENT }}>reales</span>, sin filtros.
           </p>
 
           <div className="mt-6 bx-bt pt-5 space-y-3">
@@ -3011,6 +3169,9 @@ export default function App() {
           </div>
         </section>
 
+        <MainStats trades={market.filter(isPublic)} unit={scopeUnit} />
+        <AnnualEvolution trades={market.filter(isPublic)} unit={scopeUnit} />
+
         {/* ------------------------- SELECTOR DE VISTA ------------------------- */}
         {isAdmin && (
         <div className="flex flex-wrap justify-center gap-2">
@@ -3034,32 +3195,6 @@ export default function App() {
             <Stat label="Profit Factor" value={m.profitFactor === Infinity ? "∞" : m.profitFactor.toFixed(2)} sub={`${m.legsCount} entradas cerradas`} />
             <Stat label="Señales ejecutadas" value={m.executed} sub={isAdmin ? `${m.open} activas · ${m.pending} pendientes · ${m.discarded} descartadas` : "Cerradas y descartadas"} />
           </div>
-        </section>
-
-        {/* ------------------------- GRÁFICOS ------------------------- */}
-        <section className="grid gap-4">
-          <div className="bx-card p-4">
-            <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">Curva de {scopeUnit} acumulados</div>
-            <div style={{ width: "100%", height: 280 }}>
-              <ResponsiveContainer>
-                <AreaChart data={equity} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="eqFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={ACCENT} stopOpacity={0.5} />
-                      <stop offset="100%" stopColor={ACCENT} stopOpacity={0.02} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fill: GREY, fontSize: 10 }} tickLine={false} axisLine={false} hide={equity.length > 12} />
-                  <YAxis tick={{ fill: GREY, fontSize: 11 }} tickLine={false} axisLine={false} width={60} />
-                  <Tooltip content={<ChartTooltip unit={scopeUnit.toLowerCase()} />} />
-                  <ReferenceLine y={0} stroke="#4A4A4A" strokeDasharray="4 4" />
-                  <Area type="monotone" dataKey="equity" name="Acumulado" stroke={ACCENT} strokeWidth={2.5} fill="url(#eqFill)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
         </section>
 
         </>)}
@@ -3278,7 +3413,7 @@ export default function App() {
           </section>
           </div>
         )}
-        {page === "signals" && <ServicesPricing setPage={setPage} />}
+        {page === "signals" && isAdmin && <ServicesPricing setPage={setPage} />}
 
         {/* ------------------------- FOOTER ------------------------- */}
         <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-2">
