@@ -1940,7 +1940,8 @@ function SignalShowcase() {
   return (
     <section id="ejemplo-senal" className="scroll-mt-24" data-testid="signal-showcase">
       <SectionTitle kicker="DENTRO DEL CANAL VIP" title="Así se ve una señal" text="Cada señal llega con sus niveles definidos y se actualiza en vivo: entrada activa, objetivos alcanzados y cierre." />
-      <div className="bx-card max-w-xl mx-auto overflow-hidden">
+      <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center max-w-5xl mx-auto">
+      <div className="bx-card w-full max-w-md mx-auto md:mx-0 md:ml-auto overflow-hidden">
         <div className="flex items-center gap-3 px-4 py-3 bx-bb">
           <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(245,158,11,.3)" }} />
           <div>
@@ -1949,7 +1950,7 @@ function SignalShowcase() {
           </div>
         </div>
         <div className="p-3 md:p-4 space-y-3">
-          <div className="rounded-2xl px-4 py-3 text-[15px] leading-relaxed text-white" style={bubble}>
+          <div className="rounded-2xl px-4 py-3 text-[15px] leading-relaxed text-white w-fit max-w-full" style={bubble}>
             <div>Gold 🏆</div>
             <div>Pair: XAUUSD 📊</div>
             <div>Side: Long / Buy Limit</div>
@@ -1964,7 +1965,7 @@ function SignalShowcase() {
             <div className="mt-2">Use Proper Risk Management</div>
           </div>
 
-          <SignalChart />
+          <div className="w-full" style={{ maxWidth: 360 }}><SignalChart /></div>
 
           <div className="rounded-2xl p-2 space-y-2" style={bubble}>
             {quote}
@@ -1976,7 +1977,24 @@ function SignalShowcase() {
           </div>
         </div>
       </div>
-      <p className="mt-3 text-xs bx-ink2 text-center mx-auto max-w-xl">Ejemplo de señal publicada en el canal. La gráfica es una ilustración dibujada a partir de sus niveles; no muestra el resultado real.</p>
+
+      <div className="space-y-4 px-1" data-testid="signal-legend">
+        {[
+          ["Par", <Chip tone="entry">XAUUSD</Chip>, "El mercado y el movimiento que buscamos: compra (Long) en el Oro."],
+          ["Entrada", <><Chip tone="entry">4100</Chip> <Chip tone="entry">4096</Chip></>, "Buy Limit: la orden espera a que el precio llegue al nivel. Hay dos entradas."],
+          ["Objetivos", <><Chip tone="tp">4105</Chip> <Chip tone="tp">4110</Chip> <Chip tone="tp">4115</Chip></>, "Tres niveles para tomar ganancia (50, 100 y 150 pips) y un TP abierto que sigue corriendo."],
+          ["Stop", <Chip tone="sl">4083</Chip>, "La salida si el precio se gira en contra de la idea."],
+          ["Gráfico", null, "Se publica justo después de la señal: las entradas, los objetivos y el stop dibujados sobre el precio."],
+          ["Actualizaciones", null, "Seguimos cada operación en vivo, con ganancia o pérdida: entrada activa, objetivo alcanzado, stop o cierre. Aquí: la entrada activa y el TP1."],
+        ].map(([t, chip, d]) => (
+          <div key={t}>
+            <div className="flex flex-wrap items-center gap-2"><span className="font-extrabold text-white">{t}</span>{chip}</div>
+            <p className="text-sm bx-muted mt-0.5">{d}</p>
+          </div>
+        ))}
+      </div>
+      </div>
+      <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-xl">Ejemplo de señal publicada en el canal. La gráfica es una ilustración dibujada a partir de sus niveles; no muestra el resultado real.</p>
     </section>
   );
 }
