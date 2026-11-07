@@ -1889,7 +1889,7 @@ const SIGNAL_EXAMPLES = {
       ["Entrada", ["4100", "4096"], "entry", "Buy Limit: la orden espera a que el precio llegue al nivel. Hay dos entradas."],
       ["Objetivos", ["4105", "4110", "4115"], "tp", "Tres niveles para tomar ganancia (50, 100 y 150 pips) y un TP abierto que sigue corriendo."],
       ["Stop", ["4083"], "sl", "La salida si el precio se gira en contra de la idea."],
-      ["Actualizaciones", [], "", "Seguimos cada operación en vivo, con ganancia o pérdida: entrada activa, objetivo alcanzado, stop o cierre. Aquí: la entrada activa y el TP1."],
+      ["Actualizaciones", [], "", "Seguimos cada operación en vivo, con ganancia o pérdida: entrada activa, objetivo alcanzado, stop o cierre."],
     ],
   },
   SINTETICO: {
@@ -1906,8 +1906,15 @@ const SIGNAL_EXAMPLES = {
     ],
   },
 };
-function SignalShowcase() {
-  const [kind, setKind] = useState("CFD");
+// Gestión de riesgo & reglas VIP. Deja text: "" si aún no tienes el texto (el apartado se muestra solo con su título)
+const VIP_RULES = [
+  { t: "Riesgo por Operación", text: "Cada señal indica el riesgo sugerido: 0.5%, 1% o 2% de tu cuenta, según tu perfil." },
+  { t: "Límites Diarios (Disciplina Estricta)", text: "" },
+  { t: "Sesiones Operativas", text: "Operamos principalmente la sesión de Asia y New York. Si hay un cambio para operar Londres, se informará con anticipación." },
+  { t: "Ejecución en Señales VIP", text: "" },
+];
+function SignalShowcase({ kind }) {
+  const [openRule, setOpenRule] = useState(null);
   const ex = SIGNAL_EXAMPLES[kind];
   const bubble = { background: "rgba(30,41,59,.75)", border: "1px solid rgba(100,116,139,.3)" };
   const quote = (
@@ -1919,11 +1926,7 @@ function SignalShowcase() {
   return (
     <section id="ejemplo-senal" className="scroll-mt-24" data-testid="signal-showcase">
       <SectionTitle kicker="DENTRO DEL CANAL VIP" title="Así se ve una señal" text="Cada señal llega con sus niveles definidos y se actualiza en vivo: entrada activa, objetivos alcanzados y cierre." />
-      <div className="flex justify-center gap-2 mb-5" data-testid="signal-kind">
-        {[["CFD", "CFDS"], ["SINTETICO", "SINTÉTICOS"]].map(([k, l]) => (
-          <button key={k} onClick={() => setKind(k)} className={`bx-tab ${kind === k ? "on" : ""}`}>{l}</button>
-        ))}
-      </div>
+      <div className="text-center mb-4"><span className="bx-pill on" data-testid="signal-kind-label">{kind === "CFD" ? "CFDS" : "SINTÉTICOS"}</span></div>
       <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center max-w-5xl mx-auto">
         <div className="bx-card w-full max-w-md mx-auto md:mx-0 md:ml-auto overflow-hidden">
           <div className="flex items-center gap-3 px-4 py-3 bx-bb">
@@ -1966,16 +1969,36 @@ function SignalShowcase() {
           ))}
         </div>
       </div>
+      <div className="max-w-3xl mx-auto mt-10" data-testid="vip-rules">
+        <div className="text-center mb-3">
+          <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">DISCIPLINA</div>
+          <h3 className="mt-1 text-xl md:text-2xl font-black" style={{ color: "var(--ink)" }}>Gestión de riesgo &amp; reglas VIP</h3>
+        </div>
+        <div className="bx-card divide-y" style={{ borderColor: "rgba(245,158,11,.2)" }}>
+          {VIP_RULES.map((r, i) => {
+            const open = openRule === i && !!r.text;
+            return (
+              <div key={r.t} style={{ borderTop: i ? "1px solid rgba(100,116,139,.3)" : "none" }}>
+                <button onClick={() => r.text && setOpenRule(open ? null : i)} aria-expanded={open} className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left" style={{ cursor: r.text ? "pointer" : "default" }}>
+                  <span><span className="bx-accent font-black mr-2">{i + 1}.</span><span className="font-bold text-white">{r.t}</span></span>
+                  {r.text ? <span className="bx-accent text-lg leading-none">{open ? "–" : "+"}</span> : null}
+                </button>
+                {open && <p className="px-4 pb-3 text-sm bx-muted">{r.text}</p>}
+              </div>
+            );
+          })}
+        </div>
+      </div>
       <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-xl">Ejemplo de señal publicada en el canal, a modo ilustrativo; no muestra un resultado real.</p>
     </section>
   );
 }
 
-function ServicesPricing({ setPage }) {
+function ServicesPricing({ setPage, kind = "CFD" }) {
   return (
     <div className="space-y-16">
-      {/* CANAL DE SEÑALES VIP */}
-      <section id="canal-vip" className="scroll-mt-24" data-testid="canal-vip">
+      {/* CANAL DE SEÑALES VIP (texto de CFDs: XAUUSD, NAS100 y divisas) */}
+      {kind === "CFD" && <section id="canal-vip" className="scroll-mt-24" data-testid="canal-vip">
         <SectionTitle kicker="CANAL DE SEÑALES VIP" title="ELITE VIP FX 🏆" text="Operamos los activos más volátiles y lucrativos del mercado con precisión quirúrgica: XAUUSD, NAS100 y algunos pares de divisas." />
         <div className="grid md:grid-cols-3 gap-4">
           <div className="bx-card p-5">
@@ -1999,9 +2022,9 @@ function ServicesPricing({ setPage }) {
             <p className="text-sm bx-muted mt-2">Operamos principalmente la sesión de Asia y New York. Si hay un cambio para operar Londres, se les informará con anticipación.</p>
           </div>
         </div>
-      </section>
+      </section>}
 
-      <SignalShowcase />
+      <SignalShowcase kind={kind} />
 
       {/* TABLA DE PRECIOS */}
       <section id="precios" className="scroll-mt-24">
@@ -2757,6 +2780,8 @@ export default function App() {
 
   // navegación
   const [tab, setTab] = useState("CFD"); // CFD | SINTETICO
+  const [signalKind, setSignalKind] = useState("CFD"); // CFD | SINTETICO: lo eliges en el menú de "Señales"
+  const [sigMenu, setSigMenu] = useState(false);
   const [showSubs, setShowSubs] = useState(false); // los subfiltros solo aparecen al pulsar CFDS o SINTÉTICOS
   const [cfdSub, setCfdSub] = useState("Todos");
   const [broker, setBroker] = useState("WELTRADE");
@@ -3070,8 +3095,21 @@ export default function App() {
 
           {isAdmin && (
           <nav className="bx-nav order-last w-full md:order-none md:w-auto" data-testid="admin-nav">
-            {[["home", "Inicio"], ["signals", "Señales"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => (
-              <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k || (k === "signals" && page === "vip") ? "on" : ""}`}>{l}</button>
+            {[["home", "Inicio"], ["signals", "Señales"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => k !== "signals" ? (
+              <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`}>{l}</button>
+            ) : (
+              <div key={k} className="relative" onMouseEnter={() => setSigMenu(true)} onMouseLeave={() => setSigMenu(false)} data-testid="signals-menu">
+                <button onClick={() => { setPage("signals"); setSigMenu((v) => !v); }} aria-haspopup="menu" aria-expanded={sigMenu} className={`bx-navbtn ${page === "signals" || page === "vip" ? "on" : ""}`}>{l} <span style={{ fontSize: ".7em" }}>▾</span></button>
+                {sigMenu && (
+                  <div role="menu" className="absolute left-0 top-full z-50 pt-1" style={{ minWidth: 170 }}>
+                    <div className="bx-card p-1.5 space-y-1" style={{ background: "rgba(15,23,42,.96)" }}>
+                      {[["CFD", "CFDS"], ["SINTETICO", "SINTÉTICOS"]].map(([v, t]) => (
+                        <button key={v} role="menuitem" onClick={() => { setSignalKind(v); setPage("signals"); setSigMenu(false); }} className={`bx-navbtn w-full text-left ${page === "signals" && signalKind === v ? "on" : ""}`} style={{ display: "block", width: "100%" }}>{t}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
           </nav>
           )}
@@ -3403,7 +3441,7 @@ export default function App() {
           </section>
           </div>
         )}
-        {page === "signals" && isAdmin && <ServicesPricing setPage={setPage} />}
+        {page === "signals" && isAdmin && <ServicesPricing setPage={setPage} kind={signalKind} />}
 
         {/* ------------------------- FOOTER ------------------------- */}
         <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-2">
