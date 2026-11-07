@@ -105,6 +105,8 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#fff;text-decoration:none}
 .bx-ink2{color:var(--ink2)}
 .bx-accent{color:var(--accent)}
 .bx-card{background:rgba(15,23,42,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--cardink);border:1px solid rgba(245,158,11,.2);border-radius:.875rem;box-shadow:0 1px 0 rgba(255,255,255,.03) inset}
+.bx-calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
+@media(min-width:640px){.bx-calgrid{grid-template-columns:repeat(7,minmax(0,1fr)) 88px}}
 .bx-day{background:rgba(15,23,42,.55);border:1px solid rgba(100,116,139,.35);border-radius:.9rem;transition:box-shadow .15s,transform .15s}
 .bx-day:hover{box-shadow:0 0 14px rgba(245,158,11,.22)}
 .bx-muted{color:var(--cardink2)}
@@ -2205,6 +2207,8 @@ function DayTradeCard({ t, onOpen, onSignal, onEdit, onDelete }) {
   );
 }
 
+// Pon en true para volver a mostrar el calendario anual (oculto temporalmente)
+const SHOW_YEAR_CALENDAR = false;
 function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
   // Las órdenes pendientes (aún no activadas) no cuentan: solo se muestran entradas ejecutadas
   const trades = useMemo(() => allTrades.filter((t) => t.status !== "Pendiente"), [allTrades]);
@@ -2255,6 +2259,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
   }, [y, mo, cur, byDay]);
 
   const keepMonthSel = () => (selDay === "__month__" ? "__month__" : null);
+  useEffect(() => { if (!selDay) return; const h = (e) => { if (e.key === "Escape") setSelDay(null); }; document.addEventListener("keydown", h); return () => document.removeEventListener("keydown", h); }, [selDay]);
   const go = (d) => { setYm(shiftMonth(cur, d)); setSelDay(keepMonthSel()); };
   const monthOptions = useMemo(() => Array.from(new Set([...months, curYM(), cur])).sort().reverse(), [months, cur]);
 
@@ -2288,17 +2293,17 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
   const dayList = isMonthSel ? [...monthTrades].sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : a.asset < b.asset ? -1 : 1)) : selDay ? [...(byDay[selDay] || [])].sort((a, b) => (a.asset < b.asset ? -1 : 1)) : [];
   const dec = m.wins + m.losses;
   const pct = (n) => (m.executed ? Math.round((n / m.executed) * 100) : 0);
-  const cols = { gridTemplateColumns: "repeat(7, minmax(0, 1fr)) 100px" };
+  const cols = {};
   const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
   return (
-    <section className="space-y-6">
-      <div className="flex flex-wrap justify-center gap-2">
+    <section className="space-y-3">
+      {SHOW_YEAR_CALENDAR && <div className="flex flex-wrap justify-center gap-2">
         <button onClick={() => setMode("month")} className={`bx-pill ${mode === "month" ? "on" : ""}`}>📅 Vista mensual</button>
         <button onClick={() => setMode("year")} className={`bx-pill ${mode === "year" ? "on" : ""}`}>🗓 Calendario anual</button>
-      </div>
+      </div>}
 
-      {mode === "year" && (() => {
+      {SHOW_YEAR_CALENDAR && mode === "year" && (() => {
         const row = yearTable.find((x) => x.yy === yearCur) || yearTable[0];
         const posM = row ? row.monthsRow.filter((x) => x.st.shown > 0 && x.st.pips > 0).length : 0;
         const actM = row ? row.monthsRow.filter((x) => x.st.shown > 0).length : 0;
@@ -2391,15 +2396,15 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
           <button onClick={() => setSelDay(isMonthSel ? null : "__month__")} className={`bx-pill ${isMonthSel ? "on" : ""}`} data-testid="month-summary-btn">📊 Resumen del mes completo</button>
         </div>
 
-        <div className="mt-3 overflow-x-auto">
-          <div style={{ minWidth: 640 }}>
-            <div className="grid gap-1.5 text-center text-[11px] uppercase tracking-wider bx-muted mb-1.5" style={cols}>
+        <div className="mt-2">
+          <div>
+            <div className="bx-calgrid gap-1 text-center text-[10px] sm:text-[11px] uppercase tracking-wider bx-muted mb-1" style={cols}>
               {WEEKDAYS.map((d) => <div key={d}>{d}</div>)}
-              <div>Resumen</div>
+              <div className="hidden sm:block">Semana</div>
             </div>
 
             {weeks.map((wk, wi) => (
-              <div key={wi} className="grid gap-1.5 mb-1.5" style={cols}>
+              <div key={wi} className="bx-calgrid gap-1 mb-1" style={cols}>
                 {wk.days.map((c, di) => {
                   if (!c) return <div key={di} />;
                   const { st } = c;
@@ -2412,12 +2417,12 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                       key={di}
                       onClick={() => setSelDay(sel ? null : c.key)}
                       aria-label={`Día ${c.d}`}
-                      className="bx-day p-1.5 flex flex-col text-left"
-                      style={{ aspectRatio: "1 / 1", background: bg, border: `1px solid ${border}`, boxShadow: has ? `0 0 12px ${st.pips > 0 ? "rgba(16,185,129,.18)" : st.pips < 0 ? "rgba(244,63,94,.18)" : "rgba(148,163,184,.12)"}` : undefined, outline: sel ? `2px solid ${ACCENT}` : "none", outlineOffset: 1 }}
+                      className="bx-day px-1 py-0.5 sm:p-1.5 flex flex-col text-left min-w-0"
+                      style={{ height: "clamp(40px, 11vw, 58px)", background: bg, border: `1px solid ${border}`, boxShadow: has ? `0 0 12px ${st.pips > 0 ? "rgba(16,185,129,.18)" : st.pips < 0 ? "rgba(244,63,94,.18)" : "rgba(148,163,184,.12)"}` : undefined, outline: sel ? `2px solid ${ACCENT}` : "none", outlineOffset: 1 }}
                     >
-                      <span className="text-[11px] font-bold" style={{ color: c.key === today ? ACCENT : GREY }}>{c.d}</span>
+                      <span className="text-[10px] sm:text-[11px] font-bold leading-none" style={{ color: c.key === today ? ACCENT : GREY }}>{c.d}</span>
                       {has && (
-                        <span className={`text-xs md:text-sm font-extrabold text-center my-auto leading-tight ${pnlColor(st.pips)}`}>{fmtDayPips(st.pips, unitL)}</span>
+                        <span className={`text-[10px] sm:text-xs font-extrabold text-center my-auto leading-none whitespace-nowrap ${pnlColor(st.pips)}`}>{fmtDayPips(st.pips, "")}<span className="hidden sm:inline font-bold opacity-80">{unitL && !unitL.includes("/") ? ` ${unitL}` : ""}</span></span>
                       )}
                       {isAdmin && st.open > 0 && (
                         <span className="text-[9px] text-center" style={{ color: "#7dd3fc" }}>⏳ {st.open}</span>
@@ -2428,10 +2433,10 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                     </button>
                   );
                 })}
-                <div className="bx-day p-2 flex flex-col justify-center text-center">
-                  <div className="text-[10px] uppercase tracking-wider bx-muted">Semana {wi + 1}</div>
-                  <div className={`text-sm font-extrabold ${pnlColor(wk.pips)}`}>{fmtP(wk.pips)}</div>
-                  <div className="text-[10px] bx-muted">{wk.traded === 1 ? "1 día operado" : `${wk.traded} días operados`}</div>
+                <div className="bx-day p-1 hidden sm:flex flex-col justify-center text-center" style={{ height: 58 }}>
+                  <div className="text-[9px] uppercase tracking-wider bx-muted">Sem. {wi + 1}</div>
+                  <div className={`text-xs font-extrabold ${pnlColor(wk.pips)}`}>{fmtP(wk.pips)}</div>
+                  <div className="text-[9px] bx-muted">{wk.traded} {wk.traded === 1 ? "día" : "días"}</div>
                 </div>
               </div>
             ))}
@@ -2441,27 +2446,28 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
 
       {/* ---------- OPERACIONES DEL DÍA ---------- */}
       {selDay && (
-        <div className="bx-card p-3 md:p-4">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="font-extrabold">{isMonthSel ? `Resumen consolidado de ${monthLabel(cur)}` : `${isAdmin ? "Operaciones del" : "Resumen del"} ${fmtDate(selDay)}`}</h3>
-            <button onClick={() => setSelDay(null)} className="bx-ghost">Cerrar</button>
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/70 p-3" onClick={() => setSelDay(null)} data-testid="day-modal">
+        <div className="bx-card w-full max-w-xl flex flex-col p-3" style={{ maxHeight: "82vh" }} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center justify-between gap-2 pb-2 shrink-0">
+            <h3 className="font-extrabold text-sm md:text-base">{isMonthSel ? `Resumen consolidado de ${monthLabel(cur)}` : `${isAdmin ? "Operaciones del" : "Resumen del"} ${fmtDate(selDay)}`}</h3>
+            <button onClick={() => setSelDay(null)} className="bx-ghost" style={{ padding: ".25rem .6rem" }} aria-label="Cerrar">✕</button>
           </div>
           {dayList.length === 0 ? (
-            <div className="mt-3 text-sm bx-muted">{isMonthSel ? "Sin operaciones este mes." : "Sin operaciones este día."}</div>
+            <div className="py-3 text-sm bx-muted">{isMonthSel ? "Sin operaciones este mes." : "Sin operaciones este día."}</div>
           ) : (
-            <>
+            <div className="overflow-y-auto min-h-0 pr-1" data-testid="day-scroll">
               {(() => {
                 const ds = dayStats(dayList);
                 return (
-                  <div className="mt-3 grid grid-cols-3 gap-3 text-center">
-                    <div className="rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
-                    <div className="rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
-                    <div className="rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
+                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
+                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
                   </div>
                 );
               })()}
-              <div className="mt-5 text-[11px] uppercase tracking-[0.18em] bx-muted">Detalle de operaciones · {dayList.length}</div>
-              <div className="mt-2 space-y-3" data-testid="day-trades">
+              <div className="mt-3 text-[11px] uppercase tracking-[0.18em] bx-muted">Detalle de operaciones · {dayList.length}</div>
+              <div className="mt-2 space-y-2" data-testid="day-trades">
                 {dayList.map((t, i) => (
                   <React.Fragment key={t.id}>
                     {isMonthSel && (i === 0 || dayList[i - 1].date !== t.date) && (
@@ -2471,8 +2477,9 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                   </React.Fragment>
                 ))}
               </div>
-            </>
+            </div>
           )}
+        </div>
         </div>
       )}
 
@@ -2767,6 +2774,7 @@ export default function App() {
 
   // navegación
   const [tab, setTab] = useState("CFD"); // CFD | SINTETICO
+  const [showSubs, setShowSubs] = useState(false); // los subfiltros solo aparecen al pulsar CFDS o SINTÉTICOS
   const [cfdSub, setCfdSub] = useState("Todos");
   const [broker, setBroker] = useState("WELTRADE");
 
@@ -3140,20 +3148,20 @@ export default function App() {
           <div className="mt-6 bx-bt pt-5 space-y-3">
             <div className="flex flex-wrap justify-center gap-2">
               {[["CFD", "CFDs"], ["SINTETICO", "Sintéticos"]].map(([k, label]) => (
-                <button key={k} onClick={() => setTab(k)} className={`bx-tab ${tab === k ? "on" : ""}`}>
+                <button key={k} onClick={() => { if (tab === k) setShowSubs((v) => !v); else { setTab(k); setShowSubs(true); } }} className={`bx-tab ${tab === k ? "on" : ""}`} aria-expanded={tab === k && showSubs}>
                   {label.toUpperCase()}
                 </button>
               ))}
             </div>
 
-            {tab === "CFD" ? (
-              <div className="flex flex-wrap justify-center gap-2">
+            {!showSubs ? null : tab === "CFD" ? (
+              <div className="flex flex-wrap justify-center gap-2" data-testid="subfilters">
                 {["Todos", ...CFD_SUBS].map((s) => (
                   <button key={s} onClick={() => setCfdSub(s)} className={`bx-pill ${cfdSub === s ? "on" : ""}`}>{s === "Todos" ? "Todo" : s === "Oro/Metales" ? "Oro" : s}</button>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-wrap justify-center gap-2">
+              <div className="flex flex-wrap justify-center gap-2" data-testid="subfilters">
                 {BROKERS.map((b) => (
                   <button key={b} onClick={() => setBroker(b)} className={`bx-pill ${broker === b ? "on" : ""}`}>{cap(b.toLowerCase())}</button>
                 ))}
