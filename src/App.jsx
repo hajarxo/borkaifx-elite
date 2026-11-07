@@ -1879,6 +1879,108 @@ function VipOfferCta({ setPage }) {
   );
 }
 
+/* ----------------------------- Ejemplo de señal (formato del canal ELITE VIP FX) ----------------------------- */
+const CHANNEL_NAME = "ELITE VIP FX";
+const Chip = ({ tone, children }) => {
+  const c = tone === "entry" ? ["rgba(56,189,248,.16)", "#7dd3fc"] : tone === "tp" ? ["rgba(16,185,129,.16)", "#6ee7b7"] : ["rgba(244,63,94,.16)", "#fda4af"];
+  return <span className="font-mono px-1.5 py-0.5 rounded-md text-[0.9em]" style={{ background: c[0], color: c[1] }}>{children}</span>;
+};
+function SignalChart() {
+  // Niveles de la señal de ejemplo (XAUUSD · Buy Limit)
+  const lv = [
+    { k: "Take Profit 3", p: 4115, c: GREEN },
+    { k: "Take Profit 2", p: 4110, c: GREEN },
+    { k: "Take Profit 1", p: 4105, c: GREEN },
+    { k: "Entry", p: 4100, c: "#38bdf8" },
+    { k: "Entry 2", p: 4096, c: "#38bdf8" },
+    { k: "Stop Loss", p: 4083, c: RED },
+  ];
+  const top = 4116, bot = 4081, y = (p) => 18 + ((top - p) / (top - bot)) * 192;
+  const candles = Array.from({ length: 15 }, (_, i) => {
+    const o = 4113 - i * 0.85 + (i % 3 === 0 ? 0.6 : 0);
+    const c = o - 0.9 + (i % 4 === 1 ? 0.7 : 0);
+    return { o, c, h: Math.max(o, c) + 0.7, l: Math.min(o, c) - 0.6 };
+  });
+  return (
+    <div className="rounded-2xl p-2" style={{ background: "rgba(2,6,23,.55)", border: "1px solid rgba(100,116,139,.35)" }}>
+      <svg viewBox="0 0 360 230" width="100%" role="img" aria-label="Ilustración de los niveles de la señal XAUUSD" style={{ display: "block" }}>
+        <text x="8" y="12" fill="#6B6760" fontSize="8" letterSpacing="2" fontFamily="monospace">ILUSTRACIÓN</text>
+        <text x="12" y="205" fill="rgba(255,255,255,.07)" fontSize="34" fontWeight="800">XAUUSD</text>
+        {[1, 2, 3].map((g) => <line key={g} x1="0" x2="360" y1={g * 55} y2={g * 55} stroke="rgba(255,255,255,.05)" />)}
+        <rect x="170" y={y(4100)} width="108" height={y(4083) - y(4100)} fill="rgba(244,63,94,.07)" />
+        {candles.map((cd, i) => {
+          const x = 12 + i * 9.5, up = cd.c >= cd.o, col = up ? "#10b981" : "#9ca3af";
+          return (
+            <g key={i}>
+              <line x1={x + 2} x2={x + 2} y1={y(cd.h)} y2={y(cd.l)} stroke={col} strokeOpacity=".8" />
+              <rect x={x} y={y(Math.max(cd.o, cd.c))} width="4" height={Math.max(2, Math.abs(y(cd.o) - y(cd.c)))} fill={col} fillOpacity=".85" />
+            </g>
+          );
+        })}
+        {lv.map((l) => (
+          <g key={l.k}>
+            <text x="274" y={y(l.p) - 3} textAnchor="end" fill={l.c} fontSize="9" fontWeight="700">{l.k}</text>
+            <line x1="170" x2="278" y1={y(l.p)} y2={y(l.p)} stroke={l.c} strokeWidth="1.2" />
+            <rect x="284" y={y(l.p) - 8} width="70" height="16" rx="4" fill="rgba(30,41,59,.9)" stroke={l.c} strokeOpacity=".5" />
+            <text x="319" y={y(l.p) + 3.5} textAnchor="middle" fill={l.c} fontSize="9.5" fontFamily="monospace">{l.p}</text>
+          </g>
+        ))}
+      </svg>
+    </div>
+  );
+}
+function SignalShowcase() {
+  const bubble = { background: "rgba(30,41,59,.75)", border: "1px solid rgba(100,116,139,.3)" };
+  const quote = (
+    <div className="rounded-lg px-3 py-1.5 text-xs" style={{ background: "rgba(56,189,248,.10)", borderLeft: "3px solid #38bdf8" }}>
+      <div className="font-bold" style={{ color: "#7dd3fc" }}>{CHANNEL_NAME}</div>
+      <div className="bx-muted truncate">Gold 🏆 · Pair: XAUUSD 📊 · Long / Buy Limit …</div>
+    </div>
+  );
+  return (
+    <section id="ejemplo-senal" className="scroll-mt-24" data-testid="signal-showcase">
+      <SectionTitle kicker="DENTRO DEL CANAL VIP" title="Así se ve una señal" text="Cada señal llega con sus niveles definidos y se actualiza en vivo: entrada activa, objetivos alcanzados y cierre." />
+      <div className="bx-card max-w-xl mx-auto overflow-hidden">
+        <div className="flex items-center gap-3 px-4 py-3 bx-bb">
+          <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(245,158,11,.3)" }} />
+          <div>
+            <div className="font-extrabold text-white leading-tight">{CHANNEL_NAME}</div>
+            <div className="text-xs bx-muted">Sala de señales VIP</div>
+          </div>
+        </div>
+        <div className="p-3 md:p-4 space-y-3">
+          <div className="rounded-2xl px-4 py-3 text-[15px] leading-relaxed text-white" style={bubble}>
+            <div>Gold 🏆</div>
+            <div>Pair: XAUUSD 📊</div>
+            <div>Side: Long / Buy Limit</div>
+            <div>Entry: <Chip tone="entry">4100</Chip> <Chip tone="entry">4096</Chip></div>
+            <div>TP: Open</div>
+            <div>SL: <Chip tone="sl">4083</Chip></div>
+            <div className="mt-1 bx-muted text-sm">Note: past profits do not predict future profits</div>
+            <div>Risk 0.5-1-2%</div>
+            <div className="mt-2">TP1 <Chip tone="tp">4105</Chip> 50pips ✅</div>
+            <div>TP2 <Chip tone="tp">4110</Chip> 100pips ✅</div>
+            <div>TP3 <Chip tone="tp">4115</Chip> 150pips ✅</div>
+            <div className="mt-2">Use Proper Risk Management</div>
+          </div>
+
+          <SignalChart />
+
+          <div className="rounded-2xl p-2 space-y-2" style={bubble}>
+            {quote}
+            <div className="px-2 pb-1 text-[15px] text-white font-semibold">XAUUSD 4100 ENTRADA ACTIVA <span style={{ color: "#fbbf24" }}>⚠️</span></div>
+          </div>
+          <div className="rounded-2xl p-2 space-y-2" style={bubble}>
+            {quote}
+            <div className="px-2 pb-1 text-[15px] text-white font-semibold">XAUUSD HIT TP1 ✅</div>
+          </div>
+        </div>
+      </div>
+      <p className="mt-3 text-xs bx-ink2 text-center mx-auto max-w-xl">Ejemplo de señal publicada en el canal. La gráfica es una ilustración dibujada a partir de sus niveles; no muestra el resultado real.</p>
+    </section>
+  );
+}
+
 function ServicesPricing({ setPage }) {
   return (
     <div className="space-y-16">
@@ -1909,6 +2011,8 @@ function ServicesPricing({ setPage }) {
           </div>
         </div>
       </section>
+
+      <SignalShowcase />
 
       {/* TABLA DE PRECIOS */}
       <section id="precios" className="scroll-mt-24">
