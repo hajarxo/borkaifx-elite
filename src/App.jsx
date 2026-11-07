@@ -1900,7 +1900,6 @@ function ServicesPricing({ setPage }) {
             <div className="text-xs bx-accent font-bold tracking-widest">03</div>
             <h3 className="mt-1 text-lg font-extrabold">Copytrading en MT5</h3>
             <p className="mt-2 text-sm bx-muted">Operaciones replicadas en automático en tu cuenta, sin mensualidades ni comisión sobre ganancias.</p>
-            <button onClick={() => setPage("copytrading")} className="mt-3 text-sm bx-accent font-bold">Ver cómo funciona →</button>
           </div>
           <div className="bx-card p-5">
             <div className="text-xs bx-accent font-bold tracking-widest">04</div>
@@ -1938,115 +1937,6 @@ function ServicesPricing({ setPage }) {
 
         <VipOfferCta setPage={setPage} />
       </section>
-    </div>
-  );
-}
-
-function CopytradingPage({ setPage }) {
-  const [cpStep, setCpStep] = useState(0);
-  const cpSteps = [
-    { title: "Registro en broker afiliado", text: "Abre tu cuenta mediante los enlaces oficiales de afiliado en una de las plataformas soportadas:", brokers: true },
-    { title: "Depósito de capital de trabajo", text: `Deposita un mínimo de ${SITE.copyMinDeposit} directamente en tu cuenta de trading.`, note: "El dinero permanece a tu nombre, con control total para retirar tu capital y tus ganancias en cualquier momento." },
-    { title: "Verificación y confirmación de cuenta", text: "Envía tu número de ID/CR de trading únicamente por el WhatsApp oficial para validar la vinculación a la red." },
-    { title: "Conexión MT5 y validación", text: "Te enviamos las instrucciones para vincular tu cuenta MT5 a la cuenta maestra y replicar las operaciones en tiempo real." },
-    { title: "Monitoreo y disfrute de beneficios 24/5", text: "Sigue tus operaciones en vivo desde la aplicación de MT5, con 0% de comisión sobre las ganancias." },
-  ];
-  const cs = cpSteps[cpStep];
-  return (
-    <div className="space-y-16">
-      {/* COPYTRADING */}
-      <section id="copytrading" className="scroll-mt-24">
-        <SectionTitle
-          kicker="COPYTRADING AUTOMÁTICO · METATRADER 5"
-          title="Sistema de Copytrading de Alto Rendimiento"
-          text="Las operaciones se replican solas en tu cuenta de MT5, mientras tú conservas el control de tu dinero."
-        />
-        <div className="grid md:grid-cols-3 gap-4 text-center">
-          <div className="bx-card p-5">
-            <div className="text-3xl font-black bx-accent">100%</div>
-            <h3 className="mt-1 text-lg font-extrabold">Automático</h3>
-            <p className="mt-2 text-sm bx-muted">Operaciones 100% en automático directo a tu MT5.</p>
-          </div>
-          <div className="bx-card p-5">
-            <div className="text-3xl font-black bx-accent">0%</div>
-            <h3 className="mt-1 text-lg font-extrabold">Sin mensualidades ni Profit Share</h3>
-            <p className="mt-2 text-sm bx-muted">Sin mensualidades recurrentes ni cobro de porcentaje de ganancias. Conservas el 100% de tus beneficios.</p>
-          </div>
-          <div className="bx-card p-5" style={{ border: `2px solid ${ACCENT}` }}>
-            <div className="text-3xl font-black bx-accent">{SITE.copyPrice}</div>
-            <h3 className="mt-1 text-lg font-extrabold">Costo de acceso único</h3>
-            <p className="mt-2 text-sm bx-muted">Pago único de configuración (setup), sin cobros ocultos ni mensualidades.</p>
-          </div>
-        </div>
-
-        {/* Paso a paso interactivo */}
-        <div className="bx-card p-5 md:p-6 mt-6 text-center">
-          <div className="text-xs uppercase tracking-[0.2em] bx-muted">Paso a paso para la activación</div>
-          <div className="mt-4 flex justify-center gap-2 flex-wrap">
-            {cpSteps.map((st, i) => (
-              <button key={i} onClick={() => setCpStep(i)} aria-label={`Paso ${i + 1}`} className={`bx-tab ${cpStep === i ? "on" : ""}`} style={{ padding: ".5rem 1rem" }}>
-                Paso {i + 1}
-              </button>
-            ))}
-          </div>
-          <div className="mt-5 max-w-xl mx-auto">
-            <StepDot n={cpStep + 1} />
-            <h3 className="mt-3 text-xl font-extrabold">{cs.title}</h3>
-            <p className="mt-2 text-sm bx-muted">{cs.text}</p>
-            {cs.brokers && (
-              <div className="mt-4 grid grid-cols-3 gap-2">
-                {SITE.copyAffiliates.map((b) => <BrokerBtn key={b.broker} b={b} wa />)}
-              </div>
-            )}
-            {cs.note && (
-              <div className="mt-4 rounded-xl p-3 text-sm" style={{ background: "rgba(255,85,0,.12)", border: "1px solid rgba(255,85,0,.45)", color: "#ffb089" }}>{cs.note}</div>
-            )}
-          </div>
-          <div className="mt-6 flex justify-center gap-2">
-            <button onClick={() => setCpStep((i) => Math.max(0, i - 1))} disabled={cpStep === 0} className="bx-ghost" style={cpStep === 0 ? { opacity: 0.4 } : {}}>← Anterior</button>
-            <button onClick={() => setCpStep((i) => Math.min(cpSteps.length - 1, i + 1))} disabled={cpStep === cpSteps.length - 1} className="bx-ghost" style={cpStep === cpSteps.length - 1 ? { opacity: 0.4 } : {}}>Siguiente →</button>
-          </div>
-        </div>
-
-        <div className="mt-6 text-center">
-          <a
-            href={waHref("Hola, quiero activar mi cuenta de copytrading")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bx-btn"
-            style={{ padding: ".9rem 2rem", fontSize: "1rem", letterSpacing: ".04em" }}
-          >
-            ACTIVAR MI CUENTA AHORA
-          </a>
-        </div>
-      </section>
-
-    </div>
-  );
-}
-
-function EducationPage({ setPage }) {
-  return (
-    <div className="space-y-16">
-      {/* CURSO & ENTRENAMIENTO */}
-      <section id="curso" className="scroll-mt-24">
-        <SectionTitle
-          kicker="FORMACIÓN"
-          title="Curso & Entrenamiento"
-          text="Un programa diseñado para personas con o sin conocimiento previo que buscan mejorar su operativa."
-        />
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
-          {SITE.courseModules.map((c, i) => (
-            <div key={i} className="bx-card p-5">
-              <div className="text-2xl font-black bx-accent">{String(i + 1).padStart(2, "0")}</div>
-              <h3 className="mt-1 font-extrabold">{c.title}</h3>
-              <p className="mt-1 text-sm bx-muted">{c.text}</p>
-            </div>
-          ))}
-        </div>
-        <VipOfferCta setPage={setPage} />
-      </section>
-
     </div>
   );
 }
@@ -2741,7 +2631,7 @@ function AnnualEvolution({ trades, unit }) {
   );
 }
 
-const PAGE_PATHS = { home: "/", signals: "/senales", vip: "/vip-gratis", copytrading: "/copytrading", education: "/educacion", admin: "/admin" };
+const PAGE_PATHS = { home: "/", signals: "/senales", vip: "/vip-gratis", admin: "/elpatron" }; // el panel de administración vive en /elpatron
 const pageFromPath = () => {
   try {
     const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
@@ -2752,8 +2642,8 @@ const pageFromPath = () => {
 export default function App() {
   const twReady = useTailwind();
   const [trades, setTrades] = useState([]);
-  // Rutas: "/" (Track Record), "/senales", "/vip-gratis" (sin pestaña: se entra desde Señales), "/copytrading", "/educacion"
-  const [page, setPageState] = useState(pageFromPath); // home | signals | vip | copytrading | education | admin
+  // Rutas: "/" (Track Record), "/senales", "/vip-gratis" (sin pestaña: se entra desde Señales), "/elpatron" (panel admin)
+  const [page, setPageState] = useState(pageFromPath); // home | signals | vip | admin
   const setPage = (k) => {
     setPageState(k);
     try { if (window.location.pathname !== PAGE_PATHS[k]) window.history.pushState({ page: k }, "", PAGE_PATHS[k]); } catch (e) {}
@@ -3087,7 +2977,7 @@ export default function App() {
 
           {isAdmin && (
           <nav className="bx-nav order-last w-full md:order-none md:w-auto" data-testid="admin-nav">
-            {[["home", "Inicio"], ["signals", "Señales"], ["copytrading", "Copytrading"], ["education", "Educación"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => (
+            {[["home", "Inicio"], ["signals", "Señales"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => (
               <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k || (k === "signals" && page === "vip") ? "on" : ""}`}>{l}</button>
             ))}
           </nav>
@@ -3095,11 +2985,7 @@ export default function App() {
 
           <div className="flex items-center gap-2">
             <a href={SITE.join.url} target="_blank" rel="noopener noreferrer" className="bx-btn text-center" data-testid="join-btn">{SITE.join.label}</a>
-            {isAdmin ? (
-              <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>
-            ) : (
-              <button onClick={() => setShowLogin(true)} className="bx-ghost-page" aria-label="Acceso de administrador" title="Acceso de administrador">🔒 Admin</button>
-            )}
+            {isAdmin && <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>}
           </div>
         </div>
         {isAdmin && (
@@ -3119,19 +3005,16 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {page === "vip" && <VipPage />}
-        {["signals", "copytrading", "education"].includes(page) && !isAdmin && (
+        {page === "signals" && !isAdmin && (
           <section className="bx-card p-8 text-center" data-testid="page-locked">
             <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">ACCESO PROTEGIDO</div>
             <h1 className="mt-2 text-2xl md:text-3xl font-black text-white">Sección privada</h1>
-            <p className="mt-2 text-sm bx-muted">Esta sección solo está disponible para el administrador.</p>
+            <p className="mt-2 text-sm bx-muted">Esta sección no está disponible.</p>
             <div className="mt-5 flex flex-wrap justify-center gap-2">
-              <button type="button" onClick={() => setShowLogin(true)} className="bx-btn">🔒 Entrar como administrador</button>
-              <button type="button" onClick={() => setPage("home")} className="bx-ghost">Ir al Track Record</button>
+              <button type="button" onClick={() => setPage("home")} className="bx-btn">Ir al Track Record</button>
             </div>
           </section>
         )}
-        {page === "copytrading" && isAdmin && <CopytradingPage setPage={setPage} />}
-        {page === "education" && isAdmin && <EducationPage setPage={setPage} />}
         {page === "home" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section
