@@ -199,8 +199,9 @@ function guessSub(asset) {
 }
 
 // Tamaño de 1 pip (o punto) expresado en precio
+const isStepIndex = (asset) => /^\s*STEP\b/i.test(asset || ""); // Step Index (no incluye MULTI STEP)
 function guessPip(asset, category, sub) {
-  if (category === "SINTETICO") return 1;
+  if (category === "SINTETICO") return isStepIndex(asset) ? 0.1 : 1; // Step Index: 1 punto = 0.1 de precio
   const a = (asset || "").toUpperCase();
   if (/XAU|GOLD/.test(a)) return 0.1;
   if (/XAG|SILVER/.test(a)) return 0.01;
@@ -210,8 +211,8 @@ function guessPip(asset, category, sub) {
 }
 
 // Unidad según tipo de activo / broker
-// Regla de unidades: WELTRADE = PUNTOS (fijo) · CFDs = PIPS · DERIV = lo que se elija en la señal (t.unit), PIPS por defecto
-const unitWord = (t) => (t.category === "SINTETICO" ? (t.broker === "WELTRADE" ? "puntos" : t.unit === "puntos" ? "puntos" : "pips") : "pips");
+// Regla de unidades: TODOS los sintéticos (Deriv y Weltrade) = PUNTOS · CFDs = PIPS
+const unitWord = (t) => (t.category === "SINTETICO" ? "puntos" : "pips");
 const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 const unitName = (t) => cap(unitWord(t));
 
@@ -349,7 +350,9 @@ function parseSignal(raw) {
   const sign = out.direction === "SELL" ? -1 : 1;
   const hasEntry = out.entry1 !== "";
   // Convierte una distancia a unidades de precio
-  const distPrice = (v, unit) => (/^pips?$/i.test(unit) ? v * ps : out.category === "SINTETICO" || out.sub === "Índices" ? v : v * ps);
+  // (la escala `ps` ya vale 1 en índices y en la mayoría de sintéticos, y 0.1 en Step Index: 1000 puntos = 100 de precio)
+  const distPrice = (v) => v * ps;
+  const distUnit = out.category === "SINTETICO" ? "puntos" : "pips";
   const looksLikeDistance = (v) => hasEntry && out.entry1 >= 100 && v < out.entry1 * 0.1;
 
   if (slRaw) {
@@ -357,7 +360,7 @@ function parseSignal(raw) {
       if (hasEntry) {
         const d = slRaw.unit ? distPrice(slRaw.v, slRaw.unit) : slRaw.v;
         out.sl = r5(out.entry1 - sign * d);
-        if (!slRaw.unit) out.warnings.push(`SL interpretado como distancia de ${slRaw.v} ${out.broker === "WELTRADE" ? "puntos" : "pips"} desde la entrada. Revísalo.`);
+        if (!slRaw.unit) out.warnings.push(`SL interpretado como distancia de ${slRaw.v} ${distUnit} desde la entrada. Revísalo.`);
       } else out.warnings.push("El SL viene como distancia pero no se detectó la entrada.");
     } else out.sl = slRaw.v;
   }
@@ -366,7 +369,7 @@ function parseSignal(raw) {
       if (hasEntry) {
         const d = t.unit ? distPrice(t.v, t.unit) : t.v;
         out.tps.push(r5(out.entry1 + sign * d));
-        if (!t.unit) out.warnings.push(`TP interpretado como distancia de ${t.v} ${out.broker === "WELTRADE" ? "puntos" : "pips"} desde la entrada. Revísalo.`);
+        if (!t.unit) out.warnings.push(`TP interpretado como distancia de ${t.v} ${distUnit} desde la entrada. Revísalo.`);
       } else out.warnings.push("El TP viene como distancia pero no se detectó la entrada.");
     } else out.tps.push(t.v);
   });
@@ -442,6 +445,24 @@ function calcPips(t, k, price) {
   if (e === null || p === null) return null;
   const dir = t.direction === "SELL" ? -1 : 1;
   return round1(((p - e) * dir) / ps);
+}
+
+// Recalcula con la escala actual los resultados automáticos de cada entrada (SL y TP con precio). BE, Cierre Manual y TP open no se tocan.
+function rescaleLegs(t) {
+  const legs = { ...(t.legs || {}) };
+  Object.keys(legs).forEach((k) => {
+    const L = legs[k];
+    if (!L) return;
+    if (L.status === "SL") {
+      const p = calcPips(t, k, t.sl);
+      if (p !== null) legs[k] = { ...L, exit: t.sl, pips: p };
+    } else if (L.status === "TP" && L.exit !== "OPEN" && t.tps && t.tps[L.tpIdx] !== undefined && t.tps[L.tpIdx] !== "OPEN") {
+      const lvl = t.tps[L.tpIdx];
+      const p = calcPips(t, k, lvl);
+      if (p !== null) legs[k] = { ...L, exit: lvl, pips: p };
+    }
+  });
+  return legs;
 }
 
 function riskPips(t, k) {
@@ -826,7 +847,7 @@ function TradeForm({ initial, onCancel, onSave }) {
     if (e1 === null) return setErr("Entry 1 es obligatoria.");
     const single = f.category === "SINTETICO" && !legacyE2;
     const e2 = single ? null : num(f.entry2);
-    const trade = recompute({
+    const draft = ({
       id: f.id || uid(),
       date: f.date,
       category: f.category,
@@ -840,7 +861,7 @@ function TradeForm({ initial, onCancel, onSave }) {
       sl: num(f.sl) ?? "",
       tps: parseTpsText(f.tpsText),
       pipSize: num(f.pipSize) || 1,
-      ...(f.category === "SINTETICO" && f.broker === "DERIV" ? { unit: f.unit === "puntos" ? "puntos" : "pips" } : {}),
+      ...(f.category === "SINTETICO" ? { unit: "puntos" } : {}),
       legs: f.legs || {},
       discarded: !!f.discarded,
       raw: f.raw || "",
@@ -848,13 +869,15 @@ function TradeForm({ initial, onCancel, onSave }) {
       mgmt: (f.mgmt || "").trim(),
       tags: (f.tagsText || "").split(",").map((t) => t.trim()).filter(Boolean),
     });
+    if (f.id && num(f.pipSize) !== num(initial.pipSize)) draft.legs = rescaleLegs(draft); // cambió la escala: se corrigen los pips ya calculados
+    const trade = recompute(draft);
     onSave(trade);
   };
 
   const singleEntry = f.category === "SINTETICO" && !legacyE2;
   const showE2 = !singleEntry && num(f.entry2) !== null;
   const isDeriv = f.category === "SINTETICO" && f.broker !== "WELTRADE";
-  const fUnit = f.category === "SINTETICO" ? (f.broker === "WELTRADE" ? "puntos" : f.unit === "puntos" ? "puntos" : "pips") : "pips";
+  const fUnit = f.category === "SINTETICO" ? "puntos" : "pips";
   const auto = classifyAsset(f.asset);
 
   return (
@@ -936,19 +959,12 @@ function TradeForm({ initial, onCancel, onSave }) {
                 <input type="number" step="any" className="bx-input" value={f.sl} onChange={(e) => set("sl", e.target.value)} />
               </Field>
               <Field label="Unidad de medida">
-                {isDeriv ? (
-                  <select className="bx-input" value={fUnit} onChange={(e) => { setUnitTouched(true); set("unit", e.target.value); }} aria-label="Unidad de medida">
-                    <option value="pips">Pips</option>
-                    <option value="puntos">Puntos</option>
-                  </select>
-                ) : (
-                  <div className="bx-input flex items-center" style={{ opacity: 0.85 }}>Puntos (WELTRADE)</div>
-                )}
+                <div className="bx-input flex items-center" style={{ opacity: 0.85 }} aria-label="Unidad de medida">Puntos</div>
               </Field>
               <Field label="Entradas">
                 <div className="bx-input flex items-center" style={{ opacity: 0.85 }}>Una sola entrada</div>
               </Field>
-              {isDeriv && <div className="col-span-2 md:col-span-4 -mt-1 text-[11px] bx-muted">Los activos como Step Index se miden en <b className="text-white">puntos</b>; Boom, Crash y similares, normalmente en pips. Esta unidad se usa en los resultados y en los reportes.</div>}
+              <div className="col-span-2 md:col-span-4 -mt-1 text-[11px] bx-muted">Todos los sintéticos se miden en <b className="text-white">puntos</b>. Usa "Valor de 1 punto (en precio)" para la escala (Step Index = 0.1); los resultados y reportes salen en puntos.</div>
             </>
           ) : (
             <>
@@ -2762,7 +2778,7 @@ export default function App() {
 
   // Unidad dinámica: CFDs = Pips · DERIV = Pips o Puntos (según cada señal) · WELTRADE = Puntos
   const scopeUnits = Array.from(new Set(market.map(unitWord)));
-  const scopeUnit = scopeUnits.length === 1 ? cap(scopeUnits[0]) : scopeUnits.length > 1 ? "Pips/Puntos" : tab === "SINTETICO" && broker === "WELTRADE" ? "Puntos" : "Pips";
+  const scopeUnit = scopeUnits.length === 1 ? cap(scopeUnits[0]) : scopeUnits.length > 1 ? "Pips/Puntos" : tab === "SINTETICO" ? "Puntos" : "Pips";
 
   const baseList = useMemo(() => (dateFilter ? market.filter((t) => t.date >= dateFilter.from && t.date <= dateFilter.to) : scoped), [dateFilter, market, scoped]);
   const marked = useMemo(() => new Set(market.map((t) => t.date)), [market]);
