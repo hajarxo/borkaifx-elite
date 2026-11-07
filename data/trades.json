@@ -1288,7 +1288,7 @@
       11119
     ],
     "pipSize": 1,
-    "unit": "puntos",
+    "unit": "pips",
     "legs": {
       "e1": {
         "status": "BE",
