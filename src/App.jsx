@@ -2024,7 +2024,7 @@ function SignalShowcase({ kind }) {
 
 function ServicesPricing({ setPage, kind = "CFD" }) {
   const syn = kind === "SINTETICO";
-  const kicker = syn ? "Pase VIP · SINTÉTICOS VIPS" : "Pase VIP · ELITE VIP FX";
+  const kicker = syn ? "Pase VIP · SINTÉTICOS VIPS" : "Pase VIP · SINTETICOS VIP";
   const intro = syn
     ? "Compra directa del pase VIP para la comunidad donde operamos sintéticos en Deriv y Weltrade."
     : "Compra directa del pase VIP, para quienes prefieren no afiliarse a un broker. Pago y activación por Telegram.";
