@@ -73,7 +73,7 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAGHCAMAAAD2o3uU
 const CFD_SUBS = ["Forex", "Oro/Metales", "Índices"];
 const BROKERS = ["WELTRADE", "DERIV"];
 
-const ACCENT = "#FF5500";
+const ACCENT = "#F2B01E";
 const GREEN = "#10b981";
 const RED = "#f43f5e";
 const GREY = "#A8A39B";
@@ -84,25 +84,36 @@ const CSS = `
 :where(.bx-card) :is(h1,h2,h3,h4){color:#FFFFFF}
 .bx-input{color-scheme:dark}
 .bx-card .bx-accent{color:var(--accent)}
-a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#fff;text-decoration:none}
+a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-nav{display:flex;gap:.25rem;flex-wrap:wrap}
 .bx-navbtn{padding:.5rem .875rem;border-radius:.75rem;font-size:.8125rem;font-weight:800;letter-spacing:.03em;color:var(--ink2);cursor:pointer;background:transparent;border:1px solid transparent;transition:all .15s}
 .bx-navbtn:hover{color:var(--ink)}
-.bx-navbtn.on{background:var(--accent);color:#fff}
-.bx-root{color-scheme:dark;--bg:#0A0A0B;--ink:#F4F1EA;--ink2:#9A958C;--line:#232325;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#FF5500;--field:#0F0F0F;background:radial-gradient(900px circle at 85% -10%,rgba(255,85,0,.10),transparent 60%),radial-gradient(700px circle at 0% 35%,rgba(245,158,11,.06),transparent 60%),var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-.bx-header{background:rgba(10,10,11,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bx-navbtn.on{background:rgba(242,176,30,.12);color:var(--accent)}
+.bx-root{color-scheme:dark;--bg:#0A0A0C;--ink:#F4F1EA;--ink2:#9A958C;--line:#232325;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#F2B01E;--field:#0F0F0F;background:radial-gradient(1000px circle at 30% -5%,rgba(242,176,30,.13),transparent 60%),radial-gradient(800px circle at 100% 40%,rgba(242,176,30,.05),transparent 60%),var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px}
+.bx-header{background:rgba(10,10,12,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 @keyframes bxpulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}70%{box-shadow:0 0 0 8px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
 .bx-dot{width:9px;height:9px;border-radius:9999px;display:inline-block;flex:none}
 .bx-dot.live{background:#10b981;animation:bxpulse 1.8s infinite}
 .bx-dot.off{background:#f43f5e}
 .bx-live{display:flex;align-items:center;gap:.625rem;background:#141415;border:1px solid var(--cardline);border-radius:9999px;padding:.4rem .9rem;font-size:.75rem}
 .bx-ink2{color:var(--ink2)}
+.bx-display{font-family:"Anton","Bebas Neue","Oswald",Impact,"Arial Narrow",sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:1}
+.bx-mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+.bx-kicker{display:flex;align-items:center;gap:.75rem;font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:.78rem;letter-spacing:.3em;font-weight:700;color:var(--accent);text-transform:uppercase}
+.bx-kicker::before{content:"";width:34px;height:2px;background:var(--accent);flex:none}
+.bx-kicker.center{justify-content:center}
+.bx-gold{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:linear-gradient(180deg,#F7BC2E,#E49C10);color:#17120a;font-weight:800;border-radius:.8rem;padding:.6rem 1.15rem;font-size:.95rem;box-shadow:0 6px 24px rgba(242,176,30,.32);transition:filter .15s,transform .15s}
+.bx-gold:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.bx-plan{display:flex;flex-direction:column;background:rgba(16,19,28,.85);border:1px solid rgba(255,255,255,.09);border-radius:1.25rem;padding:1.6rem}
+.bx-plan.hot{border-color:rgba(242,176,30,.85);box-shadow:0 0 0 1px rgba(242,176,30,.25),0 10px 50px rgba(242,176,30,.16)}
+.bx-planbtn{display:flex;align-items:center;justify-content:center;gap:.4rem;border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;border-radius:.8rem;padding:.85rem 1rem;font-size:1rem;background:rgba(255,255,255,.03);transition:border-color .15s}
+.bx-planbtn:hover{border-color:var(--accent);color:var(--accent)}
 .bx-accent{color:var(--accent)}
-.bx-card{background:rgba(15,23,42,.6);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--cardink);border:1px solid rgba(245,158,11,.2);border-radius:.875rem;box-shadow:0 1px 0 rgba(255,255,255,.03) inset}
+.bx-card{background:rgba(16,19,28,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--cardink);border:1px solid rgba(255,255,255,.09);border-radius:1rem}
 .bx-calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
 @media(min-width:640px){.bx-calgrid{grid-template-columns:repeat(7,minmax(0,1fr)) 88px}}
-.bx-day{background:rgba(15,23,42,.55);border:1px solid rgba(100,116,139,.35);border-radius:.9rem;transition:box-shadow .15s,transform .15s}
-.bx-day:hover{box-shadow:0 0 14px rgba(245,158,11,.22)}
+.bx-day{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:.9rem;transition:box-shadow .15s,transform .15s}
+.bx-day:hover{box-shadow:0 0 14px rgba(242,176,30,.22)}
 .bx-muted{color:var(--cardink2)}
 .bx-bt{border-top:1px solid var(--cardline)}
 .bx-bb{border-bottom:1px solid var(--cardline)}
@@ -113,7 +124,7 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#fff;text-decoration:none}
 .bx-input::placeholder{color:#6B6760}
 .bx-input:disabled{opacity:.5}
 select.bx-input option{background:#161616;color:#fff}
-.bx-btn{background:var(--accent);color:#fff;font-weight:800;border-radius:.75rem;padding:.5rem 1rem;font-size:.875rem;line-height:1.25rem;cursor:pointer;transition:filter .15s;display:inline-block}
+.bx-btn{background:linear-gradient(180deg,#F7BC2E,#E49C10);color:#17120a;font-weight:800;box-shadow:0 6px 22px rgba(242,176,30,.28);border-radius:.75rem;padding:.5rem 1rem;font-size:.875rem;line-height:1.25rem;cursor:pointer;transition:filter .15s;display:inline-block}
 .bx-btn:hover{filter:brightness(1.1)}
 .bx-btn:disabled{opacity:.4;cursor:not-allowed}
 .bx-ghost{border:1px solid var(--cardline);color:var(--cardink);border-radius:.75rem;padding:.5rem .75rem;font-size:.875rem;cursor:pointer;background:transparent}
@@ -123,7 +134,7 @@ select.bx-input option{background:#161616;color:#fff}
 .bx-ghost-page:hover{border-color:var(--accent);color:var(--accent)}
 .bx-tab{border:1px solid var(--cardline);color:var(--cardink2);border-radius:.75rem;padding:.625rem 1.25rem;font-size:.875rem;font-weight:800;letter-spacing:.06em;cursor:pointer;background:transparent;transition:all .15s}
 .bx-tab:hover{color:#fff;border-color:#4A4A4A}
-.bx-tab.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.bx-tab.on{background:var(--accent);border-color:var(--accent);color:#17120a}
 .bx-pill{border:1px solid var(--cardline);color:var(--cardink2);border-radius:9999px;padding:.375rem .875rem;font-size:.75rem;font-weight:700;cursor:pointer;background:transparent;transition:all .15s}
 .bx-pill:hover{color:#fff;border-color:#4A4A4A}
 .bx-pill.on{background:#fff;color:#111;border-color:#fff}
@@ -134,9 +145,9 @@ select.bx-input option{background:#161616;color:#fff}
 .bx-seg.on.mid{background:rgba(168,163,155,.2);border-color:#A8A39B;color:#e7e5e4}
 .bx-seg.on.open{background:rgba(56,189,248,.18);border-color:#38bdf8;color:#7dd3fc}
 .bx-seg.on.wait{background:rgba(251,191,36,.18);border-color:#fbbf24;color:#fcd34d}
-.bx-seg.on.acc{background:rgba(255,85,0,.2);border-color:#FF5500;color:#ffb089}
+.bx-seg.on.acc{background:rgba(242,176,30,.2);border-color:#F2B01E;color:#fcd68a}
 .bx-file{font-size:.75rem;color:var(--cardink2)}
-.bx-file::file-selector-button{margin-right:.75rem;border:0;border-radius:.5rem;background:var(--accent);color:#fff;font-weight:800;font-size:.75rem;padding:.375rem .75rem;cursor:pointer}
+.bx-file::file-selector-button{margin-right:.75rem;border:0;border-radius:.5rem;background:var(--accent);color:#17120a;font-weight:800;font-size:.75rem;padding:.375rem .75rem;cursor:pointer}
 `;
 
 /* ----------------------------- Tailwind auto-carga ----------------------------- */
@@ -759,9 +770,9 @@ const Stat = ({ label, value, sub, tone }) => {
   const color = tone === "pos" ? "text-emerald-400" : tone === "neg" ? "text-rose-400" : "text-white";
   return (
     <div className="bx-card px-3 py-2" style={{ borderTop: `2px solid ${ACCENT}` }}>
-      <div className="text-[10px] uppercase tracking-[0.14em] bx-muted">{label}</div>
-      <div className={`text-xl md:text-2xl font-extrabold leading-tight ${color}`}>{value}</div>
-      {sub && <div className="text-[11px] bx-muted leading-tight">{sub}</div>}
+      <div className="text-[11px] uppercase tracking-[0.14em] bx-muted">{label}</div>
+      <div className={`text-2xl md:text-3xl font-extrabold leading-tight ${color}`}>{value}</div>
+      {sub && <div className="text-xs bx-muted leading-tight">{sub}</div>}
     </div>
   );
 };
@@ -776,7 +787,7 @@ const Field = ({ label, children, className = "" }) => (
 const ChartTooltip = ({ active, payload, label, unit }) => {
   if (!active || !payload || !payload.length) return null;
   return (
-    <div className="rounded-lg px-3 py-2 text-xs" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)", color: "#fff" }}>
+    <div className="rounded-lg px-3 py-2 text-xs" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)", color: "#fff" }}>
       <div style={{ color: GREY }}>{label}</div>
       {payload.map((p, i) => (
         <div key={i} className="font-bold" style={{ color: p.payload.fill || ACCENT }}>
@@ -899,7 +910,7 @@ function TradeForm({ initial, onCancel, onSave }) {
         </div>
 
         {f.warnings?.length > 0 && (
-          <div className="mb-3 rounded-xl text-xs p-3" style={{ background: "rgba(255,85,0,.12)", border: "1px solid rgba(255,85,0,.45)", color: "#ffb089" }}>
+          <div className="mb-3 rounded-xl text-xs p-3" style={{ background: "rgba(242,176,30,.12)", border: "1px solid rgba(242,176,30,.45)", color: "#fcd68a" }}>
             ⚠ Revisa antes de guardar: {f.warnings.join(" · ")}
           </div>
         )}
@@ -944,7 +955,7 @@ function TradeForm({ initial, onCancel, onSave }) {
           <Field label="Activo" className="col-span-2">
             <input className="bx-input" placeholder="XAUUSD, NAS100, CRASH 900, GAINX 400..." value={f.asset} onChange={(e) => set("asset", e.target.value)} />
             {auto && (
-              <div className="text-[11px] mt-1" style={{ color: "#ffb089" }}>
+              <div className="text-[11px] mt-1" style={{ color: "#fcd68a" }}>
                 Clasificación automática: {auto.category === "SINTETICO" ? `Sintético · ${auto.broker}` : `CFD · ${auto.sub}`}
               </div>
             )}
@@ -1041,7 +1052,7 @@ const TpChips = ({ t }) => {
             style={
               hit
                 ? { background: "rgba(16,185,129,.15)", border: "1px solid rgba(16,185,129,.5)", color: "#6ee7b7", fontWeight: 700 }
-                : { border: "1px solid rgba(100,116,139,.35)", color: GREY }
+                : { border: "1px solid rgba(255,255,255,.09)", color: GREY }
             }
           >
             {hit ? "✓ " : ""}{x === "OPEN" ? tpLabel(i, x) : `${tpLabel(i, x)} ${x}`}
@@ -1094,7 +1105,7 @@ function LegEditor({ t, k, onChange }) {
   const needsPips = L.status !== "Abierta" && L.status !== "Pendiente" && p === null;
 
   return (
-    <div className="rounded-xl p-3" style={{ background: "rgba(15,23,42,.55)", border: "1px solid rgba(100,116,139,.35)" }}>
+    <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
       <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
         <div className="text-sm font-bold">
           Entry {k === "e1" ? 1 : 2} <span className="bx-muted font-normal">@ {entry ?? "—"}</span>
@@ -1134,7 +1145,7 @@ function LegEditor({ t, k, onChange }) {
           </label>
           <div className="text-xs bx-muted pb-2">{r !== null ? `${r >= 0 ? "+" : ""}${r.toFixed(2)}R` : ""}</div>
           {(isOpenTp || needsPips) && (
-            <div className="text-xs pb-2" style={{ color: "#ffb089" }}>
+            <div className="text-xs pb-2" style={{ color: "#fcd68a" }}>
               {isOpenTp ? "TP abierto: escribe los pips/puntos reales alcanzados." : L.status === "MANUAL" ? "Cierre manual: escribe los pips/puntos finales (con − si cerró en pérdida)." : "Escribe los pips/puntos reales."}
             </div>
           )}
@@ -1152,7 +1163,7 @@ function ManagePanel({ t, onUpdate }) {
   const setLeg = (k, patch) => upd({ legs: { ...(t.legs || {}), [k]: { ...legOf(t, k), ...patch } } });
 
   return (
-    <div className="mt-5 rounded-xl p-4 space-y-4" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
+    <div className="mt-5 rounded-xl p-4 space-y-4" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
       <div className="text-[11px] uppercase tracking-[0.18em] font-bold bx-accent">Gestión rápida (Admin)</div>
 
       {t.discarded ? (
@@ -1172,7 +1183,7 @@ function ManagePanel({ t, onUpdate }) {
 
           {keys.map((k) => <LegEditor key={k} t={t} k={k} onChange={setLeg} />)}
 
-          <div className="flex items-center justify-between flex-wrap gap-2 rounded-xl px-3 py-2" style={{ background: "rgba(15,23,42,.55)", border: "1px solid rgba(100,116,139,.35)" }}>
+          <div className="flex items-center justify-between flex-wrap gap-2 rounded-xl px-3 py-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
             <div className="text-xs bx-muted uppercase tracking-wider">Total de la señal</div>
             <div className={`text-lg font-extrabold ${t.pips > 0 ? "text-emerald-400" : t.pips < 0 ? "text-rose-400" : "text-white"}`}>
               {fmtP(t.pips)} {unit.toLowerCase()} <span className="text-xs bx-muted font-normal">· {t.r >= 0 ? "+" : ""}{t.r}R</span>
@@ -1233,7 +1244,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
 
         <div className="grid grid-cols-3 gap-2 mt-4">
           {rows.map(([k, v]) => (
-            <div key={k} className="rounded-lg p-2" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
+            <div key={k} className="rounded-lg p-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
               <div className="text-[10px] uppercase tracking-wider bx-muted">{k}</div>
               <div className={`text-sm font-semibold ${k === "Resultado" ? (t.pips > 0 ? "text-emerald-400" : t.pips < 0 ? "text-rose-400" : "text-white") : "text-white"}`}>{v}</div>
             </div>
@@ -1241,7 +1252,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
         </div>
 
         {!t.discarded && hasE2(t) && keys.length > 1 && (
-          <div className="mt-3 rounded-xl p-3 text-sm space-y-1" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
+          <div className="mt-3 rounded-xl p-3 text-sm space-y-1" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
             {keys.map((k) => (
               <div key={k} className="flex justify-between gap-2">
                 <span className="bx-muted">Entry {k === "e1" ? 1 : 2} @ {entryOf(t, k)}</span>
@@ -1256,7 +1267,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
         {t.tags?.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {t.tags.map((g) => (
-              <span key={g} className="text-[11px] px-2 py-0.5 rounded-full" style={{ border: "1px solid rgba(255,85,0,.5)", color: "#ffb089" }}>#{g}</span>
+              <span key={g} className="text-[11px] px-2 py-0.5 rounded-full" style={{ border: "1px solid rgba(242,176,30,.5)", color: "#fcd68a" }}>#{g}</span>
             ))}
           </div>
         )}
@@ -1264,7 +1275,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
         {t.notes && <p className="mt-4 text-sm whitespace-pre-wrap" style={{ color: "#D6D1C9" }}>{t.notes}</p>}
 
         {t.mgmt && (
-          <div className="mt-4 rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
+          <div className="mt-4 rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
             <div className="text-[11px] uppercase tracking-[0.18em] font-bold bx-accent mb-1">Notas de gestión</div>
             <p className="text-sm whitespace-pre-wrap" style={{ color: "#D6D1C9" }}>{t.mgmt}</p>
           </div>
@@ -1273,7 +1284,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
         {t.raw && (
           <details className="mt-4">
             <summary className="cursor-pointer text-xs uppercase tracking-wider bx-muted">Señal original</summary>
-            <pre className="mt-2 whitespace-pre-wrap text-xs rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", color: GREY, border: "1px solid rgba(100,116,139,.35)" }}>{t.raw}</pre>
+            <pre className="mt-2 whitespace-pre-wrap text-xs rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", color: GREY, border: "1px solid rgba(255,255,255,.09)" }}>{t.raw}</pre>
           </details>
         )}
 
@@ -1378,7 +1389,7 @@ function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
                 title="Seleccionar la semana completa"
                 onClick={() => wk && onWeek(wk.from)}
                 className="rounded-md text-xs font-bold"
-                style={{ background: wkSel ? ACCENT : "#1d1d1d", color: wkSel ? "#fff" : "#9a948a", border: "1px solid rgba(100,116,139,.35)" }}
+                style={{ background: wkSel ? ACCENT : "#1d1d1d", color: wkSel ? "#fff" : "#9a948a", border: "1px solid rgba(255,255,255,.09)" }}
               >
                 ›
               </button>
@@ -1395,7 +1406,7 @@ function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
                     className="rounded-md text-xs font-bold relative"
                     style={{
                       height: 32,
-                      background: single ? ACCENT : inR ? "rgba(255,85,0,.28)" : "#161616",
+                      background: single ? ACCENT : inR ? "rgba(242,176,30,.28)" : "#161616",
                       color: single ? "#fff" : "#E8E4DC",
                       border: `1px solid ${d === today ? ACCENT : "#2A2A2A"}`,
                     }}
@@ -1624,7 +1635,7 @@ function ReportModal({ trades, onClose, defaultScope }) {
           <button type="button" onClick={onClose} className="bx-ghost">Cerrar</button>
         </div>
         <div className="mt-4 grid md:grid-cols-[300px_1fr] gap-4">
-          <div className="rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
+          <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
             <CalGrid ym={ym} onNav={nav} marked={marked} range={range} onDay={pickDay} onWeek={pickWeek} onMonth={pickMonth} />
             <div className="mt-2 text-[10px] bx-muted">Día = resumen diario · flecha › = semana completa · nombre del mes = mes completo</div>
           </div>
@@ -1677,15 +1688,15 @@ const waHref = (msg) => {
 const fmtMoney = (n) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
 
 const SectionTitle = ({ kicker, title, text }) => (
-  <div className="mb-6 text-center">
-    <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">{kicker}</div>
-    <h2 className="mt-1 text-2xl md:text-3xl font-black tracking-tight" style={{ color: "var(--ink)" }}>{title}</h2>
-    {text && <p className="mt-2 text-sm md:text-base bx-ink2 max-w-2xl text-center mx-auto">{text}</p>}
+  <div className="mb-8 text-center">
+    <div className="bx-kicker center">{kicker}</div>
+    <h2 className="mt-3 bx-display text-4xl md:text-6xl" style={{ color: "var(--ink)" }}>{title}</h2>
+    {text && <p className="mt-4 text-base md:text-lg bx-ink2 max-w-2xl text-center mx-auto leading-relaxed">{text}</p>}
   </div>
 );
 
 const StepDot = ({ n }) => (
-  <div className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center font-black text-white mx-auto" style={{ background: ACCENT }}>{n}</div>
+  <div className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center font-black mx-auto" style={{ background: ACCENT, color: "#17120a" }}>{n}</div>
 );
 
 // Botón de broker: si hay enlace de afiliado lo abre; si no, pide el enlace por WhatsApp
@@ -1755,7 +1766,7 @@ function FaqMessage({ text }) {
     if (ok) setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div className="mt-3 rounded-xl p-3 text-left" style={{ background: "#0B0B0B", border: "1px solid rgba(100,116,139,.35)" }}>
+    <div className="mt-3 rounded-xl p-3 text-left" style={{ background: "#0B0B0B", border: "1px solid rgba(255,255,255,.09)" }}>
       <div className="whitespace-pre-wrap text-[13px] leading-relaxed" style={{ color: "#E8E3DB" }}>“{text}”</div>
       <div className="mt-2 text-right">
         <button type="button" onClick={copy} className="bx-ghost text-xs">{copied ? "✓ Copiado" : "Copiar mensaje"}</button>
@@ -1767,7 +1778,7 @@ function FaqMessage({ text }) {
 function FaqBlock({ b }) {
   if (b.t === "p") return <p className={`${b.gap ? "mt-3 " : "mt-2 "}text-sm leading-relaxed`} style={{ color: "#D6D1C9" }}>{withHandle(b.x)}</p>;
   if (b.t === "h") return <div className="mt-4 text-[11px] font-black tracking-[0.2em] uppercase" style={{ color: ACCENT }}>{b.x}</div>;
-  if (b.t === "note") return <p className="mt-3 text-sm leading-relaxed rounded-lg px-3 py-2" style={{ background: "rgba(255,85,0,.12)", border: "1px solid rgba(255,85,0,.45)", color: "#FFFFFF" }}><b style={{ color: ACCENT }}>{b.x[0]}</b> {b.x[1]}</p>;
+  if (b.t === "note") return <p className="mt-3 text-sm leading-relaxed rounded-lg px-3 py-2" style={{ background: "rgba(242,176,30,.12)", border: "1px solid rgba(242,176,30,.45)", color: "#FFFFFF" }}><b style={{ color: ACCENT }}>{b.x[0]}</b> {b.x[1]}</p>;
   if (b.t === "msg") return <FaqMessage text={b.x} />;
   return (
     <ul className="mt-3 space-y-2 text-sm leading-relaxed text-left list-disc pl-5" style={{ color: "#D6D1C9" }}>
@@ -1785,7 +1796,7 @@ function FaqVip() {
         {FAQ_ITEMS.map((it, i) => {
           const isOpen = openIdx === i;
           return (
-            <div key={i} className="overflow-hidden" style={{ background: "#161616", border: `1px solid ${isOpen ? "rgba(255,85,0,.55)" : "#2A2A2A"}`, borderRadius: 18, transition: "border-color .2s" }}>
+            <div key={i} className="overflow-hidden" style={{ background: "#161616", border: `1px solid ${isOpen ? "rgba(242,176,30,.55)" : "#2A2A2A"}`, borderRadius: 18, transition: "border-color .2s" }}>
               <button
                 type="button"
                 onClick={() => setOpenIdx(isOpen ? -1 : i)}
@@ -1798,7 +1809,7 @@ function FaqVip() {
               </button>
               {isOpen && (
                 <div id={`faq-${i}`} className="px-5 pb-5">
-                  <div className="pt-2" style={{ borderTop: "1px solid rgba(100,116,139,.35)" }}>
+                  <div className="pt-2" style={{ borderTop: "1px solid rgba(255,255,255,.09)" }}>
                     {it.a.map((b, bi) => <FaqBlock key={bi} b={b} />)}
                   </div>
                 </div>
@@ -1856,7 +1867,7 @@ function VipOfferCta({ setPage }) {
   return (
     <div
       className="mt-8 rounded-2xl p-6 md:p-8 text-center"
-      style={{ background: "radial-gradient(600px circle at 50% 0%, rgba(255,85,0,.30), transparent 65%), #161616", border: `2px solid ${ACCENT}`, boxShadow: "0 0 40px rgba(255,85,0,.25)" }}
+      style={{ background: "radial-gradient(600px circle at 50% 0%, rgba(242,176,30,.30), transparent 65%), #161616", border: `2px solid ${ACCENT}`, boxShadow: "0 0 40px rgba(242,176,30,.25)" }}
     >
       <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">OFERTA EXCLUSIVA</div>
       <h3 className="mt-2 text-xl md:text-3xl font-black leading-tight text-white">¿Quieres ser parte del VIP sin pagar mensualidad?</h3>
@@ -1916,7 +1927,7 @@ const VIP_RULES = [
 function SignalShowcase({ kind }) {
   const [openRule, setOpenRule] = useState(null);
   const ex = SIGNAL_EXAMPLES[kind];
-  const bubble = { background: "rgba(30,41,59,.75)", border: "1px solid rgba(100,116,139,.3)" };
+  const bubble = { background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.09)" };
   const quote = (
     <div className="rounded-lg px-3 py-1.5 text-xs" style={{ background: "rgba(56,189,248,.10)", borderLeft: "3px solid #38bdf8" }}>
       <div className="font-bold" style={{ color: "#7dd3fc" }}>{CHANNEL_NAME}</div>
@@ -1929,7 +1940,7 @@ function SignalShowcase({ kind }) {
       <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center max-w-5xl mx-auto">
         <div className="bx-card w-full max-w-md mx-auto md:mx-0 md:ml-auto overflow-hidden">
           <div className="flex items-center gap-3 px-4 py-3 bx-bb">
-            <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(245,158,11,.3)" }} />
+            <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(242,176,30,.35)" }} />
             <div>
               <div className="font-extrabold text-white leading-tight">{CHANNEL_NAME}</div>
               <div className="text-xs bx-muted">Sala de señales VIP</div>
@@ -1967,13 +1978,13 @@ function SignalShowcase({ kind }) {
             </div>
           ))}
 
-          <div className="pt-4 mt-2" style={{ borderTop: "1px solid rgba(100,116,139,.3)" }} data-testid="vip-rules">
+          <div className="pt-4 mt-2" style={{ borderTop: "1px solid rgba(255,255,255,.09)" }} data-testid="vip-rules">
             <div className="font-extrabold text-white mb-2">Gestión de riesgo &amp; reglas VIP</div>
             <div className="space-y-1.5">
               {VIP_RULES.map((r, i) => {
                 const open = openRule === i && !!r.text;
                 return (
-                  <div key={r.t} className="rounded-xl" style={{ background: "rgba(2,6,23,.45)", border: "1px solid rgba(100,116,139,.3)" }}>
+                  <div key={r.t} className="rounded-xl" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
                     <button onClick={() => r.text && setOpenRule(open ? null : i)} aria-expanded={open} className="w-full flex items-center justify-between gap-3 px-3 py-2 text-left" style={{ cursor: r.text ? "pointer" : "default" }}>
                       <span className="text-sm"><span className="bx-accent font-black mr-1.5">{i + 1}.</span><span className="font-bold text-white">{r.t}</span></span>
                       {r.text ? <span className="bx-accent text-lg leading-none">{open ? "–" : "+"}</span> : null}
@@ -2023,30 +2034,41 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
 
       <SignalShowcase kind={kind} />
 
-      {/* TABLA DE PRECIOS */}
-      <section id="precios" className="scroll-mt-24">
-        <SectionTitle kicker="PASE VIP" title="Tabla de precios" text="Compra directa del pase VIP, para quienes prefieren no afiliarse a un broker." />
-        <div className="grid md:grid-cols-3 gap-4 text-center">
-          {SITE.plans.map((p) => (
-            <div key={p.name} className="bx-card p-5 flex flex-col">
-              <h3 className="text-lg font-extrabold">{p.name}</h3>
-              <div className="mt-3">
-                <span className="text-4xl font-black">{fmtMoney(p.amount)}</span> <span className="text-sm bx-muted">USD</span>
-              </div>
-              <div className="text-xs bx-muted mt-1">{p.label}</div>
-              {p.months > 1 && <div className="mt-2 text-xs font-bold bx-accent">Equivale a {fmtMoney(p.amount / p.months)} USD al mes</div>}
-              <ul className="mt-4 space-y-2 text-sm bx-muted flex-1 text-left mx-auto w-fit">
-                {p.features.map((f, i) => (
-                  <li key={i} className="flex gap-2"><span className="bx-accent">✓</span>{f}</li>
-                ))}
-              </ul>
-              <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="mt-5 text-center bx-btn">
-                Comprar por Telegram
-              </a>
-            </div>
+      {/* ACCESOS · PLANES */}
+      <section id="precios" className="scroll-mt-24" data-testid="access-plans">
+        <div className="bx-kicker">Pase VIP · ELITE VIP FX</div>
+        <h2 className="bx-display mt-4 text-5xl md:text-7xl" style={{ color: "#fff" }}>
+          <span className="block">Opera con el</span>
+          <span className="block" style={{ color: ACCENT }}>canal VIP.</span>
+        </h2>
+        <p className="mt-5 text-base md:text-lg bx-ink2 max-w-2xl leading-relaxed">Compra directa del pase VIP, para quienes prefieren no afiliarse a un broker. Pago y activación por Telegram.</p>
+        <ul className="mt-6 space-y-2.5 text-[15px] md:text-base" style={{ color: "#E8E5DD" }}>
+          {["De 2 a 3 señales diarias con entrada, Stop Loss y múltiples Take Profits", "Seguimiento en tiempo real: parciales, Breakeven y cierres anticipados", "Sesiones de Asia y New York", "Gestión de riesgo recomendada"].map((x) => (
+            <li key={x} className="flex gap-3"><span style={{ color: GREEN }}>✓</span>{x}</li>
           ))}
+        </ul>
+
+        <div className="mt-8 grid md:grid-cols-3 gap-4 md:gap-5">
+          {SITE.plans.map((p, i) => {
+            const hot = i === SITE.plans.length - 1;
+            return (
+              <div key={p.name} className={`bx-plan ${hot ? "hot" : ""}`} data-testid="plan-card">
+                <div className="text-base font-semibold text-white">{p.name}</div>
+                <div className="mt-3 text-5xl md:text-6xl font-extrabold leading-none" style={{ color: ACCENT }}>{fmtMoney(p.amount)}</div>
+                <div className="mt-3 text-sm bx-muted">{p.label} · USD</div>
+                {p.months > 1 && <div className="mt-1 text-sm font-bold" style={{ color: ACCENT }}>Equivale a {fmtMoney(p.amount / p.months)} al mes</div>}
+                <ul className="mt-5 space-y-2 text-[15px] flex-1" style={{ color: "#E8E5DD" }}>
+                  {p.features.map((f, k) => (
+                    <li key={k} className="flex gap-2.5"><span style={{ color: GREEN }}>✓</span>{f}</li>
+                  ))}
+                </ul>
+                <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={`mt-6 ${hot ? "bx-gold" : "bx-planbtn"}`} style={hot ? { padding: ".85rem 1rem", fontSize: "1rem" } : undefined}>
+                  Unirme · {p.name} ↗
+                </a>
+              </div>
+            );
+          })}
         </div>
-        <p className="mt-4 text-xs bx-ink2 text-center mx-auto max-w-2xl">El pago y la activación se coordinan por Telegram.</p>
 
         <VipOfferCta setPage={setPage} />
       </section>
@@ -2131,12 +2153,12 @@ function SignalModal({ t, onClose }) {
   }, [onClose]);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" onClick={onClose} data-testid="signal-modal">
-      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl p-5" role="dialog" aria-label="Señal original" style={{ background: "rgba(2,6,23,.5)", border: `1px solid ${ACCENT}`, boxShadow: "0 20px 60px rgba(0,0,0,.7)" }}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl p-5" role="dialog" aria-label="Señal original" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${ACCENT}`, boxShadow: "0 20px 60px rgba(0,0,0,.7)" }}>
         <div className="flex items-center justify-between gap-2">
           <div className="text-[11px] tracking-[0.25em] font-bold bx-accent">SEÑAL ORIGINAL · {fmtDate(t.date)}</div>
           <button type="button" onClick={onClose} aria-label="Cerrar" className="bx-ghost" style={{ padding: ".25rem .6rem" }}>✕</button>
         </div>
-        <pre className="mt-4 rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap break-words" style={{ background: "rgba(15,23,42,.55)", border: "1px solid rgba(100,116,139,.35)", color: "#F2EEE6", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }}>{buildSignalText(t)}</pre>
+        <pre className="mt-4 rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap break-words" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)", color: "#F2EEE6", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }}>{buildSignalText(t)}</pre>
       </div>
     </div>
   );
@@ -2151,7 +2173,7 @@ function DayTradeCard({ t, onOpen, onSignal, onEdit, onDelete }) {
   const mg = (t.mgmt || "").trim();
   const click = onOpen ? { role: "button", tabIndex: 0, onClick: () => onOpen(t.id), style: { cursor: "pointer" } } : {};
   return (
-    <div {...click} data-testid="day-trade" className="bx-row w-full text-left rounded-xl p-4" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)", ...(click.style || {}) }}>
+    <div {...click} data-testid="day-trade" className="bx-row w-full text-left rounded-xl p-4" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)", ...(click.style || {}) }}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-extrabold text-base text-white">{t.asset}</span>
@@ -2191,13 +2213,13 @@ function DayTradeCard({ t, onOpen, onSignal, onEdit, onDelete }) {
           type="button"
           onClick={(e) => { e.stopPropagation(); onSignal(t); }}
           className="text-xs font-bold underline underline-offset-4"
-          style={{ color: "#ffb089" }}
+          style={{ color: "#fcd68a" }}
         >
           📡 Ver señal original
         </button>
       </div>
       {note && (
-        <div className="mt-3 rounded-lg px-3 py-2 text-sm whitespace-pre-line" style={{ background: "rgba(255,85,0,.10)", border: "1px solid rgba(255,85,0,.35)", color: "#ffd2b8" }}>
+        <div className="mt-3 rounded-lg px-3 py-2 text-sm whitespace-pre-line" style={{ background: "rgba(242,176,30,.10)", border: "1px solid rgba(242,176,30,.35)", color: "#ffd2b8" }}>
           📝 <b>Nota:</b> {note}
         </div>
       )}
@@ -2345,7 +2367,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                       <td className="text-left px-2 font-black" style={{ color: rw.yy === yearCur ? ACCENT : undefined }}>{rw.yy}</td>
                       {rw.monthsRow.map((c, i) => {
                         const has = c.st.shown > 0;
-                        const bg = !has ? "rgba(2,6,23,.5)" : c.st.pips > 0 ? "rgba(16,185,129,.13)" : c.st.pips < 0 ? "rgba(244,63,94,.13)" : "#1B1B1B";
+                        const bg = !has ? "rgba(255,255,255,.03)" : c.st.pips > 0 ? "rgba(16,185,129,.13)" : c.st.pips < 0 ? "rgba(244,63,94,.13)" : "#1B1B1B";
                         const bd = !has ? "#2A2A2A" : c.st.pips > 0 ? "rgba(16,185,129,.6)" : c.st.pips < 0 ? "rgba(244,63,94,.6)" : "#4A4A4A";
                         return (
                           <td key={i} className="p-0">
@@ -2366,7 +2388,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                         );
                       })}
                       <td className="p-0">
-                        <div className="rounded-xl px-1 py-2 flex flex-col items-center" style={{ background: "rgba(2,6,23,.5)", border: `1px solid ${ACCENT}`, minHeight: 58 }}>
+                        <div className="rounded-xl px-1 py-2 flex flex-col items-center" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${ACCENT}`, minHeight: 58 }}>
                           <span className={`font-black ${pnlColor(rw.tot.pips)}`}>{fmtP(rw.tot.pips)}</span>
                           <span className="text-[10px] bx-muted leading-tight">{rw.tot.shown} {rw.tot.shown === 1 ? "trade" : "trades"}{rw.tot.wr !== null ? ` | ${rw.tot.wr}%` : ""}</span>
                         </div>
@@ -2412,8 +2434,8 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                   if (!c) return <div key={di} />;
                   const { st } = c;
                   const has = st.shown > 0;
-                  const border = !has ? "rgba(100,116,139,.3)" : st.pips > 0 ? "rgba(16,185,129,.55)" : st.pips < 0 ? "rgba(244,63,94,.55)" : "rgba(148,163,184,.4)";
-                  const bg = !has ? "rgba(15,23,42,.45)" : st.pips > 0 ? "rgba(16,185,129,.12)" : st.pips < 0 ? "rgba(244,63,94,.12)" : "rgba(30,41,59,.5)";
+                  const border = !has ? "rgba(255,255,255,.09)" : st.pips > 0 ? "rgba(16,185,129,.55)" : st.pips < 0 ? "rgba(244,63,94,.55)" : "rgba(148,163,184,.4)";
+                  const bg = !has ? "rgba(255,255,255,.02)" : st.pips > 0 ? "rgba(16,185,129,.12)" : st.pips < 0 ? "rgba(244,63,94,.12)" : "rgba(255,255,255,.06)";
                   const sel = selDay === c.key;
                   return (
                     <button
@@ -2463,9 +2485,9 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                 const ds = dayStats(dayList);
                 return (
                   <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
-                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
-                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
+                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
+                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
+                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
                   </div>
                 );
               })()}
@@ -2549,22 +2571,22 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                 ["SL · Perdedoras", m.losses, `${pct(m.losses)}%`, "text-rose-400"],
                 ["Break Even (BE)", m.be, `${pct(m.be)}%`, "text-white"],
               ].map(([label, n, p, cls]) => (
-                <div key={label} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
+                <div key={label} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
                   <span className="bx-muted">{label}</span>
                   <span className={`font-extrabold ${cls}`}>{n} <span className="bx-muted font-normal text-xs">({p})</span></span>
                 </div>
               ))}
               {isAdmin && (
                 <>
-                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
                     <span className="bx-muted">Descartadas / Canceladas</span>
                     <span className="font-extrabold">{m.discarded}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
                     <span className="bx-muted">Activas</span>
                     <span className="font-extrabold">{m.open}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
                     <span className="bx-muted">Órdenes pendientes</span>
                     <span className="font-extrabold">{m.pending}</span>
                   </div>
@@ -2575,7 +2597,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
 
           <div className="bx-card p-3 md:p-4">
             <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">{unit} totales y extremos</div>
-            <div className="text-center rounded-xl py-4" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)" }}>
+            <div className="text-center rounded-xl py-4" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
               <div className="text-[11px] uppercase tracking-widest bx-muted">Neto del mes</div>
               <div className={`text-4xl font-black ${pnlColor(m.totalPips)}`}>{fmtP(m.totalPips)}</div>
               <div className="text-xs bx-muted">{unitL}</div>
@@ -2590,7 +2612,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                   disabled={!t}
                   onClick={() => t && isAdmin && onOpen(t.id)}
                   className="rounded-xl p-3 text-center"
-                  style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(100,116,139,.35)", cursor: t && isAdmin ? "pointer" : "default" }}
+                  style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)", cursor: t && isAdmin ? "pointer" : "default" }}
                 >
                   <div className="text-[11px] uppercase tracking-widest bx-muted">{label}</div>
                   {t ? (
@@ -2807,9 +2829,16 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    document.body.style.background = "#0A0A0B";
+    document.body.style.background = "#0A0A0C";
   }, []);
 
+  useEffect(() => {
+    if (document.getElementById("bx-fonts")) return;
+    const l = document.createElement("link");
+    l.id = "bx-fonts"; l.rel = "stylesheet";
+    l.href = "https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap";
+    document.head.appendChild(l);
+  }, []);
   useEffect(() => { window.scrollTo(0, 0); }, [page]);
 
   const login = () => {
@@ -3070,7 +3099,7 @@ export default function App() {
 
   if (!twReady) {
     return (
-      <div style={{ minHeight: "100vh", background: "#0A0A0B", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ minHeight: "100vh", background: "#0A0A0C", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <img src={LOGO} alt="" style={{ height: 96 }} />
       </div>
     );
@@ -3082,16 +3111,17 @@ export default function App() {
 
       {/* ------------------------- HEADER ------------------------- */}
       <header className="bx-header sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <img src={LOGO} alt="BORKAIFX ELITE" className="w-11 h-11 object-contain" />
             <div>
-              <div className="font-black tracking-[0.2em] leading-none text-lg">{BRAND}</div>
+              <div className="bx-display text-2xl md:text-3xl tracking-[0.06em] leading-none" style={{ color: "var(--ink)" }}>BORKAIFX <span style={{ color: ACCENT }}>ELITE</span></div>
             </div>
           </div>
 
+          <div className="flex flex-wrap items-center justify-end gap-2 md:gap-4">
           {isAdmin && (
-          <nav className="bx-nav order-last w-full md:order-none md:w-auto" data-testid="admin-nav">
+          <nav className="bx-nav " data-testid="admin-nav">
             {[["home", "Inicio"], ["signals", "Señales"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => k !== "signals" ? (
               <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`}>{l}</button>
             ) : (
@@ -3099,7 +3129,7 @@ export default function App() {
                 <button onClick={() => { setPage("signals"); setSigMenu((v) => !v); }} aria-haspopup="menu" aria-expanded={sigMenu} className={`bx-navbtn ${page === "signals" || page === "vip" ? "on" : ""}`}>{l} <span style={{ fontSize: ".7em" }}>▾</span></button>
                 {sigMenu && (
                   <div role="menu" className="absolute left-0 top-full z-50 pt-1" style={{ minWidth: 170 }}>
-                    <div className="bx-card p-1.5 space-y-1" style={{ background: "rgba(15,23,42,.96)" }}>
+                    <div className="bx-card p-1.5 space-y-1" style={{ background: "rgba(16,19,28,.98)" }}>
                       {[["CFD", "CFDS"], ["SINTETICO", "SINTÉTICOS"]].map(([v, t]) => (
                         <button key={v} role="menuitem" onClick={() => { setSignalKind(v); setPage("signals"); setSigMenu(false); }} className={`bx-navbtn w-full text-left ${page === "signals" && signalKind === v ? "on" : ""}`} style={{ display: "block", width: "100%" }}>{t}</button>
                       ))}
@@ -3111,13 +3141,12 @@ export default function App() {
           </nav>
           )}
 
-          <div className="flex items-center gap-2">
-            <a href={SITE.join.url} target="_blank" rel="noopener noreferrer" className="bx-btn text-center" data-testid="join-btn">{SITE.join.label}</a>
+            <a href={SITE.join.url} target="_blank" rel="noopener noreferrer" className="bx-gold" data-testid="join-btn">{SITE.join.label}</a>
             {isAdmin && <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>}
           </div>
         </div>
         {isAdmin && (
-          <div className="text-center text-[11px] tracking-[0.25em] py-1 font-bold text-white" style={{ background: ACCENT }}>
+          <div className="text-center text-[11px] tracking-[0.25em] py-1 font-bold" style={{ background: ACCENT, color: "#17120a" }}>
             MODO ADMINISTRADOR ACTIVO · {cloudLabel}
           </div>
         )}
@@ -3146,18 +3175,19 @@ export default function App() {
         {page === "home" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section
-          className="bx-card p-4 md:p-5 text-center"
-          style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), rgba(15,23,42,.6)" }}
+          className="bx-card p-5 md:p-8 text-left"
+          style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(242,176,30,.20), transparent 60%), rgba(16,19,28,.85)" }}
         >
-          <h1 className="text-2xl md:text-4xl font-black tracking-[0.08em] leading-tight uppercase" style={{ color: "#FFFFFF" }}>
-            TRACK RECORD PÚBLICO <span style={{ color: ACCENT }}>·</span> CANAL VIP
+          <div className="bx-kicker">Canal VIP · Resultados verificados</div>
+          <h1 className="mt-3 bx-display text-4xl sm:text-5xl md:text-7xl" style={{ color: "#FFFFFF" }}>
+            <span className="block">TRACK RECORD PÚBLICO</span>{" "}<span className="block" style={{ color: ACCENT }}>· CANAL VIP</span>
           </h1>
-          <p className="mt-2 text-base md:text-xl font-semibold" style={{ color: "#D9D5CC" }}>
-            Resultados <span style={{ color: ACCENT }}>reales</span>, sin filtros.
+          <p className="mt-4 text-lg md:text-2xl font-medium" style={{ color: "#D6D3CB" }}>
+            Resultados <span style={{ color: ACCENT, fontWeight: 800 }}>reales</span>, sin filtros.
           </p>
 
           <div className="mt-6 bx-bt pt-5 space-y-3">
-            <div className="flex flex-wrap justify-center gap-2">
+            <div className="flex flex-wrap justify-start gap-2">
               {[["CFD", "CFDs"], ["SINTETICO", "Sintéticos"]].map(([k, label]) => (
                 <button key={k} onClick={() => { if (tab === k) setShowSubs((v) => !v); else { setTab(k); setShowSubs(true); } }} className={`bx-tab ${tab === k ? "on" : ""}`} aria-expanded={tab === k && showSubs}>
                   {label.toUpperCase()}
@@ -3166,20 +3196,20 @@ export default function App() {
             </div>
 
             {!showSubs ? null : tab === "CFD" ? (
-              <div className="flex flex-wrap justify-center gap-2" data-testid="subfilters">
+              <div className="flex flex-wrap justify-start gap-2" data-testid="subfilters">
                 {["Todos", ...CFD_SUBS].map((s) => (
                   <button key={s} onClick={() => setCfdSub(s)} className={`bx-pill ${cfdSub === s ? "on" : ""}`}>{s === "Todos" ? "Todo" : s === "Oro/Metales" ? "Oro" : s}</button>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-wrap justify-center gap-2" data-testid="subfilters">
+              <div className="flex flex-wrap justify-start gap-2" data-testid="subfilters">
                 {BROKERS.map((b) => (
                   <button key={b} onClick={() => setBroker(b)} className={`bx-pill ${broker === b ? "on" : ""}`}>{cap(b.toLowerCase())}</button>
                 ))}
               </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-center gap-2 pt-1" style={viewEff === "calendar" ? { display: "none" } : undefined}>
+            <div className="flex flex-wrap items-center justify-start gap-2 pt-1" style={viewEff === "calendar" ? { display: "none" } : undefined}>
               <button onClick={() => setPeriod("cur")} className={`bx-pill ${periodEff === "cur" ? "on" : ""}`}>Mes actual</button>
               <button onClick={() => setPeriod("all")} className={`bx-pill ${periodEff === "all" ? "on" : ""}`}>Todo el histórico</button>
               <div className="flex items-center gap-1">
@@ -3242,7 +3272,7 @@ export default function App() {
             <div>
               <h2 className="font-extrabold tracking-wider bx-accent">REGISTRO DE OPERACIONES</h2>
               <div className="text-xs bx-muted">{filtered.length} de {baseList.length} señales · {scopeLabel} · {dateFilter ? dateLabel : periodLabel}</div>
-              {isAdmin && <div className="text-[11px] mt-1" style={{ color: "#ffb089" }}>Vista Admin: también ves señales pendientes, activas y descartadas. El público ve las cerradas (TP / SL / BE) y las descartadas, nunca las pendientes ni las activas.</div>}
+              {isAdmin && <div className="text-[11px] mt-1" style={{ color: "#fcd68a" }}>Vista Admin: también ves señales pendientes, activas y descartadas. El público ve las cerradas (TP / SL / BE) y las descartadas, nunca las pendientes ni las activas.</div>}
             </div>
 
             <div className="flex flex-wrap gap-2 items-center">
@@ -3275,7 +3305,7 @@ export default function App() {
                       <td className="px-3 py-3 font-bold whitespace-nowrap">
                         {t.asset}
                         {t.tags?.includes("VIP Signal") && (
-                          <span className="ml-2 text-[10px] px-1 rounded" style={{ color: "#ffb089", border: "1px solid rgba(255,85,0,.5)" }}>VIP</span>
+                          <span className="ml-2 text-[10px] px-1 rounded" style={{ color: "#fcd68a", border: "1px solid rgba(242,176,30,.5)" }}>VIP</span>
                         )}
                       </td>
                       <td className="px-3 py-3"><DirBadge dir={t.direction} /></td>
@@ -3322,7 +3352,7 @@ export default function App() {
         )}
         {page === "admin" && isAdmin && (
           <div className="space-y-6" data-testid="admin-panel">
-            <section className="bx-card p-5 md:p-6" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(255,85,0,.20), transparent 60%), rgba(15,23,42,.6)" }}>
+            <section className="bx-card p-5 md:p-6" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(242,176,30,.20), transparent 60%), rgba(16,19,28,.85)" }}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">PANEL DE ADMINISTRACIÓN</div>
@@ -3359,7 +3389,7 @@ export default function App() {
               <section
                 className="bx-card p-4"
                 data-testid="pending-box"
-                style={{ border: "2px solid #fbbf24", background: "radial-gradient(500px circle at 0% 0%, rgba(251,191,36,.14), transparent 60%), rgba(15,23,42,.6)", boxShadow: "0 0 30px rgba(251,191,36,.12)" }}
+                style={{ border: "2px solid #fbbf24", background: "radial-gradient(500px circle at 0% 0%, rgba(251,191,36,.14), transparent 60%), rgba(16,19,28,.85)", boxShadow: "0 0 30px rgba(251,191,36,.12)" }}
               >
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-xs uppercase tracking-[0.18em] font-bold" style={{ color: "#fcd34d" }}>🕓 Órdenes pendientes</div>
@@ -3367,11 +3397,11 @@ export default function App() {
                 </div>
                 <div className="text-xs bx-muted mt-1">Entradas enviadas que aún no se activan. Cuando el precio entre, pulsa <b className="text-white">Activar</b>.</div>
                 {pendingList.length === 0 ? (
-                  <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(2,6,23,.5)", border: "1px dashed #3a3a3a" }}>No tienes órdenes pendientes.</div>
+                  <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>No tienes órdenes pendientes.</div>
                 ) : (
                   <div className="mt-3 space-y-2 overflow-y-auto" style={{ maxHeight: 360 }}>
                     {pendingList.map((t) => (
-                      <div key={t.id} data-testid="pending-item" className="rounded-xl p-3" style={{ background: "rgba(2,6,23,.5)", border: "1px solid rgba(251,191,36,.35)" }}>
+                      <div key={t.id} data-testid="pending-item" className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(251,191,36,.35)" }}>
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <div className="flex items-center gap-2 flex-wrap">
                             <span className="font-extrabold text-white">{t.asset}</span>
@@ -3412,7 +3442,7 @@ export default function App() {
                 </div>
               </div>
               {adminList.length === 0 ? (
-                <div className="mt-4 rounded-xl p-6 text-center text-sm bx-muted" style={{ background: "rgba(2,6,23,.5)", border: "1px dashed #3a3a3a" }}>
+                <div className="mt-4 rounded-xl p-6 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>
                   No hay operaciones registradas en esta fecha. Pega una señal arriba o elige otro día en el calendario.
                 </div>
               ) : (
