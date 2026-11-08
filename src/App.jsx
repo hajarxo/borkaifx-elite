@@ -2023,18 +2023,26 @@ function SignalShowcase({ kind }) {
 }
 
 function ServicesPricing({ setPage, kind = "CFD" }) {
+  const syn = kind === "SINTETICO";
+  const kicker = syn ? "Pase VIP · SINTÉTICOS VIPS" : "Pase VIP · ELITE VIP FX";
+  const intro = syn
+    ? "Compra directa del pase VIP para la comunidad donde operamos sintéticos en Deriv y Weltrade."
+    : "Compra directa del pase VIP, para quienes prefieren no afiliarse a un broker. Pago y activación por Telegram.";
+  const bullets = syn
+    ? ["De 3 a 5 señales diarias con entrada, Stop Loss y Take Profit", "Seguimiento de cada señal con indicaciones", "Meta semanal de 1000 a 1500 pips", "Curso estratégico", "1 Reto flipping al mes"]
+    : ["De 2 a 3 señales diarias con entrada, Stop Loss y múltiples Take Profits", "Seguimiento en tiempo real: parciales, Breakeven y cierres anticipados", "Sesiones de Asia y New York", "Gestión de riesgo recomendada"];
   return (
     <div className="space-y-16">
       {/* ACCESOS · PLANES */}
       <section id="precios" className="scroll-mt-24" data-testid="access-plans">
-        <div className="bx-kicker">Pase VIP · ELITE VIP FX</div>
+        <div className="bx-kicker">{kicker}</div>
         <h2 className="bx-display mt-4 text-5xl md:text-7xl" style={{ color: "#fff" }}>
           <span className="block">Opera con el</span>
           <span className="block" style={{ color: ACCENT }}>canal VIP.</span>
         </h2>
-        <p className="mt-5 text-base md:text-lg bx-ink2 max-w-2xl leading-relaxed">Compra directa del pase VIP, para quienes prefieren no afiliarse a un broker. Pago y activación por Telegram.</p>
+        <p className="mt-5 text-base md:text-lg bx-ink2 max-w-2xl leading-relaxed">{intro}</p>
         <ul className="mt-6 space-y-2.5 text-[15px] md:text-base" style={{ color: "#E8E5DD" }}>
-          {["De 2 a 3 señales diarias con entrada, Stop Loss y múltiples Take Profits", "Seguimiento en tiempo real: parciales, Breakeven y cierres anticipados", "Sesiones de Asia y New York", "Gestión de riesgo recomendada"].map((x) => (
+          {bullets.map((x) => (
             <li key={x} className="flex gap-3"><span style={{ color: GREEN }}>✓</span>{x}</li>
           ))}
         </ul>
@@ -2046,13 +2054,16 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
               <div key={p.name} className={`bx-plan ${hot ? "hot" : ""}`} data-testid="plan-card">
                 <div className="text-base font-semibold text-white">{p.name}</div>
                 <div className="mt-3 text-5xl md:text-6xl font-extrabold leading-none" style={{ color: ACCENT }}>{fmtMoney(p.amount)}</div>
-                <div className="mt-3 text-sm bx-muted">{p.label} · USD</div>
-                {p.months > 1 && <div className="mt-1 text-sm font-bold" style={{ color: ACCENT }}>Equivale a {fmtMoney(p.amount / p.months)} al mes</div>}
-                <ul className="mt-5 space-y-2 text-[15px] flex-1" style={{ color: "#E8E5DD" }}>
-                  {p.features.map((f, k) => (
-                    <li key={k} className="flex gap-2.5"><span style={{ color: GREEN }}>✓</span>{f}</li>
-                  ))}
-                </ul>
+                {!syn && <div className="mt-3 text-sm bx-muted">{p.label} · USD</div>}
+                {!syn && p.months > 1 && <div className="mt-1 text-sm font-bold" style={{ color: ACCENT }}>Equivale a {fmtMoney(p.amount / p.months)} al mes</div>}
+                {!syn && (
+                  <ul className="mt-5 space-y-2 text-[15px] flex-1" style={{ color: "#E8E5DD" }}>
+                    {p.features.map((f, k) => (
+                      <li key={k} className="flex gap-2.5"><span style={{ color: GREEN }}>✓</span>{f}</li>
+                    ))}
+                  </ul>
+                )}
+                {syn && <div className="flex-1" />}
                 <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={`mt-6 ${hot ? "bx-gold" : "bx-planbtn"}`} style={hot ? { padding: ".85rem 1rem", fontSize: "1rem" } : undefined}>
                   Unirme · {p.name} ↗
                 </a>
@@ -2061,9 +2072,10 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
           })}
         </div>
 
-        <VipOfferCta setPage={setPage} />
+        {!syn && <VipOfferCta setPage={setPage} />}
       </section>
       <SignalShowcase kind={kind} />
+      {syn && <div data-testid="offer-below"><VipOfferCta setPage={setPage} /></div>}
 
     </div>
   );
