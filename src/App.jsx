@@ -28,7 +28,7 @@ const TELEGRAM_URL = "https://t.me/borkaifxoficial";
    ============================================================ */
 const SITE = {
   // Botón "Únete a Borkaifx" de la cabecera (cambia aquí el texto y el enlace)
-  join: { label: "Únete a Borkaifx", url: TELEGRAM_URL },
+  join: { label: "Telegram", url: "https://t.me/borkaifxelite" },
 
   // WhatsApp oficial: se usa SOLO en el Copytrading (botón "ACTIVAR MI CUENTA AHORA").
   // Acepta enlace corto (wa.link, ya trae su mensaje) o "https://wa.me/58XXXXXXXXXX".
@@ -100,7 +100,7 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-dot.off{background:#f43f5e}
 .bx-live{display:flex;align-items:center;gap:.625rem;background:#141415;border:1px solid var(--cardline);border-radius:9999px;padding:.4rem .9rem;font-size:.75rem}
 .bx-ink2{color:var(--ink2)}
-@media(max-width:480px){.bx-gold{padding:.5rem .85rem;font-size:.85rem}.bx-brand{font-size:1.45rem!important}}
+@media(max-width:480px){.bx-gold:not(.bx-gold-sm){padding:.5rem .85rem;font-size:.85rem}.bx-brand{font-size:1.15rem!important}}
 .bx-h1{font-size:2.35rem;line-height:.98}
 @media(min-width:640px){.bx-h1{font-size:3.1rem}}
 @media(min-width:1024px){.bx-h1{font-size:3.6rem}}
@@ -122,6 +122,7 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-kicker::before{content:"";width:34px;height:2px;background:var(--accent);flex:none}
 .bx-kicker.center{justify-content:center}
 .bx-gold{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:linear-gradient(180deg,#F7BC2E,#E49C10);color:#17120a;font-weight:800;border-radius:.8rem;padding:.6rem 1.15rem;font-size:.95rem;box-shadow:0 6px 24px rgba(242,176,30,.32);transition:filter .15s,transform .15s}
+.bx-gold.bx-gold-sm{padding:.38rem .9rem;font-size:.82rem;border-radius:.6rem;box-shadow:0 4px 14px rgba(242,176,30,.25)}
 .bx-gold:hover{filter:brightness(1.08);transform:translateY(-1px)}
 .bx-plan{display:flex;flex-direction:column;background:rgba(16,19,28,.85);border:1px solid rgba(255,255,255,.09);border-radius:1.25rem;padding:1.6rem}
 .bx-plan.hot{border-color:rgba(242,176,30,.85);box-shadow:0 0 0 1px rgba(242,176,30,.25),0 10px 50px rgba(242,176,30,.16)}
@@ -2803,7 +2804,7 @@ function AnnualEvolution({ trades, unit }) {
   );
 }
 
-const PAGE_PATHS = { home: "/", signals: "/senales", vip: "/vip-gratis", admin: "/elpatron" }; // el panel de administración vive en /elpatron
+const PAGE_PATHS = { home: "/", track: "/track-record", signals: "/senales", vip: "/vip-gratis", admin: "/elpatron" }; // el panel de administración vive en /elpatron
 const pageFromPath = () => {
   try {
     const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
@@ -2854,7 +2855,7 @@ export default function App() {
   const [signalText, setSignalText] = useState("");
 
   useEffect(() => {
-    document.title = "BORKAIFX ELITE · Track Record & Portafolio";
+    document.title = "BORKAIFX ELITE · Track Record";
     document.body.style.margin = "0";
     let link = document.querySelector("link[rel='icon']");
     if (!link) {
@@ -3148,19 +3149,19 @@ export default function App() {
       <style>{CSS}</style>
 
       {/* ------------------------- HEADER ------------------------- */}
-      <header className="bx-header sticky top-0 z-30">
+      <header className="bx-header relative z-30">
         <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <div className="flex items-center gap-3">
-            <img src={LOGO} alt="BORKAIFX ELITE" className="w-9 h-9 md:w-11 md:h-11 object-contain" />
+            <img src={LOGO} alt="BORKAIFX ELITE" className="w-7 h-7 md:w-9 md:h-9 object-contain" />
             <div>
-              <div className="bx-display bx-brand text-2xl md:text-3xl tracking-[0.06em] leading-none whitespace-nowrap" style={{ color: "var(--ink)" }}>BORKAIFX <span style={{ color: ACCENT }}>ELITE</span></div>
+              <div className="bx-display bx-brand text-xl md:text-2xl tracking-[0.06em] leading-none whitespace-nowrap" style={{ color: "var(--ink)" }}>BORKAIFX <span style={{ color: ACCENT }}>ELITE</span></div>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-2 md:gap-4">
           {isAdmin && (
           <nav className="bx-nav " data-testid="admin-nav">
-            {[["home", "Inicio"], ["signals", "Señales"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => k !== "signals" ? (
+            {[["home", "Inicio"], ["track", "Track Record"], ["signals", "Señales"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => k !== "signals" ? (
               <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`}>{l}</button>
             ) : (
               <div key={k} className="relative" onMouseEnter={() => setSigMenu(true)} onMouseLeave={() => setSigMenu(false)} data-testid="signals-menu">
@@ -3179,7 +3180,7 @@ export default function App() {
           </nav>
           )}
 
-            <a href={SITE.join.url} target="_blank" rel="noopener noreferrer" className="bx-gold" data-testid="join-btn">{SITE.join.label}</a>
+            <a href={SITE.join.url} target="_blank" rel="noopener noreferrer" className="bx-gold bx-gold-sm" data-testid="join-btn">{SITE.join.label}</a>
             {isAdmin && <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>}
           </div>
         </div>
@@ -3207,11 +3208,11 @@ export default function App() {
             <h1 className="mt-2 text-2xl md:text-3xl font-black text-white">Sección privada</h1>
             <p className="mt-2 text-sm bx-muted">Esta sección no está disponible.</p>
             <div className="mt-5 flex flex-wrap justify-center gap-2">
-              <button type="button" onClick={() => setPage("home")} className="bx-btn">Ir al Track Record</button>
+              <button type="button" onClick={() => setPage("track")} className="bx-btn">Ir al Track Record</button>
             </div>
           </section>
         )}
-        {page === "home" && (<>
+        {(page === "home" || page === "track") && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section className="text-left pt-3 md:pt-8" data-testid="hero">
           <div className="bx-kicker" style={{ fontSize: "12px" }}>Resultados canal VIP</div>
@@ -3395,7 +3396,7 @@ export default function App() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button type="button" onClick={() => setShowReport(true)} className="bx-ghost">📄 Generar Resumen en Texto</button>
-                  <button type="button" onClick={() => setPage("home")} className="bx-ghost">Ver Track Record</button>
+                  <button type="button" onClick={() => setPage("track")} className="bx-ghost">Ver Track Record</button>
                 </div>
               </div>
             </section>
