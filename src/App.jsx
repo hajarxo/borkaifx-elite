@@ -100,6 +100,16 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-dot.off{background:#f43f5e}
 .bx-live{display:flex;align-items:center;gap:.625rem;background:#141415;border:1px solid var(--cardline);border-radius:9999px;padding:.4rem .9rem;font-size:.75rem}
 .bx-ink2{color:var(--ink2)}
+/* Cinta de texto (ticker): colores por variables; claro/oscuro */
+.bx-root{--tk-ink:#9A958C;--tk-line:rgba(255,255,255,.10);--tk-gold:var(--accent);--tk-bg:rgba(10,10,12,.6)}
+.bx-root[data-theme="light"],[data-theme="light"] .bx-root{--tk-ink:#6B665D;--tk-line:rgba(0,0,0,.12);--tk-gold:#B8860B;--tk-bg:rgba(255,255,255,.7)}
+.bx-ticker{width:100%;max-width:100vw;overflow:hidden;box-sizing:border-box;border-top:1px solid var(--tk-line);border-bottom:1px solid var(--tk-line);background:var(--tk-bg);color:var(--tk-ink);padding:.55rem 0}
+.bx-ticker-track{display:flex;width:max-content;animation:bxticker 40s linear infinite;will-change:transform}
+.bx-ticker-group{display:flex;flex:none;align-items:center}
+.bx-ticker-item{flex:none;white-space:nowrap;font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1;text-transform:uppercase;letter-spacing:.14em}
+.bx-ticker-item i{font-style:normal;color:var(--tk-gold);margin:0 1.1em}
+@keyframes bxticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.bx-ticker-track{animation:none;transform:none}}
 .bx-display{font-family:"Anton","Bebas Neue","Oswald",Impact,"Arial Narrow",sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:1}
 .bx-mono{font-family:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
 .bx-kicker{display:flex;align-items:center;gap:.75rem;font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:.78rem;letter-spacing:.3em;font-weight:700;color:var(--accent);text-transform:uppercase}
@@ -2639,6 +2649,24 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
 }
 
 /* ============================== APP ============================== */
+/* ----------------------------- Cinta de texto (ticker) ----------------------------- */
+const TICKER_PHRASES = ["XAUUSD", "LIQUIDEZ BARRIDA ✓", "CHoCH CONFIRMADO ✓", "ENTRADA EN FVG ✓", "LECCIÓN NUEVA CADA SEMANA", "SOLO EDUCATIVO · NO ES ASESORAMIENTO FINANCIERO"];
+function Ticker() {
+  // Dos grupos idénticos: al desplazar -50% el bucle es continuo y sin saltos
+  const group = (hidden) => (
+    <div className="bx-ticker-group" aria-hidden={hidden || undefined}>
+      {[0, 1, 2].flatMap((r) => TICKER_PHRASES.map((p, i) => (
+        <span className="bx-ticker-item" key={`${r}-${i}`}><i>◆</i>{p}</span>
+      )))}
+    </div>
+  );
+  return (
+    <div className="bx-ticker" role="marquee" aria-label="Mensajes del canal" data-testid="ticker">
+      <div className="bx-ticker-track">{group(false)}{group(true)}</div>
+    </div>
+  );
+}
+
 /* ----------------------------- Estado de mercados en vivo ----------------------------- */
 // CFDs: abierto de domingo 17:00 a viernes 17:00 (hora de Nueva York). Sintéticos: 24/7.
 function cfdMarketOpen(now) {
@@ -3156,6 +3184,7 @@ export default function App() {
         )}
       </header>
 
+      <Ticker />
       <LiveStatus />
 
       {cloudState === "error" && (
@@ -3183,15 +3212,15 @@ export default function App() {
           style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(242,176,30,.20), transparent 60%), rgba(16,19,28,.85)" }}
         >
           <div className="bx-kicker">Canal VIP · Resultados verificados</div>
-          <h1 className="mt-3 bx-display text-4xl sm:text-5xl md:text-7xl" style={{ color: "#FFFFFF" }}>
+          <h1 className="mt-3 bx-display text-3xl sm:text-4xl md:text-5xl" style={{ color: "#FFFFFF" }}>
             <span className="block">TRACK RECORD PÚBLICO</span>{" "}<span className="block" style={{ color: ACCENT }}>· CANAL VIP</span>
           </h1>
-          <p className="mt-4 text-lg md:text-2xl font-medium" style={{ color: "#D6D3CB" }}>
+          <p className="mt-3 text-base md:text-xl font-medium" style={{ color: "#D6D3CB" }}>
             Resultados <span style={{ color: ACCENT, fontWeight: 800 }}>reales</span>, sin filtros.
           </p>
 
           <div className="mt-6 bx-bt pt-5 space-y-3">
-            <div className="flex flex-wrap justify-start gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               {[["CFD", "CFDs"], ["SINTETICO", "Sintéticos"]].map(([k, label]) => (
                 <button key={k} onClick={() => { if (tab === k) setShowSubs((v) => !v); else { setTab(k); setShowSubs(true); } }} className={`bx-tab ${tab === k ? "on" : ""}`} aria-expanded={tab === k && showSubs}>
                   {label.toUpperCase()}
@@ -3200,20 +3229,20 @@ export default function App() {
             </div>
 
             {!showSubs ? null : tab === "CFD" ? (
-              <div className="flex flex-wrap justify-start gap-2" data-testid="subfilters">
+              <div className="flex flex-wrap justify-center gap-2" data-testid="subfilters">
                 {["Todos", ...CFD_SUBS].map((s) => (
                   <button key={s} onClick={() => setCfdSub(s)} className={`bx-pill ${cfdSub === s ? "on" : ""}`}>{s === "Todos" ? "Todo" : s === "Oro/Metales" ? "Oro" : s}</button>
                 ))}
               </div>
             ) : (
-              <div className="flex flex-wrap justify-start gap-2" data-testid="subfilters">
+              <div className="flex flex-wrap justify-center gap-2" data-testid="subfilters">
                 {BROKERS.map((b) => (
                   <button key={b} onClick={() => setBroker(b)} className={`bx-pill ${broker === b ? "on" : ""}`}>{cap(b.toLowerCase())}</button>
                 ))}
               </div>
             )}
 
-            <div className="flex flex-wrap items-center justify-start gap-2 pt-1" style={viewEff === "calendar" ? { display: "none" } : undefined}>
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-1" style={viewEff === "calendar" ? { display: "none" } : undefined}>
               <button onClick={() => setPeriod("cur")} className={`bx-pill ${periodEff === "cur" ? "on" : ""}`}>Mes actual</button>
               <button onClick={() => setPeriod("all")} className={`bx-pill ${periodEff === "all" ? "on" : ""}`}>Todo el histórico</button>
               <div className="flex items-center gap-1">
