@@ -1363,7 +1363,7 @@
     "sub": "",
     "broker": "DERIV",
     "asset": "CRASH 900",
-    "direction": "BUY",
+    "direction": "SELL",
     "entry1": 17826,
     "entry2": "",
     "activation": "E1",
