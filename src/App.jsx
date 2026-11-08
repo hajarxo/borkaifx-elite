@@ -1691,6 +1691,210 @@ function ReportModal({ trades, onClose, defaultScope }) {
   );
 }
 
+/* ----------------------------- Resumen tipo "Weekly Recap" ----------------------------- */
+const nfmt = (v) => Math.abs(Math.round(v * 10) / 10).toLocaleString("en-US", { maximumFractionDigits: 1 });
+const sgn = (v) => (v > 0 ? "+" : v < 0 ? "-" : "");
+function buildRecap(trades, mode, ref, scope) {
+  const rg = mode === "weekly" ? weekRange(ref) : mode === "monthly" ? monthRange(ref.slice(0, 7)) : { from: ref, to: ref };
+  const list = trades
+    .filter((t) => t.date >= rg.from && t.date <= rg.to && !t.discarded && isClosed(t))
+    .filter((t) => scope === "ALL" || (scope === "CFD" ? t.category === "CFD" : scope === "DERIV" ? t.category === "SINTETICO" && t.broker !== "WELTRADE" : t.category === "SINTETICO" && t.broker === "WELTRADE"))
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  const title = mode === "weekly" ? "WEEKLY RECAP" : mode === "monthly" ? "MONTHLY RECAP" : "DAILY RECAP";
+  const range = rg.from === rg.to ? fmtDate(rg.from) : `${fmtDate(rg.from)} al ${fmtDate(rg.to)}`;
+  let wins = 0, losses = 0, be = 0;
+  const tot = {};
+  const lines = list.map((t) => {
+    const p = Number(t.pips) || 0;
+    const U = unitWord(t).toUpperCase();
+    tot[U] = round1((tot[U] || 0) + p);
+    const dir = t.direction === "SELL" ? "Sell" : "Buy";
+    let res;
+    if (t.status === "BE" && p === 0) { be++; res = "BE"; }
+    else if (p > 0) { wins++; res = `+${nfmt(p)} ${U} ✅`; }
+    else if (p < 0) { losses++; res = `-${nfmt(p)} ${U}`; }
+    else if (t.status === "SL") { losses++; res = "SL HIT"; }
+    else { be++; res = "BE"; }
+    return `${t.asset} - ${t.entry1} ${dir} - ${res}`;
+  });
+  const taken = list.length;
+  const dec = wins + losses;
+  const wr = dec ? Math.round((wins / dec) * 1000) / 10 : 0;
+  const totTxt = Object.keys(tot).length ? Object.entries(tot).map(([u, v]) => `${sgn(v)}${nfmt(v)} ${u}`).join(" | ") : "0";
+  const L = [`📊 BORKAIFX ELITE · ${title}`, `🗓 ${range}`, ""];
+  if (!lines.length) L.push("Sin operaciones cerradas en este período.", "");
+  else L.push(...lines, "");
+  L.push(`➡️TOTAL: ${totTxt}`, `➡️TAKEN: ${taken}`, `➡️WINS: ${wins}`, `➡️LOSSES: ${losses}`, `➡️BE: ${be}`, `➡️WIN RATE: ${wr}%`);
+  return { text: L.join("\n"), count: taken };
+}
+
+function RecapPanel({ trades, defaultScope }) {
+  const [mode, setMode] = useState("weekly");
+  const [ref, setRef] = useState(localDate());
+  const [ym, setYm] = useState(localDate().slice(0, 7));
+  const [scope, setScope] = useState(defaultScope || "ALL");
+  const [copied, setCopied] = useState(false);
+  const rep = useMemo(() => buildRecap(trades, mode, ref, scope), [trades, mode, ref, scope]);
+  const [text, setText] = useState(rep.text);
+  useEffect(() => { setText(rep.text); setCopied(false); }, [rep.text]);
+  const taRef = useRef(null);
+  const marked = useMemo(() => new Set(trades.map((t) => t.date)), [trades]);
+  const range = mode === "daily" ? { from: ref, to: ref } : mode === "weekly" ? weekRange(ref) : monthRange(ref.slice(0, 7));
+  const rangeLabel = range.from === range.to ? fmtDate(range.from) : `${fmtDate(range.from)} al ${fmtDate(range.to)}`;
+  const nav = (n) => { const v = shiftYM(ym, n); setYm(v); if (mode === "monthly") setRef(`${v}-01`); };
+  const copy = async () => {
+    let ok = false;
+    try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {}
+    if (!ok) { try { taRef.current?.select(); ok = document.execCommand("copy"); } catch (e) {} }
+    setCopied(ok);
+    if (ok) setTimeout(() => setCopied(false), 2200);
+  };
+  return (
+    <section className="bx-card p-4 md:p-5" data-testid="recap-panel">
+      <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Resúmenes · diario, semanal y mensual</div>
+      <div className="text-xs bx-muted mt-1">Solo operaciones cerradas. Elige el período, revisa el texto y cópialo para el canal.</div>
+      <div className="mt-4 grid md:grid-cols-[300px_1fr] gap-4">
+        <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+          <CalGrid ym={ym} onNav={nav} marked={marked} range={range}
+            onDay={(d) => { setMode("daily"); setRef(d); }}
+            onWeek={(d) => { setMode("weekly"); setRef(d); }}
+            onMonth={() => { setMode("monthly"); setRef(`${ym}-01`); }} />
+          <div className="mt-2 text-[10px] bx-muted">Día = resumen diario · flecha › = semana completa · nombre del mes = mes completo</div>
+        </div>
+        <div>
+          <div className="flex flex-wrap gap-2">
+            {[["daily", "Diario"], ["weekly", "Semanal"], ["monthly", "Mensual"]].map(([k, l]) => (
+              <button key={k} type="button" onClick={() => { setMode(k); if (k === "monthly") setYm(ref.slice(0, 7)); }} className={`bx-pill ${mode === k ? "on" : ""}`}>{l}</button>
+            ))}
+          </div>
+          <div className="mt-3 text-sm"><span className="bx-muted">Rango: </span><b className="text-white" data-testid="recap-range">{rangeLabel}</b></div>
+          <label className="text-xs bx-muted block mt-3">
+            Mercado
+            <select className="bx-input mt-1" value={scope} onChange={(e) => setScope(e.target.value)}>
+              <option value="ALL">Todos</option>
+              <option value="CFD">CFDs (pips)</option>
+              <option value="DERIV">Sintéticos · DERIV</option>
+              <option value="WELTRADE">Sintéticos · WELTRADE (puntos)</option>
+            </select>
+          </label>
+          <div className="mt-3 text-xs bx-muted">{rep.count} {rep.count === 1 ? "operación cerrada" : "operaciones cerradas"} en el rango</div>
+        </div>
+      </div>
+      <textarea ref={taRef} rows={14} className="bx-input mt-3 font-mono text-xs leading-relaxed" value={text} onChange={(e) => setText(e.target.value)} aria-label="Texto del resumen" data-testid="recap-text" />
+      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+        <span className="text-xs bx-muted">Puedes editar el texto antes de copiar</span>
+        <button type="button" onClick={copy} className="bx-btn">{copied ? "✓ ¡Copiado!" : "Copiar al portapapeles"}</button>
+      </div>
+    </section>
+  );
+}
+
+/* ----------------------------- Calendario de noticias USD (Forex Factory) ----------------------------- */
+const FF_URL = "https://nfs.faireconomy.media/ff_calendar_thisweek.json";
+function TvEvents() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.innerHTML = "";
+    const s = document.createElement("script");
+    s.src = "https://s3.tradingview.com/external-embedding/embed-widget-events.js";
+    s.async = true;
+    s.innerHTML = JSON.stringify({ colorTheme: "dark", isTransparent: true, width: "100%", height: "520", locale: "es", importanceFilter: "0,1", countryFilter: "us" });
+    el.appendChild(s);
+  }, []);
+  return <div ref={ref} className="tradingview-widget-container" data-testid="tv-events" />;
+}
+function NewsCalendar() {
+  const [state, setState] = useState({ status: "loading", items: [] });
+  const load = async (force) => {
+    setState((s) => ({ ...s, status: "loading" }));
+    try {
+      let raw = null;
+      try {
+        const c = JSON.parse(sessionStorage.getItem("bx_ff") || "null");
+        if (!force && c && Date.now() - c.t < 30 * 60 * 1000) raw = c.d;
+      } catch (e) {}
+      if (!raw) {
+        const r = await fetch(FF_URL, { cache: "no-store" });
+        if (!r.ok) throw new Error("http " + r.status);
+        raw = await r.json();
+        try { sessionStorage.setItem("bx_ff", JSON.stringify({ t: Date.now(), d: raw })); } catch (e) {}
+      }
+      const items = (Array.isArray(raw) ? raw : [])
+        .filter((e) => e && e.country === "USD" && (e.impact === "High" || e.impact === "Medium"))
+        .map((e) => ({ ...e, ts: new Date(e.date).getTime() }))
+        .filter((e) => !isNaN(e.ts))
+        .sort((a, b) => a.ts - b.ts);
+      setState({ status: "ok", items });
+    } catch (e) {
+      setState({ status: "error", items: [] });
+    }
+  };
+  useEffect(() => { load(false); }, []);
+  const days = {};
+  state.items.forEach((e) => {
+    const d = new Date(e.ts);
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    (days[key] = days[key] || []).push(e);
+  });
+  const today = localDate();
+  const hm = (ts) => new Date(ts).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit", hour12: false });
+  return (
+    <section className="bx-card p-4 md:p-5" data-testid="news-calendar">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Noticias USD · Forex Factory</div>
+          <div className="text-xs bx-muted mt-1 flex items-center gap-3 flex-wrap">
+            <span><span style={{ color: "#ef4444" }}>●</span> Impacto alto</span>
+            <span><span style={{ color: "#f59e0b" }}>●</span> Impacto medio</span>
+            <span>Hora en tu zona horaria</span>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button type="button" className="bx-ghost" onClick={() => load(true)}>↻ Actualizar</button>
+          <a className="bx-ghost" href="https://www.forexfactory.com/calendar?week=this" target="_blank" rel="noreferrer">Abrir Forex Factory ↗</a>
+        </div>
+      </div>
+      {state.status === "loading" && <div className="mt-4 text-sm bx-muted">Cargando noticias…</div>}
+      {state.status === "error" && (
+        <div className="mt-4">
+          <div className="text-xs bx-muted mb-2">No se pudo leer el feed de Forex Factory desde el navegador. Mostrando el calendario económico de TradingView (EE. UU., impacto alto y medio).</div>
+          <TvEvents />
+        </div>
+      )}
+      {state.status === "ok" && (
+        Object.keys(days).length === 0 ? (
+          <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>No hay noticias USD de impacto alto o medio esta semana.</div>
+        ) : (
+          <div className="mt-4 space-y-3" data-testid="news-list">
+            {Object.keys(days).sort().map((k) => (
+              <div key={k}>
+                <div className="text-[11px] tracking-[0.18em] font-bold mb-1" style={{ color: k === today ? ACCENT : "#9aa0aa" }}>
+                  {dayName(k).toUpperCase()} {fmtDate(k)}{k === today ? " · HOY" : ""}
+                </div>
+                <div className="space-y-1">
+                  {days[k].map((e, i) => (
+                    <div key={i} data-testid="news-item" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${e.impact === "High" ? "rgba(239,68,68,.35)" : "rgba(245,158,11,.35)"}` }}>
+                      <span style={{ color: e.impact === "High" ? "#ef4444" : "#f59e0b" }}>●</span>
+                      <span className="font-mono text-xs text-white w-12 shrink-0">{hm(e.ts)}</span>
+                      <span className="text-white flex-1 min-w-0">{e.title}</span>
+                      <span className="text-[11px] bx-muted shrink-0 text-right">
+                        {e.forecast ? <>Prev. <b className="text-white">{e.forecast}</b></> : null}
+                        {e.previous ? <> · Ant. <b className="text-white">{e.previous}</b></> : null}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      )}
+    </section>
+  );
+}
+
 /* ----------------------------- Inicio / Servicios ----------------------------- */
 const goTo = (id) => {
   const el = document.getElementById(id);
@@ -2024,7 +2228,7 @@ function SignalShowcase({ kind }) {
 
 function ServicesPricing({ setPage, kind = "CFD" }) {
   const syn = kind === "SINTETICO";
-  const kicker = syn ? "Pase VIP · SINTÉTICOS VIPS" : "Pase VIP · SINTETICOS VIP";
+  const kicker = syn ? "Pase VIP · SINTÉTICOS VIPS" : "Pase VIP · ELITE VIP FX";
   const intro = syn
     ? "Compra directa del pase VIP para la comunidad donde operamos sintéticos en Deriv y Weltrade."
     : "Compra directa del pase VIP, para quienes prefieren no afiliarse a un broker. Pago y activación por Telegram.";
@@ -2675,13 +2879,12 @@ function LiveStatus() {
         <span className={`bx-dot ${cfd ? "live" : "off"}`} />
         <span className="font-black tracking-widest text-white">CFD</span>
         <span className={cfd ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>{cfd ? "EN VIVO · Mercado abierto" : "Mercado cerrado"}</span>
-        <span className="bx-muted hidden sm:inline">Forex · Oro · Índices{cfd ? "" : " · abre el domingo 5:00 PM (NY)"}</span>
+        {!cfd && <span className="bx-muted hidden sm:inline">Abre el domingo 5:00 PM (NY)</span>}
       </div>
       <div className="bx-live" data-testid="live-synth">
         <span className="bx-dot live" />
         <span className="font-black tracking-widest text-white">SINTÉTICOS</span>
         <span className="text-emerald-400 font-bold">EN VIVO · Abierto 24/7</span>
-        <span className="bx-muted hidden sm:inline">Deriv · Weltrade</span>
       </div>
     </div>
   );
@@ -2806,6 +3009,7 @@ export default function App() {
   });
   const [showLogin, setShowLogin] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [adminTab, setAdminTab] = useState("dash");
   const [editing, setEditing] = useState(null);
   const [detail, setDetail] = useState(null); // id
   const [confirmDel, setConfirmDel] = useState(null);
@@ -3039,9 +3243,10 @@ export default function App() {
     setConfirmDel(null);
   };
 
-  const importSignal = () => {
+  const importSignal = (kind) => {
     if (!signalText.trim()) return;
     const p = parseSignal(signalText);
+    if (kind && (kind === "cfd") !== (p.category === "CFD")) p.warnings = [...(p.warnings || []), `Ojo: esta señal se detectó como ${p.category === "CFD" ? "CFD" : "Sintético"}, pero la estás cargando desde la página de ${kind === "cfd" ? "CFDs" : "Sintéticos"}.`];
     const base = emptyForm(p.category, p.sub, p.broker);
     setEditing({
       ...base,
@@ -3110,6 +3315,105 @@ export default function App() {
   })();
   const shiftAdmin = (n) => { const step = (adminSingle ? 1 : 7) * n; setAdminRange({ from: addDays(adminRange.from, step), to: addDays(adminRange.to, step) }); };
   const activateTrade = (t) => updateTrade(recompute({ ...t, legs: { ...(t.legs || {}), ...Object.fromEntries(legKeys(t).map((k) => [k, { ...legOf(t, k), status: "Abierta", tpIdx: null, exit: "", pips: "" }])) } }));
+
+  // ---- Sub-páginas del panel admin ----
+  const catMatch = (t, kind) => (kind === "cfd" ? t.category === "CFD" : t.category === "SINTETICO");
+  const renderPending = (list, showCat) => (
+    <section
+      className="bx-card p-4"
+      data-testid="pending-box"
+      style={{ border: "2px solid #fbbf24", background: "radial-gradient(500px circle at 0% 0%, rgba(251,191,36,.14), transparent 60%), rgba(16,19,28,.85)", boxShadow: "0 0 30px rgba(251,191,36,.12)" }}
+    >
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-xs uppercase tracking-[0.18em] font-bold" style={{ color: "#fcd34d" }}>🕓 Entradas pendientes</div>
+        <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: "rgba(251,191,36,.18)", border: "1px solid #fbbf24", color: "#fcd34d" }}>{list.length}</span>
+      </div>
+      <div className="text-xs bx-muted mt-1">Entradas enviadas que aún no se activan. Cuando el precio entre, pulsa <b className="text-white">Activar</b>.</div>
+      {list.length === 0 ? (
+        <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>No tienes entradas pendientes.</div>
+      ) : (
+        <div className="mt-3 space-y-2 overflow-y-auto" style={{ maxHeight: 420 }}>
+          {list.map((t) => (
+            <div key={t.id} data-testid="pending-item" className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(251,191,36,.35)" }}>
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="font-extrabold text-white">{t.asset}</span>
+                <DirBadge dir={t.direction} />
+                <span className="text-[11px] bx-muted">{showCat ? `${t.category === "CFD" ? `CFD · ${t.sub}` : `Sintético · ${t.broker}`} · ` : ""}{fmtDate(t.date)}</span>
+              </div>
+              <div className="mt-2 text-xs bx-muted">
+                E1 <b className="text-white">{t.entry1}</b>{hasE2(t) ? <> · E2 <b className="text-white">{t.entry2}</b></> : null} · SL <b className="text-rose-300">{t.sl === "" ? "—" : t.sl}</b>
+                {(t.tps || []).length ? <> · {(t.tps || []).map((x, i) => (x === "OPEN" ? tpLabel(i, x) : `${tpLabel(i, x)} ${x}`)).join(" · ")}</> : null}
+              </div>
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <button type="button" onClick={() => activateTrade(t)} className="bx-btn" style={{ padding: ".4rem .9rem" }}>▶ Activar</button>
+                <button type="button" onClick={() => setDetail(t.id)} className="bx-ghost">Gestionar</button>
+                <button type="button" title="Editar" aria-label="Editar" onClick={() => setEditing(toForm(t))} className="bx-muted hover:text-white">✎</button>
+                <button type="button" title="Eliminar" aria-label="Eliminar" onClick={() => setConfirmDel(t)} className="bx-muted hover:text-rose-400">🗑</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+  const renderCatPage = (kind) => {
+    const list = adminList.filter((t) => catMatch(t, kind));
+    const pend = pendingList.filter((t) => catMatch(t, kind));
+    const net = {};
+    list.filter((t) => !t.discarded).forEach((t) => { if (legResults(t).length) { const u = unitWord(t); net[u] = round1((net[u] || 0) + (Number(t.pips) || 0)); } });
+    const act = list.filter((t) => !t.discarded && t.status !== "Pendiente").length;
+    const kindName = kind === "cfd" ? "CFDs" : "Sintéticos";
+    return (
+      <div className="space-y-6" data-testid={`admin-page-${kind}`}>
+        <div className="grid lg:grid-cols-2 gap-6 items-start">
+          <section className="bx-card p-4">
+            <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold mb-2">Cargar señal · {kindName}</div>
+            <textarea
+              rows={6}
+              className="bx-input"
+              placeholder={kind === "cfd"
+                ? "Pega aquí la señal tal como la envías al canal VIP…\n\nPair: XAUUSD 📊\nSide: Short / Sell\nEntry 1: 4018\nEntry 2: 4022\nSL: 4030\nTP: Open\nTP1 4013 …"
+                : "Pega aquí la señal de sintéticos…\n\nCRASH 900 SELL 16792\nSL 20 PTS\nTP1 30 PTS\nTP2 60 PTS"}
+              value={signalText}
+              onChange={(e) => setSignalText(e.target.value)}
+            />
+            <div className="mt-2 flex items-center justify-between gap-2 flex-wrap">
+              <span className="text-xs bx-muted">Detecta activo, broker, dirección, entradas, SL y TPs. Podrás revisar antes de guardar.</span>
+              <button onClick={() => importSignal(kind)} disabled={!signalText.trim()} className="bx-btn">Interpretar y revisar</button>
+            </div>
+          </section>
+          {renderPending(pend, false)}
+        </div>
+        <section className="bx-card p-3 md:p-4" data-testid="admin-day">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 className="font-extrabold tracking-wider bx-accent">{kindName.toUpperCase()} · {adminSingle ? (adminRange.from === todayStr ? "HOY" : dayName(adminRange.from).toUpperCase()) : "SEMANA"} · {adminLabel}</h2>
+              <div className="text-xs bx-muted mt-0.5">
+                {list.length} {list.length === 1 ? "entrada" : "entradas"} · {act} activadas · {list.filter((t) => t.status === "Pendiente").length} pendientes · {list.filter(isClosed).length} cerradas{Object.keys(net).length ? ` · Neto: ${Object.entries(net).map(([u, v]) => `${fmtP(v)} ${u}`).join(" | ")}` : ""}
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-1">
+              <button type="button" className="bx-ghost" aria-label="Anterior" title={adminSingle ? "Día anterior" : "Semana anterior"} onClick={() => shiftAdmin(-1)}>‹</button>
+              <MiniCalendar marked={marked} range={adminRange} onChange={(r) => setAdminRange(r || { from: todayStr, to: todayStr })} noClear />
+              <button type="button" className="bx-ghost" aria-label="Siguiente" title={adminSingle ? "Día siguiente" : "Semana siguiente"} onClick={() => shiftAdmin(1)}>›</button>
+              <button type="button" className="bx-ghost" onClick={() => setAdminRange({ from: todayStr, to: todayStr })}>Hoy</button>
+            </div>
+          </div>
+          {list.length === 0 ? (
+            <div className="mt-4 rounded-xl p-6 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>
+              No hay entradas de {kindName} en esta fecha. Pega una señal arriba o elige otro día en el calendario.
+            </div>
+          ) : (
+            <div className="mt-4 space-y-3" data-testid="admin-day-list">
+              {list.map((t) => (
+                <DayTradeCard key={t.id} t={t} onOpen={setDetail} onSignal={setSigTrade} onEdit={(x) => setEditing(toForm(x))} onDelete={setConfirmDel} />
+              ))}
+            </div>
+          )}
+        </section>
+      </div>
+    );
+  };
 
   if (!twReady) {
     return (
@@ -3360,112 +3664,46 @@ export default function App() {
                   <div className="text-xs bx-muted mt-1">{cloudLabel}</div>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <button type="button" onClick={() => setShowReport(true)} className="bx-ghost">📄 Generar Resumen en Texto</button>
+                  <button type="button" onClick={() => setShowReport(true)} className="bx-ghost">📄 Reporte detallado</button>
                   <button type="button" onClick={() => setPage("track")} className="bx-ghost">Ver Track Record</button>
                 </div>
               </div>
-            </section>
-
-            <div className="grid lg:grid-cols-2 gap-6 items-start">
-              <section className="bx-card p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Pegar señal (CFDs y Sintéticos)</div>
-            </div>
-            <textarea
-              rows={6}
-              className="bx-input"
-              placeholder={"Pega aquí la señal tal como la envías al canal VIP…\n\nPair: XAUUSD 📊\nSide: Short / Sell\nEntry 1: 4018\nEntry 2: 4022\nSL: 4030\nTP: Open\nTP1 4013 …\n\nTambién acepta formato corto:\nCRASH 900 SELL 16792\nSL 20 PTS\nTP: 300 PTS"}
-              value={signalText}
-              onChange={(e) => setSignalText(e.target.value)}
-            />
-            <div className="mt-2 flex items-center justify-between gap-2 flex-wrap">
-              <span className="text-xs bx-muted">
-                Detecta activo, categoría y broker (CFDs, DERIV y WELTRADE), dirección, Entry 1 / Entry 2, SL, TPs (precio o distancia en PTS, incluido TP OPEN). Podrás revisar antes de guardar.
-              </span>
-              <button onClick={importSignal} disabled={!signalText.trim()} className="bx-btn">Interpretar y revisar</button>
-            </div>
-          </section>
-
-              <section
-                className="bx-card p-4"
-                data-testid="pending-box"
-                style={{ border: "2px solid #fbbf24", background: "radial-gradient(500px circle at 0% 0%, rgba(251,191,36,.14), transparent 60%), rgba(16,19,28,.85)", boxShadow: "0 0 30px rgba(251,191,36,.12)" }}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div className="text-xs uppercase tracking-[0.18em] font-bold" style={{ color: "#fcd34d" }}>🕓 Órdenes pendientes</div>
-                  <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: "rgba(251,191,36,.18)", border: "1px solid #fbbf24", color: "#fcd34d" }}>{pendingList.length}</span>
-                </div>
-                <div className="text-xs bx-muted mt-1">Entradas enviadas que aún no se activan. Cuando el precio entre, pulsa <b className="text-white">Activar</b>.</div>
-                {pendingList.length === 0 ? (
-                  <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>No tienes órdenes pendientes.</div>
-                ) : (
-                  <div className="mt-3 space-y-2 overflow-y-auto" style={{ maxHeight: 360 }}>
-                    {pendingList.map((t) => (
-                      <div key={t.id} data-testid="pending-item" className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(251,191,36,.35)" }}>
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-extrabold text-white">{t.asset}</span>
-                            <DirBadge dir={t.direction} />
-                            <span className="text-[11px] bx-muted">{t.category === "CFD" ? `CFD · ${t.sub}` : `Sintético · ${t.broker}`} · {fmtDate(t.date)}</span>
-                          </div>
-                        </div>
-                        <div className="mt-2 text-xs bx-muted">
-                          E1 <b className="text-white">{t.entry1}</b>{hasE2(t) ? <> · E2 <b className="text-white">{t.entry2}</b></> : null} · SL <b className="text-rose-300">{t.sl === "" ? "—" : t.sl}</b>
-                          {(t.tps || []).length ? <> · {(t.tps || []).map((x, i) => (x === "OPEN" ? tpLabel(i, x) : `${tpLabel(i, x)} ${x}`)).join(" · ")}</> : null}
-                        </div>
-                        <div className="mt-2 flex flex-wrap items-center gap-2">
-                          <button type="button" onClick={() => activateTrade(t)} className="bx-btn" style={{ padding: ".4rem .9rem" }}>▶ Activar</button>
-                          <button type="button" onClick={() => setDetail(t.id)} className="bx-ghost">Gestionar</button>
-                          <button type="button" title="Editar" aria-label="Editar" onClick={() => setEditing(toForm(t))} className="bx-muted hover:text-white">✎</button>
-                          <button type="button" title="Eliminar" aria-label="Eliminar" onClick={() => setConfirmDel(t)} className="bx-muted hover:text-rose-400">🗑</button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </section>
-            </div>
-
-            <section className="bx-card p-3 md:p-4" data-testid="admin-day">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="font-extrabold tracking-wider bx-accent">OPERACIONES · {adminSingle ? (adminRange.from === todayStr ? "HOY" : dayName(adminRange.from).toUpperCase()) : "SEMANA"} · {adminLabel}</h2>
-                  <div className="text-xs bx-muted mt-0.5">
-                    {aStats.total} {aStats.total === 1 ? "entrada" : "entradas"} · {aStats.act} activadas · {aStats.pend} pendientes · {aStats.closed} cerradas{Object.keys(aStats.net).length ? ` · Neto: ${Object.entries(aStats.net).map(([u, v]) => `${fmtP(v)} ${u}`).join(" | ")}` : ""}
-                  </div>
-                </div>
-                <div className="flex flex-wrap items-center gap-1">
-                  <button type="button" className="bx-ghost" aria-label="Anterior" title={adminSingle ? "Día anterior" : "Semana anterior"} onClick={() => shiftAdmin(-1)}>‹</button>
-                  <MiniCalendar marked={marked} range={adminRange} onChange={(r) => setAdminRange(r || { from: todayStr, to: todayStr })} noClear />
-                  <button type="button" className="bx-ghost" aria-label="Siguiente" title={adminSingle ? "Día siguiente" : "Semana siguiente"} onClick={() => shiftAdmin(1)}>›</button>
-                  <button type="button" className="bx-ghost" onClick={() => setAdminRange({ from: todayStr, to: todayStr })}>Hoy</button>
-                </div>
+              <div className="mt-4 flex flex-wrap gap-2" data-testid="admin-tabs">
+                {[["dash", "🏠 Dashboard"], ["cfd", "📈 CFDs"], ["synth", "🎲 Sintéticos"], ["recap", "📄 Resúmenes"]].map(([k, l]) => (
+                  <button key={k} type="button" data-testid={`atab-${k}`} onClick={() => setAdminTab(k)} className={`bx-pill ${adminTab === k ? "on" : ""}`}>
+                    {l}{k === "cfd" && pendingList.some((t) => t.category === "CFD") ? ` · ${pendingList.filter((t) => t.category === "CFD").length}🕓` : ""}{k === "synth" && pendingList.some((t) => t.category !== "CFD") ? ` · ${pendingList.filter((t) => t.category !== "CFD").length}🕓` : ""}
+                  </button>
+                ))}
               </div>
-              {adminList.length === 0 ? (
-                <div className="mt-4 rounded-xl p-6 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>
-                  No hay operaciones registradas en esta fecha. Pega una señal arriba o elige otro día en el calendario.
-                </div>
-              ) : (
-                <div className="mt-4 space-y-3" data-testid="admin-day-list">
-                  {adminList.map((t) => (
-                    <DayTradeCard key={t.id} t={t} onOpen={setDetail} onSignal={setSigTrade} onEdit={(x) => setEditing(toForm(x))} onDelete={setConfirmDel} />
-                  ))}
-                </div>
-              )}
             </section>
 
-            <section className="bx-card p-4 flex flex-wrap items-center gap-3">
-            <div className="text-xs uppercase tracking-[0.18em] bx-muted mr-auto">Herramientas de administración</div>
-            <button onClick={exportJson} className="bx-ghost">⬇ Exportar respaldo (JSON)</button>
-            <button onClick={() => fileRef.current?.click()} className="bx-ghost">⬆ Importar respaldo</button>
-            <input ref={fileRef} type="file" accept="application/json" className="hidden" onChange={importJson} />
-            <button
-              onClick={() => { if (window.confirm(cloud ? "¿Eliminar TODAS las operaciones? También se borrarán de la nube y de todos tus dispositivos." : "¿Eliminar TODAS las operaciones (incluidas las de ejemplo)?")) setTrades([]); }}
-              className="bx-ghost danger"
-            >
-              Vaciar Track Record
-            </button>
-          </section>
+            {adminTab === "dash" && (
+              <div className="space-y-6" data-testid="admin-page-dash">
+                <section className="bx-card p-5">
+                  <h2 className="text-xl md:text-2xl font-black text-white">Bienvenido al Dashboard de administración</h2>
+                  <p className="mt-1 text-sm bx-muted">Aquí ves lo importante del día: las noticias USD de impacto alto y las entradas que aún no se activan. Carga señales y revisa tus entradas en las páginas de CFDs y Sintéticos.</p>
+                </section>
+                <div className="grid lg:grid-cols-[1.3fr_1fr] gap-6 items-start">
+                  <NewsCalendar />
+                  {renderPending(pendingList, true)}
+                </div>
+                <section className="bx-card p-4 flex flex-wrap items-center gap-3">
+                  <div className="text-xs uppercase tracking-[0.18em] bx-muted mr-auto">Herramientas de administración</div>
+                  <button onClick={exportJson} className="bx-ghost">⬇ Exportar respaldo (JSON)</button>
+                  <button onClick={() => fileRef.current?.click()} className="bx-ghost">⬆ Importar respaldo</button>
+                  <input ref={fileRef} type="file" accept="application/json" className="hidden" onChange={importJson} />
+                  <button
+                    onClick={() => { if (window.confirm(cloud ? "¿Eliminar TODAS las operaciones? También se borrarán de la nube y de todos tus dispositivos." : "¿Eliminar TODAS las operaciones (incluidas las de ejemplo)?")) setTrades([]); }}
+                    className="bx-ghost danger"
+                  >
+                    Vaciar Track Record
+                  </button>
+                </section>
+              </div>
+            )}
+            {adminTab === "cfd" && renderCatPage("cfd")}
+            {adminTab === "synth" && renderCatPage("synth")}
+            {adminTab === "recap" && <RecapPanel trades={trades} defaultScope="ALL" />}
           </div>
         )}
         {page === "signals" && <ServicesPricing setPage={setPage} kind={signalKind} />}
