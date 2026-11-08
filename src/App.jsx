@@ -2700,13 +2700,13 @@ function LiveStatus() {
         <span className={`bx-dot ${cfd ? "live" : "off"}`} />
         <span className="font-black tracking-widest text-white">CFD</span>
         <span className={cfd ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>{cfd ? "EN VIVO · Mercado abierto" : "Mercado cerrado"}</span>
-        <span className="bx-muted hidden sm:inline">Forex · Oro · Índices{cfd ? "" : " · abre el domingo 5:00 PM (NY)"}</span>
+        <span className="bx-muted hidden sm:inline">{cfd ? "" : " · abre el domingo 5:00 PM (NY)"}</span>
       </div>
       <div className="bx-live" data-testid="live-synth">
         <span className="bx-dot live" />
         <span className="font-black tracking-widest text-white">SINTÉTICOS</span>
         <span className="text-emerald-400 font-bold">EN VIVO · Abierto 24/7</span>
-        <span className="bx-muted hidden sm:inline">Deriv · Weltrade</span>
+        <span className="bx-muted hidden sm:inline"></span>
       </div>
     </div>
   );
