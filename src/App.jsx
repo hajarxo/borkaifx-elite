@@ -2025,35 +2025,6 @@ function SignalShowcase({ kind }) {
 function ServicesPricing({ setPage, kind = "CFD" }) {
   return (
     <div className="space-y-16">
-      {/* CANAL DE SEÑALES VIP (texto de CFDs: XAUUSD, NAS100 y divisas) */}
-      {kind === "CFD" && <section id="canal-vip" className="scroll-mt-24" data-testid="canal-vip">
-        <SectionTitle kicker="CANAL DE SEÑALES VIP" title="ELITE VIP FX 🏆" text="Operamos los activos más volátiles y lucrativos del mercado con precisión quirúrgica: XAUUSD, NAS100 y algunos pares de divisas." />
-        <div className="grid md:grid-cols-3 gap-4">
-          <div className="bx-card p-5">
-            <div className="text-xs bx-accent font-bold tracking-widest">📌 ¿QUÉ INCLUYE EL SERVICIO VIP?</div>
-            <h3 className="mt-2 font-extrabold">De 2 a 3 señales diarias</h3>
-            <p className="text-sm bx-muted mt-1">Con parámetros exactos:</p>
-            <ul className="mt-2 space-y-1.5 text-sm bx-muted">
-              {["Punto de entrada", "Stop Loss", "Múltiples Take Profits"].map((x) => <li key={x} className="flex gap-2"><span className="bx-accent">✓</span>{x}</li>)}
-            </ul>
-          </div>
-          <div className="bx-card p-5">
-            <div className="text-xs bx-accent font-bold tracking-widest">⏱ SEGUIMIENTO</div>
-            <h3 className="mt-2 font-extrabold">Seguimiento en tiempo real</h3>
-            <ul className="mt-2 space-y-1.5 text-sm bx-muted">
-              {["Avisos para tomar parciales", "Indicación para mover el SL a Breakeven", "Cierres anticipados según la estructura del mercado", "Gestión de riesgo recomendada"].map((x) => <li key={x} className="flex gap-2"><span className="bx-accent">✓</span>{x}</li>)}
-            </ul>
-          </div>
-          <div className="bx-card p-5">
-            <div className="text-xs bx-accent font-bold tracking-widest">🌐 SESIONES OPERATIVAS</div>
-            <h3 className="mt-2 font-extrabold">Asia y New York</h3>
-            <p className="text-sm bx-muted mt-2">Operamos principalmente la sesión de Asia y New York. Si hay un cambio para operar Londres, se les informará con anticipación.</p>
-          </div>
-        </div>
-      </section>}
-
-      <SignalShowcase kind={kind} />
-
       {/* ACCESOS · PLANES */}
       <section id="precios" className="scroll-mt-24" data-testid="access-plans">
         <div className="bx-kicker">Pase VIP · ELITE VIP FX</div>
@@ -2092,6 +2063,8 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
 
         <VipOfferCta setPage={setPage} />
       </section>
+      <SignalShowcase kind={kind} />
+
     </div>
   );
 }
@@ -2700,13 +2673,13 @@ function LiveStatus() {
         <span className={`bx-dot ${cfd ? "live" : "off"}`} />
         <span className="font-black tracking-widest text-white">CFD</span>
         <span className={cfd ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>{cfd ? "EN VIVO · Mercado abierto" : "Mercado cerrado"}</span>
-        <span className="bx-muted hidden sm:inline">{cfd ? "" : " · abre el domingo 5:00 PM (NY)"}</span>
+        <span className="bx-muted hidden sm:inline">Forex · Oro · Índices{cfd ? "" : " · abre el domingo 5:00 PM (NY)"}</span>
       </div>
       <div className="bx-live" data-testid="live-synth">
         <span className="bx-dot live" />
         <span className="font-black tracking-widest text-white">SINTÉTICOS</span>
         <span className="text-emerald-400 font-bold">EN VIVO · Abierto 24/7</span>
-        <span className="bx-muted hidden sm:inline"></span>
+        <span className="bx-muted hidden sm:inline">Deriv · Weltrade</span>
       </div>
     </div>
   );
@@ -3192,7 +3165,7 @@ export default function App() {
       </header>
 
       <Ticker />
-      <LiveStatus />
+      {page !== "signals" && <LiveStatus />}
 
       {cloudState === "error" && (
         <div className="text-center text-xs py-2 px-4 bg-rose-500/20 text-rose-500">
