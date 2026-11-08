@@ -1357,50 +1357,6 @@
     "r": 33.33
   },
   {
-    "id": "e57nzmifmw88wxmb",
-    "date": "2026-11-08",
-    "category": "SINTETICO",
-    "sub": "",
-    "broker": "DERIV",
-    "asset": "CRASH 900",
-    "direction": "SELL",
-    "entry1": 17891.772,
-    "entry2": "",
-    "activation": "E1",
-    "sl": 17912.426,
-    "tps": [
-      17726,
-      17676,
-      17591
-    ],
-    "pipSize": 1,
-    "unit": "puntos",
-    "legs": {
-      "e1": {
-        "status": "BE",
-        "exit": 17891.772,
-        "pips": 0,
-        "tpIdx": null
-      },
-      "e2": {
-        "status": "Pendiente",
-        "exit": "",
-        "pips": "",
-        "tpIdx": null
-      }
-    },
-    "discarded": false,
-    "raw": "CRASH 900 INDEX SELL LIMIT 17891.772\nTP1: 17726.00\nTP2: 17676.00\nTP3: 17591.00\nSL: 17912.426",
-    "notes": "",
-    "mgmt": "",
-    "tags": [
-      "VIP Signal"
-    ],
-    "status": "BE",
-    "pips": 0,
-    "r": 0
-  },
-  {
     "id": "ikor65vgmw88y4xd",
     "date": "2026-11-08",
     "category": "SINTETICO",
