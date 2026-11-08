@@ -2054,16 +2054,7 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
               <div key={p.name} className={`bx-plan ${hot ? "hot" : ""}`} data-testid="plan-card">
                 <div className="text-base font-semibold text-white">{p.name}</div>
                 <div className="mt-3 text-5xl md:text-6xl font-extrabold leading-none" style={{ color: ACCENT }}>{fmtMoney(p.amount)}</div>
-                {!syn && <div className="mt-3 text-sm bx-muted">{p.label} · USD</div>}
-                {!syn && p.months > 1 && <div className="mt-1 text-sm font-bold" style={{ color: ACCENT }}>Equivale a {fmtMoney(p.amount / p.months)} al mes</div>}
-                {!syn && (
-                  <ul className="mt-5 space-y-2 text-[15px] flex-1" style={{ color: "#E8E5DD" }}>
-                    {p.features.map((f, k) => (
-                      <li key={k} className="flex gap-2.5"><span style={{ color: GREEN }}>✓</span>{f}</li>
-                    ))}
-                  </ul>
-                )}
-                {syn && <div className="flex-1" />}
+                                <div className="flex-1" />
                 <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={`mt-6 ${hot ? "bx-gold" : "bx-planbtn"}`} style={hot ? { padding: ".85rem 1rem", fontSize: "1rem" } : undefined}>
                   Unirme · {p.name} ↗
                 </a>
@@ -2072,10 +2063,9 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
           })}
         </div>
 
-        {!syn && <VipOfferCta setPage={setPage} />}
       </section>
       <SignalShowcase kind={kind} />
-      {syn && <div data-testid="offer-below"><VipOfferCta setPage={setPage} /></div>}
+      <div data-testid="offer-below"><VipOfferCta setPage={setPage} /></div>
 
     </div>
   );
@@ -3144,9 +3134,9 @@ export default function App() {
           </div>
 
           <div className="flex flex-wrap items-center justify-end gap-2 md:gap-4">
-          {isAdmin && (
-          <nav className="bx-nav " data-testid="admin-nav">
-            {[["home", "Inicio"], ["track", "Track Record"], ["signals", "Señales"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => k !== "signals" ? (
+          {(
+          <nav className="bx-nav" data-testid="main-nav">
+            {(isAdmin ? [["home", "Inicio"], ["track", "Track Record"], ["signals", "Señales"], ["admin", "Panel Admin"]] : [["signals", "Señales"]]).map(([k, l]) => k !== "signals" ? (
               <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`}>{l}</button>
             ) : (
               <div key={k} className="relative" onMouseEnter={() => setSigMenu(true)} onMouseLeave={() => setSigMenu(false)} data-testid="signals-menu">
@@ -3187,16 +3177,6 @@ export default function App() {
 
       <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
         {page === "vip" && <VipPage />}
-        {page === "signals" && !isAdmin && (
-          <section className="bx-card p-8 text-center" data-testid="page-locked">
-            <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">ACCESO PROTEGIDO</div>
-            <h1 className="mt-2 text-2xl md:text-3xl font-black text-white">Sección privada</h1>
-            <p className="mt-2 text-sm bx-muted">Esta sección no está disponible.</p>
-            <div className="mt-5 flex flex-wrap justify-center gap-2">
-              <button type="button" onClick={() => setPage("track")} className="bx-btn">Ir al Track Record</button>
-            </div>
-          </section>
-        )}
         {(page === "home" || page === "track") && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section className="text-left pt-3 md:pt-8" data-testid="hero">
@@ -3488,7 +3468,7 @@ export default function App() {
           </section>
           </div>
         )}
-        {page === "signals" && isAdmin && <ServicesPricing setPage={setPage} kind={signalKind} />}
+        {page === "signals" && <ServicesPricing setPage={setPage} kind={signalKind} />}
 
         {/* ------------------------- FOOTER ------------------------- */}
         <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-2">
