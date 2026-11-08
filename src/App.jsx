@@ -554,6 +554,13 @@ const hitMax = (t) => {
     if (L.status === "TP" && L.tpIdx !== null && L.tpIdx !== undefined) best = Math.max(best, L.tpIdx);
     const r = num(L.reached);
     if (r !== null) best = Math.max(best, r);
+    // BE con ganancia: si los pips/puntos reales alcanzan la distancia de un TP, ese TP se tocó antes de volver a BE
+    const bp = L.status === "BE" ? num(L.pips) : null;
+    if (bp !== null && bp > 0) (t.tps || []).forEach((lvl, i) => {
+      if (lvl === "OPEN") return;
+      const need = calcPips(t, k, lvl);
+      if (need !== null && need > 0 && bp + 0.05 >= need) best = Math.max(best, i);
+    });
   });
   return best;
 };
@@ -1097,20 +1104,28 @@ function LegEditor({ t, k, onChange }) {
 
   const pickTp = (i) => {
     const lvl = tps[i];
-    if (lvl === "OPEN") onChange(k, { status: "TP", tpIdx: i, exit: "OPEN", pips: L.exit === "OPEN" ? L.pips : "" });
+    if (lvl === "OPEN") onChange(k, { status: "TP", tpIdx: i, exit: "OPEN", reached: null, pips: L.exit === "OPEN" ? L.pips : "" });
     else {
       const p = calcPips(t, k, lvl);
-      onChange(k, { status: "TP", tpIdx: i, exit: lvl, pips: p === null ? "" : p });
+      onChange(k, { status: "TP", tpIdx: i, exit: lvl, reached: null, pips: p === null ? "" : p });
     }
   };
   const pickSL = () => {
     const p = calcPips(t, k, t.sl);
-    onChange(k, { status: "SL", tpIdx: null, exit: t.sl, pips: p === null ? "" : p });
+    onChange(k, { status: "SL", tpIdx: null, reached: null, exit: t.sl, pips: p === null ? "" : p });
   };
-  const pickBE = () => onChange(k, { status: "BE", tpIdx: null, exit: entry ?? "", pips: 0 });
-  const pickOpen = () => onChange(k, { status: "Abierta", tpIdx: null, exit: "", pips: "" });
-  const pickPending = () => onChange(k, { status: "Pendiente", tpIdx: null, exit: "", pips: "" });
-  const pickManual = () => onChange(k, { status: "MANUAL", tpIdx: null, exit: "", pips: L.status === "MANUAL" ? L.pips : "" });
+  const pickBE = () => onChange(k, { status: "BE", tpIdx: null, reached: null, exit: entry ?? "", pips: 0 });
+  const pickReached = (i) => {
+    if (i === null) return onChange(k, { reached: null });
+    const lvl = tps[i];
+    const need = lvl === "OPEN" ? null : calcPips(t, k, lvl);
+    const cur = num(L.pips);
+    // Si aún no hay pips escritos, se toma el TP alcanzado para la suma (editable)
+    onChange(k, { reached: i, ...(need !== null && (cur === null || cur <= 0) ? { pips: need } : {}) });
+  };
+  const pickOpen = () => onChange(k, { status: "Abierta", tpIdx: null, reached: null, exit: "", pips: "" });
+  const pickPending = () => onChange(k, { status: "Pendiente", tpIdx: null, reached: null, exit: "", pips: "" });
+  const pickManual = () => onChange(k, { status: "MANUAL", tpIdx: null, reached: null, exit: "", pips: L.status === "MANUAL" ? L.pips : "" });
 
   const commitPips = () => {
     let v = num(pipsText);
@@ -1147,6 +1162,18 @@ function LegEditor({ t, k, onChange }) {
       </div>
       {L.status === "Pendiente" && (
         <div className="mt-2 text-xs" style={{ color: "#fcd34d" }}>Orden pendiente: aún no se activó en el mercado. Cuando el precio entre, pulsa <b>Activa</b>.</div>
+      )}
+      {L.status === "BE" && tps.some((x) => x !== "OPEN") && (
+        <div className="mt-3" data-testid="be-reached">
+          <div className="text-[11px] bx-muted mb-1">¿Tocó algún TP antes de volver a BE? (cuenta para el resumen y la suma)</div>
+          <div className="flex flex-wrap gap-1.5">
+            <button type="button" onClick={() => pickReached(null)} className={`bx-seg mid ${num(L.reached) === null ? "on" : ""}`}>Ninguno</button>
+            {tps.map((lvl, i) => (lvl === "OPEN" ? null : (
+              <button key={i} type="button" onClick={() => pickReached(i)} className={`bx-seg pos ${num(L.reached) === i ? "on" : ""}`}>Tocó {tpLabel(i, lvl)}</button>
+            )))}
+          </div>
+          {hitMax(t) >= 0 && <div className="mt-1 text-[11px]" style={{ color: "#86efac" }}>Se registra: tocó hasta TP{hitMax(t) + 1} y volvió a BE.</div>}
+        </div>
       )}
       {L.status !== "Abierta" && L.status !== "Pendiente" && (
         <div className="mt-3 flex items-end gap-3 flex-wrap">
@@ -1355,7 +1382,7 @@ const dayName = (ymd) => { const [y, m, d] = ymd.split("-").map(Number); return 
 
 const weekRange = (ymd) => {
   const [y, m, d] = ymd.split("-").map(Number);
-  const dow = (new Date(y, m - 1, d).getDay() + 6) % 7; // lunes = 0
+  const dow = new Date(y, m - 1, d).getDay(); // semana de trading: domingo (sesión asiática) a sábado
   const from = addDays(ymd, -dow);
   return { from, to: addDays(from, 6) };
 };
@@ -1372,7 +1399,7 @@ const shiftYM = (ym, n) => {
 // Matriz mensual (estilo mini calendario): clic en un día, en la flecha lateral de la semana o en el nombre del mes
 function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
   const [y, m] = ym.split("-").map(Number);
-  const lead = (new Date(y, m - 1, 1).getDay() + 6) % 7;
+  const lead = new Date(y, m - 1, 1).getDay();
   const dim = new Date(y, m, 0).getDate();
   const cells = [];
   for (let i = 0; i < lead; i++) cells.push(null);
@@ -1394,7 +1421,7 @@ function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
       </div>
       <div className="grid gap-1" style={{ gridTemplateColumns: "28px repeat(7, minmax(0, 1fr))" }}>
         <div />
-        {["L", "M", "X", "J", "V", "S", "D"].map((d, i) => (
+        {["D", "L", "M", "X", "J", "V", "S"].map((d, i) => (
           <div key={i} className="text-center text-[10px] bx-muted font-bold">{d}</div>
         ))}
         {rows.map((row, ri) => {
@@ -1491,7 +1518,7 @@ function buildReport(trades, mode, ref, scope) {
   let from = ref, to = ref, title = "";
   const [y, m, d] = ref.split("-").map(Number);
   if (mode === "weekly") {
-    const dow = (new Date(y, m - 1, d).getDay() + 6) % 7; // lunes = 0
+    const dow = new Date(y, m - 1, d).getDay(); // domingo = 0
     from = addDays(ref, -dow);
     to = addDays(from, 6);
     title = `RESUMEN SEMANAL · ${fmtDate(from)} al ${fmtDate(to)}`;
@@ -1710,7 +1737,7 @@ function buildRecap(trades, mode, ref, scope) {
     tot[U] = round1((tot[U] || 0) + p);
     const dir = t.direction === "SELL" ? "Sell" : "Buy";
     let res;
-    if (t.status === "BE" && p === 0) { be++; res = "BE"; }
+    if (t.status === "BE" && p === 0) { be++; res = hitMax(t) >= 0 ? `BE (tocó TP${hitMax(t) + 1})` : "BE"; }
     else if (p > 0) { wins++; res = `+${nfmt(p)} ${U} ✅`; }
     else if (p < 0) { losses++; res = `-${nfmt(p)} ${U}`; }
     else if (t.status === "SL") { losses++; res = "SL HIT"; }
