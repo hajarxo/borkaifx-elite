@@ -80,6 +80,9 @@ const GREY = "#A8A39B";
 
 /* ----------------------------- Estilos del tema ----------------------------- */
 const CSS = `
+html,body{margin:0!important;padding:0!important;background:#0A0A0C!important;display:block!important;min-width:0!important;border:0!important}
+#root{max-width:none!important;width:100%!important;margin:0!important;padding:0!important;border:0!important;text-align:left!important;display:block!important}
+.bx-root{width:100%;box-sizing:border-box;border:0;outline:0}
 :where(.bx-root) :is(h1,h2,h3,h4){color:var(--ink)}
 :where(.bx-card) :is(h1,h2,h3,h4){color:#FFFFFF}
 .bx-input{color-scheme:dark}
@@ -2830,6 +2833,7 @@ export default function App() {
 
   useEffect(() => {
     document.body.style.background = "#0A0A0C";
+    document.documentElement.style.background = "#0A0A0C";
   }, []);
 
   useEffect(() => {
