@@ -100,6 +100,12 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-dot.off{background:#f43f5e}
 .bx-live{display:flex;align-items:center;gap:.625rem;background:#141415;border:1px solid var(--cardline);border-radius:9999px;padding:.4rem .9rem;font-size:.75rem}
 .bx-ink2{color:var(--ink2)}
+@media(max-width:480px){.bx-gold{padding:.5rem .85rem;font-size:.85rem}.bx-brand{font-size:1.45rem!important}}
+.bx-h1{font-size:2.35rem;line-height:.98}
+@media(min-width:640px){.bx-h1{font-size:3.1rem}}
+@media(min-width:1024px){.bx-h1{font-size:3.6rem}}
+.bx-hero-filters .bx-tab{padding:.4rem 1.05rem;font-size:.72rem;letter-spacing:.08em;border-radius:.65rem}
+.bx-hero-filters .bx-pill{padding:.25rem .75rem;font-size:.7rem}
 /* Cinta de texto (ticker): colores por variables; claro/oscuro */
 .bx-root{--tk-ink:#9A958C;--tk-line:rgba(255,255,255,.10);--tk-gold:var(--accent);--tk-bg:rgba(10,10,12,.6)}
 .bx-root[data-theme="light"],[data-theme="light"] .bx-root{--tk-ink:#6B665D;--tk-line:rgba(0,0,0,.12);--tk-gold:#B8860B;--tk-bg:rgba(255,255,255,.7)}
@@ -3143,11 +3149,11 @@ export default function App() {
 
       {/* ------------------------- HEADER ------------------------- */}
       <header className="bx-header sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <div className="flex items-center gap-3">
-            <img src={LOGO} alt="BORKAIFX ELITE" className="w-11 h-11 object-contain" />
+            <img src={LOGO} alt="BORKAIFX ELITE" className="w-9 h-9 md:w-11 md:h-11 object-contain" />
             <div>
-              <div className="bx-display text-2xl md:text-3xl tracking-[0.06em] leading-none" style={{ color: "var(--ink)" }}>BORKAIFX <span style={{ color: ACCENT }}>ELITE</span></div>
+              <div className="bx-display bx-brand text-2xl md:text-3xl tracking-[0.06em] leading-none whitespace-nowrap" style={{ color: "var(--ink)" }}>BORKAIFX <span style={{ color: ACCENT }}>ELITE</span></div>
             </div>
           </div>
 
@@ -3207,19 +3213,14 @@ export default function App() {
         )}
         {page === "home" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
-        <section
-          className="bx-card p-5 md:p-8 text-left"
-          style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(242,176,30,.20), transparent 60%), rgba(16,19,28,.85)" }}
-        >
-          <div className="bx-kicker">Canal VIP · Resultados verificados</div>
-          <h1 className="mt-3 bx-display text-3xl sm:text-4xl md:text-5xl" style={{ color: "#FFFFFF" }}>
-            <span className="block">TRACK RECORD PÚBLICO</span>{" "}<span className="block" style={{ color: ACCENT }}>· CANAL VIP</span>
+        <section className="text-left pt-3 md:pt-8" data-testid="hero">
+          <div className="bx-kicker" style={{ fontSize: "12px" }}>Resultados canal VIP</div>
+          <h1 className="mt-4 bx-display bx-h1" style={{ color: "#FFFFFF" }}>
+            <span className="block">TRACK RECORD DE NUESTROS</span>
+            <span className="block" style={{ color: ACCENT }}>CANALES VIP AL PÚBLICO.</span>
           </h1>
-          <p className="mt-3 text-base md:text-xl font-medium" style={{ color: "#D6D3CB" }}>
-            Resultados <span style={{ color: ACCENT, fontWeight: 800 }}>reales</span>, sin filtros.
-          </p>
 
-          <div className="mt-6 bx-bt pt-5 space-y-3">
+          <div className="mt-6 space-y-2.5 bx-hero-filters">
             <div className="flex flex-wrap justify-center gap-2">
               {[["CFD", "CFDs"], ["SINTETICO", "Sintéticos"]].map(([k, label]) => (
                 <button key={k} onClick={() => { if (tab === k) setShowSubs((v) => !v); else { setTab(k); setShowSubs(true); } }} className={`bx-tab ${tab === k ? "on" : ""}`} aria-expanded={tab === k && showSubs}>
