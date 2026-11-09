@@ -1381,7 +1381,7 @@
         "exit": 17826,
         "pips": 100,
         "tpIdx": null,
-        "reached": 0
+        "reached": 1
       },
       "e2": {
         "status": "Pendiente",
