@@ -1556,9 +1556,9 @@
       "e1": {
         "status": "BE",
         "exit": 26262.11,
-        "pips": 0,
+        "pips": 17.3,
         "tpIdx": null,
-        "reached": null
+        "reached": 0
       },
       "e2": {
         "status": "Pendiente",
@@ -1575,8 +1575,8 @@
       "VIP Signal"
     ],
     "status": "BE",
-    "pips": 0,
-    "r": 0
+    "pips": 17.3,
+    "r": 1.02
   },
   {
     "id": "kwaxg73imw992yjl",
