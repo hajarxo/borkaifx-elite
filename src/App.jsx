@@ -102,8 +102,8 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-ink2{color:var(--ink2)}
 @media(max-width:480px){.bx-gold:not(.bx-gold-sm){padding:.5rem .85rem;font-size:.85rem}.bx-brand{font-size:1.15rem!important}}
 .bx-h1{font-size:2.35rem;line-height:.98}
-@media(min-width:640px){.bx-h1{font-size:3.1rem}}
-@media(min-width:1024px){.bx-h1{font-size:3.6rem}}
+@media(min-width:640px){.bx-h1{font-size:2.6rem}}
+@media(min-width:1024px){.bx-h1{font-size:2.9rem}}
 .bx-hero-filters .bx-tab{padding:.4rem 1.05rem;font-size:.72rem;letter-spacing:.08em;border-radius:.65rem}
 .bx-hero-filters .bx-pill{padding:.25rem .75rem;font-size:.7rem}
 /* Cinta de texto (ticker): colores por variables; claro/oscuro */
@@ -124,9 +124,9 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-gold{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:linear-gradient(180deg,#F7BC2E,#E49C10);color:#17120a;font-weight:800;border-radius:.8rem;padding:.6rem 1.15rem;font-size:.95rem;box-shadow:0 6px 24px rgba(242,176,30,.32);transition:filter .15s,transform .15s}
 .bx-gold.bx-gold-sm{padding:.38rem .9rem;font-size:.82rem;border-radius:.6rem;box-shadow:0 4px 14px rgba(242,176,30,.25)}
 .bx-gold:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.bx-plan{display:flex;flex-direction:column;background:rgba(16,19,28,.85);border:1px solid rgba(255,255,255,.09);border-radius:1.25rem;padding:1.6rem}
+.bx-plan{display:flex;flex-direction:column;background:rgba(16,19,28,.85);border:1px solid rgba(255,255,255,.09);border-radius:1rem;padding:1.15rem 1.25rem}
 .bx-plan.hot{border-color:rgba(242,176,30,.85);box-shadow:0 0 0 1px rgba(242,176,30,.25),0 10px 50px rgba(242,176,30,.16)}
-.bx-planbtn{display:flex;align-items:center;justify-content:center;gap:.4rem;border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;border-radius:.8rem;padding:.85rem 1rem;font-size:1rem;background:rgba(255,255,255,.03);transition:border-color .15s}
+.bx-planbtn{display:flex;align-items:center;justify-content:center;gap:.4rem;border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;border-radius:.7rem;padding:.6rem 1rem;font-size:.85rem;background:rgba(255,255,255,.03);transition:border-color .15s}
 .bx-planbtn:hover{border-color:var(--accent);color:var(--accent)}
 .bx-accent{color:var(--accent)}
 .bx-card{background:rgba(16,19,28,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--cardink);border:1px solid rgba(255,255,255,.09);border-radius:1rem}
@@ -2094,7 +2094,7 @@ const fmtMoney = (n) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
 const SectionTitle = ({ kicker, title, text }) => (
   <div className="mb-8 text-center">
     <div className="bx-kicker center">{kicker}</div>
-    <h2 className="mt-3 bx-display text-4xl md:text-6xl" style={{ color: "var(--ink)" }}>{title}</h2>
+    <h2 className="mt-3 bx-display text-3xl md:text-5xl" style={{ color: "var(--ink)" }}>{title}</h2>
     {text && <p className="mt-4 text-base md:text-lg bx-ink2 max-w-2xl text-center mx-auto leading-relaxed">{text}</p>}
   </div>
 );
@@ -2420,26 +2420,26 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
       {/* ACCESOS · PLANES */}
       <section id="precios" className="scroll-mt-24" data-testid="access-plans">
         <div className="bx-kicker">{kicker}</div>
-        <h2 className="bx-display mt-4 text-5xl md:text-7xl" style={{ color: "#fff" }}>
+        <h2 className="bx-display mt-3 text-4xl md:text-5xl" style={{ color: "#fff" }}>
           <span className="block">Opera con el</span>
           <span className="block" style={{ color: ACCENT }}>canal VIP.</span>
         </h2>
-        <p className="mt-5 text-base md:text-lg bx-ink2 max-w-2xl leading-relaxed">{intro}</p>
-        <ul className="mt-6 space-y-2.5 text-[15px] md:text-base" style={{ color: "#E8E5DD" }}>
+        <p className="mt-4 text-[15px] bx-ink2 max-w-xl leading-relaxed">{intro}</p>
+        <ul className="mt-5 space-y-2 text-sm" style={{ color: "#E8E5DD" }}>
           {bullets.map((x) => (
             <li key={x} className="flex gap-3"><span style={{ color: GREEN }}>✓</span>{x}</li>
           ))}
         </ul>
 
-        <div className="mt-8 grid md:grid-cols-3 gap-4 md:gap-5">
+        <div className="mt-6 grid sm:grid-cols-3 gap-3 md:gap-4">
           {SITE.plans.map((p, i) => {
             const hot = i === SITE.plans.length - 1;
             return (
               <div key={p.name} className={`bx-plan ${hot ? "hot" : ""}`} data-testid="plan-card">
-                <div className="text-base font-semibold text-white">{p.name}</div>
-                <div className="mt-3 text-5xl md:text-6xl font-extrabold leading-none" style={{ color: ACCENT }}>{fmtMoney(p.amount)}</div>
+                <div className="text-sm font-semibold text-white">{p.name}</div>
+                <div className="mt-2 text-3xl md:text-4xl font-extrabold leading-none" style={{ color: ACCENT }}>{fmtMoney(p.amount)}</div>
                                 <div className="flex-1" />
-                <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={`mt-6 ${hot ? "bx-gold" : "bx-planbtn"}`} style={hot ? { padding: ".85rem 1rem", fontSize: "1rem" } : undefined}>
+                <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={`mt-4 ${hot ? "bx-gold" : "bx-planbtn"}`} style={hot ? { padding: ".6rem 1rem", fontSize: ".85rem" } : undefined}>
                   Unirme · {p.name} ↗
                 </a>
               </div>
@@ -3054,7 +3054,7 @@ function LiveStatus() {
   useEffect(() => { const iv = setInterval(() => setNow(new Date()), 60000); return () => clearInterval(iv); }, []);
   const cfd = cfdMarketOpen(now);
   return (
-    <div className="max-w-7xl mx-auto px-4 pt-4 flex flex-wrap justify-center gap-3" data-testid="live-status">
+    <div className="max-w-5xl mx-auto px-4 pt-4 flex flex-wrap justify-center gap-3" data-testid="live-status">
       <div className="bx-live" data-testid="live-cfd">
         <span className={`bx-dot ${cfd ? "live" : "off"}`} />
         <span className="font-black tracking-widest text-white">CFD</span>
@@ -3609,13 +3609,13 @@ export default function App() {
 
       {/* ------------------------- HEADER ------------------------- */}
       <header className="bx-header relative z-30">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-          <div className="flex items-center gap-3">
-            <img src={LOGO} alt="BORKAIFX ELITE" className="w-7 h-7 md:w-9 md:h-9 object-contain" />
+        <div className="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <a href={PAGE_PATHS.home} onClick={(e) => { e.preventDefault(); setPage("home"); window.scrollTo(0, 0); }} className="flex items-center gap-3" data-testid="brand-link" aria-label="Ir al inicio" style={{ textDecoration: "none" }}>
+            <img src={LOGO} alt="BORKAIFX ELITE" className="w-7 h-7 md:w-8 md:h-8 object-contain" />
             <div>
-              <div className="bx-display bx-brand text-xl md:text-2xl tracking-[0.06em] leading-none whitespace-nowrap" style={{ color: "var(--ink)" }}>BORKAIFX <span style={{ color: ACCENT }}>ELITE</span></div>
+              <div className="bx-display bx-brand text-lg md:text-xl tracking-[0.06em] leading-none whitespace-nowrap" style={{ color: "var(--ink)" }}>BORKAIFX <span style={{ color: ACCENT }}>ELITE</span></div>
             </div>
-          </div>
+          </a>
 
           <div className="flex flex-wrap items-center justify-end gap-2 md:gap-4">
           {(
@@ -3659,7 +3659,7 @@ export default function App() {
         </div>
       )}
 
-      <main className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+      <main className={`${page === "admin" ? "max-w-6xl" : "max-w-5xl"} mx-auto px-4 py-6 space-y-6`}>
         {page === "vip" && <VipPage />}
         {(page === "home" || page === "track") && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
