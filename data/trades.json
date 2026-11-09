@@ -1379,9 +1379,9 @@
       "e1": {
         "status": "BE",
         "exit": 17826,
-        "pips": 0,
+        "pips": 150,
         "tpIdx": null,
-        "reached": null
+        "reached": 1
       },
       "e2": {
         "status": "Pendiente",
@@ -1398,7 +1398,7 @@
       "VIP Signal"
     ],
     "status": "BE",
-    "pips": 0,
-    "r": 0
+    "pips": 150,
+    "r": 8.82
   }
 ]
