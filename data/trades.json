@@ -1569,7 +1569,7 @@
     "discarded": false,
     "raw": "VOLATILITY 10 INDEX SELL 4854.050\nTP1: 4839.353\nSL: 4860.900",
     "notes": "",
-    "mgmt": "",
+    "mgmt": "Se indico tomar parciales en 1:1 y mover el SL",
     "tags": [
       "VIP Signal"
     ],
