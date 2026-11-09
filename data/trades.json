@@ -1556,9 +1556,9 @@
     "legs": {
       "e1": {
         "status": "TP",
-        "exit": 4113,
-        "pips": 100,
-        "tpIdx": 0,
+        "exit": 4133,
+        "pips": 300,
+        "tpIdx": 2,
         "reached": null
       },
       "e2": {
@@ -1576,8 +1576,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 100,
-    "r": 0.53
+    "pips": 300,
+    "r": 1.58
   },
   {
     "id": "kwaxg73imw992yjl",
