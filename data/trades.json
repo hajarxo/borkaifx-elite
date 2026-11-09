@@ -1557,7 +1557,7 @@
       "e1": {
         "status": "TP",
         "exit": "OPEN",
-        "pips": "",
+        "pips": 450,
         "tpIdx": 3,
         "reached": null
       },
@@ -1575,9 +1575,9 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "BE",
-    "pips": 0,
-    "r": 0
+    "status": "TP",
+    "pips": 450,
+    "r": 2.37
   },
   {
     "id": "kwaxg73imw992yjl",
