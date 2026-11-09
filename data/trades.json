@@ -1554,10 +1554,10 @@
     "pipSize": 1,
     "legs": {
       "e1": {
-        "status": "TP",
-        "exit": 26244.83,
-        "pips": 17.3,
-        "tpIdx": 0,
+        "status": "BE",
+        "exit": 26262.11,
+        "pips": 0,
+        "tpIdx": null,
         "reached": null
       },
       "e2": {
@@ -1574,9 +1574,9 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "TP",
-    "pips": 17.3,
-    "r": 1.02
+    "status": "BE",
+    "pips": 0,
+    "r": 0
   },
   {
     "id": "kwaxg73imw992yjl",
