@@ -1533,5 +1533,48 @@
     "status": "BE",
     "pips": 150,
     "r": 8.82
+  },
+  {
+    "id": "kwaxg73imw992yjl",
+    "date": "2026-11-09",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "VOLATILITY 10",
+    "direction": "SELL",
+    "entry1": 4854.05,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 4860.9,
+    "tps": [
+      4839.353
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "BE",
+        "exit": 4854.05,
+        "pips": 0,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "VOLATILITY 10 INDEX SELL 4854.050\nTP1: 4839.353\nSL: 4860.900",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "BE",
+    "pips": 0,
+    "r": 0
   }
 ]
