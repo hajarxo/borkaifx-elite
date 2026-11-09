@@ -1377,11 +1377,11 @@
     "unit": "puntos",
     "legs": {
       "e1": {
-        "status": "BE",
-        "exit": 17826,
-        "pips": 100,
-        "tpIdx": null,
-        "reached": 1
+        "status": "TP",
+        "exit": 17676,
+        "pips": 150,
+        "tpIdx": 1,
+        "reached": null
       },
       "e2": {
         "status": "Pendiente",
@@ -1397,8 +1397,8 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "BE",
-    "pips": 100,
-    "r": 5.88
+    "status": "TP",
+    "pips": 150,
+    "r": 8.82
   }
 ]
