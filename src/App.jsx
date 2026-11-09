@@ -1755,13 +1755,152 @@ function buildRecap(trades, mode, ref, scope) {
   return { text: L.join("\n"), count: taken };
 }
 
+/* ----------------------------- Imagen del resumen (Daily / Weekly recap) ----------------------------- */
+const EN_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+const EN_MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const ymdParts = (s) => { const [y, m, d] = s.split("-").map(Number); return { y, m, d, dow: new Date(y, m - 1, d).getDay() }; };
+const enShort = (s) => { const p = ymdParts(s); return `${p.d} ${EN_MON[p.m - 1]}`; };
+function recapData(trades, mode, ref, scope) {
+  const rg = mode === "weekly" ? weekRange(ref) : { from: ref, to: ref };
+  const list = trades
+    .filter((t) => t.date >= rg.from && t.date <= rg.to && !t.discarded && isClosed(t))
+    .filter((t) => scope === "ALL" || (scope === "CFD" ? t.category === "CFD" : scope === "DERIV" ? t.category === "SINTETICO" && t.broker !== "WELTRADE" : t.category === "SINTETICO" && t.broker === "WELTRADE"))
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))
+    .map((t) => {
+      const p = Number(t.pips) || 0;
+      return { date: t.date, p, r: Number(t.r) || 0, dir: t.direction === "SELL" ? "Sell" : "Buy", unit: unitWord(t), win: p > 0, loss: p < 0 || (t.status === "SL" && p === 0) };
+    });
+  const units = Array.from(new Set(list.map((x) => x.unit)));
+  return { rg, list, units };
+}
+const cnv = (w, h, sc) => { const c = document.createElement("canvas"); c.width = w * sc; c.height = h * sc; const x = c.getContext("2d"); x.scale(sc, sc); return [c, x]; };
+async function drawRecapImage(trades, mode, ref, scope) {
+  const { rg, list, units } = recapData(trades, mode, ref, scope);
+  try { await Promise.all([document.fonts.load("700 40px Inter"), document.fonts.load("400 30px Inter")]); } catch (e) {}
+  const W = 1024, H = 1280, SC = 2, M = 80;
+  const [c, x] = cnv(W, H, SC);
+  const BG = "#0A0A0C", INK = "#F5F3EE", MUTED = "#8A8578", POS = "#34d399", NEG = "#fb7185";
+  const F = (wt, sz) => `${wt} ${sz}px Inter, "Segoe UI", Arial, sans-serif`;
+  const T = (s, px, py, o = {}) => { x.font = F(o.w || 400, o.s || 30); x.fillStyle = o.c || INK; x.textAlign = o.a || "left"; x.textBaseline = "alphabetic"; x.fillText(s, px, py); return x.measureText(s).width; };
+  x.fillStyle = BG; x.fillRect(0, 0, W, H);
+  // halo dorado muy suave en la esquina (identidad de la página)
+  const g = x.createRadialGradient(W, 0, 0, W, 0, 700); g.addColorStop(0, "rgba(242,176,30,.16)"); g.addColorStop(1, "rgba(242,176,30,0)");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  const uName = units.length === 1 && units[0] === "puntos" ? "points" : "pips";
+  const total = round1(list.reduce((a, t) => a + t.p, 0));
+  const wins = list.filter((t) => t.win).length, losses = list.filter((t) => t.loss).length;
+  const dec = wins + losses;
+  const netR = Math.round(list.reduce((a, t) => a + t.r, 0) * 100) / 100;
+  const sg = (v) => (v > 0 ? "+" : v < 0 ? "-" : "");
+  const num2 = (v) => Math.abs(v).toLocaleString("en-US", { maximumFractionDigits: 1 });
+  const col = (v) => (v > 0 ? POS : v < 0 ? NEG : INK);
+  if (mode === "daily") {
+    T("BORKAIFX ELITE · Signal Performance", M, 112, { s: 31, c: ACCENT, w: 600 });
+    T("Daily recap", M, 214, { s: 80, w: 800 });
+    const p = ymdParts(ref);
+    T(`${EN_DAYS[p.dow].slice(0, 3)} ${p.d} ${EN_MON[p.m - 1]}`, M, 270, { s: 36, c: MUTED });
+    const n = list.length;
+    if (n) {
+      const cum = [0]; list.forEach((t) => cum.push(round1(cum[cum.length - 1] + t.p)));
+      const mn = Math.min(...cum), mx = Math.max(...cum), span = mx - mn || 1;
+      const cx = (i) => M + (i * (W - 2 * M - 70)) / n;
+      const cy = (v) => 640 - ((v - mn) / span) * 280;
+      x.strokeStyle = INK; x.lineWidth = 5; x.lineJoin = "round"; x.beginPath();
+      cum.forEach((v, i) => (i ? x.lineTo(cx(i), cy(v)) : x.moveTo(cx(i), cy(v)))); x.stroke();
+      cum.forEach((v, i) => {
+        const last = i === n, first = i === 0;
+        x.beginPath();
+        x.arc(cx(i), cy(v), first ? 7 : last ? 17 : 12, 0, Math.PI * 2);
+        x.fillStyle = first ? "#6b665c" : last ? (total >= 0 ? POS : NEG) : list[i - 1].p < 0 ? NEG : INK;
+        x.fill();
+      });
+      const fs = n > 6 ? 34 : 44;
+      list.forEach((t, i) => {
+        const px = cx(i + 1);
+        T(`${sg(t.p)}${num2(t.p)}`.replace("+0", "0"), px, 745, { s: fs, w: 700, c: t.p < 0 ? NEG : INK, a: "center" });
+        T(t.dir, px, 790, { s: n > 6 ? 26 : 32, w: 500, a: "center" });
+        T(`${t.r >= 0 ? "+" : "-"}${Math.abs(t.r).toFixed(2)}R`, px, 828, { s: 25, c: MUTED, a: "center" });
+      });
+    } else T("No closed trades", M, 600, { s: 40, c: MUTED });
+    const tw = T(`${sg(total)}${num2(total)}`, M, 990, { s: 150, w: 800, c: col(total) });
+    T(uName, M + tw + 20, 990, { s: 48, w: 700 });
+    const cols = [M, 368, 656];
+    T(`${dec ? Math.round((wins / dec) * 100) : 0}%`, cols[0], 1130, { s: 46, w: 700 }); T("Win rate", cols[0], 1170, { s: 28, c: MUTED });
+    T(`${wins}W // ${losses}L`, cols[1], 1130, { s: 46, w: 700 }); T(`${list.length} trades`, cols[1], 1170, { s: 28, c: MUTED });
+    T(`${sg(netR)}${Math.abs(netR).toFixed(2)}R`, cols[2], 1130, { s: 46, w: 700 }); T("Net R", cols[2], 1170, { s: 28, c: MUTED });
+  } else {
+    T("VIP Performance", M, 112, { s: 31, c: ACCENT, w: 600 });
+    T("Weekly recap", M, 226, { s: 100, w: 800 });
+    // filas: lunes a viernes siempre; domingo y sábado solo si hubo operaciones
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = addDays(rg.from, i), dow = ymdParts(d).dow;
+      const ts = list.filter((t) => t.date === d);
+      if ((dow >= 1 && dow <= 5) || ts.length) days.push({ d, dow, ts });
+    }
+    days.sort((a, b) => ((a.dow + 6) % 7) - ((b.dow + 6) % 7)); // lunes → domingo, como en el ejemplo
+    const first = days[0].d, last = days[days.length - 1].d;
+    T(ymdParts(first).m === ymdParts(last).m ? `${ymdParts(first).d} – ${enShort(last)}` : `${enShort(first)} – ${enShort(last)}`, M, 285, { s: 36, c: MUTED });
+    const top = 330, rowH = Math.min(87, 470 / days.length);
+    x.strokeStyle = "rgba(255,255,255,.12)"; x.lineWidth = 1.5;
+    x.beginPath(); x.moveTo(M, top); x.lineTo(W - M, top); x.stroke();
+    days.forEach((dd, i) => {
+      const yb = top + (i + 1) * rowH, ym = top + i * rowH + rowH / 2 + 12;
+      const dp = round1(dd.ts.reduce((a, t) => a + t.p, 0));
+      const dw = dd.ts.filter((t) => t.win).length, dl = dd.ts.filter((t) => t.loss).length;
+      T(EN_DAYS[dd.dow], M, ym, { s: 38, w: 500 });
+      T(dd.ts.length ? `${dw} ${dw === 1 ? "Win" : "Wins"} // ${dl} ${dl === 1 ? "Loss" : "Loss"}` : "No trades", 392, ym - 2, { s: 28, c: MUTED });
+      T(dd.ts.length ? `${sg(dp)}${num2(dp)} ${uName}` : "—", W - M, ym, { s: 36, w: 700, c: dd.ts.length ? col(dp) : MUTED, a: "right" });
+      x.beginPath(); x.moveTo(M, yb); x.lineTo(W - M, yb); x.stroke();
+    });
+    const by = top + days.length * rowH;
+    T("Overall", M, by + 85, { s: 30, c: MUTED });
+    const tw = T(`${sg(total)}${num2(total)} `, M, by + 205, { s: 130, w: 800, c: col(total) });
+    T(uName, M + tw + 6, by + 205, { s: 130, w: 800, c: col(total) });
+    T(`${wins} ${wins === 1 ? "Win" : "Wins"} // ${losses} ${losses === 1 ? "Loss" : "Losses"}`, M, by + 270, { s: 36, w: 500 });
+    T(`${dec ? (Math.round((wins / dec) * 10000) / 100).toFixed(2) : "0.00"}% win rate`, W - M, by + 270, { s: 36, w: 500, a: "right" });
+    if (uName === "pips") {
+      const gy = by + 345;
+      T("Weekly gain", M, gy, { s: 28, c: MUTED });
+      [["0.01", 0.1, M], ["0.10", 1, 368], ["1.00", 10, 656]].forEach(([lot, f, px]) => {
+        const v = Math.round(total * f);
+        T(`${v < 0 ? "-" : ""}$${Math.abs(v).toLocaleString("en-US")}`, px, gy + 52, { s: 44, w: 700, c: v < 0 ? NEG : INK });
+        T(`${lot} lots`, px, gy + 90, { s: 26, c: MUTED });
+      });
+    }
+  }
+  if (mode === "daily") {
+    T("Not financial advice. Past performance isn't a guarantee.", M, 1226, { s: 22, c: "#6b665c" });
+    T("Trading leveraged products is high risk.", M, 1256, { s: 22, c: "#6b665c" });
+  }
+  return { url: c.toDataURL("image/png"), mixed: units.length > 1, count: list.length };
+}
+
 function RecapPanel({ trades, defaultScope }) {
   const [mode, setMode] = useState("weekly");
   const [ref, setRef] = useState(localDate());
   const [ym, setYm] = useState(localDate().slice(0, 7));
   const [scope, setScope] = useState(defaultScope || "ALL");
   const [copied, setCopied] = useState(false);
+  const [img, setImg] = useState(null);
+  const [imgMsg, setImgMsg] = useState("");
   const rep = useMemo(() => buildRecap(trades, mode, ref, scope), [trades, mode, ref, scope]);
+  useEffect(() => { setImg(null); setImgMsg(""); }, [trades, mode, ref, scope]);
+  const makeImg = async () => {
+    setImgMsg("");
+    try {
+      const r = await drawRecapImage(trades, mode, ref, scope);
+      if (r.mixed) { setImgMsg("Hay pips y puntos mezclados: elige un solo mercado (CFDs, Deriv o Weltrade) para generar la imagen."); setImg(null); return; }
+      setImg(r.url);
+    } catch (e) { setImgMsg("No se pudo generar la imagen."); }
+  };
+  const copyImg = async () => {
+    try {
+      const blob = await (await fetch(img)).blob();
+      await navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]);
+      setImgMsg("✓ Imagen copiada");
+    } catch (e) { setImgMsg("Tu navegador no permite copiar la imagen: usa Descargar PNG."); }
+  };
   const [text, setText] = useState(rep.text);
   useEffect(() => { setText(rep.text); setCopied(false); }, [rep.text]);
   const taRef = useRef(null);
@@ -1810,8 +1949,22 @@ function RecapPanel({ trades, defaultScope }) {
       <textarea ref={taRef} rows={14} className="bx-input mt-3 font-mono text-xs leading-relaxed" value={text} onChange={(e) => setText(e.target.value)} aria-label="Texto del resumen" data-testid="recap-text" />
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
         <span className="text-xs bx-muted">Puedes editar el texto antes de copiar</span>
-        <button type="button" onClick={copy} className="bx-btn">{copied ? "✓ ¡Copiado!" : "Copiar al portapapeles"}</button>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={makeImg} disabled={mode === "monthly"} title={mode === "monthly" ? "El diseño mensual llegará pronto" : ""} className="bx-ghost" data-testid="recap-img-btn">🖼 Generar imagen</button>
+          <button type="button" onClick={copy} className="bx-btn">{copied ? "✓ ¡Copiado!" : "Copiar al portapapeles"}</button>
+        </div>
       </div>
+      {mode === "monthly" && <div className="mt-2 text-xs bx-muted">La imagen mensual todavía no está disponible (diario y semanal sí).</div>}
+      {imgMsg && <div className="mt-2 text-xs" style={{ color: "#fcd68a" }}>{imgMsg}</div>}
+      {img && (
+        <div className="mt-4 flex flex-col items-center gap-3" data-testid="recap-img">
+          <img src={img} alt="Resumen en imagen" style={{ width: "100%", maxWidth: 420, borderRadius: 12, border: "1px solid rgba(255,255,255,.12)" }} />
+          <div className="flex flex-wrap gap-2 justify-center">
+            <a className="bx-btn" href={img} download={`borkaifx-${mode === "weekly" ? "weekly" : "daily"}-recap-${ref}.png`}>⬇ Descargar PNG</a>
+            <button type="button" className="bx-ghost" onClick={copyImg}>Copiar imagen</button>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
