@@ -1535,6 +1535,50 @@
     "r": 8.82
   },
   {
+    "id": "2yt2k233mw9fqcr6",
+    "date": "2026-11-09",
+    "category": "CFD",
+    "sub": "Índices",
+    "broker": "",
+    "asset": "GER30",
+    "direction": "SELL",
+    "entry1": 26262.11,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 26279.15,
+    "tps": [
+      26244.83,
+      26190.3,
+      "OPEN"
+    ],
+    "pipSize": 1,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 26244.83,
+        "pips": 17.3,
+        "tpIdx": 0,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "Index 📉\nPair: GER30 📊\nSide: Short / Sell\nEntry: 26262.11\nTP: Open\nSL: 26279.15\nNote: past profits do not predict future profits\nRisk 0.5-1-2%\n\nTP1 26244.83 ✅\nTP2 26190.30 ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 17.3,
+    "r": 1.02
+  },
+  {
     "id": "kwaxg73imw992yjl",
     "date": "2026-11-09",
     "category": "SINTETICO",
