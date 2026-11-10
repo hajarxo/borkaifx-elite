@@ -102,6 +102,9 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-ink2{color:var(--ink2)}
 @media(max-width:480px){.bx-gold:not(.bx-gold-sm){padding:.5rem .85rem;font-size:.85rem}.bx-brand{font-size:1.15rem!important}}
 .bx-h1{font-size:2.35rem;line-height:.98}
+.bx-hero1{font-size:2.6rem;line-height:.98}
+@media(min-width:640px){.bx-hero1{font-size:3.4rem}}
+@media(min-width:1024px){.bx-hero1{font-size:4.4rem}}
 @media(min-width:640px){.bx-h1{font-size:2.6rem}}
 @media(min-width:1024px){.bx-h1{font-size:2.9rem}}
 .bx-hero-filters .bx-tab{padding:.4rem 1.05rem;font-size:.72rem;letter-spacing:.08em;border-radius:.65rem}
@@ -2226,6 +2229,71 @@ function FaqVip() {
   );
 }
 
+/* ----------------------------- Inicio ----------------------------- */
+function CandleArt() {
+  // Velas decorativas (solo ilustración)
+  const c = [[0, 52, 40, 70, 1], [1, 44, 30, 62, 1], [2, 60, 48, 80, 0], [3, 70, 60, 92, 0], [4, 64, 50, 78, 1], [5, 54, 40, 70, 1], [6, 42, 28, 58, 0], [7, 36, 24, 50, 1], [8, 30, 16, 44, 1], [9, 40, 30, 56, 0], [10, 28, 14, 42, 1], [11, 18, 6, 32, 1]];
+  return (
+    <svg viewBox="0 0 240 110" className="w-full h-auto" aria-hidden="true" data-testid="candle-art">
+      {[22, 55, 88].map((y) => <line key={y} x1="0" x2="240" y1={y} y2={y} stroke="rgba(255,255,255,.06)" />)}
+      {c.map(([i, top, hi, lo, up]) => (
+        <g key={i}>
+          <line x1={14 + i * 19} x2={14 + i * 19} y1={hi} y2={lo} stroke={up ? GREEN : "#ef4444"} strokeWidth="1.5" />
+          <rect x={9 + i * 19} y={top - 10} width="10" height="22" rx="1.5" fill={up ? GREEN : "#ef4444"} />
+        </g>
+      ))}
+    </svg>
+  );
+}
+function HomePage({ setPage }) {
+  const steps = [
+    { tag: "Entry", name: "FREE", tone: GREEN, title: "Smart Money Action", text: "Una guía gratuita de 15 páginas, el playbook que necesitas: estructura, liquidez, FVG, las cuatro sesiones y un modelo simple.", cta: "Obtener la guía gratis", href: "https://t.me/borkaifxelite/633" },
+    { tag: "TP1", name: "EL CURSO", tone: ACCENT, title: "El curso", price: "$299", text: "El curso para traders que, con o sin experiencia, buscan operar con claridad y estrategia institucional: XAUUSD, índices bursátiles y divisas, con estrategias por separado y ordenadas.", cta: "Quiero el curso", href: SITE.join.url },
+    { tag: "TP2", name: "VIP", tone: ACCENT, hot: true, title: "Tradea con nosotros", text: "Todas nuestras señales con punto de entrada, stop y take profit, con seguimiento a cada señal desde su activación.", cta: "Ver señales VIP", go: "signals" },
+  ];
+  return (
+    <div className="space-y-16" data-testid="home-page">
+      <section data-testid="home-hero" className="grid md:grid-cols-[1.4fr_1fr] gap-8 items-center pt-3 md:pt-8">
+        <div>
+          <div className="bx-kicker" style={{ fontSize: "11px" }}>ANALIZAR, ESPERAR Y EJECUTAR</div>
+          <h1 className="mt-4 bx-display bx-hero1" style={{ color: "#fff" }}>
+            <span className="block">CADA VELA CUENTA</span>
+            <span className="block" style={{ color: ACCENT }}>UNA HISTORIA.</span>
+          </h1>
+          <p className="mt-5 text-[15px] bx-ink2 max-w-xl leading-relaxed">
+            Sé parte de BORKAIFX ELITE y transforma tu trading y tus resultados. Si estás buscando desarrollar un sistema de trading rentable y consistente bajo conceptos SMC, este es el lugar correcto.
+          </p>
+        </div>
+        <div className="bx-card p-4 hidden md:block"><CandleArt /></div>
+      </section>
+
+      <section data-testid="home-path">
+        <div className="bx-kicker">A tu ritmo</div>
+        <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "#fff" }}>TOMA EL TRADE, NIVEL POR NIVEL.</h2>
+        <p className="mt-3 text-[15px] bx-ink2 max-w-xl leading-relaxed">Comienza aquí.</p>
+        <div className="mt-6 grid md:grid-cols-3 gap-3 md:gap-4">
+          {steps.map((s) => (
+            <div key={s.tag} className={`bx-plan ${s.hot ? "hot" : ""}`} data-testid="path-card">
+              <div className="flex items-center gap-2 text-[11px] font-bold tracking-[0.18em] uppercase" style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace' }}>
+                <span style={{ color: s.tone }}>{s.tag}</span><span className="bx-muted">•</span><span className="text-white">{s.name}</span>
+              </div>
+              <div className="mt-3 text-lg font-extrabold text-white leading-snug">{s.title}</div>
+              <p className="mt-3 text-sm bx-ink2 leading-relaxed">{s.text}</p>
+              <div className="flex-1" />
+              {s.price && <div className="mt-4 text-3xl md:text-4xl font-extrabold leading-none" style={{ color: ACCENT }} data-testid="course-price">{s.price}</div>}
+              {s.go ? (
+                <button type="button" onClick={() => { setPage(s.go); window.scrollTo(0, 0); }} className="mt-4 bx-gold" style={{ padding: ".6rem 1rem", fontSize: ".85rem" }}>{s.cta}</button>
+              ) : (
+                <a href={s.href} target="_blank" rel="noopener noreferrer" className="mt-4 bx-planbtn">{s.cta} ↗</a>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function VipPage() {
   return (
     <div className="max-w-6xl mx-auto" data-testid="vip-page">
@@ -2308,22 +2376,23 @@ const SIGNAL_EXAMPLES = {
     ],
   },
   SINTETICO: {
-    // Ejemplo ilustrativo: cámbialo por una señal real de sintéticos cuando quieras
-    head: "Synthetic 📈", pair: "STEP INDEX 200", side: "Long / Buy", entries: ["11167.0"], sl: "11162.0", unit: "puntos",
-    tps: [["11172.0", "50"], ["11177.0", "100"], ["11182.0", "150"]],
-    updates: ["STEP INDEX 200 ENTRADA ACTIVA", "STEP INDEX 200 HIT TP1 ✅"],
+    channel: "SINTETICOS VIP",
+    short: true,
+    title: "CRASH 900 INDEX BUY LIMIT", entry: "17826.00", sl: "17843.00",
+    tps: [["17726.00"], ["17676.00"], ["17526.00"]],
+    updates: ["CRASH 900 ENTRADA ACTIVA 🟢", "TP1 HIT 100 PIPS ✅"],
     legend: [
-      ["Par", ["STEP INDEX 200"], "entry", "El índice sintético y el movimiento que buscamos: compra (Long)."],
-      ["Entrada", ["11167.0"], "entry", "Una sola entrada, clara y directa."],
-      ["Objetivos", ["11172.0", "11177.0", "11182.0"], "tp", "Tres niveles para tomar ganancia (50, 100 y 150 puntos) y un TP abierto que sigue corriendo."],
-      ["Stop", ["11162.0"], "sl", "La salida si el precio se gira en contra de la idea."],
-      ["Actualizaciones", [], "", "Seguimos cada operación en vivo, medida en puntos: entrada activa, objetivo alcanzado, stop o cierre."],
+      ["Par", ["CRASH 900 INDEX"], "entry", "El índice sintético y el tipo de orden: Buy Limit, que espera a que el precio llegue al nivel."],
+      ["Entrada", ["17826.00"], "entry", "Una sola entrada, clara y directa."],
+      ["Objetivos", ["17726.00", "17676.00", "17526.00"], "tp", "Tres niveles para tomar ganancia: TP1, TP2 y TP3."],
+      ["Stop", ["17843.00"], "sl", "La salida si el precio se gira en contra de la idea."],
+      ["Actualizaciones", [], "", "Seguimos cada operación en vivo: entrada activa, objetivo alcanzado, stop o cierre."],
     ],
   },
 };
 // Gestión de riesgo & reglas VIP. Deja text: "" si aún no tienes el texto (el apartado se muestra solo con su título)
 const VIP_RULES = [
-  { t: "Riesgo por Operación", text: "Cada señal indica el riesgo sugerido: 0.5%, 1% o 2% de tu cuenta, según tu perfil." },
+  { t: "Riesgo por Operación", text: "" },
   { t: "Límites Diarios (Disciplina Estricta)", text: "" },
   { t: "Sesiones Operativas", text: "Operamos principalmente la sesión de Asia y New York. Si hay un cambio para operar Londres, se informará con anticipación." },
   { t: "Ejecución en Señales VIP", text: "" },
@@ -2331,11 +2400,12 @@ const VIP_RULES = [
 function SignalShowcase({ kind }) {
   const [openRule, setOpenRule] = useState(null);
   const ex = SIGNAL_EXAMPLES[kind];
+  const chName = ex.channel || CHANNEL_NAME;
   const bubble = { background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.09)" };
   const quote = (
     <div className="rounded-lg px-3 py-1.5 text-xs" style={{ background: "rgba(56,189,248,.10)", borderLeft: "3px solid #38bdf8" }}>
-      <div className="font-bold" style={{ color: "#7dd3fc" }}>{CHANNEL_NAME}</div>
-      <div className="bx-muted truncate">{ex.head} · Pair: {ex.pair} 📊 · {ex.side} …</div>
+      <div className="font-bold" style={{ color: "#7dd3fc" }}>{chName}</div>
+      <div className="bx-muted truncate">{ex.short ? `${ex.title} ${ex.entry} …` : `${ex.head} · Pair: ${ex.pair} 📊 · ${ex.side} …`}</div>
     </div>
   );
   return (
@@ -2346,12 +2416,17 @@ function SignalShowcase({ kind }) {
           <div className="flex items-center gap-3 px-4 py-3 bx-bb">
             <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(242,176,30,.35)" }} />
             <div>
-              <div className="font-extrabold text-white leading-tight">{CHANNEL_NAME}</div>
+              <div className="font-extrabold text-white leading-tight">{chName}</div>
               <div className="text-xs bx-muted">Sala de señales VIP</div>
             </div>
           </div>
           <div className="p-3 md:p-4 space-y-3">
             <div className="rounded-2xl px-4 py-3 text-[15px] leading-relaxed text-white w-fit max-w-full" style={bubble} data-testid="signal-bubble">
+              {ex.short ? (<>
+                <div>{ex.title} <Chip tone="entry">{ex.entry}</Chip></div>
+                {ex.tps.map(([p], i) => <div key={p}>TP{i + 1}: <Chip tone="tp">{p}</Chip></div>)}
+                <div>SL: <Chip tone="sl">{ex.sl}</Chip></div>
+              </>) : (<>
               <div>{ex.head}</div>
               <div>Pair: {ex.pair} 📊</div>
               <div>Side: {ex.side}</div>
@@ -2364,11 +2439,12 @@ function SignalShowcase({ kind }) {
                 {ex.tps.map(([p, n], i) => <div key={p}>TP{i + 1} <Chip tone="tp">{p}</Chip> {n}{ex.unit} ✅</div>)}
               </div>
               <div className="mt-2">Use Proper Risk Management</div>
+              </>)}
             </div>
             {ex.updates.map((u, i) => (
               <div key={u} className="rounded-2xl p-2 space-y-2" style={bubble}>
                 {quote}
-                <div className="px-2 pb-1 text-[15px] text-white font-semibold">{u}{i === 0 ? <span style={{ color: "#fbbf24" }}> ⚠️</span> : null}</div>
+                <div className="px-2 pb-1 text-[15px] text-white font-semibold">{u}{i === 0 && !ex.short ? <span style={{ color: "#fbbf24" }}> ⚠️</span> : null}</div>
               </div>
             ))}
           </div>
@@ -3620,7 +3696,7 @@ export default function App() {
           <div className="flex flex-wrap items-center justify-end gap-2 md:gap-4">
           {(
           <nav className="bx-nav" data-testid="main-nav">
-            {(isAdmin ? [["home", "Inicio"], ["track", "Track Record"], ["signals", "Señales"], ["admin", "Panel Admin"]] : [["signals", "Señales"]]).map(([k, l]) => k !== "signals" ? (
+            {(isAdmin ? [["track", "Track Record"], ["signals", "Señales"], ["admin", "Panel Admin"]] : [["track", "Track Record"], ["signals", "Señales"]]).map(([k, l]) => k !== "signals" ? (
               <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`}>{l}</button>
             ) : (
               <div key={k} className="relative" onMouseEnter={() => setSigMenu(true)} onMouseLeave={() => setSigMenu(false)} data-testid="signals-menu">
@@ -3651,7 +3727,7 @@ export default function App() {
       </header>
 
       <Ticker />
-      {page !== "signals" && <LiveStatus />}
+      {page !== "signals" && page !== "home" && <LiveStatus />}
 
       {cloudState === "error" && (
         <div className="text-center text-xs py-2 px-4 bg-rose-500/20 text-rose-500">
@@ -3661,7 +3737,8 @@ export default function App() {
 
       <main className={`${page === "admin" ? "max-w-6xl" : "max-w-5xl"} mx-auto px-4 py-6 space-y-6`}>
         {page === "vip" && <VipPage />}
-        {(page === "home" || page === "track") && (<>
+        {page === "home" && <HomePage setPage={setPage} />}
+        {page === "track" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section className="text-left pt-3 md:pt-8" data-testid="hero">
           <div className="bx-kicker" style={{ fontSize: "12px" }}>Resultados canal VIP</div>
