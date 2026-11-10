@@ -2229,6 +2229,208 @@ function FaqVip() {
   );
 }
 
+/* ----------------------------- Herramientas (calculadoras) ----------------------------- */
+const TOOLS = [
+  { k: "size", icon: "🧮", name: "Calculadora de tamaño de posición", text: "El lotaje exacto según tu balance, el % de riesgo y el stop loss." },
+  { k: "rr", icon: "⚖️", name: "Calculadora Riesgo / Beneficio", text: "Tu R:R, el win rate de equilibrio y la ganancia esperada por trade." },
+  { k: "comp", icon: "📈", name: "Calculadora de interés compuesto", text: "Cómo crece una cuenta con un rendimiento mensual constante." },
+];
+const nv = (v) => { const n = parseFloat(String(v).replace(",", ".")); return Number.isFinite(n) ? n : null; };
+const usd = (v) => `${v < 0 ? "-" : ""}$${Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+function CalcField({ label, value, onChange, suffix, hint }) {
+  return (
+    <label className="block">
+      <span className="bx-label">{label}</span>
+      <div className="relative">
+        <input type="number" inputMode="decimal" step="any" className="bx-input" value={value} onChange={(e) => onChange(e.target.value)} />
+        {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs bx-muted pointer-events-none">{suffix}</span>}
+      </div>
+      {hint && <span className="text-[11px] bx-muted">{hint}</span>}
+    </label>
+  );
+}
+function Out({ label, value, tone }) {
+  return (
+    <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+      <div className="text-[11px] bx-muted">{label}</div>
+      <div className="mt-0.5 text-xl font-extrabold" style={{ color: tone || "#fff" }}>{value}</div>
+    </div>
+  );
+}
+function SizeCalc() {
+  const [bal, setBal] = useState("1000");
+  const [risk, setRisk] = useState("1");
+  const [sl, setSl] = useState("50");
+  const [inst, setInst] = useState("gold");
+  const [pv, setPv] = useState("10");
+  const pipVal = inst === "custom" ? nv(pv) : 10;
+  const b = nv(bal), r = nv(risk), s = nv(sl);
+  const ok = b > 0 && r > 0 && s > 0 && pipVal > 0;
+  const riskUsd = ok ? (b * r) / 100 : 0;
+  const lots = ok ? riskUsd / (s * pipVal) : 0;
+  return (
+    <div data-testid="calc-size">
+      <div className="grid sm:grid-cols-2 gap-3">
+        <CalcField label="Balance de la cuenta" value={bal} onChange={setBal} suffix="USD" />
+        <CalcField label="Riesgo por operación" value={risk} onChange={setRisk} suffix="%" />
+        <CalcField label="Stop loss" value={sl} onChange={setSl} suffix="pips" hint="En XAUUSD, 1 pip = 0.10 de precio (10 pips = $1)." />
+        <label className="block">
+          <span className="bx-label">Instrumento</span>
+          <select className="bx-input" value={inst} onChange={(e) => setInst(e.target.value)}>
+            <option value="gold">XAUUSD · $10 por pip por lote</option>
+            <option value="fx">Forex (par con USD al final) · $10 por pip por lote</option>
+            <option value="custom">Otro · escribo el valor del pip</option>
+          </select>
+        </label>
+        {inst === "custom" && <CalcField label="Valor de 1 pip por 1 lote" value={pv} onChange={setPv} suffix="USD" />}
+      </div>
+      <div className="mt-4 grid sm:grid-cols-3 gap-3">
+        <Out label="Tamaño de lote" value={ok ? (Math.floor(lots * 100) / 100).toFixed(2) : "—"} tone={ACCENT} />
+        <Out label="Dinero en riesgo" value={ok ? usd(riskUsd) : "—"} />
+        <Out label="Pérdida si toca el SL" value={ok ? usd(-riskUsd) : "—"} tone="#fb7185" />
+      </div>
+      <p className="mt-3 text-[11px] bx-muted">Cálculo de referencia (el lote se redondea hacia abajo a 0.01). Verifica el valor del pip con tu broker.</p>
+    </div>
+  );
+}
+function RrCalc() {
+  const [sl, setSl] = useState("50");
+  const [tp, setTp] = useState("150");
+  const [risk, setRisk] = useState("10");
+  const [wr, setWr] = useState("50");
+  const s = nv(sl), t = nv(tp), rk = nv(risk), w = nv(wr);
+  const ok = s > 0 && t > 0;
+  const rr = ok ? t / s : 0;
+  const be = ok ? (1 / (1 + rr)) * 100 : 0;
+  const win = ok && rk > 0 ? rk * rr : null;
+  const exp = ok && rk > 0 && w !== null ? (w / 100) * rk * rr - (1 - w / 100) * rk : null;
+  return (
+    <div data-testid="calc-rr">
+      <div className="grid sm:grid-cols-2 gap-3">
+        <CalcField label="Stop loss" value={sl} onChange={setSl} suffix="pips" />
+        <CalcField label="Take profit" value={tp} onChange={setTp} suffix="pips" />
+        <CalcField label="Riesgo por trade (opcional)" value={risk} onChange={setRisk} suffix="USD" />
+        <CalcField label="Tu win rate (opcional)" value={wr} onChange={setWr} suffix="%" />
+      </div>
+      <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <Out label="Relación R:R" value={ok ? `1 : ${rr.toFixed(2)}` : "—"} tone={ACCENT} />
+        <Out label="Win rate de equilibrio" value={ok ? `${be.toFixed(1)}%` : "—"} />
+        <Out label="Ganancia si gana" value={win !== null ? usd(win) : "—"} tone="#34d399" />
+        <Out label="Esperanza por trade" value={exp !== null ? usd(exp) : "—"} tone={exp !== null && exp < 0 ? "#fb7185" : "#34d399"} />
+      </div>
+      <p className="mt-3 text-[11px] bx-muted">El win rate de equilibrio es el porcentaje mínimo de aciertos para no perder dinero con ese R:R.</p>
+    </div>
+  );
+}
+function CompCalc() {
+  const [ini, setIni] = useState("1000");
+  const [rate, setRate] = useState("5");
+  const [months, setMonths] = useState("12");
+  const [dep, setDep] = useState("0");
+  const i0 = nv(ini), r = nv(rate), m = Math.min(Math.max(Math.round(nv(months) || 0), 0), 120), d = nv(dep) || 0;
+  const ok = i0 >= 0 && r !== null && m > 0;
+  const rows = [];
+  if (ok) { let bal = i0, put = i0; for (let k = 1; k <= m; k++) { bal = bal * (1 + r / 100) + d; put += d; rows.push({ m: k, bal: Math.round(bal * 100) / 100, put }); } }
+  const last = rows[rows.length - 1];
+  return (
+    <div data-testid="calc-comp">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <CalcField label="Capital inicial" value={ini} onChange={setIni} suffix="USD" />
+        <CalcField label="Rendimiento mensual" value={rate} onChange={setRate} suffix="%" />
+        <CalcField label="Meses" value={months} onChange={setMonths} hint="Máximo 120" />
+        <CalcField label="Aporte mensual (opcional)" value={dep} onChange={setDep} suffix="USD" />
+      </div>
+      <div className="mt-4 grid sm:grid-cols-3 gap-3">
+        <Out label="Balance final" value={last ? usd(last.bal) : "—"} tone={ACCENT} />
+        <Out label="Total aportado" value={last ? usd(last.put) : "—"} />
+        <Out label="Ganancia generada" value={last ? usd(last.bal - last.put) : "—"} tone="#34d399" />
+      </div>
+      {rows.length > 0 && (
+        <div className="mt-4" style={{ height: 220 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={rows} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
+              <CartesianGrid stroke="rgba(255,255,255,.06)" vertical={false} />
+              <XAxis dataKey="m" tick={{ fill: "#8A8578", fontSize: 11 }} tickLine={false} axisLine={false} />
+              <YAxis tick={{ fill: "#8A8578", fontSize: 11 }} tickLine={false} axisLine={false} width={56} />
+              <Tooltip contentStyle={{ background: "#10131c", border: "1px solid rgba(255,255,255,.12)", borderRadius: 10, fontSize: 12 }} formatter={(v) => usd(v)} labelFormatter={(l) => `Mes ${l}`} />
+              <Area type="monotone" dataKey="bal" stroke={ACCENT} fill="rgba(242,176,30,.18)" strokeWidth={2} />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+      <p className="mt-3 text-[11px] bx-muted">Proyección matemática con rendimiento constante; no es una promesa de resultados.</p>
+    </div>
+  );
+}
+function ToolCards({ onPick, active }) {
+  return (
+    <div className="grid sm:grid-cols-3 gap-3 md:gap-4">
+      {TOOLS.map((t) => (
+        <button key={t.k} type="button" onClick={() => onPick(t.k)} className="bx-plan text-left" data-testid="tool-card" style={active === t.k ? { borderColor: "rgba(242,176,30,.85)" } : undefined}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: "rgba(242,176,30,.12)", border: "1px solid rgba(242,176,30,.35)" }}>{t.icon}</div>
+          <div className="mt-3 text-base font-extrabold text-white leading-snug">{t.name}</div>
+          <p className="mt-1.5 text-sm bx-ink2 leading-relaxed">{t.text}</p>
+          <div className="flex-1" />
+          <div className="mt-3 text-sm font-bold" style={{ color: ACCENT }}>Abrir calculadora →</div>
+        </button>
+      ))}
+    </div>
+  );
+}
+function ToolsPage({ tool, setTool }) {
+  const cur = TOOLS.find((t) => t.k === tool) || TOOLS[0];
+  return (
+    <div className="space-y-8" data-testid="tools-page">
+      <section className="pt-3 md:pt-8">
+        <div className="bx-kicker">Herramientas</div>
+        <h1 className="mt-3 bx-display text-3xl md:text-5xl" style={{ color: "#fff" }}>PLANEA EL TRADE, <span style={{ color: ACCENT }}>TRADEA EL PLAN.</span></h1>
+      </section>
+      <ToolCards onPick={setTool} active={cur.k} />
+      <section className="bx-card p-4 md:p-5">
+        <h2 className="text-lg font-extrabold text-white mb-4">{cur.name}</h2>
+        {cur.k === "size" && <SizeCalc />}
+        {cur.k === "rr" && <RrCalc />}
+        {cur.k === "comp" && <CompCalc />}
+      </section>
+    </div>
+  );
+}
+
+/* ----------------------------- Testimonios (diseño provisional) ----------------------------- */
+// Cuando tengas los resultados reales, llena esta lista y desaparecen las tarjetas de ejemplo:
+// { asset: "XAUUSD", dir: "Buy", result: "+120 pips", date: "04/11/2026", link: "https://t.me/borkaifxelite/123" }
+const TESTIMONIOS = [];
+const TESTIMONIO_DEMO = [
+  { asset: "XAUUSD", dir: "Buy", result: "+000 pips", date: "00/00/0000", link: "https://t.me/borkaifxelite" },
+  { asset: "NAS100", dir: "Sell", result: "+000 pips", date: "00/00/0000", link: "https://t.me/borkaifxelite" },
+  { asset: "CRASH 900", dir: "Sell", result: "+000 puntos", date: "00/00/0000", link: "https://t.me/borkaifxelite" },
+];
+function Testimonios() {
+  const demo = TESTIMONIOS.length === 0;
+  const list = demo ? TESTIMONIO_DEMO : TESTIMONIOS;
+  return (
+    <section data-testid="home-testimonios">
+      <div className="bx-kicker">Testimonios</div>
+      <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "#fff" }}>RESULTADOS REALES DEL VIP</h2>
+      <p className="mt-3 text-[15px] bx-ink2 max-w-xl leading-relaxed">Cada resultado se puede verificar en el mensaje original del canal gratuito.</p>
+      <div className="mt-6 grid sm:grid-cols-3 gap-3 md:gap-4">
+        {list.map((t, i) => (
+          <div key={i} className="bx-plan" data-testid="testimonio-card">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2"><span className="font-extrabold text-white">{t.asset}</span><DirBadge dir={t.dir === "Sell" ? "SELL" : "BUY"} /></div>
+              {demo && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(242,176,30,.14)", color: ACCENT, border: "1px solid rgba(242,176,30,.4)" }}>EJEMPLO</span>}
+            </div>
+            <div className="mt-3 text-3xl font-extrabold leading-none" style={{ color: "#34d399" }}>{t.result}</div>
+            <div className="mt-2 text-xs bx-muted">{t.date} · Canal VIP</div>
+            <div className="flex-1" />
+            <a href={t.link} target="_blank" rel="noopener noreferrer" className="mt-4 bx-planbtn">Ver mensaje en el canal ↗</a>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 /* ----------------------------- Inicio ----------------------------- */
 function CandleArt() {
   // Velas decorativas (solo ilustración)
@@ -2245,7 +2447,7 @@ function CandleArt() {
     </svg>
   );
 }
-function HomePage({ setPage }) {
+function HomePage({ setPage, openTool }) {
   const steps = [
     { tag: "Entry", name: "FREE", tone: GREEN, title: "Smart Money Action", text: "Una guía gratuita de 15 páginas, el playbook que necesitas: estructura, liquidez, FVG, las cuatro sesiones y un modelo simple.", cta: "Obtener la guía gratis", href: "https://t.me/borkaifxelite/633" },
     { tag: "TP1", name: "EL CURSO", tone: ACCENT, title: "El curso", price: "$299", text: "El curso para traders que, con o sin experiencia, buscan operar con claridad y estrategia institucional: XAUUSD, índices bursátiles y divisas, con estrategias por separado y ordenadas.", cta: "Quiero el curso", href: SITE.join.url },
@@ -2290,6 +2492,14 @@ function HomePage({ setPage }) {
           ))}
         </div>
       </section>
+
+      <section data-testid="home-tools">
+        <div className="bx-kicker">Herramientas</div>
+        <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "#fff" }}>PLANEA EL TRADE, TRADEA EL PLAN</h2>
+        <div className="mt-6"><ToolCards onPick={(k) => { openTool(k); window.scrollTo(0, 0); }} /></div>
+      </section>
+
+      <Testimonios />
     </div>
   );
 }
@@ -2394,7 +2604,7 @@ const SIGNAL_EXAMPLES = {
 const VIP_RULES = [
   { t: "Riesgo por Operación", text: "" },
   { t: "Límites Diarios (Disciplina Estricta)", text: "" },
-  { t: "Sesiones Operativas", text: "Operamos principalmente la sesión de Asia y New York. Si hay un cambio para operar Londres, se informará con anticipación." },
+  { t: "Sesiones Operativas", text: "" },
   { t: "Ejecución en Señales VIP", text: "" },
 ];
 function SignalShowcase({ kind }) {
@@ -3238,7 +3448,7 @@ function AnnualEvolution({ trades, unit }) {
   );
 }
 
-const PAGE_PATHS = { home: "/", track: "/track-record", signals: "/senales", vip: "/vip-gratis", admin: "/elpatron" }; // el panel de administración vive en /elpatron
+const PAGE_PATHS = { home: "/", track: "/track-record", signals: "/senales", vip: "/vip-gratis", tools: "/herramientas", admin: "/elpatron" }; // el panel de administración vive en /elpatron
 const pageFromPath = () => {
   try {
     const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
@@ -3266,6 +3476,7 @@ export default function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [adminTab, setAdminTab] = useState("dash");
+  const [tool, setTool] = useState("size");
   const [editing, setEditing] = useState(null);
   const [detail, setDetail] = useState(null); // id
   const [confirmDel, setConfirmDel] = useState(null);
@@ -3727,7 +3938,7 @@ export default function App() {
       </header>
 
       <Ticker />
-      {page !== "signals" && page !== "home" && <LiveStatus />}
+      {page === "home" && <LiveStatus />}
 
       {cloudState === "error" && (
         <div className="text-center text-xs py-2 px-4 bg-rose-500/20 text-rose-500">
@@ -3737,7 +3948,8 @@ export default function App() {
 
       <main className={`${page === "admin" ? "max-w-6xl" : "max-w-5xl"} mx-auto px-4 py-6 space-y-6`}>
         {page === "vip" && <VipPage />}
-        {page === "home" && <HomePage setPage={setPage} />}
+        {page === "home" && <HomePage setPage={setPage} openTool={(k) => { setTool(k); setPage("tools"); }} />}
+        {page === "tools" && <ToolsPage tool={tool} setTool={setTool} />}
         {page === "track" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section className="text-left pt-3 md:pt-8" data-testid="hero">
