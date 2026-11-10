@@ -1666,49 +1666,5 @@
     "status": "SL",
     "pips": -60,
     "r": -0.6
-  },
-  {
-    "id": "xe44acl6mwapdwkx",
-    "date": "2026-11-10",
-    "category": "SINTETICO",
-    "sub": "",
-    "broker": "DERIV",
-    "asset": "VOLATILITY 10",
-    "direction": "SELL",
-    "entry1": 4836.5,
-    "entry2": "",
-    "activation": "E1",
-    "sl": 4848.383,
-    "tps": [
-      4820.254,
-      4800.167
-    ],
-    "pipSize": 1,
-    "unit": "puntos",
-    "legs": {
-      "e1": {
-        "status": "TP",
-        "exit": 4820.254,
-        "pips": 16.2,
-        "tpIdx": 0,
-        "reached": null
-      },
-      "e2": {
-        "status": "Pendiente",
-        "exit": "",
-        "pips": "",
-        "tpIdx": null
-      }
-    },
-    "discarded": false,
-    "raw": "VOLATILITY 10 INDEX SELL 4836.5\nTP1: 4820.254\nTP2: 4800.167\nSL: 4848.383",
-    "notes": "",
-    "mgmt": "",
-    "tags": [
-      "VIP Signal"
-    ],
-    "status": "TP",
-    "pips": 16.2,
-    "r": 1.36
   }
 ]
