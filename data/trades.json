@@ -1785,9 +1785,9 @@
       "e2": {
         "status": "BE",
         "exit": 4034,
-        "pips": 0,
+        "pips": 70,
         "tpIdx": null,
-        "reached": null
+        "reached": 0
       }
     },
     "discarded": false,
@@ -1798,8 +1798,8 @@
       "VIP Signal"
     ],
     "status": "BE",
-    "pips": 50,
-    "r": 0.31
+    "pips": 120,
+    "r": 0.81
   },
   {
     "id": "t7dr6cvemwayq61x",
