@@ -55,8 +55,8 @@ const SITE = {
   // Planes del pase VIP (amount en USD, months = duración)
   plans: [
     { name: "1 Mes", amount: 70, months: 1, label: "Pago mensual", features: ["Acceso únicamente al canal de señales"] },
-    { name: "3 Meses", amount: 150, months: 3, label: "Pago cada 3 meses", features: ["Canal de señales", "Estrategia Institucional"] },
-    { name: "Anual", amount: 300, months: 12, label: "Pago anual", features: ["Canal de señales", "Ebook “Domina tu Mente”", "Curso Estratégico (XAUUSD e Índices)"] },
+    { name: "3 Meses", amount: 150, months: 3, perk: "INCLUYE ACCESO AL CURSO Y ESTRATEGIA PARA OPERAR DIVISAS", label: "Pago cada 3 meses", features: ["Canal de señales", "Estrategia Institucional"] },
+    { name: "Anual", amount: 300, months: 12, perk: "INCLUYE ACCESO AL CURSO ESTRATEGICO Y ACCESO AL PDF DOMINA TU MENTE", label: "Pago anual", features: ["Canal de señales", "Ebook “Domina tu Mente”", "Curso Estratégico (XAUUSD e Índices)"] },
   ],
 
   courseModules: [
@@ -2532,7 +2532,7 @@ function SmcChart() {
   );
 }
 
-function HomePage({ setPage, openTool }) {
+function HomePage({ setPage, openTool, openSignals }) {
   const steps = [
     { tag: "Entry", name: "FREE", tone: GREEN, title: "Smart Money Action", text: "Una guía gratuita de 15 páginas, el playbook que necesitas: estructura, liquidez, FVG, las cuatro sesiones y un modelo simple.", cta: "Obtener la guía gratis", href: "https://t.me/borkaifxelite/633" },
     { tag: "TP1", name: "EL CURSO", tone: ACCENT, title: "El curso", price: "$299", text: "El curso para traders que, con o sin experiencia, buscan operar con claridad y estrategia institucional: XAUUSD, índices bursátiles y divisas, con estrategias por separado y ordenadas.", cta: "Quiero el curso", href: SITE.join.url },
@@ -2544,8 +2544,8 @@ function HomePage({ setPage, openTool }) {
         <div>
           <div className="bx-kicker" style={{ fontSize: "11px" }}>COMUNIDAD DE TRADING</div>
           <h1 className="mt-4 bx-display bx-hero1" style={{ color: "#fff" }}>
-            <span>SI NO SABES DÓNDE ESTÁ LA LIQUIDEZ EN EL GRÁFICO, </span>
-            <span style={{ color: ACCENT }}>LA LIQUIDEZ ERES TÚ.</span>
+            <span>SI NO SABES DONDE ESTA LA LIQUIDEZ EN EL GRAFICO, </span>
+            <span style={{ color: ACCENT }}>LA LIQUIDEZ ERES TU.</span>
           </h1>
           <p className="mt-5 text-[15px] bx-ink2 max-w-xl leading-relaxed">
             El mercado no se adivina, se entiende. En BORKAIFX ELITE transformamos tu operativa mediante conceptos SMC. Aprende a identificar las huellas del dinero, protege tu capital con precisión y desarrolla la consistencia real que define a un trader profesional.
@@ -2570,7 +2570,10 @@ function HomePage({ setPage, openTool }) {
               <div className="flex-1" />
               {s.price && <div className="mt-4 text-3xl md:text-4xl font-extrabold leading-none" style={{ color: ACCENT }} data-testid="course-price">{s.price}</div>}
               {s.go ? (
-                <button type="button" onClick={() => { setPage(s.go); window.scrollTo(0, 0); }} className="mt-4 bx-gold" style={{ padding: ".6rem 1rem", fontSize: ".85rem" }}>{s.cta}</button>
+                <div className="mt-4 grid grid-cols-2 gap-2" data-testid="home-vip-btns">
+                  <button type="button" onClick={() => { openSignals("CFD"); window.scrollTo(0, 0); }} className="bx-gold" style={{ padding: ".6rem .5rem", fontSize: ".85rem" }}>CFDs</button>
+                  <button type="button" onClick={() => { openSignals("SINTETICO"); window.scrollTo(0, 0); }} className="bx-gold" style={{ padding: ".6rem .5rem", fontSize: ".85rem" }}>Sintéticos</button>
+                </div>
               ) : (
                 <a href={s.href} target="_blank" rel="noopener noreferrer" className="mt-4 bx-planbtn">{s.cta} ↗</a>
               )}
@@ -2631,6 +2634,8 @@ function VipPage() {
 }
 
 // Bloque de oferta exclusiva (VIP gratis): se usa en Señales y en Educación
+// Oferta VIP gratis (afiliados): abre WhatsApp con el mensaje ya escrito
+const OFFER_WA_URL = "https://wa.me/15168316363?text=Hola%20Daniela,%20mi%20nombre%20es%20__________%20vi%20la%20promocion%20para%20unirse%20al%20VIP%20siendo%20afiliado,%20me%20gustaria%20aprovechar%20la%20promocion%20con%20el%20broker%20_____";
 function VipOfferCta({ setPage }) {
   return (
     <div
@@ -2640,14 +2645,16 @@ function VipOfferCta({ setPage }) {
       <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">OFERTA EXCLUSIVA</div>
       <h3 className="mt-2 text-xl md:text-3xl font-black leading-tight text-white">¿Quieres ser parte del VIP sin pagar mensualidad?</h3>
       <p className="mt-2 text-sm bx-muted max-w-xl mx-auto">Accede gratis registrándote en uno de nuestros brokers afiliados.</p>
-      <button
-        type="button"
-        onClick={() => setPage("vip")}
-        className="bx-btn mt-5"
+      <a
+        href={OFFER_WA_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bx-btn mt-5 inline-block"
         style={{ padding: "1rem 2.25rem", fontSize: "1.05rem", letterSpacing: ".04em" }}
+        data-testid="offer-link"
       >
         🔥 Oferta exclusiva · Clic aquí →
-      </button>
+      </a>
     </div>
   );
 }
@@ -2783,7 +2790,8 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
   const kicker = syn ? "Pase VIP · SINTÉTICOS VIPS" : "Pase VIP · ELITE VIP FX";
   const intro = syn
     ? "Compra directa del pase VIP para la comunidad donde operamos sintéticos en Deriv y Weltrade."
-    : "Compra directa del pase VIP, para quienes prefieren no afiliarse a un broker. Pago y activación por Telegram.";
+    : "Canal de señales donde operamos los dos activos más volátiles y lucrativos del mercado con precisión quirúrgica: NAS100 & XAUUSD.";
+  const plans = syn ? [{ name: "1 Mes", amount: 50 }, { name: "3 Meses", amount: 120 }] : SITE.plans;
   const bullets = syn
     ? ["De 3 a 5 señales diarias con entrada, Stop Loss y Take Profit", "Seguimiento de cada señal con indicaciones", "Meta semanal de 1000 a 1500 pips", "Curso estratégico", "1 Reto flipping al mes"]
     : ["De 2 a 3 señales diarias con entrada, Stop Loss y múltiples Take Profits", "Seguimiento en tiempo real: parciales, Breakeven y cierres anticipados", "Sesiones de Asia y New York", "Gestión de riesgo recomendada"];
@@ -2803,14 +2811,15 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
           ))}
         </ul>
 
-        <div className="mt-6 grid sm:grid-cols-3 gap-3 md:gap-4">
-          {SITE.plans.map((p, i) => {
-            const hot = i === SITE.plans.length - 1;
+        <div className={`mt-6 grid gap-3 md:gap-4 ${syn ? "sm:grid-cols-2 max-w-2xl" : "sm:grid-cols-3"}`}>
+          {plans.map((p, i) => {
+            const hot = i === plans.length - 1;
             return (
               <div key={p.name} className={`bx-plan ${hot ? "hot" : ""}`} data-testid="plan-card">
                 <div className="text-sm font-semibold text-white">{p.name}</div>
                 <div className="mt-2 text-3xl md:text-4xl font-extrabold leading-none" style={{ color: ACCENT }}>{fmtMoney(p.amount)}</div>
-                                <div className="flex-1" />
+                {p.perk && !syn && <div className="mt-3 text-[11px] font-bold leading-snug tracking-wide" style={{ color: "#E8E5DD" }} data-testid="plan-perk">{p.perk}</div>}
+                <div className="flex-1" />
                 <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={`mt-4 ${hot ? "bx-gold" : "bx-planbtn"}`} style={hot ? { padding: ".6rem 1rem", fontSize: ".85rem" } : undefined}>
                   Unirme · {p.name} ↗
                 </a>
@@ -3993,7 +4002,7 @@ export default function App() {
           <div className="flex flex-wrap items-center justify-end gap-2 md:gap-4">
           {(
           <nav className="bx-nav" data-testid="main-nav">
-            {(isAdmin ? [["track", "Track Record"], ["signals", "Señales"], ["admin", "Panel Admin"]] : [["track", "Track Record"], ["signals", "Señales"]]).map(([k, l]) => k !== "signals" ? (
+            {(isAdmin ? [["track", "Track Record"], ["admin", "Panel Admin"]] : [["track", "Track Record"]]).map(([k, l]) => k !== "signals" ? (
               <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`}>{l}</button>
             ) : (
               <div key={k} className="relative" onMouseEnter={() => setSigMenu(true)} onMouseLeave={() => setSigMenu(false)} data-testid="signals-menu">
@@ -4034,7 +4043,7 @@ export default function App() {
 
       <main className={`${page === "admin" ? "max-w-6xl" : "max-w-5xl"} mx-auto px-4 py-6 space-y-6`}>
         {page === "vip" && <VipPage />}
-        {page === "home" && <HomePage setPage={setPage} openTool={(k) => { setTool(k); setPage("tools"); }} />}
+        {page === "home" && <HomePage setPage={setPage} openSignals={(k) => { setSignalKind(k); setPage("signals"); }} openTool={(k) => { setTool(k); setPage("tools"); }} />}
         {page === "tools" && <ToolsPage tool={tool} setTool={setTool} />}
         {page === "track" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
@@ -4264,7 +4273,18 @@ export default function App() {
         {page === "signals" && <ServicesPricing setPage={setPage} kind={signalKind} />}
 
         {/* ------------------------- FOOTER ------------------------- */}
-        <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-2">
+        <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-4" data-testid="site-footer">
+          {page !== "admin" && (<>
+            <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-bold" aria-label="Enlaces">
+              <button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]">Herramientas</button>
+              <button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]">Señales CFDs</button>
+              <button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]">Señales Sintéticos</button>
+              <a href={OFFER_WA_URL} target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F2B01E]" data-testid="footer-vip-free">VIP gratis</a>
+            </nav>
+            <p className="max-w-3xl mx-auto leading-relaxed" data-testid="risk-disclaimer">
+              El trading es una actividad de alto riesgo. Operar con productos apalancados (CFDs, divisas, índices sintéticos) puede resultar en la pérdida de todo el capital invertido y no es adecuado para todos los inversores. Su dinero está en riesgo. Los resultados pasados no garantizan resultados futuros. Todo el contenido de este sitio es educativo y no constituye asesoramiento financiero.
+            </p>
+          </>)}
           <div className="tracking-[0.25em]">© {new Date().getFullYear()} {BRAND}</div>
         </footer>
       </main>
