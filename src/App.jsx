@@ -2618,7 +2618,7 @@ function VipPage() {
           <h3 className="mt-3 text-lg font-extrabold">Verifica tu cuenta</h3>
           <p className="mt-2 text-sm bx-muted">Una vez enviado tu depósito, contáctanos para verificar tu cuenta y activarte el acceso VIP de inmediato.</p>
           <div className="mt-4">
-            <a href={waHref("Hola, ya me registré y realicé mi depósito. Quiero verificar mi cuenta para el acceso VIP gratis.")} target="_blank" rel="noopener noreferrer" className="bx-btn">Verificar por Telegram</a>
+            <a href={OFFER_WA_URL} target="_blank" rel="noopener noreferrer" className="bx-btn" data-testid="verify-wa">Verificar por WhatsApp</a>
           </div>
         </div>
       </div>
@@ -2631,7 +2631,7 @@ function VipPage() {
 }
 
 // Bloque de oferta exclusiva (VIP gratis): se usa en Señales y en Educación
-// Oferta VIP gratis (afiliados): abre WhatsApp con el mensaje ya escrito
+// WhatsApp de verificación del VIP gratis (botón "Verifica tu cuenta" en /vip-gratis), con el mensaje ya escrito
 const OFFER_WA_URL = "https://wa.me/15168316363?text=Hola%20Daniela,%20mi%20nombre%20es%20__________%20vi%20la%20promocion%20para%20unirse%20al%20VIP%20siendo%20afiliado,%20me%20gustaria%20aprovechar%20la%20promocion%20con%20el%20broker%20_____";
 function VipOfferCta({ setPage }) {
   return (
@@ -2642,16 +2642,15 @@ function VipOfferCta({ setPage }) {
       <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">OFERTA EXCLUSIVA</div>
       <h3 className="mt-2 text-xl md:text-3xl font-black leading-tight text-white">¿Quieres ser parte del VIP sin pagar mensualidad?</h3>
       <p className="mt-2 text-sm bx-muted max-w-xl mx-auto">Accede gratis registrándote en uno de nuestros brokers afiliados.</p>
-      <a
-        href={OFFER_WA_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="bx-btn mt-5 inline-block"
+      <button
+        type="button"
+        onClick={() => { setPage("vip"); window.scrollTo(0, 0); }}
+        className="bx-btn mt-5"
         style={{ padding: "1rem 2.25rem", fontSize: "1.05rem", letterSpacing: ".04em" }}
         data-testid="offer-link"
       >
         🔥 Oferta exclusiva · Clic aquí →
-      </a>
+      </button>
     </div>
   );
 }
@@ -4276,7 +4275,7 @@ export default function App() {
               <button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]">Herramientas</button>
               <button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]">Señales CFDs</button>
               <button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]">Señales Sintéticos</button>
-              <a href={OFFER_WA_URL} target="_blank" rel="noopener noreferrer" className="text-white hover:text-[#F2B01E]" data-testid="footer-vip-free">VIP gratis</a>
+              <button type="button" onClick={() => { setPage("vip"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]" data-testid="footer-vip-free">VIP gratis</button>
             </nav>
             <p className="max-w-3xl mx-auto leading-relaxed" data-testid="risk-disclaimer">
               El trading es una actividad de alto riesgo. Operar con productos apalancados (CFDs, divisas, índices sintéticos) puede resultar en la pérdida de todo el capital invertido y no es adecuado para todos los inversores. Su dinero está en riesgo. Los resultados pasados no garantizan resultados futuros. Todo el contenido de este sitio es educativo y no constituye asesoramiento financiero.
