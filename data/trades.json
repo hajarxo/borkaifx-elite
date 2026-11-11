@@ -1826,7 +1826,7 @@
         "exit": 4034,
         "pips": -140,
         "tpIdx": null,
-        "reached": null
+        "reached": 0
       },
       "e2": {
         "status": "Pendiente",
