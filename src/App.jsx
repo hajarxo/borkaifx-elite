@@ -102,9 +102,11 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-ink2{color:var(--ink2)}
 @media(max-width:480px){.bx-gold:not(.bx-gold-sm){padding:.5rem .85rem;font-size:.85rem}.bx-brand{font-size:1.15rem!important}}
 .bx-h1{font-size:2.35rem;line-height:.98}
-.bx-hero1{font-size:2.6rem;line-height:.98}
-@media(min-width:640px){.bx-hero1{font-size:3.4rem}}
-@media(min-width:1024px){.bx-hero1{font-size:4.4rem}}
+.bx-hero1{font-size:2.1rem;line-height:1}
+@media(min-width:640px){.bx-hero1{font-size:2.9rem}}
+@media(min-width:1024px){.bx-hero1{font-size:3.7rem}}
+.bx-home{position:relative;isolation:isolate}
+.bx-home::before{content:"";position:absolute;left:0;right:0;top:0;height:780px;z-index:-1;pointer-events:none;background:radial-gradient(620px 360px at 22% 26%,rgba(242,176,30,.22),transparent 70%),radial-gradient(520px 300px at 6% 40%,rgba(170,110,20,.16),transparent 70%),linear-gradient(rgba(242,176,30,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(90deg,rgba(242,176,30,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/48px 48px;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
 @media(min-width:640px){.bx-h1{font-size:2.6rem}}
 @media(min-width:1024px){.bx-h1{font-size:2.9rem}}
 .bx-hero-filters .bx-tab{padding:.4rem 1.05rem;font-size:.72rem;letter-spacing:.08em;border-radius:.65rem}
@@ -2086,6 +2088,7 @@ const goTo = (id) => {
 
 // Enlace de WhatsApp oficial (con mensaje opcional). Si no está configurado, usa Telegram.
 const waHref = (msg) => {
+  return SITE.join.url; // se usa Telegram (@borkaifxelite) en lugar de WhatsApp
   const base = SITE.whatsapp;
   if (!base) return TELEGRAM_URL;
   // Los enlaces cortos (wa.link) ya incluyen su mensaje: se usan tal cual
@@ -2432,21 +2435,103 @@ function Testimonios() {
 }
 
 /* ----------------------------- Inicio ----------------------------- */
-function CandleArt() {
-  // Velas decorativas (solo ilustración)
-  const c = [[0, 52, 40, 70, 1], [1, 44, 30, 62, 1], [2, 60, 48, 80, 0], [3, 70, 60, 92, 0], [4, 64, 50, 78, 1], [5, 54, 40, 70, 1], [6, 42, 28, 58, 0], [7, 36, 24, 50, 1], [8, 30, 16, 44, 1], [9, 40, 30, 56, 0], [10, 28, 14, 42, 1], [11, 18, 6, 32, 1]];
+/* ----------------------------- Gráfico interactivo SMC (inicio) ----------------------------- */
+const SMC_C = [ // [apertura, máximo, mínimo, cierre]
+  [112, 116, 110, 115], [115, 126, 114, 124], [124, 126, 118, 119], [119, 123, 117, 122], [122, 123, 113, 114],
+  [114, 115, 107, 108], [108, 109, 102, 103], [103, 108, 100, 106], [106, 111, 102, 103], [103, 106, 100, 105],
+  [105, 106, 102, 103], [103, 104, 94, 101], [101, 102, 98, 99], [99, 115, 98.5, 114], [114, 118, 107, 116],
+  [116, 117, 106, 108], [108, 114, 107, 113], [113, 118, 112, 117], [117, 119, 115, 118], [118, 119, 116, 117],
+];
+const SMC_STEPS = [
+  { k: "BSL", tone: "#F2B01E", title: "Buy-side liquidity (BSL)", text: "Dos máximos iguales. Todo trader que vendió aquí tiene su stop justo encima. Ese conjunto de órdenes es un imán, y el precio volverá a buscarlo." },
+  { k: "SSL", tone: "#F2B01E", title: "Sell-side liquidity (SSL)", text: "Dos mínimos iguales. Quienes compraron aquí tienen su stop justo debajo. Es otro imán de liquidez: el precio querrá ir a buscarlo." },
+  { k: "SWEEP", tone: "#ef4444", title: "El barrido (sweep)", text: "El precio se mete bajo los mínimos, activa todos los stops y cierra de nuevo por encima. Los minoristas salen stopeados. Esa es la trampa y, a la vez, la señal." },
+  { k: "OB", tone: "#F2B01E", title: "Order block (OB)", text: "La última vela bajista antes del impulso alcista. Ahí quedaron órdenes institucionales, y el precio suele respetar esa zona cuando regresa." },
+  { k: "CHoCH", tone: "#10b981", title: "Cambio de carácter (CHoCH)", text: "El precio rompe con cuerpo el último máximo menor. La estructura pasó de bajista a alcista: el barrido tuvo intención." },
+  { k: "FVG", tone: "#F2B01E", title: "Fair value gap (FVG)", text: "Un hueco que deja el impulso: tres velas donde la del medio no deja solapamiento. El precio tiende a volver a rellenarlo." },
+  { k: "ENTRY", tone: "#10b981", title: "La entrada", text: "Orden limit dentro del FVG, con el stop bajo el OB. Entras en el retroceso, con el riesgo definido y sin perseguir el precio." },
+  { k: "TP", tone: "#10b981", title: "Objetivo 1.5R", text: "El primer objetivo está a 1.5 veces el riesgo: por cada $1 que arriesgas, buscas $1.50. Al llegar, se toma ganancia o se protege la operación." },
+];
+function SmcChart() {
+  const [step, setStep] = useState(0);
+  const [auto, setAuto] = useState(true);
+  useEffect(() => {
+    if (!auto) return;
+    const iv = setInterval(() => setStep((s) => (s + 1) % 8), 5000);
+    return () => clearInterval(iv);
+  }, [auto]);
+  const pick = (i) => { setAuto(false); setStep(i); };
+  const X = (i) => 40 + i * 33, Y = (v) => 345 - (v - 92) * 8.2;
+  const op = (i) => (step === i ? 1 : 0.3);
+  const cur = SMC_STEPS[step];
+  const marks = [[X(1.5), Y(126) - 26], [X(8), Y(100) + 30], [X(11), Y(94) + 24], [X(12) - 2, Y(102) - 32], [X(10), Y(111) - 30], [X(14), Y(98)], [X(17), Y(103)], [X(18.5), Y(118) - 26]];
+  const mono = '"JetBrains Mono", ui-monospace, Menlo, monospace';
   return (
-    <svg viewBox="0 0 240 110" className="w-full h-auto" aria-hidden="true" data-testid="candle-art">
-      {[22, 55, 88].map((y) => <line key={y} x1="0" x2="240" y1={y} y2={y} stroke="rgba(255,255,255,.06)" />)}
-      {c.map(([i, top, hi, lo, up]) => (
-        <g key={i}>
-          <line x1={14 + i * 19} x2={14 + i * 19} y1={hi} y2={lo} stroke={up ? GREEN : "#ef4444"} strokeWidth="1.5" />
-          <rect x={9 + i * 19} y={top - 10} width="10" height="22" rx="1.5" fill={up ? GREEN : "#ef4444"} />
-        </g>
-      ))}
-    </svg>
+    <section data-testid="smc-chart" className="grid md:grid-cols-[1.55fr_1fr] gap-4 items-stretch">
+      <div className="bx-card p-3 md:p-4">
+        <div className="flex items-center justify-between gap-2 text-[11px]" style={{ fontFamily: mono }}>
+          <span><b className="text-white">XAUUSD</b> <span className="bx-muted">· 15M</span></span>
+          <span style={{ color: ACCENT }}>● toca los puntos brillantes</span>
+        </div>
+        <svg viewBox="0 0 780 375" className="w-full h-auto mt-2" role="img" aria-label="Gráfico educativo de una operación SMC en oro">
+          {[60, 140, 220, 300].map((y) => <line key={y} x1="20" x2="760" y1={y} y2={y} stroke="rgba(255,255,255,.05)" />)}
+          {/* BSL */}
+          <g opacity={op(0)}><line x1={X(0)} x2={730} y1={Y(126)} y2={Y(126)} stroke="#F2B01E" strokeDasharray="5 4" /><text x="736" y={Y(126) + 4} fill="#F2B01E" fontSize="13" fontFamily={mono} fontWeight="700">BSL</text></g>
+          {/* SSL */}
+          <g opacity={op(1)}><line x1={X(6)} x2={730} y1={Y(100)} y2={Y(100)} stroke="#F2B01E" strokeDasharray="5 4" /><text x="736" y={Y(100) + 4} fill="#F2B01E" fontSize="13" fontFamily={mono} fontWeight="700">SSL</text></g>
+          {/* CHoCH */}
+          <g opacity={op(4)}><line x1={X(8)} x2={X(13) + 10} y1={Y(111)} y2={Y(111)} stroke="#10b981" strokeDasharray="5 4" /><text x={X(13) + 16} y={Y(111) + 4} fill="#10b981" fontSize="12" fontFamily={mono} fontWeight="700">CHoCH</text></g>
+          {/* OB */}
+          <g opacity={op(3)}><rect x={X(12) - 9} y={Y(102)} width={X(15) - X(12) + 9} height={Y(98) - Y(102)} fill="rgba(139,92,246,.20)" stroke="#8b5cf6" /><text x={X(12) - 9} y={Y(98) + 14} fill="#a78bfa" fontSize="12" fontFamily={mono} fontWeight="700">OB</text></g>
+          {/* FVG */}
+          <g opacity={op(5)}><rect x={X(13)} y={Y(107)} width={X(16) - X(13)} height={Y(102) - Y(107)} fill="rgba(242,176,30,.16)" stroke="#F2B01E" /><text x={X(13) + 4} y={Y(102) - 5} fill="#F2B01E" fontSize="12" fontFamily={mono} fontWeight="700">FVG</text></g>
+          {/* Entrada y SL */}
+          <g opacity={op(6)}><line x1={X(15)} x2={X(19)} y1={Y(106)} y2={Y(106)} stroke="#fff" /><line x1={X(15)} x2={X(19)} y1={Y(98)} y2={Y(98)} stroke="#ef4444" strokeDasharray="4 4" /><text x={X(19) + 8} y={Y(106) + 4} fill="#fff" fontSize="12" fontFamily={mono} fontWeight="700">ENTRY</text><text x={X(19) + 8} y={Y(98) + 4} fill="#ef4444" fontSize="12" fontFamily={mono} fontWeight="700">SL</text></g>
+          {/* Objetivo */}
+          <g opacity={op(7)}><line x1={X(15)} x2={730} y1={Y(118)} y2={Y(118)} stroke="#10b981" strokeDasharray="5 4" /><text x="736" y={Y(118) + 4} fill="#10b981" fontSize="13" fontFamily={mono} fontWeight="700">1.5R</text></g>
+          {/* Sweep */}
+          <g opacity={op(2)}><line x1={X(11) - 14} x2={X(11) + 14} y1={Y(94)} y2={Y(94)} stroke="#ef4444" strokeWidth="2" /></g>
+          {/* velas */}
+          {SMC_C.map(([o, h, l, c], i) => {
+            const up = c >= o, col = up ? "#22c55e" : "#ef4444";
+            return (
+              <g key={i}>
+                <line x1={X(i)} x2={X(i)} y1={Y(h)} y2={Y(l)} stroke={col} strokeWidth="1.6" />
+                <rect x={X(i) - 7} y={Y(Math.max(o, c))} width="14" height={Math.max(2, Math.abs(Y(o) - Y(c)))} rx="1.5" fill={col} />
+              </g>
+            );
+          })}
+          {/* puntos */}
+          {marks.map(([cx, cy], i) => {
+            const on = step === i, col = SMC_STEPS[i].tone;
+            return (
+              <g key={i} role="button" tabIndex={0} aria-label={`Punto ${i + 1}: ${SMC_STEPS[i].k}`} data-testid="smc-dot" onClick={() => pick(i)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(i); } }} style={{ cursor: "pointer", outline: "none" }}>
+                {on && <circle cx={cx} cy={cy} r="16" fill="none" stroke={col} strokeWidth="1.5"><animate attributeName="r" values="15;24;15" dur="1.8s" repeatCount="indefinite" /><animate attributeName="opacity" values=".7;0;.7" dur="1.8s" repeatCount="indefinite" /></circle>}
+                <circle cx={cx} cy={cy} r={on ? 15 : 12} fill={on ? col : "rgba(10,10,12,.85)"} stroke={col} strokeWidth="2" />
+                <text x={cx} y={cy + 4.5} textAnchor="middle" fontSize="13" fontWeight="800" fontFamily={mono} fill={on ? "#0A0A0C" : col}>{i + 1}</text>
+              </g>
+            );
+          })}
+        </svg>
+      </div>
+      <div className="bx-card p-4 md:p-5 flex flex-col" style={{ borderTop: `3px solid ${cur.tone}` }} data-testid="smc-card">
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[11px] bx-muted" style={{ fontFamily: mono }} data-testid="smc-counter">{String(step + 1).padStart(2, "0")} / 8</span>
+          <div className="flex gap-1.5">{SMC_STEPS.map((s, i) => <button key={s.k} type="button" aria-label={`Ir al punto ${i + 1}`} onClick={() => pick(i)} style={{ width: i === step ? 22 : 8, height: 8, borderRadius: 8, background: i === step ? ACCENT : "rgba(255,255,255,.2)", transition: "width .2s" }} />)}</div>
+        </div>
+        <h3 className="mt-3 bx-display text-2xl md:text-3xl" style={{ color: cur.tone }} data-testid="smc-title">{cur.title}</h3>
+        <p className="mt-2 text-sm bx-ink2 leading-relaxed" data-testid="smc-text">{cur.text}</p>
+        <div className="flex-1" />
+        <div className="mt-4 flex items-center justify-between gap-2 flex-wrap">
+          <a href="https://t.me/borkaifxelite/633" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-white">Leer la guía completa →</a>
+          <button type="button" onClick={() => pick((step + 1) % 8)} className="bx-ghost" data-testid="smc-next">Siguiente punto</button>
+        </div>
+        <p className="mt-3 text-[10px] bx-muted">Ilustración educativa; no es una operación real ni asesoramiento financiero.</p>
+      </div>
+    </section>
   );
 }
+
 function HomePage({ setPage, openTool }) {
   const steps = [
     { tag: "Entry", name: "FREE", tone: GREEN, title: "Smart Money Action", text: "Una guía gratuita de 15 páginas, el playbook que necesitas: estructura, liquidez, FVG, las cuatro sesiones y un modelo simple.", cta: "Obtener la guía gratis", href: "https://t.me/borkaifxelite/633" },
@@ -2455,19 +2540,20 @@ function HomePage({ setPage, openTool }) {
   ];
   return (
     <div className="space-y-16" data-testid="home-page">
-      <section data-testid="home-hero" className="grid md:grid-cols-[1.4fr_1fr] gap-8 items-center pt-3 md:pt-8">
+      <section data-testid="home-hero" className="pt-3 md:pt-8">
         <div>
-          <div className="bx-kicker" style={{ fontSize: "11px" }}>ANALIZAR, ESPERAR Y EJECUTAR</div>
+          <div className="bx-kicker" style={{ fontSize: "11px" }}>COMUNIDAD DE TRADING</div>
           <h1 className="mt-4 bx-display bx-hero1" style={{ color: "#fff" }}>
-            <span className="block">CADA VELA CUENTA</span>
-            <span className="block" style={{ color: ACCENT }}>UNA HISTORIA.</span>
+            <span>SI NO SABES DÓNDE ESTÁ LA LIQUIDEZ EN EL GRÁFICO, </span>
+            <span style={{ color: ACCENT }}>LA LIQUIDEZ ERES TÚ.</span>
           </h1>
           <p className="mt-5 text-[15px] bx-ink2 max-w-xl leading-relaxed">
-            Sé parte de BORKAIFX ELITE y transforma tu trading y tus resultados. Si estás buscando desarrollar un sistema de trading rentable y consistente bajo conceptos SMC, este es el lugar correcto.
+            El mercado no se adivina, se entiende. En BORKAIFX ELITE transformamos tu operativa mediante conceptos SMC. Aprende a identificar las huellas del dinero, protege tu capital con precisión y desarrolla la consistencia real que define a un trader profesional.
           </p>
         </div>
-        <div className="bx-card p-4 hidden md:block"><CandleArt /></div>
       </section>
+
+      {/* Gráfico interactivo SMC: oculto por ahora (el componente SmcChart sigue en el código) */}
 
       <section data-testid="home-path">
         <div className="bx-kicker">A tu ritmo</div>
@@ -2532,7 +2618,7 @@ function VipPage() {
           <h3 className="mt-3 text-lg font-extrabold">Verifica tu cuenta</h3>
           <p className="mt-2 text-sm bx-muted">Una vez enviado tu depósito, contáctanos para verificar tu cuenta y activarte el acceso VIP de inmediato.</p>
           <div className="mt-4">
-            <a href={waHref("Hola, ya me registré y realicé mi depósito. Quiero verificar mi cuenta para el acceso VIP gratis.")} target="_blank" rel="noopener noreferrer" className="bx-btn">Verificar por WhatsApp</a>
+            <a href={waHref("Hola, ya me registré y realicé mi depósito. Quiero verificar mi cuenta para el acceso VIP gratis.")} target="_blank" rel="noopener noreferrer" className="bx-btn">Verificar por Telegram</a>
           </div>
         </div>
       </div>
@@ -3891,7 +3977,7 @@ export default function App() {
   }
 
   return (
-    <div className="bx-root">
+    <div className={`bx-root ${page === "home" ? "bx-home" : ""}`}>
       <style>{CSS}</style>
 
       {/* ------------------------- HEADER ------------------------- */}
