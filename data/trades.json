@@ -1976,5 +1976,46 @@
     "status": "TP",
     "pips": 150,
     "r": 10
+  },
+  {
+    "id": "zel26hm6mwcjqm1b",
+    "date": "2026-11-11",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "WELTRADE",
+    "asset": "GAINX 1200",
+    "direction": "BUY",
+    "entry1": 93661,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 93641,
+    "tps": [],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "SL",
+        "exit": 93641,
+        "pips": -20,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "GAINX 1200 BUY NOW 93661\nSL 20 PTS",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "SL",
+    "pips": -20,
+    "r": -1
   }
 ]
