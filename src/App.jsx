@@ -21,7 +21,7 @@ import {
    ============================================================ */
 
 const BRAND = "BORKAIFX ELITE";
-const TELEGRAM_URL = "https://t.me/borkaifxoficial";
+const TELEGRAM_URL = "https://t.me/borkaifxelite";
 
 /* ============================================================
    CONFIGURACIÓN DE INICIO / SERVICIOS — EDITA AQUÍ TUS DATOS
@@ -2536,7 +2536,7 @@ function HomePage({ setPage, openTool, openSignals }) {
   const steps = [
     { tag: "Entry", name: "FREE", tone: GREEN, title: "Smart Money Action", text: "Una guía gratuita de 15 páginas, el playbook que necesitas: estructura, liquidez, FVG, las cuatro sesiones y un modelo simple.", cta: "Obtener la guía gratis", href: "https://t.me/borkaifxelite/633" },
     { tag: "TP1", name: "EL CURSO", tone: ACCENT, title: "El curso", price: "$299", text: "El curso para traders que, con o sin experiencia, buscan operar con claridad y estrategia institucional: XAUUSD, índices bursátiles y divisas, con estrategias por separado y ordenadas.", cta: "Quiero el curso", href: SITE.join.url },
-    { tag: "TP2", name: "VIP", tone: ACCENT, hot: true, title: "Tradea con nosotros", text: "Todas nuestras señales con punto de entrada, stop y take profit, con seguimiento a cada señal desde su activación.", cta: "Ver señales VIP", go: "signals" },
+    { tag: "TP2", name: "VIP", tone: ACCENT, hot: true, title: "Tradea con nosotros", text: "Todas nuestras señales con punto de entrada, stop y take profit, con seguimiento a cada señal desde su activación.", cta: "Acceso al Telegram", href: "https://t.me/borkaifxelite", gold: true },
   ];
   return (
     <div className="space-y-16" data-testid="home-page">
@@ -2569,11 +2569,8 @@ function HomePage({ setPage, openTool, openSignals }) {
               <p className="mt-3 text-sm bx-ink2 leading-relaxed">{s.text}</p>
               <div className="flex-1" />
               {s.price && <div className="mt-4 text-3xl md:text-4xl font-extrabold leading-none" style={{ color: ACCENT }} data-testid="course-price">{s.price}</div>}
-              {s.go ? (
-                <div className="mt-4 grid grid-cols-2 gap-2" data-testid="home-vip-btns">
-                  <button type="button" onClick={() => { openSignals("CFD"); window.scrollTo(0, 0); }} className="bx-gold" style={{ padding: ".6rem .5rem", fontSize: ".85rem" }}>CFDs</button>
-                  <button type="button" onClick={() => { openSignals("SINTETICO"); window.scrollTo(0, 0); }} className="bx-gold" style={{ padding: ".6rem .5rem", fontSize: ".85rem" }}>Sintéticos</button>
-                </div>
+              {s.gold ? (
+                <a href={s.href} target="_blank" rel="noopener noreferrer" className="mt-4 bx-gold" style={{ padding: ".6rem 1rem", fontSize: ".85rem" }} data-testid="home-vip-btn">{s.cta}</a>
               ) : (
                 <a href={s.href} target="_blank" rel="noopener noreferrer" className="mt-4 bx-planbtn">{s.cta} ↗</a>
               )}
