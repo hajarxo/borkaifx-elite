@@ -1125,8 +1125,8 @@ function LegEditor({ t, k, onChange }) {
     const lvl = tps[i];
     const need = lvl === "OPEN" ? null : calcPips(t, k, lvl);
     const cur = num(L.pips);
-    // Si aún no hay pips escritos, se toma el TP alcanzado para la suma (editable)
-    onChange(k, { reached: i, ...(need !== null && (cur === null || cur <= 0) ? { pips: need } : {}) });
+    // BE: si aún no hay pips escritos, se toma el TP alcanzado para la suma (editable). SL: no se toca el resultado, lo escribes tú.
+    onChange(k, { reached: i, ...(L.status === "BE" && need !== null && (cur === null || cur <= 0) ? { pips: need } : {}) });
   };
   const pickOpen = () => onChange(k, { status: "Abierta", tpIdx: null, reached: null, exit: "", pips: "" });
   const pickPending = () => onChange(k, { status: "Pendiente", tpIdx: null, reached: null, exit: "", pips: "" });
@@ -1134,7 +1134,7 @@ function LegEditor({ t, k, onChange }) {
 
   const commitPips = () => {
     let v = num(pipsText);
-    if (v !== null && L.status === "SL" && v > 0) v = -v;
+    if (v !== null && L.status === "SL" && v > 0 && num(L.reached) === null) v = -v; // con un TP tocado antes (parcial), el neto puede ser positivo
     onChange(k, { pips: v === null ? "" : v });
   };
 
@@ -1168,16 +1168,17 @@ function LegEditor({ t, k, onChange }) {
       {L.status === "Pendiente" && (
         <div className="mt-2 text-xs" style={{ color: "#fcd34d" }}>Orden pendiente: aún no se activó en el mercado. Cuando el precio entre, pulsa <b>Activa</b>.</div>
       )}
-      {L.status === "BE" && tps.some((x) => x !== "OPEN") && (
+      {(L.status === "BE" || L.status === "SL") && tps.some((x) => x !== "OPEN") && (
         <div className="mt-3" data-testid="be-reached">
-          <div className="text-[11px] bx-muted mb-1">¿Tocó algún TP antes de volver a BE? (cuenta para el resumen y la suma)</div>
+          <div className="text-[11px] bx-muted mb-1">{L.status === "BE" ? "¿Tocó algún TP antes de volver a BE? (cuenta para el resumen y la suma)" : "¿Tocó algún TP antes de tocar el SL? (por ejemplo, si tomaste parcial en TP1 y dejaste correr el resto)"}</div>
           <div className="flex flex-wrap gap-1.5">
             <button type="button" onClick={() => pickReached(null)} className={`bx-seg mid ${num(L.reached) === null ? "on" : ""}`}>Ninguno</button>
             {tps.map((lvl, i) => (lvl === "OPEN" ? null : (
               <button key={i} type="button" onClick={() => pickReached(i)} className={`bx-seg pos ${num(L.reached) === i ? "on" : ""}`}>Tocó {tpLabel(i, lvl)}</button>
             )))}
           </div>
-          {hitMax(t) >= 0 && <div className="mt-1 text-[11px]" style={{ color: "#86efac" }}>Se registra: tocó hasta TP{hitMax(t) + 1} y volvió a BE.</div>}
+          {hitMax(t) >= 0 && <div className="mt-1 text-[11px]" style={{ color: "#86efac" }}>Se registra: tocó hasta TP{hitMax(t) + 1} y {L.status === "BE" ? "volvió a BE" : "luego tocó el SL"}.</div>}
+          {L.status === "SL" && num(L.reached) !== null && <div className="mt-1 text-[11px]" style={{ color: "#fcd68a" }}>Escribe abajo el resultado neto real (ganancia del parcial menos la pérdida del resto).</div>}
         </div>
       )}
       {L.status !== "Abierta" && L.status !== "Pendiente" && (
