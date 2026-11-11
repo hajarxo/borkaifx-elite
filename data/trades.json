@@ -1889,48 +1889,5 @@
     "status": "TP",
     "pips": 20.1,
     "r": 1.69
-  },
-  {
-    "id": "zezvmi1dmwc7l1ss",
-    "date": "2026-11-11",
-    "category": "SINTETICO",
-    "sub": "",
-    "broker": "DERIV",
-    "asset": "VOLATILITY 25",
-    "direction": "BUY",
-    "entry1": 2862.7,
-    "entry2": "",
-    "activation": "E1",
-    "sl": 2836,
-    "tps": [
-      2980.93
-    ],
-    "pipSize": 1,
-    "unit": "puntos",
-    "legs": {
-      "e1": {
-        "status": "TP",
-        "exit": 2980.93,
-        "pips": 118.2,
-        "tpIdx": 0,
-        "reached": null
-      },
-      "e2": {
-        "status": "Pendiente",
-        "exit": "",
-        "pips": "",
-        "tpIdx": null
-      }
-    },
-    "discarded": false,
-    "raw": "VOLATILITY 25 INDEX BUY LIMIT 2862.700\nTP1: 2980.930\nSL: 2836.000",
-    "notes": "",
-    "mgmt": "",
-    "tags": [
-      "VIP Signal"
-    ],
-    "status": "TP",
-    "pips": 118.2,
-    "r": 4.43
   }
 ]
