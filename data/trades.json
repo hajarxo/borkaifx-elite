@@ -1909,9 +1909,9 @@
     "unit": "puntos",
     "legs": {
       "e1": {
-        "status": "SL",
-        "exit": 2836,
-        "pips": -26.7,
+        "status": "BE",
+        "exit": 2862.7,
+        "pips": 0,
         "tpIdx": null,
         "reached": null
       },
@@ -1929,8 +1929,8 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "SL",
-    "pips": -26.7,
-    "r": -1
+    "status": "BE",
+    "pips": 0,
+    "r": 0
   }
 ]
