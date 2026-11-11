@@ -1935,5 +1935,46 @@
     "status": "SL",
     "pips": -6.6,
     "r": -1
+  },
+  {
+    "id": "y9h7ydunmwcjsq0d",
+    "date": "2026-11-11",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "WELTRADE",
+    "asset": "PAINX 1200",
+    "direction": "SELL",
+    "entry1": 94529,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 94544,
+    "tps": [],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "MANUAL",
+        "exit": "",
+        "pips": 150,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "PAINX 1200 SELL 94529\nSL 15 PTS",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 150,
+    "r": 10
   }
 ]
