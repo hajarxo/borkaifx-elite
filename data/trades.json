@@ -1937,6 +1937,50 @@
     "r": -1
   },
   {
+    "id": "gw47h8pvmwc97r7l",
+    "date": "2026-11-11",
+    "category": "CFD",
+    "sub": "Oro/Metales",
+    "broker": "",
+    "asset": "XAUUSD",
+    "direction": "SELL",
+    "entry1": 4028,
+    "entry2": 4033,
+    "activation": "E1",
+    "sl": 4046,
+    "tps": [
+      4018,
+      4008,
+      3998,
+      "OPEN"
+    ],
+    "pipSize": 0.1,
+    "legs": {
+      "e1": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": true,
+    "raw": "Gold 🏆\nPair: XAUUSD 📊\nSide: Short / Sell Limit\nEntry: 4028 - 4033\nTP: Open\nSL: 4046\nNote: past profits do not predict future profits \nRisk 0.5-1-2% \n\nTP1 4018 100pips ✅\nTP2 4008 200pips ✅\nTP3 3998 300pips ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "Descartada",
+    "pips": 0,
+    "r": 0
+  },
+  {
     "id": "y9h7ydunmwcjsq0d",
     "date": "2026-11-11",
     "category": "SINTETICO",
