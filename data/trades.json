@@ -2022,6 +2022,49 @@
     "r": -1
   },
   {
+    "id": "ps5y5qikmwcr9d3q",
+    "date": "2026-11-11",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "CRASH 300",
+    "direction": "SELL",
+    "entry1": 2143,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 2158,
+    "tps": [
+      2096
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 2096,
+        "pips": 47,
+        "tpIdx": 0,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "CRASH 300 SELL NOW 2143\nSL 15 PIPS",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 47,
+    "r": 3.13
+  },
+  {
     "id": "u4atg4pemwcv1lhw",
     "date": "2026-11-11",
     "category": "SINTETICO",
