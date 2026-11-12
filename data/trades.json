@@ -2326,7 +2326,7 @@
     "broker": "DERIV",
     "asset": "BOOM 500",
     "direction": "BUY",
-    "entry1": 5861,
+    "entry1": 5876,
     "entry2": "",
     "activation": "E1",
     "sl": 5849,
@@ -2349,7 +2349,7 @@
       }
     },
     "discarded": false,
-    "raw": "BOOM 500 BUY NOW 5861\nSL 12 PIPS",
+    "raw": "BOOM 500 BUY NOW 5876\nSL 12 PIPS",
     "notes": "",
     "mgmt": "",
     "tags": [
@@ -2357,7 +2357,7 @@
     ],
     "status": "SL",
     "pips": -12,
-    "r": -1
+    "r": -0.44
   },
   {
     "id": "w1fcpdn4mwdl4u17",
