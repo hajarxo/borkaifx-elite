@@ -73,7 +73,7 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAGHCAMAAAD2o3uU
 const CFD_SUBS = ["Forex", "Oro/Metales", "Índices"];
 const BROKERS = ["WELTRADE", "DERIV"];
 
-const ACCENT = "#F2B01E";
+const ACCENT = "#F47F45";
 const GREEN = "#10b981";
 const RED = "#f43f5e";
 const GREY = "#A8A39B";
@@ -91,14 +91,14 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-nav{display:flex;gap:.25rem;flex-wrap:wrap}
 .bx-navbtn{padding:.5rem .875rem;border-radius:.75rem;font-size:.8125rem;font-weight:800;letter-spacing:.03em;color:var(--ink2);cursor:pointer;background:transparent;border:1px solid transparent;transition:all .15s}
 .bx-navbtn:hover{color:var(--ink)}
-.bx-navbtn.on{background:rgba(242,176,30,.12);color:var(--accent)}
-.bx-root{color-scheme:dark;--bg:#0A0A0C;--ink:#F4F1EA;--ink2:#9A958C;--line:#232325;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#F2B01E;--field:#0F0F0F;background:radial-gradient(1000px circle at 30% -5%,rgba(242,176,30,.13),transparent 60%),radial-gradient(800px circle at 100% 40%,rgba(242,176,30,.05),transparent 60%),var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px}
-.bx-header{background:rgba(10,10,12,.9);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bx-navbtn.on{background:rgba(244,127,69,.12);color:var(--accent)}
+.bx-root{color-scheme:dark;--bg:#0A0A0C;--ink:#F4F1EA;--ink2:#9A958C;--line:#232325;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#F47F45;--field:#0F0F0F;background:radial-gradient(900px circle at -5% 0%,rgba(190,86,32,.34),transparent 62%),radial-gradient(700px circle at 100% 8%,rgba(120,60,28,.22),transparent 60%),radial-gradient(900px circle at 10% 105%,rgba(170,78,30,.22),transparent 60%),var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px}
+.bx-header{background:rgba(10,10,12,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 @keyframes bxpulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}70%{box-shadow:0 0 0 8px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
 .bx-dot{width:9px;height:9px;border-radius:9999px;display:inline-block;flex:none}
 .bx-dot.live{background:#10b981;animation:bxpulse 1.8s infinite}
 .bx-dot.off{background:#f43f5e}
-.bx-live{display:flex;align-items:center;gap:.625rem;background:#141415;border:1px solid var(--cardline);border-radius:9999px;padding:.4rem .9rem;font-size:.75rem}
+.bx-live{display:flex;align-items:center;gap:.625rem;background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--cardline);border-radius:9999px;padding:.4rem .9rem;font-size:.75rem}
 .bx-ink2{color:var(--ink2)}
 @media(max-width:480px){.bx-gold:not(.bx-gold-sm){padding:.5rem .85rem;font-size:.85rem}.bx-brand{font-size:1.15rem!important}}
 .bx-h1{font-size:2.35rem;line-height:.98}
@@ -106,14 +106,14 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 @media(min-width:640px){.bx-hero1{font-size:2.9rem}}
 @media(min-width:1024px){.bx-hero1{font-size:3.7rem}}
 .bx-home{position:relative;isolation:isolate}
-.bx-home::before{content:"";position:absolute;left:0;right:0;top:0;height:780px;z-index:-1;pointer-events:none;background:radial-gradient(620px 360px at 22% 26%,rgba(242,176,30,.22),transparent 70%),radial-gradient(520px 300px at 6% 40%,rgba(170,110,20,.16),transparent 70%),linear-gradient(rgba(242,176,30,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(90deg,rgba(242,176,30,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/48px 48px;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
+.bx-home::before{content:"";position:absolute;left:0;right:0;top:0;height:780px;z-index:-1;pointer-events:none;background:radial-gradient(620px 360px at 22% 26%,rgba(244,127,69,.22),transparent 70%),radial-gradient(520px 300px at 6% 40%,rgba(150,68,24,.16),transparent 70%),linear-gradient(rgba(244,127,69,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(90deg,rgba(244,127,69,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/48px 48px;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
 @media(min-width:640px){.bx-h1{font-size:2.6rem}}
 @media(min-width:1024px){.bx-h1{font-size:2.9rem}}
 .bx-hero-filters .bx-tab{padding:.4rem 1.05rem;font-size:.72rem;letter-spacing:.08em;border-radius:.65rem}
 .bx-hero-filters .bx-pill{padding:.25rem .75rem;font-size:.7rem}
 /* Cinta de texto (ticker): colores por variables; claro/oscuro */
 .bx-root{--tk-ink:#9A958C;--tk-line:rgba(255,255,255,.10);--tk-gold:var(--accent);--tk-bg:rgba(10,10,12,.6)}
-.bx-root[data-theme="light"],[data-theme="light"] .bx-root{--tk-ink:#6B665D;--tk-line:rgba(0,0,0,.12);--tk-gold:#B8860B;--tk-bg:rgba(255,255,255,.7)}
+.bx-root[data-theme="light"],[data-theme="light"] .bx-root{--tk-ink:#6B665D;--tk-line:rgba(0,0,0,.12);--tk-gold:#C2571F;--tk-bg:rgba(255,255,255,.7)}
 .bx-ticker{width:100%;max-width:100vw;overflow:hidden;box-sizing:border-box;border-top:1px solid var(--tk-line);border-bottom:1px solid var(--tk-line);background:var(--tk-bg);color:var(--tk-ink);padding:.55rem 0}
 .bx-ticker-track{display:flex;width:max-content;animation:bxticker 40s linear infinite;will-change:transform}
 .bx-ticker-group{display:flex;flex:none;align-items:center}
@@ -126,19 +126,19 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-kicker{display:flex;align-items:center;gap:.75rem;font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:.78rem;letter-spacing:.3em;font-weight:700;color:var(--accent);text-transform:uppercase}
 .bx-kicker::before{content:"";width:34px;height:2px;background:var(--accent);flex:none}
 .bx-kicker.center{justify-content:center}
-.bx-gold{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:linear-gradient(180deg,#F7BC2E,#E49C10);color:#17120a;font-weight:800;border-radius:.8rem;padding:.6rem 1.15rem;font-size:.95rem;box-shadow:0 6px 24px rgba(242,176,30,.32);transition:filter .15s,transform .15s}
-.bx-gold.bx-gold-sm{padding:.38rem .9rem;font-size:.82rem;border-radius:.6rem;box-shadow:0 4px 14px rgba(242,176,30,.25)}
+.bx-gold{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:linear-gradient(180deg,#FA9A6B,#D95F26);color:#17120a;font-weight:800;border-radius:.8rem;padding:.6rem 1.15rem;font-size:.95rem;box-shadow:0 6px 24px rgba(244,127,69,.32);transition:filter .15s,transform .15s}
+.bx-gold.bx-gold-sm{padding:.38rem .9rem;font-size:.82rem;border-radius:.6rem;box-shadow:0 4px 14px rgba(244,127,69,.25)}
 .bx-gold:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.bx-plan{display:flex;flex-direction:column;background:rgba(16,19,28,.85);border:1px solid rgba(255,255,255,.09);border-radius:1rem;padding:1.15rem 1.25rem}
-.bx-plan.hot{border-color:rgba(242,176,30,.85);box-shadow:0 0 0 1px rgba(242,176,30,.25),0 10px 50px rgba(242,176,30,.16)}
+.bx-plan{display:flex;flex-direction:column;background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.012) 55%,rgba(244,127,69,.03));-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(255,255,255,.13);border-radius:1.25rem;padding:1.15rem 1.25rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 10px 40px rgba(0,0,0,.35)}
+.bx-plan.hot{border-color:rgba(244,127,69,.85);box-shadow:0 0 0 1px rgba(244,127,69,.25),0 10px 50px rgba(244,127,69,.16)}
 .bx-planbtn{display:flex;align-items:center;justify-content:center;gap:.4rem;border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;border-radius:.7rem;padding:.6rem 1rem;font-size:.85rem;background:rgba(255,255,255,.03);transition:border-color .15s}
 .bx-planbtn:hover{border-color:var(--accent);color:var(--accent)}
 .bx-accent{color:var(--accent)}
-.bx-card{background:rgba(16,19,28,.85);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:var(--cardink);border:1px solid rgba(255,255,255,.09);border-radius:1rem}
+.bx-card{background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.012) 55%,rgba(244,127,69,.03));-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);color:var(--cardink);border:1px solid rgba(255,255,255,.13);border-radius:1.25rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 10px 40px rgba(0,0,0,.35)}
 .bx-calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
 @media(min-width:640px){.bx-calgrid{grid-template-columns:repeat(7,minmax(0,1fr)) 88px}}
-.bx-day{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.09);border-radius:.9rem;transition:box-shadow .15s,transform .15s}
-.bx-day:hover{box-shadow:0 0 14px rgba(242,176,30,.22)}
+.bx-day{background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.1);border-radius:1rem;transition:box-shadow .15s,transform .15s}
+.bx-day:hover{box-shadow:0 0 14px rgba(244,127,69,.22)}
 .bx-muted{color:var(--cardink2)}
 .bx-bt{border-top:1px solid var(--cardline)}
 .bx-bb{border-bottom:1px solid var(--cardline)}
@@ -149,7 +149,7 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-input::placeholder{color:#6B6760}
 .bx-input:disabled{opacity:.5}
 select.bx-input option{background:#161616;color:#fff}
-.bx-btn{background:linear-gradient(180deg,#F7BC2E,#E49C10);color:#17120a;font-weight:800;box-shadow:0 6px 22px rgba(242,176,30,.28);border-radius:.75rem;padding:.5rem 1rem;font-size:.875rem;line-height:1.25rem;cursor:pointer;transition:filter .15s;display:inline-block}
+.bx-btn{background:linear-gradient(180deg,#FA9A6B,#D95F26);color:#1a0d05;font-weight:800;box-shadow:0 6px 22px rgba(244,127,69,.28);border-radius:.75rem;padding:.5rem 1rem;font-size:.875rem;line-height:1.25rem;cursor:pointer;transition:filter .15s;display:inline-block}
 .bx-btn:hover{filter:brightness(1.1)}
 .bx-btn:disabled{opacity:.4;cursor:not-allowed}
 .bx-ghost{border:1px solid var(--cardline);color:var(--cardink);border-radius:.75rem;padding:.5rem .75rem;font-size:.875rem;cursor:pointer;background:transparent}
@@ -170,7 +170,7 @@ select.bx-input option{background:#161616;color:#fff}
 .bx-seg.on.mid{background:rgba(168,163,155,.2);border-color:#A8A39B;color:#e7e5e4}
 .bx-seg.on.open{background:rgba(56,189,248,.18);border-color:#38bdf8;color:#7dd3fc}
 .bx-seg.on.wait{background:rgba(251,191,36,.18);border-color:#fbbf24;color:#fcd34d}
-.bx-seg.on.acc{background:rgba(242,176,30,.2);border-color:#F2B01E;color:#fcd68a}
+.bx-seg.on.acc{background:rgba(244,127,69,.2);border-color:#F47F45;color:#fdc3a0}
 .bx-file{font-size:.75rem;color:var(--cardink2)}
 .bx-file::file-selector-button{margin-right:.75rem;border:0;border-radius:.5rem;background:var(--accent);color:#17120a;font-weight:800;font-size:.75rem;padding:.375rem .75rem;cursor:pointer}
 `;
@@ -246,8 +246,18 @@ function guessSub(asset) {
 
 // Tamaño de 1 pip (o punto) expresado en precio
 const isStepIndex = (asset) => /^\s*STEP\b/i.test(asset || ""); // Step Index (no incluye MULTI STEP)
+// Sintéticos: 1 punto = el movimiento de precio que vale $1 por lote = 1 / contract size (según Specification de MT5 en Deriv).
+// Boom, Crash, Volatility, Jump... tienen contract size 1 → 1 punto = 1.00 de precio.
+// Step Index 100/200/300/400/500 tienen contract size 10 → 1 punto = 0.1; Step 1000/1500/2000 tienen 1 → 1 punto = 1.00.
+const STEP_CONTRACT = { 100: 10, 200: 10, 300: 10, 400: 10, 500: 10, 1000: 1, 1500: 1, 2000: 1 };
+function synthPip(asset) {
+  const m = /^\s*STEP\b(?:\s*INDEX)?\s*(\d+)?/i.exec(asset || "");
+  if (!m) return 1;
+  const cs = STEP_CONTRACT[Number(m[1] || 100)] || 10;
+  return 1 / cs;
+}
 function guessPip(asset, category, sub) {
-  if (category === "SINTETICO") return isStepIndex(asset) ? 0.1 : 1; // Step Index: 1 punto = 0.1 de precio
+  if (category === "SINTETICO") return synthPip(asset);
   const a = (asset || "").toUpperCase();
   if (/XAU|GOLD/.test(a)) return 0.1;
   if (/XAG|SILVER/.test(a)) return 0.01;
@@ -942,7 +952,7 @@ function TradeForm({ initial, onCancel, onSave }) {
         </div>
 
         {f.warnings?.length > 0 && (
-          <div className="mb-3 rounded-xl text-xs p-3" style={{ background: "rgba(242,176,30,.12)", border: "1px solid rgba(242,176,30,.45)", color: "#fcd68a" }}>
+          <div className="mb-3 rounded-xl text-xs p-3" style={{ background: "rgba(244,127,69,.12)", border: "1px solid rgba(244,127,69,.45)", color: "#fdc3a0" }}>
             ⚠ Revisa antes de guardar: {f.warnings.join(" · ")}
           </div>
         )}
@@ -987,7 +997,7 @@ function TradeForm({ initial, onCancel, onSave }) {
           <Field label="Activo" className="col-span-2">
             <input className="bx-input" placeholder="XAUUSD, NAS100, CRASH 900, GAINX 400..." value={f.asset} onChange={(e) => set("asset", e.target.value)} />
             {auto && (
-              <div className="text-[11px] mt-1" style={{ color: "#fcd68a" }}>
+              <div className="text-[11px] mt-1" style={{ color: "#fdc3a0" }}>
                 Clasificación automática: {auto.category === "SINTETICO" ? `Sintético · ${auto.broker}` : `CFD · ${auto.sub}`}
               </div>
             )}
@@ -1178,7 +1188,7 @@ function LegEditor({ t, k, onChange }) {
             )))}
           </div>
           {hitMax(t) >= 0 && <div className="mt-1 text-[11px]" style={{ color: "#86efac" }}>Se registra: tocó hasta TP{hitMax(t) + 1} y {L.status === "BE" ? "volvió a BE" : "luego tocó el SL"}.</div>}
-          {L.status === "SL" && num(L.reached) !== null && <div className="mt-1 text-[11px]" style={{ color: "#fcd68a" }}>Escribe abajo el resultado neto real (ganancia del parcial menos la pérdida del resto).</div>}
+          {L.status === "SL" && num(L.reached) !== null && <div className="mt-1 text-[11px]" style={{ color: "#fdc3a0" }}>Escribe abajo el resultado neto real (ganancia del parcial menos la pérdida del resto).</div>}
         </div>
       )}
       {L.status !== "Abierta" && L.status !== "Pendiente" && (
@@ -1198,7 +1208,7 @@ function LegEditor({ t, k, onChange }) {
           </label>
           <div className="text-xs bx-muted pb-2">{r !== null ? `${r >= 0 ? "+" : ""}${r.toFixed(2)}R` : ""}</div>
           {(isOpenTp || needsPips) && (
-            <div className="text-xs pb-2" style={{ color: "#fcd68a" }}>
+            <div className="text-xs pb-2" style={{ color: "#fdc3a0" }}>
               {isOpenTp ? "TP abierto: escribe los pips/puntos reales alcanzados." : L.status === "MANUAL" ? "Cierre manual: escribe los pips/puntos finales (con − si cerró en pérdida)." : "Escribe los pips/puntos reales."}
             </div>
           )}
@@ -1320,7 +1330,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
         {t.tags?.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {t.tags.map((g) => (
-              <span key={g} className="text-[11px] px-2 py-0.5 rounded-full" style={{ border: "1px solid rgba(242,176,30,.5)", color: "#fcd68a" }}>#{g}</span>
+              <span key={g} className="text-[11px] px-2 py-0.5 rounded-full" style={{ border: "1px solid rgba(244,127,69,.5)", color: "#fdc3a0" }}>#{g}</span>
             ))}
           </div>
         )}
@@ -1459,7 +1469,7 @@ function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
                     className="rounded-md text-xs font-bold relative"
                     style={{
                       height: 32,
-                      background: single ? ACCENT : inR ? "rgba(242,176,30,.28)" : "#161616",
+                      background: single ? ACCENT : inR ? "rgba(244,127,69,.28)" : "#161616",
                       color: single ? "#fff" : "#E8E4DC",
                       border: `1px solid ${d === today ? ACCENT : "#2A2A2A"}`,
                     }}
@@ -1790,7 +1800,7 @@ async function drawRecapImage(trades, mode, ref, scope) {
   const T = (s, px, py, o = {}) => { x.font = F(o.w || 400, o.s || 30); x.fillStyle = o.c || INK; x.textAlign = o.a || "left"; x.textBaseline = "alphabetic"; x.fillText(s, px, py); return x.measureText(s).width; };
   x.fillStyle = BG; x.fillRect(0, 0, W, H);
   // halo dorado muy suave en la esquina (identidad de la página)
-  const g = x.createRadialGradient(W, 0, 0, W, 0, 700); g.addColorStop(0, "rgba(242,176,30,.16)"); g.addColorStop(1, "rgba(242,176,30,0)");
+  const g = x.createRadialGradient(W, 0, 0, W, 0, 700); g.addColorStop(0, "rgba(244,127,69,.16)"); g.addColorStop(1, "rgba(244,127,69,0)");
   x.fillStyle = g; x.fillRect(0, 0, W, H);
   const uName = units.length === 1 && units[0] === "puntos" ? "points" : "pips";
   const total = round1(list.reduce((a, t) => a + t.p, 0));
@@ -1942,9 +1952,9 @@ async function drawCopyImage({ pre, date, f }) {
   const fit = (txt, wt, size, maxW) => { let z = size; x.font = FN(wt, z); while (z > 24 && x.measureText(txt).width > maxW) { z -= 2; x.font = FN(wt, z); } return z; };
   const tone = (v) => { const t = (v || "").trim(); if (!t || /--/.test(t)) return MUTED; return t.startsWith("-") || t.startsWith("−") ? NEG : t.startsWith("+") ? POS : INK; };
   x.fillStyle = BG; x.fillRect(0, 0, W, H);
-  const g = x.createRadialGradient(W, 0, 0, W, 0, 900); g.addColorStop(0, "rgba(242,176,30,.22)"); g.addColorStop(1, "rgba(242,176,30,0)");
+  const g = x.createRadialGradient(W, 0, 0, W, 0, 900); g.addColorStop(0, "rgba(244,127,69,.22)"); g.addColorStop(1, "rgba(244,127,69,0)");
   x.fillStyle = g; x.fillRect(0, 0, W, H);
-  const g2 = x.createRadialGradient(0, H, 0, 0, H, 700); g2.addColorStop(0, "rgba(242,176,30,.08)"); g2.addColorStop(1, "rgba(242,176,30,0)");
+  const g2 = x.createRadialGradient(0, H, 0, 0, H, 700); g2.addColorStop(0, "rgba(244,127,69,.08)"); g2.addColorStop(1, "rgba(244,127,69,0)");
   x.fillStyle = g2; x.fillRect(0, 0, W, H);
   // Encabezado
   try { const lg = await loadImg(LOGO); const lh = 70, lw = (lg.width / lg.height) * lh; x.drawImage(lg, M, 86, lw, lh); } catch (e) {}
@@ -2029,7 +2039,7 @@ function CopyPanel() {
             <input type="file" accept="image/*" onChange={onFile} disabled={busy} className="bx-input" data-testid="copy-file" />
           </label>
           {thumb && <img src={thumb} alt="Captura subida" style={{ maxHeight: 90, borderRadius: 8, border: "1px solid rgba(255,255,255,.12)" }} />}
-          {msg && <div className="text-xs" style={{ color: "#fcd68a" }} data-testid="copy-msg">{msg}</div>}
+          {msg && <div className="text-xs" style={{ color: "#fdc3a0" }} data-testid="copy-msg">{msg}</div>}
           <div className="grid sm:grid-cols-2 gap-3">
             <label className="block"><span className="bx-label">Texto pequeño sobre el título</span><input className="bx-input" value={pre} onChange={(e) => setPre(e.target.value)} /></label>
             <label className="block"><span className="bx-label">Fecha o período</span><input className="bx-input" value={date} onChange={(e) => setDate(e.target.value)} /></label>
@@ -2135,7 +2145,7 @@ function RecapPanel({ trades, defaultScope }) {
         </div>
       </div>
       {mode === "monthly" && <div className="mt-2 text-xs bx-muted">La imagen mensual todavía no está disponible (diario y semanal sí).</div>}
-      {imgMsg && <div className="mt-2 text-xs" style={{ color: "#fcd68a" }}>{imgMsg}</div>}
+      {imgMsg && <div className="mt-2 text-xs" style={{ color: "#fdc3a0" }}>{imgMsg}</div>}
       {img && (
         <div className="mt-4 flex flex-col items-center gap-3" data-testid="recap-img">
           <img src={img} alt="Resumen en imagen" style={{ width: "100%", maxWidth: 420, borderRadius: 12, border: "1px solid rgba(255,255,255,.12)" }} />
@@ -2363,7 +2373,7 @@ function FaqMessage({ text }) {
 function FaqBlock({ b }) {
   if (b.t === "p") return <p className={`${b.gap ? "mt-3 " : "mt-2 "}text-sm leading-relaxed`} style={{ color: "#D6D1C9" }}>{withHandle(b.x)}</p>;
   if (b.t === "h") return <div className="mt-4 text-[11px] font-black tracking-[0.2em] uppercase" style={{ color: ACCENT }}>{b.x}</div>;
-  if (b.t === "note") return <p className="mt-3 text-sm leading-relaxed rounded-lg px-3 py-2" style={{ background: "rgba(242,176,30,.12)", border: "1px solid rgba(242,176,30,.45)", color: "#FFFFFF" }}><b style={{ color: ACCENT }}>{b.x[0]}</b> {b.x[1]}</p>;
+  if (b.t === "note") return <p className="mt-3 text-sm leading-relaxed rounded-lg px-3 py-2" style={{ background: "rgba(244,127,69,.12)", border: "1px solid rgba(244,127,69,.45)", color: "#FFFFFF" }}><b style={{ color: ACCENT }}>{b.x[0]}</b> {b.x[1]}</p>;
   if (b.t === "msg") return <FaqMessage text={b.x} />;
   return (
     <ul className="mt-3 space-y-2 text-sm leading-relaxed text-left list-disc pl-5" style={{ color: "#D6D1C9" }}>
@@ -2381,7 +2391,7 @@ function FaqVip() {
         {FAQ_ITEMS.map((it, i) => {
           const isOpen = openIdx === i;
           return (
-            <div key={i} className="overflow-hidden" style={{ background: "#161616", border: `1px solid ${isOpen ? "rgba(242,176,30,.55)" : "#2A2A2A"}`, borderRadius: 18, transition: "border-color .2s" }}>
+            <div key={i} className="overflow-hidden" style={{ background: "linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.015))", border: `1px solid ${isOpen ? "rgba(244,127,69,.55)" : "rgba(255,255,255,.13)"}`, borderRadius: 18, transition: "border-color .2s" }}>
               <button
                 type="button"
                 onClick={() => setOpenIdx(isOpen ? -1 : i)}
@@ -2531,7 +2541,7 @@ function CompCalc() {
               <XAxis dataKey="m" tick={{ fill: "#8A8578", fontSize: 11 }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fill: "#8A8578", fontSize: 11 }} tickLine={false} axisLine={false} width={56} />
               <Tooltip contentStyle={{ background: "#10131c", border: "1px solid rgba(255,255,255,.12)", borderRadius: 10, fontSize: 12 }} formatter={(v) => usd(v)} labelFormatter={(l) => `Mes ${l}`} />
-              <Area type="monotone" dataKey="bal" stroke={ACCENT} fill="rgba(242,176,30,.18)" strokeWidth={2} />
+              <Area type="monotone" dataKey="bal" stroke={ACCENT} fill="rgba(244,127,69,.18)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -2544,8 +2554,8 @@ function ToolCards({ onPick, active }) {
   return (
     <div className="grid sm:grid-cols-3 gap-3 md:gap-4">
       {TOOLS.map((t) => (
-        <button key={t.k} type="button" onClick={() => onPick(t.k)} className="bx-plan text-left" data-testid="tool-card" style={active === t.k ? { borderColor: "rgba(242,176,30,.85)" } : undefined}>
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: "rgba(242,176,30,.12)", border: "1px solid rgba(242,176,30,.35)" }}>{t.icon}</div>
+        <button key={t.k} type="button" onClick={() => onPick(t.k)} className="bx-plan text-left" data-testid="tool-card" style={active === t.k ? { borderColor: "rgba(244,127,69,.85)" } : undefined}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: "rgba(244,127,69,.12)", border: "1px solid rgba(244,127,69,.35)" }}>{t.icon}</div>
           <div className="mt-3 text-base font-extrabold text-white leading-snug">{t.name}</div>
           <p className="mt-1.5 text-sm bx-ink2 leading-relaxed">{t.text}</p>
           <div className="flex-1" />
@@ -2596,7 +2606,7 @@ function Testimonios() {
           <div key={i} className="bx-plan" data-testid="testimonio-card">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2"><span className="font-extrabold text-white">{t.asset}</span><DirBadge dir={t.dir === "Sell" ? "SELL" : "BUY"} /></div>
-              {demo && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(242,176,30,.14)", color: ACCENT, border: "1px solid rgba(242,176,30,.4)" }}>EJEMPLO</span>}
+              {demo && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(244,127,69,.14)", color: ACCENT, border: "1px solid rgba(244,127,69,.4)" }}>EJEMPLO</span>}
             </div>
             <div className="mt-3 text-3xl font-extrabold leading-none" style={{ color: "#34d399" }}>{t.result}</div>
             <div className="mt-2 text-xs bx-muted">{t.date} · Canal VIP</div>
@@ -2618,12 +2628,12 @@ const SMC_C = [ // [apertura, máximo, mínimo, cierre]
   [116, 117, 106, 108], [108, 114, 107, 113], [113, 118, 112, 117], [117, 119, 115, 118], [118, 119, 116, 117],
 ];
 const SMC_STEPS = [
-  { k: "BSL", tone: "#F2B01E", title: "Buy-side liquidity (BSL)", text: "Dos máximos iguales. Todo trader que vendió aquí tiene su stop justo encima. Ese conjunto de órdenes es un imán, y el precio volverá a buscarlo." },
-  { k: "SSL", tone: "#F2B01E", title: "Sell-side liquidity (SSL)", text: "Dos mínimos iguales. Quienes compraron aquí tienen su stop justo debajo. Es otro imán de liquidez: el precio querrá ir a buscarlo." },
+  { k: "BSL", tone: "#F47F45", title: "Buy-side liquidity (BSL)", text: "Dos máximos iguales. Todo trader que vendió aquí tiene su stop justo encima. Ese conjunto de órdenes es un imán, y el precio volverá a buscarlo." },
+  { k: "SSL", tone: "#F47F45", title: "Sell-side liquidity (SSL)", text: "Dos mínimos iguales. Quienes compraron aquí tienen su stop justo debajo. Es otro imán de liquidez: el precio querrá ir a buscarlo." },
   { k: "SWEEP", tone: "#ef4444", title: "El barrido (sweep)", text: "El precio se mete bajo los mínimos, activa todos los stops y cierra de nuevo por encima. Los minoristas salen stopeados. Esa es la trampa y, a la vez, la señal." },
-  { k: "OB", tone: "#F2B01E", title: "Order block (OB)", text: "La última vela bajista antes del impulso alcista. Ahí quedaron órdenes institucionales, y el precio suele respetar esa zona cuando regresa." },
+  { k: "OB", tone: "#F47F45", title: "Order block (OB)", text: "La última vela bajista antes del impulso alcista. Ahí quedaron órdenes institucionales, y el precio suele respetar esa zona cuando regresa." },
   { k: "CHoCH", tone: "#10b981", title: "Cambio de carácter (CHoCH)", text: "El precio rompe con cuerpo el último máximo menor. La estructura pasó de bajista a alcista: el barrido tuvo intención." },
-  { k: "FVG", tone: "#F2B01E", title: "Fair value gap (FVG)", text: "Un hueco que deja el impulso: tres velas donde la del medio no deja solapamiento. El precio tiende a volver a rellenarlo." },
+  { k: "FVG", tone: "#F47F45", title: "Fair value gap (FVG)", text: "Un hueco que deja el impulso: tres velas donde la del medio no deja solapamiento. El precio tiende a volver a rellenarlo." },
   { k: "ENTRY", tone: "#10b981", title: "La entrada", text: "Orden limit dentro del FVG, con el stop bajo el OB. Entras en el retroceso, con el riesgo definido y sin perseguir el precio." },
   { k: "TP", tone: "#10b981", title: "Objetivo 1.5R", text: "El primer objetivo está a 1.5 veces el riesgo: por cada $1 que arriesgas, buscas $1.50. Al llegar, se toma ganancia o se protege la operación." },
 ];
@@ -2651,15 +2661,15 @@ function SmcChart() {
         <svg viewBox="0 0 780 375" className="w-full h-auto mt-2" role="img" aria-label="Gráfico educativo de una operación SMC en oro">
           {[60, 140, 220, 300].map((y) => <line key={y} x1="20" x2="760" y1={y} y2={y} stroke="rgba(255,255,255,.05)" />)}
           {/* BSL */}
-          <g opacity={op(0)}><line x1={X(0)} x2={730} y1={Y(126)} y2={Y(126)} stroke="#F2B01E" strokeDasharray="5 4" /><text x="736" y={Y(126) + 4} fill="#F2B01E" fontSize="13" fontFamily={mono} fontWeight="700">BSL</text></g>
+          <g opacity={op(0)}><line x1={X(0)} x2={730} y1={Y(126)} y2={Y(126)} stroke="#F47F45" strokeDasharray="5 4" /><text x="736" y={Y(126) + 4} fill="#F47F45" fontSize="13" fontFamily={mono} fontWeight="700">BSL</text></g>
           {/* SSL */}
-          <g opacity={op(1)}><line x1={X(6)} x2={730} y1={Y(100)} y2={Y(100)} stroke="#F2B01E" strokeDasharray="5 4" /><text x="736" y={Y(100) + 4} fill="#F2B01E" fontSize="13" fontFamily={mono} fontWeight="700">SSL</text></g>
+          <g opacity={op(1)}><line x1={X(6)} x2={730} y1={Y(100)} y2={Y(100)} stroke="#F47F45" strokeDasharray="5 4" /><text x="736" y={Y(100) + 4} fill="#F47F45" fontSize="13" fontFamily={mono} fontWeight="700">SSL</text></g>
           {/* CHoCH */}
           <g opacity={op(4)}><line x1={X(8)} x2={X(13) + 10} y1={Y(111)} y2={Y(111)} stroke="#10b981" strokeDasharray="5 4" /><text x={X(13) + 16} y={Y(111) + 4} fill="#10b981" fontSize="12" fontFamily={mono} fontWeight="700">CHoCH</text></g>
           {/* OB */}
           <g opacity={op(3)}><rect x={X(12) - 9} y={Y(102)} width={X(15) - X(12) + 9} height={Y(98) - Y(102)} fill="rgba(139,92,246,.20)" stroke="#8b5cf6" /><text x={X(12) - 9} y={Y(98) + 14} fill="#a78bfa" fontSize="12" fontFamily={mono} fontWeight="700">OB</text></g>
           {/* FVG */}
-          <g opacity={op(5)}><rect x={X(13)} y={Y(107)} width={X(16) - X(13)} height={Y(102) - Y(107)} fill="rgba(242,176,30,.16)" stroke="#F2B01E" /><text x={X(13) + 4} y={Y(102) - 5} fill="#F2B01E" fontSize="12" fontFamily={mono} fontWeight="700">FVG</text></g>
+          <g opacity={op(5)}><rect x={X(13)} y={Y(107)} width={X(16) - X(13)} height={Y(102) - Y(107)} fill="rgba(244,127,69,.16)" stroke="#F47F45" /><text x={X(13) + 4} y={Y(102) - 5} fill="#F47F45" fontSize="12" fontFamily={mono} fontWeight="700">FVG</text></g>
           {/* Entrada y SL */}
           <g opacity={op(6)}><line x1={X(15)} x2={X(19)} y1={Y(106)} y2={Y(106)} stroke="#fff" /><line x1={X(15)} x2={X(19)} y1={Y(98)} y2={Y(98)} stroke="#ef4444" strokeDasharray="4 4" /><text x={X(19) + 8} y={Y(106) + 4} fill="#fff" fontSize="12" fontFamily={mono} fontWeight="700">ENTRY</text><text x={X(19) + 8} y={Y(98) + 4} fill="#ef4444" fontSize="12" fontFamily={mono} fontWeight="700">SL</text></g>
           {/* Objetivo */}
@@ -2812,7 +2822,7 @@ function VipOfferCta({ setPage }) {
   return (
     <div
       className="mt-8 rounded-2xl p-6 md:p-8 text-center"
-      style={{ background: "radial-gradient(600px circle at 50% 0%, rgba(242,176,30,.30), transparent 65%), #161616", border: `2px solid ${ACCENT}`, boxShadow: "0 0 40px rgba(242,176,30,.25)" }}
+      style={{ background: "radial-gradient(600px circle at 50% 0%, rgba(244,127,69,.30), transparent 65%), rgba(30,22,18,.85)", border: `2px solid ${ACCENT}`, boxShadow: "0 0 40px rgba(244,127,69,.25)" }}
     >
       <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">OFERTA EXCLUSIVA</div>
       <h3 className="mt-2 text-xl md:text-3xl font-black leading-tight text-white">¿Quieres ser parte del VIP sin pagar mensualidad?</h3>
@@ -2852,11 +2862,11 @@ const SIGNAL_EXAMPLES = {
   SINTETICO: {
     channel: "SINTETICOS VIP",
     short: true,
-    title: "CRASH 900 INDEX BUY LIMIT", entry: "17826.00", sl: "17843.00",
+    title: "CRASH 900 INDEX SELL LIMIT", entry: "17826.00", sl: "17843.00",
     tps: [["17726.00"], ["17676.00"], ["17526.00"]],
     updates: ["CRASH 900 ENTRADA ACTIVA 🟢", "TP1 HIT 100 PIPS ✅"],
     legend: [
-      ["Par", ["CRASH 900 INDEX"], "entry", "El índice sintético y el tipo de orden: Buy Limit, que espera a que el precio llegue al nivel."],
+      ["Par", ["CRASH 900 INDEX"], "entry", "El índice sintético y el tipo de orden: Sell Limit, que espera a que el precio llegue al nivel."],
       ["Entrada", ["17826.00"], "entry", "Una sola entrada, clara y directa."],
       ["Objetivos", ["17726.00", "17676.00", "17526.00"], "tp", "Tres niveles para tomar ganancia: TP1, TP2 y TP3."],
       ["Stop", ["17843.00"], "sl", "La salida si el precio se gira en contra de la idea."],
@@ -2888,7 +2898,7 @@ function SignalShowcase({ kind }) {
       <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center max-w-5xl mx-auto">
         <div className="bx-card w-full max-w-md mx-auto md:mx-0 md:ml-auto overflow-hidden">
           <div className="flex items-center gap-3 px-4 py-3 bx-bb">
-            <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(242,176,30,.35)" }} />
+            <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(244,127,69,.35)" }} />
             <div>
               <div className="font-extrabold text-white leading-tight">{chName}</div>
               <div className="text-xs bx-muted">Sala de señales VIP</div>
@@ -3144,13 +3154,13 @@ function DayTradeCard({ t, onOpen, onSignal, onEdit, onDelete }) {
           type="button"
           onClick={(e) => { e.stopPropagation(); onSignal(t); }}
           className="text-xs font-bold underline underline-offset-4"
-          style={{ color: "#fcd68a" }}
+          style={{ color: "#fdc3a0" }}
         >
           📡 Ver señal original
         </button>
       </div>
       {note && (
-        <div className="mt-3 rounded-lg px-3 py-2 text-sm whitespace-pre-line" style={{ background: "rgba(242,176,30,.10)", border: "1px solid rgba(242,176,30,.35)", color: "#ffd2b8" }}>
+        <div className="mt-3 rounded-lg px-3 py-2 text-sm whitespace-pre-line" style={{ background: "rgba(244,127,69,.10)", border: "1px solid rgba(244,127,69,.35)", color: "#ffd2b8" }}>
           📝 <b>Nota:</b> {note}
         </div>
       )}
@@ -3612,11 +3622,6 @@ function LiveStatus() {
         <span className="font-black tracking-widest text-white">CFD</span>
         <span className={cfd ? "text-emerald-400 font-bold" : "text-rose-400 font-bold"}>{cfd ? "EN VIVO · Mercado abierto" : "Mercado cerrado"}</span>
         {!cfd && <span className="bx-muted hidden sm:inline">Abre el domingo 5:00 PM (NY)</span>}
-      </div>
-      <div className="bx-live" data-testid="live-synth">
-        <span className="bx-dot live" />
-        <span className="font-black tracking-widest text-white">SINTÉTICOS</span>
-        <span className="text-emerald-400 font-bold">EN VIVO · Abierto 24/7</span>
       </div>
     </div>
   );
@@ -4311,7 +4316,7 @@ export default function App() {
             <div>
               <h2 className="font-extrabold tracking-wider bx-accent">REGISTRO DE OPERACIONES</h2>
               <div className="text-xs bx-muted">{filtered.length} de {baseList.length} señales · {scopeLabel} · {dateFilter ? dateLabel : periodLabel}</div>
-              {isAdmin && <div className="text-[11px] mt-1" style={{ color: "#fcd68a" }}>Vista Admin: también ves señales pendientes, activas y descartadas. El público ve las cerradas (TP / SL / BE) y las descartadas, nunca las pendientes ni las activas.</div>}
+              {isAdmin && <div className="text-[11px] mt-1" style={{ color: "#fdc3a0" }}>Vista Admin: también ves señales pendientes, activas y descartadas. El público ve las cerradas (TP / SL / BE) y las descartadas, nunca las pendientes ni las activas.</div>}
             </div>
 
             <div className="flex flex-wrap gap-2 items-center">
@@ -4344,7 +4349,7 @@ export default function App() {
                       <td className="px-3 py-3 font-bold whitespace-nowrap">
                         {t.asset}
                         {t.tags?.includes("VIP Signal") && (
-                          <span className="ml-2 text-[10px] px-1 rounded" style={{ color: "#fcd68a", border: "1px solid rgba(242,176,30,.5)" }}>VIP</span>
+                          <span className="ml-2 text-[10px] px-1 rounded" style={{ color: "#fdc3a0", border: "1px solid rgba(244,127,69,.5)" }}>VIP</span>
                         )}
                       </td>
                       <td className="px-3 py-3"><DirBadge dir={t.direction} /></td>
@@ -4391,7 +4396,7 @@ export default function App() {
         )}
         {page === "admin" && isAdmin && (
           <div className="space-y-6" data-testid="admin-panel">
-            <section className="bx-card p-5 md:p-6" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(242,176,30,.20), transparent 60%), rgba(16,19,28,.85)" }}>
+            <section className="bx-card p-5 md:p-6" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(244,127,69,.20), transparent 60%), rgba(16,19,28,.85)" }}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">PANEL DE ADMINISTRACIÓN</div>
@@ -4448,10 +4453,10 @@ export default function App() {
         <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-4" data-testid="site-footer">
           {page !== "admin" && (<>
             <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-bold" aria-label="Enlaces">
-              <button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]">Herramientas</button>
-              <button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]">Señales CFDs</button>
-              <button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]">Señales Sintéticos</button>
-              <button type="button" onClick={() => { setPage("vip"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F2B01E]" data-testid="footer-vip-free">VIP gratis</button>
+              <button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F47F45]">Herramientas</button>
+              <button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F47F45]">Señales CFDs</button>
+              <button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F47F45]">Señales Sintéticos</button>
+              <button type="button" onClick={() => { setPage("vip"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F47F45]" data-testid="footer-vip-free">VIP gratis</button>
             </nav>
             <p className="max-w-3xl mx-auto leading-relaxed" data-testid="risk-disclaimer">
               El trading es una actividad de alto riesgo. Operar con productos apalancados (CFDs, divisas, índices sintéticos) puede resultar en la pérdida de todo el capital invertido y no es adecuado para todos los inversores. Su dinero está en riesgo. Los resultados pasados no garantizan resultados futuros. Todo el contenido de este sitio es educativo y no constituye asesoramiento financiero.
