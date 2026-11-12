@@ -1882,6 +1882,131 @@ async function drawRecapImage(trades, mode, ref, scope) {
   return { url: c.toDataURL("image/png"), mixed: units.length > 1, count: list.length };
 }
 
+/* ----------------------------- Resultados del copy (imagen con el diseño de la marca) ----------------------------- */
+const loadImg = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+const rrect = (x, px, py, w, h, r) => { x.beginPath(); x.moveTo(px + r, py); x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r); x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); };
+async function drawCopyImage({ shot, title, date, ret, stats }) {
+  try { await Promise.all([document.fonts.load("700 40px Inter"), document.fonts.load("400 30px Inter")]); } catch (e) {}
+  const W = 1080, H = 1350, SC = 2, M = 80;
+  const c = document.createElement("canvas"); c.width = W * SC; c.height = H * SC;
+  const x = c.getContext("2d"); x.scale(SC, SC);
+  const BG = "#0A0A0C", INK = "#F5F3EE", MUTED = "#8A8578", POS = "#34d399", NEG = "#fb7185";
+  const F = (wt, sz) => `${wt} ${sz}px Inter, "Segoe UI", Arial, sans-serif`;
+  const T = (s, px, py, o = {}) => { x.font = F(o.w || 400, o.s || 30); x.fillStyle = o.c || INK; x.textAlign = o.a || "left"; x.textBaseline = "alphabetic"; if (o.ls !== undefined) { try { x.letterSpacing = o.ls + "px"; } catch (e) {} } x.fillText(s, px, py); try { x.letterSpacing = "0px"; } catch (e) {} return x.measureText(s).width; };
+  x.fillStyle = BG; x.fillRect(0, 0, W, H);
+  const g = x.createRadialGradient(W, 0, 0, W, 0, 900); g.addColorStop(0, "rgba(242,176,30,.20)"); g.addColorStop(1, "rgba(242,176,30,0)");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  const g2 = x.createRadialGradient(0, H, 0, 0, H, 700); g2.addColorStop(0, "rgba(242,176,30,.07)"); g2.addColorStop(1, "rgba(242,176,30,0)");
+  x.fillStyle = g2; x.fillRect(0, 0, W, H);
+  // Encabezado: logo + marca + fecha
+  try { const lg = await loadImg(LOGO); const lh = 70, lw = (lg.width / lg.height) * lh; x.drawImage(lg, M, 86, lw, lh); } catch (e) {}
+  T("BORKAIFX ELITE", M + 76, 118, { s: 28, w: 700, ls: 5 });
+  T(title.toUpperCase(), M + 76, 150, { s: 19, c: ACCENT, w: 600, ls: 5 });
+  T(date, W - M, 128, { s: 30, c: MUTED, a: "right" });
+  let cur = 200;
+  const r = (ret || "").trim();
+  if (r) {
+    const neg = r.startsWith("-");
+    T("Return", M, 290, { s: 34, c: MUTED });
+    T(r, M, 430, { s: r.length > 7 ? 130 : 160, w: 800, c: neg ? NEG : POS });
+    cur = 480;
+  }
+  const st = stats.filter((s) => s.v.trim());
+  if (st.length) {
+    const cw = (W - 2 * M - 24) / 2, ch = 150;
+    st.slice(0, 4).forEach((s, i) => {
+      const px = M + (i % 2) * (cw + 24), py = cur + Math.floor(i / 2) * (ch + 24);
+      rrect(x, px, py, cw, ch, 28); x.fillStyle = "rgba(255,255,255,.04)"; x.fill(); x.strokeStyle = "rgba(255,255,255,.12)"; x.lineWidth = 1.5; x.stroke();
+      T(s.l, px + 30, py + 52, { s: 26, c: MUTED });
+      const neg = s.v.trim().startsWith("-");
+      T(s.v, px + 30, py + 110, { s: 48, w: 800, c: s.green ? (neg ? NEG : POS) : INK });
+    });
+    cur += Math.ceil(Math.min(st.length, 4) / 2) * (ch + 24) + 10;
+  }
+  if (shot) {
+    const availH = 1215 - cur, availW = W - 2 * M;
+    const sc = Math.min(availW / shot.width, availH / shot.height);
+    const w = shot.width * sc, h = shot.height * sc, px = (W - w) / 2, py = cur + (availH - h) / 2;
+    x.save(); rrect(x, px, py, w, h, 30); x.shadowColor = "rgba(0,0,0,.5)"; x.shadowBlur = 30; x.fillStyle = "#fff"; x.fill(); x.restore();
+    x.save(); rrect(x, px, py, w, h, 30); x.clip(); x.drawImage(shot, px, py, w, h); x.restore();
+    rrect(x, px, py, w, h, 30); x.strokeStyle = "rgba(242,176,30,.55)"; x.lineWidth = 2; x.stroke();
+  }
+  T("Past performance does not guarantee future results.", W / 2, 1262, { s: 21, c: "#6b665c", a: "center" });
+  T("borkaifx-elite.vercel.app", W / 2, 1306, { s: 27, c: MUTED, a: "center", ls: 1 });
+  return c.toDataURL("image/png");
+}
+function CopyPanel() {
+  const [shot, setShot] = useState(null);
+  const [title, setTitle] = useState("Copy results");
+  const [date, setDate] = useState(() => { const d = new Date(); return `${EN_DAYS[d.getDay()]}, ${d.getDate()} ${EN_MON[d.getMonth()]}`; });
+  const [ret, setRet] = useState("");
+  const [stats, setStats] = useState([{ l: "Realised P/L", v: "", green: true }, { l: "Balance", v: "" }, { l: "Equity", v: "" }, { l: "Trades", v: "" }]);
+  const [out, setOut] = useState(null);
+  const [msg, setMsg] = useState("");
+  const onFile = async (e) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    try {
+      const url = await new Promise((res, rej) => { const fr = new FileReader(); fr.onload = () => res(fr.result); fr.onerror = rej; fr.readAsDataURL(f); });
+      setShot(await loadImg(url)); setMsg("");
+    } catch (err) { setMsg("No se pudo leer esa imagen."); }
+    e.target.value = "";
+  };
+  useEffect(() => {
+    let live = true;
+    if (!shot && !ret.trim() && !stats.some((s) => s.v.trim())) { setOut(null); return; }
+    drawCopyImage({ shot, title, date, ret, stats }).then((u) => { if (live) setOut(u); }).catch(() => { if (live) setMsg("No se pudo generar la imagen."); });
+    return () => { live = false; };
+  }, [shot, title, date, ret, stats]);
+  const setStat = (i, k, v) => setStats((a) => a.map((s, j) => (j === i ? { ...s, [k]: v } : s)));
+  const copyImg = async () => {
+    try { const blob = await (await fetch(out)).blob(); await navigator.clipboard.write([new window.ClipboardItem({ "image/png": blob })]); setMsg("✓ Imagen copiada"); }
+    catch (e) { setMsg("Tu navegador no permite copiar la imagen: usa Descargar PNG."); }
+  };
+  return (
+    <section className="bx-card p-4 md:p-5" data-testid="copy-panel">
+      <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Resultados del copy · imagen con el diseño de la marca</div>
+      <div className="text-xs bx-muted mt-1">Sube la captura del broker y se le pone el logo, los colores y el título. La imagen sale en inglés. Los datos de abajo son opcionales.</div>
+      <div className="mt-4 grid lg:grid-cols-[1fr_340px] gap-5 items-start">
+        <div className="space-y-3">
+          <label className="block">
+            <span className="bx-label">Captura del broker</span>
+            <input type="file" accept="image/*" onChange={onFile} className="bx-input" data-testid="copy-file" />
+          </label>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <label className="block"><span className="bx-label">Título (debajo de la marca)</span><input className="bx-input" value={title} onChange={(e) => setTitle(e.target.value)} /></label>
+            <label className="block"><span className="bx-label">Fecha o período (texto)</span><input className="bx-input" value={date} onChange={(e) => setDate(e.target.value)} /></label>
+            <label className="block sm:col-span-2"><span className="bx-label">Retorno grande (opcional, ej. +3.28%)</span><input className="bx-input" value={ret} onChange={(e) => setRet(e.target.value)} placeholder="+3.28%" /></label>
+          </div>
+          <div className="text-[11px] bx-muted">Tarjetas pequeñas (opcionales, hasta 4). Deja el valor vacío para no mostrarla.</div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {stats.map((s, i) => (
+              <div key={i} className="grid grid-cols-[1fr_1fr] gap-2">
+                <input className="bx-input" value={s.l} onChange={(e) => setStat(i, "l", e.target.value)} aria-label={`Etiqueta ${i + 1}`} />
+                <input className="bx-input" value={s.v} onChange={(e) => setStat(i, "v", e.target.value)} placeholder="+$327.99" aria-label={`Valor ${i + 1}`} />
+              </div>
+            ))}
+          </div>
+          {msg && <div className="text-xs" style={{ color: "#fcd68a" }}>{msg}</div>}
+        </div>
+        <div className="flex flex-col items-center gap-3">
+          {out ? (
+            <>
+              <img src={out} alt="Vista previa" data-testid="copy-out" style={{ width: "100%", maxWidth: 340, borderRadius: 12, border: "1px solid rgba(255,255,255,.12)" }} />
+              <div className="flex flex-wrap gap-2 justify-center">
+                <a className="bx-btn" href={out} download={`borkaifx-copy-results-${localDate()}.png`}>⬇ Descargar PNG</a>
+                <button type="button" className="bx-ghost" onClick={copyImg}>Copiar imagen</button>
+              </div>
+            </>
+          ) : (
+            <div className="w-full rounded-xl p-6 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>Sube la captura para ver la vista previa.</div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function RecapPanel({ trades, defaultScope }) {
   const [mode, setMode] = useState("weekly");
   const [ref, setRef] = useState(localDate());
@@ -4230,7 +4355,7 @@ export default function App() {
                 </div>
               </div>
               <div className="mt-4 flex flex-wrap gap-2" data-testid="admin-tabs">
-                {[["dash", "🏠 Dashboard"], ["cfd", "📈 CFDs"], ["synth", "🎲 Sintéticos"], ["recap", "📄 Resúmenes"]].map(([k, l]) => (
+                {[["dash", "🏠 Dashboard"], ["cfd", "📈 CFDs"], ["synth", "🎲 Sintéticos"], ["recap", "📄 Resúmenes"], ["copy", "🖼 Copy"]].map(([k, l]) => (
                   <button key={k} type="button" data-testid={`atab-${k}`} onClick={() => setAdminTab(k)} className={`bx-pill ${adminTab === k ? "on" : ""}`}>
                     {l}{k === "cfd" && pendingList.some((t) => t.category === "CFD") ? ` · ${pendingList.filter((t) => t.category === "CFD").length}🕓` : ""}{k === "synth" && pendingList.some((t) => t.category !== "CFD") ? ` · ${pendingList.filter((t) => t.category !== "CFD").length}🕓` : ""}
                   </button>
@@ -4265,6 +4390,7 @@ export default function App() {
             {adminTab === "cfd" && renderCatPage("cfd")}
             {adminTab === "synth" && renderCatPage("synth")}
             {adminTab === "recap" && <RecapPanel trades={trades} defaultScope="ALL" />}
+            {adminTab === "copy" && <CopyPanel />}
           </div>
         )}
         {page === "signals" && <ServicesPricing setPage={setPage} kind={signalKind} />}
