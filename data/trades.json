@@ -1891,6 +1891,51 @@
     "r": 1.69
   },
   {
+    "id": "3dvhsjp9mwcqmann",
+    "date": "2026-11-11",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "BOOM 500",
+    "direction": "BUY",
+    "entry1": 5897,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 5877,
+    "tps": [
+      5996,
+      6046,
+      6049
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "BE",
+        "exit": 5897,
+        "pips": 0,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "BOOM 500 BUY 5897\nSL 20 PIPS",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "BE",
+    "pips": 0,
+    "r": 0
+  },
+  {
     "id": "5l89bi76mwc9izuz",
     "date": "2026-11-11",
     "category": "SINTETICO",
