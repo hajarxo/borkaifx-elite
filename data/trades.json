@@ -2253,7 +2253,7 @@
       "e1": {
         "status": "MANUAL",
         "exit": "",
-        "pips": 393,
+        "pips": 40,
         "tpIdx": null,
         "reached": null
       },
@@ -2272,7 +2272,7 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 393,
-    "r": 14.72
+    "pips": 40,
+    "r": 1.5
   }
 ]
