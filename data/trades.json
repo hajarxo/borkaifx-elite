@@ -2276,6 +2276,49 @@
     "r": 1.5
   },
   {
+    "id": "7jr9m0z1mwdptz7a",
+    "date": "2026-11-12",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "VOLATILITY 90",
+    "direction": "SELL",
+    "entry1": 126191,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 126752,
+    "tps": [
+      120841
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "BE",
+        "exit": 126191,
+        "pips": 0,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "VOLATILITY 90 SELL NOW 126191\nSL 126752\nTP 120841",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "BE",
+    "pips": 0,
+    "r": 0
+  },
+  {
     "id": "epaokyqomwdkelqb",
     "date": "2026-11-12",
     "category": "SINTETICO",
