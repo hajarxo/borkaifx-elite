@@ -1981,6 +1981,47 @@
     "r": 0
   },
   {
+    "id": "nh6rj60vmwcu5x7j",
+    "date": "2026-11-11",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "CRASH 500",
+    "direction": "SELL",
+    "entry1": 3036.091,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 3042,
+    "tps": [],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "SL",
+        "exit": 3042,
+        "pips": -5.9,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "CRASH 500 SELL NOW 3036.091\nSL 3042",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "SL",
+    "pips": -5.9,
+    "r": -1
+  },
+  {
     "id": "y9h7ydunmwcjsq0d",
     "date": "2026-11-11",
     "category": "SINTETICO",
