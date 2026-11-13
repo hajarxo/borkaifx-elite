@@ -73,14 +73,16 @@ const LOGO = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAGHCAMAAAD2o3uU
 const CFD_SUBS = ["Forex", "Oro/Metales", "Índices"];
 const BROKERS = ["WELTRADE", "DERIV"];
 
-const ACCENT = "#F47F45";
+const ACCENT_HEX = "#F0B429"; // para canvas y gráficos (SVG)
+const ACCENT = "var(--accent)"; // para estilos de la página (cambia con el modo claro/oscuro)
 const GREEN = "#10b981";
 const RED = "#f43f5e";
 const GREY = "#A8A39B";
 
 /* ----------------------------- Estilos del tema ----------------------------- */
 const CSS = `
-html,body{margin:0!important;padding:0!important;background:#0A0A0C!important;display:block!important;min-width:0!important;border:0!important}
+html[data-theme="light"],html[data-theme="light"] body{background:#F4F5F8!important}
+html,body{margin:0!important;padding:0!important;background:#0A0C11!important;display:block!important;min-width:0!important;border:0!important}
 #root{max-width:none!important;width:100%!important;margin:0!important;padding:0!important;border:0!important;text-align:left!important;display:block!important}
 .bx-root{width:100%;box-sizing:border-box;border:0;outline:0}
 :where(.bx-root) :is(h1,h2,h3,h4){color:var(--ink)}
@@ -91,14 +93,15 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-nav{display:flex;gap:.25rem;flex-wrap:wrap}
 .bx-navbtn{padding:.5rem .875rem;border-radius:.75rem;font-size:.8125rem;font-weight:800;letter-spacing:.03em;color:var(--ink2);cursor:pointer;background:transparent;border:1px solid transparent;transition:all .15s}
 .bx-navbtn:hover{color:var(--ink)}
-.bx-navbtn.on{background:rgba(244,127,69,.12);color:var(--accent)}
-.bx-root{color-scheme:dark;--bg:#0A0A0C;--ink:#F4F1EA;--ink2:#9A958C;--line:#232325;--card:#161616;--cardink:#FFFFFF;--cardink2:#A8A39B;--cardline:#2A2A2A;--accent:#F47F45;--field:#0F0F0F;background:radial-gradient(900px circle at -5% 0%,rgba(190,86,32,.34),transparent 62%),radial-gradient(700px circle at 100% 8%,rgba(120,60,28,.22),transparent 60%),radial-gradient(900px circle at 10% 105%,rgba(170,78,30,.22),transparent 60%),var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px}
-.bx-header{background:rgba(10,10,12,.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+.bx-navbtn.on{background:rgba(240,180,41,.12);color:var(--accent)}
+.bx-root{color-scheme:dark;--bg:#0A0C11;--ink:#ECEEF3;--ink2:#9AA0AE;--line:#1C212C;--card:#141821;--cardink:#F4F5F8;--cardink2:#A3A9B7;--cardline:#262C3A;--accent:#F0B429;--field:#0E1118;--fg:255,255,255;--c2:#141821;--c3:#1B2030;--line2:#3A4152;--pos:#34d399;--neg:#fb7185;--sky:#7dd3fc;--amb:#fcd34d;--amb2:#fbbf24;--btnink:#17120a;background:radial-gradient(900px circle at -5% 0%,rgba(176,128,20,.20),transparent 62%),radial-gradient(700px circle at 100% 8%,rgba(70,84,120,.22),transparent 60%),radial-gradient(900px circle at 10% 105%,rgba(150,110,20,.12),transparent 60%),var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px}
+.bx-root[data-theme="light"]{color-scheme:light;--bg:#F4F5F8;--ink:#0F1219;--ink2:#5A6272;--line:#DADEE6;--card:#FFFFFF;--cardink:#0F1219;--cardink2:#5A6272;--cardline:#D3D8E2;--accent:#9A6700;--field:#FFFFFF;--fg:15,18,25;--c2:#FFFFFF;--c3:#EEF0F5;--line2:#B7BECB;--pos:#047857;--neg:#be123c;--sky:#0369a1;--amb:#92400e;--amb2:#b45309;background:radial-gradient(900px circle at -5% 0%,rgba(240,180,41,.20),transparent 62%),radial-gradient(700px circle at 100% 8%,rgba(120,140,190,.16),transparent 60%),var(--bg)}
+.bx-header{background:rgba(var(--bgrgb,10,12,17),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 @keyframes bxpulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}70%{box-shadow:0 0 0 8px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
 .bx-dot{width:9px;height:9px;border-radius:9999px;display:inline-block;flex:none}
 .bx-dot.live{background:#10b981;animation:bxpulse 1.8s infinite}
 .bx-dot.off{background:#f43f5e}
-.bx-live{display:flex;align-items:center;gap:.625rem;background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--cardline);border-radius:9999px;padding:.4rem .9rem;font-size:.75rem}
+.bx-live{display:flex;align-items:center;gap:.625rem;background:rgba(var(--fg),.05);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--cardline);border-radius:9999px;padding:.4rem .9rem;font-size:.75rem}
 .bx-ink2{color:var(--ink2)}
 @media(max-width:480px){.bx-gold:not(.bx-gold-sm){padding:.5rem .85rem;font-size:.85rem}.bx-brand{font-size:1.15rem!important}}
 .bx-h1{font-size:2.35rem;line-height:.98}
@@ -106,14 +109,14 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 @media(min-width:640px){.bx-hero1{font-size:2.9rem}}
 @media(min-width:1024px){.bx-hero1{font-size:3.7rem}}
 .bx-home{position:relative;isolation:isolate}
-.bx-home::before{content:"";position:absolute;left:0;right:0;top:0;height:780px;z-index:-1;pointer-events:none;background:radial-gradient(620px 360px at 22% 26%,rgba(244,127,69,.22),transparent 70%),radial-gradient(520px 300px at 6% 40%,rgba(150,68,24,.16),transparent 70%),linear-gradient(rgba(244,127,69,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(90deg,rgba(244,127,69,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px) 0 0/48px 48px;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
+.bx-home::before{content:"";position:absolute;left:0;right:0;top:0;height:780px;z-index:-1;pointer-events:none;background:radial-gradient(620px 360px at 22% 26%,rgba(240,180,41,.22),transparent 70%),radial-gradient(520px 300px at 6% 40%,rgba(140,100,16,.16),transparent 70%),linear-gradient(rgba(240,180,41,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(90deg,rgba(240,180,41,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(rgba(var(--fg),.05) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(var(--fg),.05) 1px,transparent 1px) 0 0/48px 48px;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
 @media(min-width:640px){.bx-h1{font-size:2.6rem}}
 @media(min-width:1024px){.bx-h1{font-size:2.9rem}}
 .bx-hero-filters .bx-tab{padding:.4rem 1.05rem;font-size:.72rem;letter-spacing:.08em;border-radius:.65rem}
 .bx-hero-filters .bx-pill{padding:.25rem .75rem;font-size:.7rem}
 /* Cinta de texto (ticker): colores por variables; claro/oscuro */
-.bx-root{--tk-ink:#9A958C;--tk-line:rgba(255,255,255,.10);--tk-gold:var(--accent);--tk-bg:rgba(10,10,12,.6)}
-.bx-root[data-theme="light"],[data-theme="light"] .bx-root{--tk-ink:#6B665D;--tk-line:rgba(0,0,0,.12);--tk-gold:#C2571F;--tk-bg:rgba(255,255,255,.7)}
+.bx-root{--tk-ink:#9A958C;--tk-line:rgba(var(--fg),.10);--tk-gold:var(--accent);--tk-bg:rgba(10,10,12,.6)}
+.bx-root[data-theme="light"],[data-theme="light"] .bx-root{--tk-ink:#6B665D;--tk-line:rgba(0,0,0,.12);--tk-gold:#A66F00;--tk-bg:rgba(var(--fg),.7)}
 .bx-ticker{width:100%;max-width:100vw;overflow:hidden;box-sizing:border-box;border-top:1px solid var(--tk-line);border-bottom:1px solid var(--tk-line);background:var(--tk-bg);color:var(--tk-ink);padding:.55rem 0}
 .bx-ticker-track{display:flex;width:max-content;animation:bxticker 40s linear infinite;will-change:transform}
 .bx-ticker-group{display:flex;flex:none;align-items:center}
@@ -126,30 +129,30 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-kicker{display:flex;align-items:center;gap:.75rem;font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;font-size:.78rem;letter-spacing:.3em;font-weight:700;color:var(--accent);text-transform:uppercase}
 .bx-kicker::before{content:"";width:34px;height:2px;background:var(--accent);flex:none}
 .bx-kicker.center{justify-content:center}
-.bx-gold{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:linear-gradient(180deg,#FA9A6B,#D95F26);color:#17120a;font-weight:800;border-radius:.8rem;padding:.6rem 1.15rem;font-size:.95rem;box-shadow:0 6px 24px rgba(244,127,69,.32);transition:filter .15s,transform .15s}
-.bx-gold.bx-gold-sm{padding:.38rem .9rem;font-size:.82rem;border-radius:.6rem;box-shadow:0 4px 14px rgba(244,127,69,.25)}
+.bx-gold{display:inline-flex;align-items:center;justify-content:center;gap:.4rem;background:linear-gradient(180deg,#F7C948,#DFA01A);color:#17120a;font-weight:800;border-radius:.8rem;padding:.6rem 1.15rem;font-size:.95rem;box-shadow:0 6px 24px rgba(240,180,41,.32);transition:filter .15s,transform .15s}
+.bx-gold.bx-gold-sm{padding:.38rem .9rem;font-size:.82rem;border-radius:.6rem;box-shadow:0 4px 14px rgba(240,180,41,.25)}
 .bx-gold:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.bx-plan{display:flex;flex-direction:column;background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.012) 55%,rgba(244,127,69,.03));-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(255,255,255,.13);border-radius:1.25rem;padding:1.15rem 1.25rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 10px 40px rgba(0,0,0,.35)}
-.bx-plan.hot{border-color:rgba(244,127,69,.85);box-shadow:0 0 0 1px rgba(244,127,69,.25),0 10px 50px rgba(244,127,69,.16)}
-.bx-planbtn{display:flex;align-items:center;justify-content:center;gap:.4rem;border:1px solid rgba(255,255,255,.14);color:#fff;font-weight:800;border-radius:.7rem;padding:.6rem 1rem;font-size:.85rem;background:rgba(255,255,255,.03);transition:border-color .15s}
+.bx-plan{display:flex;flex-direction:column;background:linear-gradient(145deg,rgba(var(--fg),.05),rgba(var(--fg),.012) 55%,rgba(240,180,41,.03));-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);border:1px solid rgba(var(--fg),.13);border-radius:1.25rem;padding:1.15rem 1.25rem;box-shadow:inset 0 1px 0 rgba(var(--fg),.1),0 10px 40px rgba(0,0,0,.35)}
+.bx-plan.hot{border-color:rgba(240,180,41,.85);box-shadow:0 0 0 1px rgba(240,180,41,.25),0 10px 50px rgba(240,180,41,.16)}
+.bx-planbtn{display:flex;align-items:center;justify-content:center;gap:.4rem;border:1px solid rgba(var(--fg),.14);color:var(--cardink);font-weight:800;border-radius:.7rem;padding:.6rem 1rem;font-size:.85rem;background:rgba(var(--fg),.03);transition:border-color .15s}
 .bx-planbtn:hover{border-color:var(--accent);color:var(--accent)}
 .bx-accent{color:var(--accent)}
-.bx-card{background:linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.012) 55%,rgba(244,127,69,.03));-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);color:var(--cardink);border:1px solid rgba(255,255,255,.13);border-radius:1.25rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 10px 40px rgba(0,0,0,.35)}
+.bx-card{background:linear-gradient(145deg,rgba(var(--fg),.05),rgba(var(--fg),.012) 55%,rgba(240,180,41,.03));-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);color:var(--cardink);border:1px solid rgba(var(--fg),.13);border-radius:1.25rem;box-shadow:inset 0 1px 0 rgba(var(--fg),.1),0 10px 40px rgba(0,0,0,.35)}
 .bx-calgrid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr))}
 @media(min-width:640px){.bx-calgrid{grid-template-columns:repeat(7,minmax(0,1fr)) 88px}}
-.bx-day{background:linear-gradient(145deg,rgba(255,255,255,.04),rgba(255,255,255,.01));border:1px solid rgba(255,255,255,.1);border-radius:1rem;transition:box-shadow .15s,transform .15s}
-.bx-day:hover{box-shadow:0 0 14px rgba(244,127,69,.22)}
+.bx-day{background:linear-gradient(145deg,rgba(var(--fg),.04),rgba(var(--fg),.01));border:1px solid rgba(var(--fg),.1);border-radius:1rem;transition:box-shadow .15s,transform .15s}
+.bx-day:hover{box-shadow:0 0 14px rgba(240,180,41,.22)}
 .bx-muted{color:var(--cardink2)}
 .bx-bt{border-top:1px solid var(--cardline)}
 .bx-bb{border-bottom:1px solid var(--cardline)}
 .bx-row:hover{background:rgba(148,163,184,.08)}
 .bx-label{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--cardink2);margin-bottom:.25rem}
-.bx-input{width:100%;background:var(--field);border:1px solid var(--cardline);color:#fff;border-radius:.75rem;padding:.5rem .75rem;font-size:.875rem}
+.bx-input{width:100%;background:var(--field);border:1px solid var(--cardline);color:var(--cardink);border-radius:.75rem;padding:.5rem .75rem;font-size:.875rem}
 .bx-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .bx-input::placeholder{color:#6B6760}
 .bx-input:disabled{opacity:.5}
-select.bx-input option{background:#161616;color:#fff}
-.bx-btn{background:linear-gradient(180deg,#FA9A6B,#D95F26);color:#1a0d05;font-weight:800;box-shadow:0 6px 22px rgba(244,127,69,.28);border-radius:.75rem;padding:.5rem 1rem;font-size:.875rem;line-height:1.25rem;cursor:pointer;transition:filter .15s;display:inline-block}
+select.bx-input option{background:var(--c2);color:var(--cardink)}
+.bx-btn{background:linear-gradient(180deg,#F7C948,#DFA01A);color:#1a0d05;font-weight:800;box-shadow:0 6px 22px rgba(240,180,41,.28);border-radius:.75rem;padding:.5rem 1rem;font-size:.875rem;line-height:1.25rem;cursor:pointer;transition:filter .15s;display:inline-block}
 .bx-btn:hover{filter:brightness(1.1)}
 .bx-btn:disabled{opacity:.4;cursor:not-allowed}
 .bx-ghost{border:1px solid var(--cardline);color:var(--cardink);border-radius:.75rem;padding:.5rem .75rem;font-size:.875rem;cursor:pointer;background:transparent}
@@ -158,21 +161,37 @@ select.bx-input option{background:#161616;color:#fff}
 .bx-ghost-page{border:1px solid var(--line);color:var(--ink);border-radius:.75rem;padding:.5rem .75rem;font-size:.875rem;cursor:pointer;background:transparent}
 .bx-ghost-page:hover{border-color:var(--accent);color:var(--accent)}
 .bx-tab{border:1px solid var(--cardline);color:var(--cardink2);border-radius:.75rem;padding:.625rem 1.25rem;font-size:.875rem;font-weight:800;letter-spacing:.06em;cursor:pointer;background:transparent;transition:all .15s}
-.bx-tab:hover{color:#fff;border-color:#4A4A4A}
-.bx-tab.on{background:var(--accent);border-color:var(--accent);color:#17120a}
+.bx-tab:hover{color:var(--cardink);border-color:var(--line2)}
+.bx-tab.on{background:#F0B429;border-color:#F0B429;color:#17120a}
 .bx-pill{border:1px solid var(--cardline);color:var(--cardink2);border-radius:9999px;padding:.375rem .875rem;font-size:.75rem;font-weight:700;cursor:pointer;background:transparent;transition:all .15s}
-.bx-pill:hover{color:#fff;border-color:#4A4A4A}
-.bx-pill.on{background:#fff;color:#111;border-color:#fff}
+.bx-pill:hover{color:var(--cardink);border-color:var(--line2)}
+.bx-pill.on{background:var(--cardink);color:var(--c2);border-color:var(--cardink)}
 .bx-seg{border:1px solid var(--cardline);color:var(--cardink2);border-radius:.5rem;padding:.375rem .75rem;font-size:.75rem;font-weight:700;cursor:pointer;background:transparent}
-.bx-seg:hover{color:#fff;border-color:#4A4A4A}
-.bx-seg.on.pos{background:rgba(16,185,129,.2);border-color:#10b981;color:#6ee7b7}
-.bx-seg.on.neg{background:rgba(244,63,94,.2);border-color:#f43f5e;color:#fda4af}
-.bx-seg.on.mid{background:rgba(168,163,155,.2);border-color:#A8A39B;color:#e7e5e4}
-.bx-seg.on.open{background:rgba(56,189,248,.18);border-color:#38bdf8;color:#7dd3fc}
-.bx-seg.on.wait{background:rgba(251,191,36,.18);border-color:#fbbf24;color:#fcd34d}
-.bx-seg.on.acc{background:rgba(244,127,69,.2);border-color:#F47F45;color:#fdc3a0}
+.bx-seg:hover{color:var(--cardink);border-color:var(--line2)}
+.bx-seg.on.pos{background:rgba(16,185,129,.2);border-color:#10b981;color:var(--pos)}
+.bx-seg.on.neg{background:rgba(244,63,94,.2);border-color:#f43f5e;color:var(--neg)}
+.bx-seg.on.mid{background:rgba(168,163,155,.2);border-color:#A8A39B;color:var(--cardink)}
+.bx-seg.on.open{background:rgba(56,189,248,.18);border-color:#38bdf8;color:var(--sky)}
+.bx-seg.on.wait{background:rgba(251,191,36,.18);border-color:var(--amb2);color:var(--amb)}
+.bx-seg.on.acc{background:rgba(240,180,41,.2);border-color:#F0B429;color:#fbe3a1}
+.bx-root[data-theme="light"] .text-white{color:var(--cardink)!important}
+.bx-root[data-theme="light"] .text-emerald-400{color:var(--pos)!important}
+.bx-root[data-theme="light"] :is(.text-rose-400,.text-rose-300,.text-rose-500,.text-rose-300\/80){color:var(--neg)!important}
+.bx-root[data-theme="light"] .text-sky-300{color:#0369a1!important}
+.bx-root[data-theme="light"] .text-amber-300{color:#92400e!important}
+.bx-root[data-theme="light"] .text-neutral-400{color:#6b7280!important}
+.bx-root[data-theme="light"]{--bgrgb:244,245,248;--tk-ink:#5A6272;--tk-line:rgba(15,18,25,.12);--tk-gold:#9A6700;--tk-bg:rgba(255,255,255,.7)}
+.bx-root[data-theme="light"] .bx-card,.bx-root[data-theme="light"] .bx-plan,.bx-root[data-theme="light"] .bx-day{background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(255,255,255,.7));box-shadow:0 8px 28px rgba(15,18,25,.08),inset 0 1px 0 rgba(255,255,255,.9)}
+.bx-root[data-theme="light"] .bx-live{background:rgba(255,255,255,.8)}
+.bx-root[data-theme="light"] .bx-home::before{opacity:.55}
+.bx-root[data-theme="light"] .bx-tab.on,.bx-root[data-theme="light"] .bx-navbtn.on{color:#17120a}
+.bx-root[data-theme="light"] .bx-navbtn.on{background:rgba(240,180,41,.28);color:#6b4600}
+.bx-themefloat{position:fixed;right:14px;bottom:14px;z-index:60;display:flex;gap:2px;padding:3px;border-radius:9999px;background:rgba(var(--bgrgb,10,12,17),.78);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border:1px solid var(--cardline);box-shadow:0 8px 24px rgba(0,0,0,.28)}
+.bx-themefloat button{width:34px;height:34px;border-radius:9999px;border:0;background:transparent;font-size:16px;line-height:1;cursor:pointer;opacity:.45;transition:opacity .15s,background .15s,transform .15s;display:flex;align-items:center;justify-content:center}
+.bx-themefloat button:hover{opacity:.85}
+.bx-themefloat button.on{opacity:1;background:rgba(240,180,41,.28);box-shadow:inset 0 0 0 1px rgba(240,180,41,.6)}
 .bx-file{font-size:.75rem;color:var(--cardink2)}
-.bx-file::file-selector-button{margin-right:.75rem;border:0;border-radius:.5rem;background:var(--accent);color:#17120a;font-weight:800;font-size:.75rem;padding:.375rem .75rem;cursor:pointer}
+.bx-file::file-selector-button{margin-right:.75rem;border:0;border-radius:.5rem;background:#F0B429;color:#17120a;font-weight:800;font-size:.75rem;padding:.375rem .75rem;cursor:pointer}
 `;
 
 /* ----------------------------- Tailwind auto-carga ----------------------------- */
@@ -245,7 +264,6 @@ function guessSub(asset) {
 }
 
 // Tamaño de 1 pip (o punto) expresado en precio
-const isStepIndex = (asset) => /^\s*STEP\b/i.test(asset || ""); // Step Index (no incluye MULTI STEP)
 // Sintéticos: 1 punto = el movimiento de precio que vale $1 por lote = 1 / contract size (según Specification de MT5 en Deriv).
 // Boom, Crash, Volatility, Jump... tienen contract size 1 → 1 punto = 1.00 de precio.
 // Step Index 100/200/300/400/500 tienen contract size 10 → 1 punto = 0.1; Step 1000/1500/2000 tienen 1 → 1 punto = 1.00.
@@ -829,7 +847,7 @@ const Field = ({ label, children, className = "" }) => (
 const ChartTooltip = ({ active, payload, label, unit }) => {
   if (!active || !payload || !payload.length) return null;
   return (
-    <div className="rounded-lg px-3 py-2 text-xs" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)", color: "#fff" }}>
+    <div className="rounded-lg px-3 py-2 text-xs" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)", color: "var(--cardink)" }}>
       <div style={{ color: GREY }}>{label}</div>
       {payload.map((p, i) => (
         <div key={i} className="font-bold" style={{ color: p.payload.fill || ACCENT }}>
@@ -952,7 +970,7 @@ function TradeForm({ initial, onCancel, onSave }) {
         </div>
 
         {f.warnings?.length > 0 && (
-          <div className="mb-3 rounded-xl text-xs p-3" style={{ background: "rgba(244,127,69,.12)", border: "1px solid rgba(244,127,69,.45)", color: "#fdc3a0" }}>
+          <div className="mb-3 rounded-xl text-xs p-3" style={{ background: "rgba(240,180,41,.12)", border: "1px solid rgba(240,180,41,.45)", color: "#fbe3a1" }}>
             ⚠ Revisa antes de guardar: {f.warnings.join(" · ")}
           </div>
         )}
@@ -997,7 +1015,7 @@ function TradeForm({ initial, onCancel, onSave }) {
           <Field label="Activo" className="col-span-2">
             <input className="bx-input" placeholder="XAUUSD, NAS100, CRASH 900, GAINX 400..." value={f.asset} onChange={(e) => set("asset", e.target.value)} />
             {auto && (
-              <div className="text-[11px] mt-1" style={{ color: "#fdc3a0" }}>
+              <div className="text-[11px] mt-1" style={{ color: "#fbe3a1" }}>
                 Clasificación automática: {auto.category === "SINTETICO" ? `Sintético · ${auto.broker}` : `CFD · ${auto.sub}`}
               </div>
             )}
@@ -1093,8 +1111,8 @@ const TpChips = ({ t }) => {
             className="text-[11px] px-1.5 py-0.5 rounded-md whitespace-nowrap"
             style={
               hit
-                ? { background: "rgba(16,185,129,.15)", border: "1px solid rgba(16,185,129,.5)", color: "#6ee7b7", fontWeight: 700 }
-                : { border: "1px solid rgba(255,255,255,.09)", color: GREY }
+                ? { background: "rgba(16,185,129,.15)", border: "1px solid rgba(16,185,129,.5)", color: "var(--pos)", fontWeight: 700 }
+                : { border: "1px solid rgba(var(--fg),.09)", color: GREY }
             }
           >
             {hit ? "✓ " : ""}{x === "OPEN" ? tpLabel(i, x) : `${tpLabel(i, x)} ${x}`}
@@ -1155,7 +1173,7 @@ function LegEditor({ t, k, onChange }) {
   const needsPips = L.status !== "Abierta" && L.status !== "Pendiente" && p === null;
 
   return (
-    <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+    <div className="rounded-xl p-3" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
       <div className="flex items-center justify-between mb-2 flex-wrap gap-1">
         <div className="text-sm font-bold">
           Entry {k === "e1" ? 1 : 2} <span className="bx-muted font-normal">@ {entry ?? "—"}</span>
@@ -1176,7 +1194,7 @@ function LegEditor({ t, k, onChange }) {
         <button type="button" onClick={pickManual} className={`bx-seg mid ${L.status === "MANUAL" ? "on" : ""}`}>Cierre Manual</button>
       </div>
       {L.status === "Pendiente" && (
-        <div className="mt-2 text-xs" style={{ color: "#fcd34d" }}>Orden pendiente: aún no se activó en el mercado. Cuando el precio entre, pulsa <b>Activa</b>.</div>
+        <div className="mt-2 text-xs" style={{ color: "var(--amb)" }}>Orden pendiente: aún no se activó en el mercado. Cuando el precio entre, pulsa <b>Activa</b>.</div>
       )}
       {(L.status === "BE" || L.status === "SL") && tps.some((x) => x !== "OPEN") && (
         <div className="mt-3" data-testid="be-reached">
@@ -1188,7 +1206,7 @@ function LegEditor({ t, k, onChange }) {
             )))}
           </div>
           {hitMax(t) >= 0 && <div className="mt-1 text-[11px]" style={{ color: "#86efac" }}>Se registra: tocó hasta TP{hitMax(t) + 1} y {L.status === "BE" ? "volvió a BE" : "luego tocó el SL"}.</div>}
-          {L.status === "SL" && num(L.reached) !== null && <div className="mt-1 text-[11px]" style={{ color: "#fdc3a0" }}>Escribe abajo el resultado neto real (ganancia del parcial menos la pérdida del resto).</div>}
+          {L.status === "SL" && num(L.reached) !== null && <div className="mt-1 text-[11px]" style={{ color: "#fbe3a1" }}>Escribe abajo el resultado neto real (ganancia del parcial menos la pérdida del resto).</div>}
         </div>
       )}
       {L.status !== "Abierta" && L.status !== "Pendiente" && (
@@ -1208,7 +1226,7 @@ function LegEditor({ t, k, onChange }) {
           </label>
           <div className="text-xs bx-muted pb-2">{r !== null ? `${r >= 0 ? "+" : ""}${r.toFixed(2)}R` : ""}</div>
           {(isOpenTp || needsPips) && (
-            <div className="text-xs pb-2" style={{ color: "#fdc3a0" }}>
+            <div className="text-xs pb-2" style={{ color: "#fbe3a1" }}>
               {isOpenTp ? "TP abierto: escribe los pips/puntos reales alcanzados." : L.status === "MANUAL" ? "Cierre manual: escribe los pips/puntos finales (con − si cerró en pérdida)." : "Escribe los pips/puntos reales."}
             </div>
           )}
@@ -1226,7 +1244,7 @@ function ManagePanel({ t, onUpdate }) {
   const setLeg = (k, patch) => upd({ legs: { ...(t.legs || {}), [k]: { ...legOf(t, k), ...patch } } });
 
   return (
-    <div className="mt-5 rounded-xl p-4 space-y-4" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+    <div className="mt-5 rounded-xl p-4 space-y-4" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
       <div className="text-[11px] uppercase tracking-[0.18em] font-bold bx-accent">Gestión rápida (Admin)</div>
 
       {t.discarded ? (
@@ -1246,7 +1264,7 @@ function ManagePanel({ t, onUpdate }) {
 
           {keys.map((k) => <LegEditor key={k} t={t} k={k} onChange={setLeg} />)}
 
-          <div className="flex items-center justify-between flex-wrap gap-2 rounded-xl px-3 py-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+          <div className="flex items-center justify-between flex-wrap gap-2 rounded-xl px-3 py-2" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
             <div className="text-xs bx-muted uppercase tracking-wider">Total de la señal</div>
             <div className={`text-lg font-extrabold ${t.pips > 0 ? "text-emerald-400" : t.pips < 0 ? "text-rose-400" : "text-white"}`}>
               {fmtP(t.pips)} {unit.toLowerCase()} <span className="text-xs bx-muted font-normal">· {t.r >= 0 ? "+" : ""}{t.r}R</span>
@@ -1307,7 +1325,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
 
         <div className="grid grid-cols-3 gap-2 mt-4">
           {rows.map(([k, v]) => (
-            <div key={k} className="rounded-lg p-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+            <div key={k} className="rounded-lg p-2" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
               <div className="text-[10px] uppercase tracking-wider bx-muted">{k}</div>
               <div className={`text-sm font-semibold ${k === "Resultado" ? (t.pips > 0 ? "text-emerald-400" : t.pips < 0 ? "text-rose-400" : "text-white") : "text-white"}`}>{v}</div>
             </div>
@@ -1315,7 +1333,7 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
         </div>
 
         {!t.discarded && hasE2(t) && keys.length > 1 && (
-          <div className="mt-3 rounded-xl p-3 text-sm space-y-1" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+          <div className="mt-3 rounded-xl p-3 text-sm space-y-1" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
             {keys.map((k) => (
               <div key={k} className="flex justify-between gap-2">
                 <span className="bx-muted">Entry {k === "e1" ? 1 : 2} @ {entryOf(t, k)}</span>
@@ -1330,24 +1348,24 @@ function DetailModal({ t, onClose, isAdmin, onUpdate }) {
         {t.tags?.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-1.5">
             {t.tags.map((g) => (
-              <span key={g} className="text-[11px] px-2 py-0.5 rounded-full" style={{ border: "1px solid rgba(244,127,69,.5)", color: "#fdc3a0" }}>#{g}</span>
+              <span key={g} className="text-[11px] px-2 py-0.5 rounded-full" style={{ border: "1px solid rgba(240,180,41,.5)", color: "#fbe3a1" }}>#{g}</span>
             ))}
           </div>
         )}
 
-        {t.notes && <p className="mt-4 text-sm whitespace-pre-wrap" style={{ color: "#D6D1C9" }}>{t.notes}</p>}
+        {t.notes && <p className="mt-4 text-sm whitespace-pre-wrap" style={{ color: "var(--cardink2)" }}>{t.notes}</p>}
 
         {t.mgmt && (
-          <div className="mt-4 rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+          <div className="mt-4 rounded-xl p-3" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
             <div className="text-[11px] uppercase tracking-[0.18em] font-bold bx-accent mb-1">Notas de gestión</div>
-            <p className="text-sm whitespace-pre-wrap" style={{ color: "#D6D1C9" }}>{t.mgmt}</p>
+            <p className="text-sm whitespace-pre-wrap" style={{ color: "var(--cardink2)" }}>{t.mgmt}</p>
           </div>
         )}
 
         {t.raw && (
           <details className="mt-4">
             <summary className="cursor-pointer text-xs uppercase tracking-wider bx-muted">Señal original</summary>
-            <pre className="mt-2 whitespace-pre-wrap text-xs rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", color: GREY, border: "1px solid rgba(255,255,255,.09)" }}>{t.raw}</pre>
+            <pre className="mt-2 whitespace-pre-wrap text-xs rounded-xl p-3" style={{ background: "rgba(var(--fg),.03)", color: GREY, border: "1px solid rgba(var(--fg),.09)" }}>{t.raw}</pre>
           </details>
         )}
 
@@ -1396,9 +1414,16 @@ const addDays = (ymd, n) => {
 const DAYS_ES = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
 const dayName = (ymd) => { const [y, m, d] = ymd.split("-").map(Number); return DAYS_ES[new Date(y, m - 1, d).getDay()]; };
 
+// Fecha efectiva: en CFDs la apertura del domingo cuenta como lunes. Sintéticos conservan su fecha.
+const tdate = (t) => {
+  const d = t.date || "";
+  if (t.category !== "CFD" || d.length < 10) return d;
+  const [y, m, dd] = d.split("-").map(Number);
+  return new Date(y, m - 1, dd).getDay() === 0 ? addDays(d, 1) : d;
+};
 const weekRange = (ymd) => {
   const [y, m, d] = ymd.split("-").map(Number);
-  const dow = new Date(y, m - 1, d).getDay(); // semana de trading: domingo (sesión asiática) a sábado
+  const dow = (new Date(y, m - 1, d).getDay() + 6) % 7; // semana lunes → domingo (el domingo de CFDs ya cuenta como lunes)
   const from = addDays(ymd, -dow);
   return { from, to: addDays(from, 6) };
 };
@@ -1415,7 +1440,7 @@ const shiftYM = (ym, n) => {
 // Matriz mensual (estilo mini calendario): clic en un día, en la flecha lateral de la semana o en el nombre del mes
 function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
   const [y, m] = ym.split("-").map(Number);
-  const lead = new Date(y, m - 1, 1).getDay();
+  const lead = (new Date(y, m - 1, 1).getDay() + 6) % 7;
   const dim = new Date(y, m, 0).getDate();
   const cells = [];
   for (let i = 0; i < lead; i++) cells.push(null);
@@ -1437,7 +1462,7 @@ function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
       </div>
       <div className="grid gap-1" style={{ gridTemplateColumns: "28px repeat(7, minmax(0, 1fr))" }}>
         <div />
-        {["D", "L", "M", "X", "J", "V", "S"].map((d, i) => (
+        {["L", "M", "X", "J", "V", "S", "D"].map((d, i) => (
           <div key={i} className="text-center text-[10px] bx-muted font-bold">{d}</div>
         ))}
         {rows.map((row, ri) => {
@@ -1452,7 +1477,7 @@ function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
                 title="Seleccionar la semana completa"
                 onClick={() => wk && onWeek(wk.from)}
                 className="rounded-md text-xs font-bold"
-                style={{ background: wkSel ? ACCENT : "#1d1d1d", color: wkSel ? "#fff" : "#9a948a", border: "1px solid rgba(255,255,255,.09)" }}
+                style={{ background: wkSel ? ACCENT_HEX : "var(--c3)", color: wkSel ? "#17120a" : "var(--cardink2)", border: "1px solid rgba(var(--fg),.09)" }}
               >
                 ›
               </button>
@@ -1469,14 +1494,14 @@ function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
                     className="rounded-md text-xs font-bold relative"
                     style={{
                       height: 32,
-                      background: single ? ACCENT : inR ? "rgba(244,127,69,.28)" : "#161616",
-                      color: single ? "#fff" : "#E8E4DC",
-                      border: `1px solid ${d === today ? ACCENT : "#2A2A2A"}`,
+                      background: single ? ACCENT_HEX : inR ? "rgba(240,180,41,.28)" : "var(--c2)",
+                      color: single ? "#17120a" : "var(--cardink)",
+                      border: `1px solid ${d === today ? ACCENT : "var(--cardline)"}`,
                     }}
                   >
                     {Number(d.slice(8))}
                     {marked && marked.has(d) && (
-                      <span style={{ position: "absolute", left: "50%", bottom: 2, width: 4, height: 4, marginLeft: -2, borderRadius: 4, background: single ? "#fff" : ACCENT }} />
+                      <span style={{ position: "absolute", left: "50%", bottom: 2, width: 4, height: 4, marginLeft: -2, borderRadius: 4, background: single ? "var(--cardink)" : ACCENT }} />
                     )}
                   </button>
                 );
@@ -1493,6 +1518,7 @@ function CalGrid({ ym, onNav, marked, range, onDay, onWeek, onMonth }) {
 function MiniCalendar({ marked, range, onChange, noClear }) {
   const [open, setOpen] = useState(false);
   const [ym, setYm] = useState(() => (range ? range.from.slice(0, 7) : curYM()));
+  const [start, setStart] = useState(null); // primer clic del rango (desde)
   const box = useRef(null);
   useEffect(() => {
     if (!open) return undefined;
@@ -1504,7 +1530,7 @@ function MiniCalendar({ marked, range, onChange, noClear }) {
   return (
     <div ref={box} className="relative" data-testid="date-filter">
       <div className="flex items-center gap-1">
-        <button type="button" onClick={() => { if (!open) setYm(range ? range.from.slice(0, 7) : curYM()); setOpen(!open); }} className="bx-ghost" aria-haspopup="dialog" aria-expanded={open}>📅 {label} ▾</button>
+        <button type="button" onClick={() => { if (!open) setYm(range ? range.from.slice(0, 7) : curYM()); setStart(null); setOpen(!open); }} className="bx-ghost" aria-haspopup="dialog" aria-expanded={open}>📅 {label} ▾</button>
         {range && !noClear && (
           <button type="button" className="bx-ghost" onClick={() => onChange(null)} aria-label="Quitar filtro de fecha" title="Quitar filtro">✕</button>
         )}
@@ -1516,14 +1542,18 @@ function MiniCalendar({ marked, range, onChange, noClear }) {
             onNav={(n) => setYm((v) => shiftYM(v, n))}
             marked={marked}
             range={range}
-            onDay={(d) => { onChange({ from: d, to: d }); setOpen(false); }}
-            onWeek={(d) => { onChange(weekRange(d)); setOpen(false); }}
+            onDay={(d) => {
+              if (!start) { setStart(d); onChange({ from: d, to: d }); return; }
+              onChange(d >= start ? { from: start, to: d } : { from: d, to: start });
+              setStart(null); setOpen(false);
+            }}
+            onWeek={(d) => { setStart(null); onChange(weekRange(d)); setOpen(false); }}
           />
           <div className="mt-3 flex items-center justify-between gap-2 text-xs">
             <button type="button" className="bx-ghost" onClick={() => { const t = localDate(); setYm(t.slice(0, 7)); onChange({ from: t, to: t }); setOpen(false); }}>Hoy</button>
             <button type="button" className="bx-ghost" onClick={() => { onChange(null); setOpen(false); }}>Ver todo el período</button>
           </div>
-          <div className="mt-2 text-[10px] bx-muted">Clic en un día = solo ese día · clic en › (izquierda) = semana completa</div>
+          <div className="mt-2 text-[10px] bx-muted">{start ? "Ahora elige el día final (o toca el mismo día para dejar solo ese día)" : "Clic en un día y luego en otro = rango desde – hasta · › = semana completa"}</div>
         </div>
       )}
     </div>
@@ -1534,9 +1564,9 @@ function buildReport(trades, mode, ref, scope) {
   let from = ref, to = ref, title = "";
   const [y, m, d] = ref.split("-").map(Number);
   if (mode === "weekly") {
-    const dow = new Date(y, m - 1, d).getDay(); // domingo = 0
-    from = addDays(ref, -dow);
-    to = addDays(from, 6);
+    const wr = weekRange(ref);
+    from = wr.from;
+    to = wr.to;
     title = `RESUMEN SEMANAL · ${fmtDate(from)} al ${fmtDate(to)}`;
   } else if (mode === "monthly") {
     const ym = ref.slice(0, 7);
@@ -1547,7 +1577,7 @@ function buildReport(trades, mode, ref, scope) {
     title = `RESUMEN DIARIO · ${DAYS_ES[new Date(y, m - 1, d).getDay()]} ${fmtDate(ref)}`;
   }
   const list = trades
-    .filter((t) => t.date >= from && t.date <= to)
+    .filter((t) => tdate(t) >= from && tdate(t) <= to)
     .filter((t) => scope === "ALL" || (scope === "CFD" ? t.category === "CFD" : scope === "DERIV" ? t.category === "SINTETICO" && t.broker !== "WELTRADE" : t.category === "SINTETICO" && t.broker === "WELTRADE"))
     .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
 
@@ -1698,7 +1728,7 @@ function ReportModal({ trades, onClose, defaultScope }) {
           <button type="button" onClick={onClose} className="bx-ghost">Cerrar</button>
         </div>
         <div className="mt-4 grid md:grid-cols-[300px_1fr] gap-4">
-          <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+          <div className="rounded-xl p-3" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
             <CalGrid ym={ym} onNav={nav} marked={marked} range={range} onDay={pickDay} onWeek={pickWeek} onMonth={pickMonth} />
             <div className="mt-2 text-[10px] bx-muted">Día = resumen diario · flecha › = semana completa · nombre del mes = mes completo</div>
           </div>
@@ -1737,13 +1767,14 @@ function ReportModal({ trades, onClose, defaultScope }) {
 /* ----------------------------- Resumen tipo "Weekly Recap" ----------------------------- */
 const nfmt = (v) => Math.abs(Math.round(v * 10) / 10).toLocaleString("en-US", { maximumFractionDigits: 1 });
 const sgn = (v) => (v > 0 ? "+" : v < 0 ? "-" : "");
+const customRg = (ref) => { const [a, b] = String(ref).split("|"); const f = a, t = b || a; return f <= t ? { from: f, to: t } : { from: t, to: f }; };
 function buildRecap(trades, mode, ref, scope) {
-  const rg = mode === "weekly" ? weekRange(ref) : mode === "monthly" ? monthRange(ref.slice(0, 7)) : { from: ref, to: ref };
+  const rg = mode === "custom" ? customRg(ref) : mode === "weekly" ? weekRange(ref) : mode === "monthly" ? monthRange(ref.slice(0, 7)) : { from: ref, to: ref };
   const list = trades
-    .filter((t) => t.date >= rg.from && t.date <= rg.to && !t.discarded && isClosed(t))
+    .filter((t) => tdate(t) >= rg.from && tdate(t) <= rg.to && !t.discarded && isClosed(t))
     .filter((t) => scope === "ALL" || (scope === "CFD" ? t.category === "CFD" : scope === "DERIV" ? t.category === "SINTETICO" && t.broker !== "WELTRADE" : t.category === "SINTETICO" && t.broker === "WELTRADE"))
-    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
-  const title = mode === "weekly" ? "WEEKLY RECAP" : mode === "monthly" ? "MONTHLY RECAP" : "DAILY RECAP";
+    .sort((a, b) => (tdate(a) < tdate(b) ? -1 : tdate(a) > tdate(b) ? 1 : 0));
+  const title = mode === "weekly" || mode === "custom" ? "WEEKLY RECAP" : mode === "monthly" ? "MONTHLY RECAP" : "DAILY RECAP";
   const range = rg.from === rg.to ? fmtDate(rg.from) : `${fmtDate(rg.from)} al ${fmtDate(rg.to)}`;
   let wins = 0, losses = 0, be = 0;
   const tot = {};
@@ -1777,14 +1808,14 @@ const EN_MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const ymdParts = (s) => { const [y, m, d] = s.split("-").map(Number); return { y, m, d, dow: new Date(y, m - 1, d).getDay() }; };
 const enShort = (s) => { const p = ymdParts(s); return `${p.d} ${EN_MON[p.m - 1]}`; };
 function recapData(trades, mode, ref, scope) {
-  const rg = mode === "weekly" ? weekRange(ref) : { from: ref, to: ref };
+  const rg = mode === "custom" ? customRg(ref) : mode === "weekly" ? weekRange(ref) : { from: ref, to: ref };
   const list = trades
-    .filter((t) => t.date >= rg.from && t.date <= rg.to && !t.discarded && isClosed(t))
+    .filter((t) => tdate(t) >= rg.from && tdate(t) <= rg.to && !t.discarded && isClosed(t))
     .filter((t) => scope === "ALL" || (scope === "CFD" ? t.category === "CFD" : scope === "DERIV" ? t.category === "SINTETICO" && t.broker !== "WELTRADE" : t.category === "SINTETICO" && t.broker === "WELTRADE"))
     .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0))
     .map((t) => {
       const p = Number(t.pips) || 0;
-      return { date: t.date, p, r: Number(t.r) || 0, dir: t.direction === "SELL" ? "Sell" : "Buy", unit: unitWord(t), win: p > 0, loss: p < 0 || (t.status === "SL" && p === 0) };
+      return { date: tdate(t), p, r: Number(t.r) || 0, dir: t.direction === "SELL" ? "Sell" : "Buy", unit: unitWord(t), win: p > 0, loss: p < 0 || (t.status === "SL" && p === 0) };
     });
   const units = Array.from(new Set(list.map((x) => x.unit)));
   return { rg, list, units };
@@ -1795,12 +1826,12 @@ async function drawRecapImage(trades, mode, ref, scope) {
   try { await Promise.all([document.fonts.load("700 40px Inter"), document.fonts.load("400 30px Inter")]); } catch (e) {}
   const W = 1024, H = 1280, SC = 2, M = 80;
   const [c, x] = cnv(W, H, SC);
-  const BG = "#0A0A0C", INK = "#F5F3EE", MUTED = "#8A8578", POS = "#34d399", NEG = "#fb7185";
+  const BG = "#0A0C11", INK = "#F5F3EE", MUTED = "#8A8578", POS = "#34d399", NEG = "#fb7185";
   const F = (wt, sz) => `${wt} ${sz}px Inter, "Segoe UI", Arial, sans-serif`;
   const T = (s, px, py, o = {}) => { x.font = F(o.w || 400, o.s || 30); x.fillStyle = o.c || INK; x.textAlign = o.a || "left"; x.textBaseline = "alphabetic"; x.fillText(s, px, py); return x.measureText(s).width; };
   x.fillStyle = BG; x.fillRect(0, 0, W, H);
   // halo dorado muy suave en la esquina (identidad de la página)
-  const g = x.createRadialGradient(W, 0, 0, W, 0, 700); g.addColorStop(0, "rgba(244,127,69,.16)"); g.addColorStop(1, "rgba(244,127,69,0)");
+  const g = x.createRadialGradient(W, 0, 0, W, 0, 700); g.addColorStop(0, "rgba(240,180,41,.16)"); g.addColorStop(1, "rgba(240,180,41,0)");
   x.fillStyle = g; x.fillRect(0, 0, W, H);
   const uName = units.length === 1 && units[0] === "puntos" ? "points" : "pips";
   const total = round1(list.reduce((a, t) => a + t.p, 0));
@@ -1811,7 +1842,7 @@ async function drawRecapImage(trades, mode, ref, scope) {
   const num2 = (v) => Math.abs(v).toLocaleString("en-US", { maximumFractionDigits: 1 });
   const col = (v) => (v > 0 ? POS : v < 0 ? NEG : INK);
   if (mode === "daily") {
-    T("BORKAIFX ELITE · Signal Performance", M, 112, { s: 31, c: ACCENT, w: 600 });
+    T("BORKAIFX ELITE · Signal Performance", M, 112, { s: 31, c: ACCENT_HEX, w: 600 });
     T("Daily recap", M, 214, { s: 80, w: 800 });
     const p = ymdParts(ref);
     T(`${EN_DAYS[p.dow].slice(0, 3)} ${p.d} ${EN_MON[p.m - 1]}`, M, 270, { s: 36, c: MUTED });
@@ -1845,16 +1876,17 @@ async function drawRecapImage(trades, mode, ref, scope) {
     T(`${wins}W // ${losses}L`, cols[1], 1130, { s: 46, w: 700 }); T(`${list.length} trades`, cols[1], 1170, { s: 28, c: MUTED });
     T(`${sg(netR)}${Math.abs(netR).toFixed(2)}R`, cols[2], 1130, { s: 46, w: 700 }); T("Net R", cols[2], 1170, { s: 28, c: MUTED });
   } else {
-    T("VIP Performance", M, 112, { s: 31, c: ACCENT, w: 600 });
+    T("VIP Performance", M, 112, { s: 31, c: ACCENT_HEX, w: 600 });
     T("Weekly recap", M, 226, { s: 100, w: 800 });
     // filas: lunes a viernes siempre; domingo y sábado solo si hubo operaciones
     const days = [];
-    for (let i = 0; i < 7; i++) {
+    const nDays = Math.min(7, Math.round((new Date(rg.to).getTime() - new Date(rg.from).getTime()) / 86400000) + 1);
+    for (let i = 0; i < nDays; i++) {
       const d = addDays(rg.from, i), dow = ymdParts(d).dow;
       const ts = list.filter((t) => t.date === d);
       if ((dow >= 1 && dow <= 5) || ts.length) days.push({ d, dow, ts });
     }
-    days.sort((a, b) => ((a.dow + 6) % 7) - ((b.dow + 6) % 7)); // lunes → domingo, como en el ejemplo
+    if (!days.length) days.push({ d: rg.from, dow: ymdParts(rg.from).dow, ts: [] });
     const first = days[0].d, last = days[days.length - 1].d;
     T(ymdParts(first).m === ymdParts(last).m ? `${ymdParts(first).d} – ${enShort(last)}` : `${enShort(first)} – ${enShort(last)}`, M, 285, { s: 36, c: MUTED });
     const top = 330, rowH = Math.min(87, 470 / days.length);
@@ -1946,20 +1978,20 @@ async function drawCopyImage({ pre, date, f }) {
   const W = 1080, H = 1350, SC = 2, M = 80;
   const c = document.createElement("canvas"); c.width = W * SC; c.height = H * SC;
   const x = c.getContext("2d"); x.scale(SC, SC);
-  const BG = "#0A0A0C", INK = "#F5F3EE", MUTED = "#8A8578", POS = "#34d399", NEG = "#fb7185";
+  const BG = "#0A0C11", INK = "#F5F3EE", MUTED = "#8A8578", POS = "#34d399", NEG = "#fb7185";
   const FN = (wt, sz) => `${wt} ${sz}px Inter, "Segoe UI", Arial, sans-serif`;
   const T = (s, px, py, o = {}) => { x.font = FN(o.w || 400, o.s || 30); x.fillStyle = o.c || INK; x.textAlign = o.a || "left"; x.textBaseline = "alphabetic"; if (o.ls !== undefined) { try { x.letterSpacing = o.ls + "px"; } catch (e) {} } x.fillText(s, px, py); const m = x.measureText(s).width; try { x.letterSpacing = "0px"; } catch (e) {} return m; };
   const fit = (txt, wt, size, maxW) => { let z = size; x.font = FN(wt, z); while (z > 24 && x.measureText(txt).width > maxW) { z -= 2; x.font = FN(wt, z); } return z; };
   const tone = (v) => { const t = (v || "").trim(); if (!t || /--/.test(t)) return MUTED; return t.startsWith("-") || t.startsWith("−") ? NEG : t.startsWith("+") ? POS : INK; };
   x.fillStyle = BG; x.fillRect(0, 0, W, H);
-  const g = x.createRadialGradient(W, 0, 0, W, 0, 900); g.addColorStop(0, "rgba(244,127,69,.22)"); g.addColorStop(1, "rgba(244,127,69,0)");
+  const g = x.createRadialGradient(W, 0, 0, W, 0, 900); g.addColorStop(0, "rgba(240,180,41,.22)"); g.addColorStop(1, "rgba(240,180,41,0)");
   x.fillStyle = g; x.fillRect(0, 0, W, H);
-  const g2 = x.createRadialGradient(0, H, 0, 0, H, 700); g2.addColorStop(0, "rgba(244,127,69,.08)"); g2.addColorStop(1, "rgba(244,127,69,0)");
+  const g2 = x.createRadialGradient(0, H, 0, 0, H, 700); g2.addColorStop(0, "rgba(240,180,41,.08)"); g2.addColorStop(1, "rgba(240,180,41,0)");
   x.fillStyle = g2; x.fillRect(0, 0, W, H);
   // Encabezado
   try { const lg = await loadImg(LOGO); const lh = 70, lw = (lg.width / lg.height) * lh; x.drawImage(lg, M, 86, lw, lh); } catch (e) {}
   T("BORKAIFX ELITE", M + 76, 118, { s: 28, w: 700, ls: 5 });
-  T("COPY TRADING", M + 76, 150, { s: 19, c: ACCENT, w: 600, ls: 5 });
+  T("COPY TRADING", M + 76, 150, { s: 19, c: ACCENT_HEX, w: 600, ls: 5 });
   T(date, W - M, 128, { s: 30, c: MUTED, a: "right" });
   // Título grande
   T(pre, M, 262, { s: 34, c: MUTED });
@@ -1970,7 +2002,7 @@ async function drawCopyImage({ pre, date, f }) {
   T(rr || "—", M, 620, { s: rr.length > 7 ? 120 : 150, w: 800, c: rr ? tone(rr) : MUTED });
   const cx = W - M - 118, cy = 560, R = 118;
   x.beginPath(); x.arc(cx, cy, R, 0, Math.PI * 2); x.strokeStyle = "rgba(255,255,255,.10)"; x.lineWidth = 14; x.stroke();
-  x.beginPath(); x.arc(cx, cy, R, -Math.PI / 2, Math.PI * 1.5); x.strokeStyle = ACCENT; x.lineWidth = 14; x.lineCap = "round"; x.stroke();
+  x.beginPath(); x.arc(cx, cy, R, -Math.PI / 2, Math.PI * 1.5); x.strokeStyle = ACCENT_HEX; x.lineWidth = 14; x.lineCap = "round"; x.stroke();
   const lv = (f.liveReturn || "").trim();
   T(lv || "—", cx, cy + 6, { s: fit(lv || "—", 800, 48, 2 * R - 60), w: 800, a: "center", c: lv ? tone(lv) : MUTED });
   T("LIVE RETURN", cx, cy + 44, { s: 19, c: MUTED, a: "center", ls: 2 });
@@ -2039,7 +2071,7 @@ function CopyPanel() {
             <input type="file" accept="image/*" onChange={onFile} disabled={busy} className="bx-input" data-testid="copy-file" />
           </label>
           {thumb && <img src={thumb} alt="Captura subida" style={{ maxHeight: 90, borderRadius: 8, border: "1px solid rgba(255,255,255,.12)" }} />}
-          {msg && <div className="text-xs" style={{ color: "#fdc3a0" }} data-testid="copy-msg">{msg}</div>}
+          {msg && <div className="text-xs" style={{ color: "#fbe3a1" }} data-testid="copy-msg">{msg}</div>}
           <div className="grid sm:grid-cols-2 gap-3">
             <label className="block"><span className="bx-label">Texto pequeño sobre el título</span><input className="bx-input" value={pre} onChange={(e) => setPre(e.target.value)} /></label>
             <label className="block"><span className="bx-label">Fecha o período</span><input className="bx-input" value={date} onChange={(e) => setDate(e.target.value)} /></label>
@@ -2071,6 +2103,7 @@ function RecapPanel({ trades, defaultScope }) {
   const [ref, setRef] = useState(localDate());
   const [ym, setYm] = useState(localDate().slice(0, 7));
   const [scope, setScope] = useState(defaultScope || "ALL");
+  const [pick, setPick] = useState(null); // modo Rango: primer día elegido
   const [copied, setCopied] = useState(false);
   const [img, setImg] = useState(null);
   const [imgMsg, setImgMsg] = useState("");
@@ -2078,6 +2111,7 @@ function RecapPanel({ trades, defaultScope }) {
   useEffect(() => { setImg(null); setImgMsg(""); }, [trades, mode, ref, scope]);
   const makeImg = async () => {
     setImgMsg("");
+    if (mode === "custom") { const cr = customRg(ref); if (Math.round((new Date(cr.to) - new Date(cr.from)) / 86400000) > 6) { setImgMsg("Para la imagen elige un rango de máximo 7 días (el texto sí admite cualquier rango)."); setImg(null); return; } }
     try {
       const r = await drawRecapImage(trades, mode, ref, scope);
       if (r.mixed) { setImgMsg("Hay pips y puntos mezclados: elige un solo mercado (CFDs, Deriv o Weltrade) para generar la imagen."); setImg(null); return; }
@@ -2094,8 +2128,8 @@ function RecapPanel({ trades, defaultScope }) {
   const [text, setText] = useState(rep.text);
   useEffect(() => { setText(rep.text); setCopied(false); }, [rep.text]);
   const taRef = useRef(null);
-  const marked = useMemo(() => new Set(trades.map((t) => t.date)), [trades]);
-  const range = mode === "daily" ? { from: ref, to: ref } : mode === "weekly" ? weekRange(ref) : monthRange(ref.slice(0, 7));
+  const marked = useMemo(() => new Set(trades.map((t) => tdate(t))), [trades]);
+  const range = mode === "custom" ? customRg(ref) : mode === "daily" ? { from: ref, to: ref } : mode === "weekly" ? weekRange(ref) : monthRange(ref.slice(0, 7));
   const rangeLabel = range.from === range.to ? fmtDate(range.from) : `${fmtDate(range.from)} al ${fmtDate(range.to)}`;
   const nav = (n) => { const v = shiftYM(ym, n); setYm(v); if (mode === "monthly") setRef(`${v}-01`); };
   const copy = async () => {
@@ -2110,17 +2144,20 @@ function RecapPanel({ trades, defaultScope }) {
       <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Resúmenes · diario, semanal y mensual</div>
       <div className="text-xs bx-muted mt-1">Solo operaciones cerradas. Elige el período, revisa el texto y cópialo para el canal.</div>
       <div className="mt-4 grid md:grid-cols-[300px_1fr] gap-4">
-        <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+        <div className="rounded-xl p-3" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
           <CalGrid ym={ym} onNav={nav} marked={marked} range={range}
-            onDay={(d) => { setMode("daily"); setRef(d); }}
-            onWeek={(d) => { setMode("weekly"); setRef(d); }}
-            onMonth={() => { setMode("monthly"); setRef(`${ym}-01`); }} />
-          <div className="mt-2 text-[10px] bx-muted">Día = resumen diario · flecha › = semana completa · nombre del mes = mes completo</div>
+            onDay={(d) => {
+              if (mode === "custom") { if (!pick) { setPick(d); setRef(`${d}|${d}`); } else { setRef(`${pick}|${d}`); setPick(null); } return; }
+              setMode("daily"); setRef(d);
+            }}
+            onWeek={(d) => { setPick(null); setMode("weekly"); setRef(d); }}
+            onMonth={() => { setPick(null); setMode("monthly"); setRef(`${ym}-01`); }} />
+          <div className="mt-2 text-[10px] bx-muted">{mode === "custom" ? (pick ? "Ahora elige el día final del rango" : "Rango: toca el día de inicio y luego el día final") : "Día = resumen diario · flecha › = semana completa · nombre del mes = mes completo · «Rango» = desde – hasta"}</div>
         </div>
         <div>
           <div className="flex flex-wrap gap-2">
-            {[["daily", "Diario"], ["weekly", "Semanal"], ["monthly", "Mensual"]].map(([k, l]) => (
-              <button key={k} type="button" onClick={() => { setMode(k); if (k === "monthly") setYm(ref.slice(0, 7)); }} className={`bx-pill ${mode === k ? "on" : ""}`}>{l}</button>
+            {[["daily", "Diario"], ["weekly", "Semanal"], ["monthly", "Mensual"], ["custom", "Rango"]].map(([k, l]) => (
+              <button key={k} type="button" onClick={() => { const base = String(ref).split("|")[0]; setPick(null); setMode(k); setRef(k === "custom" ? `${base}|${base}` : base); if (k === "monthly") setYm(base.slice(0, 7)); }} className={`bx-pill ${mode === k ? "on" : ""}`}>{l}</button>
             ))}
           </div>
           <div className="mt-3 text-sm"><span className="bx-muted">Rango: </span><b className="text-white" data-testid="recap-range">{rangeLabel}</b></div>
@@ -2145,10 +2182,10 @@ function RecapPanel({ trades, defaultScope }) {
         </div>
       </div>
       {mode === "monthly" && <div className="mt-2 text-xs bx-muted">La imagen mensual todavía no está disponible (diario y semanal sí).</div>}
-      {imgMsg && <div className="mt-2 text-xs" style={{ color: "#fdc3a0" }}>{imgMsg}</div>}
+      {imgMsg && <div className="mt-2 text-xs" style={{ color: "#fbe3a1" }}>{imgMsg}</div>}
       {img && (
         <div className="mt-4 flex flex-col items-center gap-3" data-testid="recap-img">
-          <img src={img} alt="Resumen en imagen" style={{ width: "100%", maxWidth: 420, borderRadius: 12, border: "1px solid rgba(255,255,255,.12)" }} />
+          <img src={img} alt="Resumen en imagen" style={{ width: "100%", maxWidth: 420, borderRadius: 12, border: "1px solid rgba(var(--fg),.12)" }} />
           <div className="flex flex-wrap gap-2 justify-center">
             <a className="bx-btn" href={img} download={`borkaifx-${mode === "weekly" ? "weekly" : "daily"}-recap-${ref}.png`}>⬇ Descargar PNG</a>
             <button type="button" className="bx-ghost" onClick={copyImg}>Copiar imagen</button>
@@ -2235,7 +2272,7 @@ function NewsCalendar() {
       )}
       {state.status === "ok" && (
         Object.keys(days).length === 0 ? (
-          <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>No hay noticias USD de impacto alto o medio esta semana.</div>
+          <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(var(--fg),.03)", border: "1px dashed #3a3a3a" }}>No hay noticias USD de impacto alto o medio esta semana.</div>
         ) : (
           <div className="mt-4 space-y-3" data-testid="news-list">
             {Object.keys(days).sort().map((k) => (
@@ -2245,7 +2282,7 @@ function NewsCalendar() {
                 </div>
                 <div className="space-y-1">
                   {days[k].map((e, i) => (
-                    <div key={i} data-testid="news-item" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${e.impact === "High" ? "rgba(239,68,68,.35)" : "rgba(245,158,11,.35)"}` }}>
+                    <div key={i} data-testid="news-item" className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm" style={{ background: "rgba(var(--fg),.03)", border: `1px solid ${e.impact === "High" ? "rgba(239,68,68,.35)" : "rgba(245,158,11,.35)"}` }}>
                       <span style={{ color: e.impact === "High" ? "#ef4444" : "#f59e0b" }}>●</span>
                       <span className="font-mono text-xs text-white w-12 shrink-0">{hm(e.ts)}</span>
                       <span className="text-white flex-1 min-w-0">{e.title}</span>
@@ -2291,7 +2328,7 @@ const SectionTitle = ({ kicker, title, text }) => (
 );
 
 const StepDot = ({ n }) => (
-  <div className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center font-black mx-auto" style={{ background: ACCENT, color: "#17120a" }}>{n}</div>
+  <div className="w-9 h-9 shrink-0 rounded-full flex items-center justify-center font-black mx-auto" style={{ background: ACCENT_HEX, color: "#17120a" }}>{n}</div>
 );
 
 // Botón de broker: si hay enlace de afiliado lo abre; si no, pide el enlace por WhatsApp
@@ -2361,8 +2398,8 @@ function FaqMessage({ text }) {
     if (ok) setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div className="mt-3 rounded-xl p-3 text-left" style={{ background: "#0B0B0B", border: "1px solid rgba(255,255,255,.09)" }}>
-      <div className="whitespace-pre-wrap text-[13px] leading-relaxed" style={{ color: "#E8E3DB" }}>“{text}”</div>
+    <div className="mt-3 rounded-xl p-3 text-left" style={{ background: "#0B0B0B", border: "1px solid rgba(var(--fg),.09)" }}>
+      <div className="whitespace-pre-wrap text-[13px] leading-relaxed" style={{ color: "var(--cardink)" }}>“{text}”</div>
       <div className="mt-2 text-right">
         <button type="button" onClick={copy} className="bx-ghost text-xs">{copied ? "✓ Copiado" : "Copiar mensaje"}</button>
       </div>
@@ -2371,12 +2408,12 @@ function FaqMessage({ text }) {
 }
 
 function FaqBlock({ b }) {
-  if (b.t === "p") return <p className={`${b.gap ? "mt-3 " : "mt-2 "}text-sm leading-relaxed`} style={{ color: "#D6D1C9" }}>{withHandle(b.x)}</p>;
+  if (b.t === "p") return <p className={`${b.gap ? "mt-3 " : "mt-2 "}text-sm leading-relaxed`} style={{ color: "var(--cardink2)" }}>{withHandle(b.x)}</p>;
   if (b.t === "h") return <div className="mt-4 text-[11px] font-black tracking-[0.2em] uppercase" style={{ color: ACCENT }}>{b.x}</div>;
-  if (b.t === "note") return <p className="mt-3 text-sm leading-relaxed rounded-lg px-3 py-2" style={{ background: "rgba(244,127,69,.12)", border: "1px solid rgba(244,127,69,.45)", color: "#FFFFFF" }}><b style={{ color: ACCENT }}>{b.x[0]}</b> {b.x[1]}</p>;
+  if (b.t === "note") return <p className="mt-3 text-sm leading-relaxed rounded-lg px-3 py-2" style={{ background: "rgba(240,180,41,.12)", border: "1px solid rgba(240,180,41,.45)", color: "var(--cardink)" }}><b style={{ color: ACCENT }}>{b.x[0]}</b> {b.x[1]}</p>;
   if (b.t === "msg") return <FaqMessage text={b.x} />;
   return (
-    <ul className="mt-3 space-y-2 text-sm leading-relaxed text-left list-disc pl-5" style={{ color: "#D6D1C9" }}>
+    <ul className="mt-3 space-y-2 text-sm leading-relaxed text-left list-disc pl-5" style={{ color: "var(--cardink2)" }}>
       {b.x.map(([lead, rest], i) => (<li key={i}><b className="text-white">{lead}</b> {rest}</li>))}
     </ul>
   );
@@ -2391,7 +2428,7 @@ function FaqVip() {
         {FAQ_ITEMS.map((it, i) => {
           const isOpen = openIdx === i;
           return (
-            <div key={i} className="overflow-hidden" style={{ background: "linear-gradient(145deg,rgba(255,255,255,.05),rgba(255,255,255,.015))", border: `1px solid ${isOpen ? "rgba(244,127,69,.55)" : "rgba(255,255,255,.13)"}`, borderRadius: 18, transition: "border-color .2s" }}>
+            <div key={i} className="overflow-hidden" style={{ background: "linear-gradient(145deg,rgba(var(--fg),.05),rgba(var(--fg),.015))", border: `1px solid ${isOpen ? "rgba(240,180,41,.55)" : "rgba(var(--fg),.13)"}`, borderRadius: 18, transition: "border-color .2s" }}>
               <button
                 type="button"
                 onClick={() => setOpenIdx(isOpen ? -1 : i)}
@@ -2400,11 +2437,11 @@ function FaqVip() {
                 className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
               >
                 <span className="font-extrabold text-[15px] tracking-tight text-white">{it.q}</span>
-                <span aria-hidden="true" className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xl font-bold leading-none" style={{ background: isOpen ? ACCENT : "#262626", color: isOpen ? "#fff" : "#CFCAC1", transition: "transform .2s, background .2s", transform: isOpen ? "rotate(45deg)" : "none" }}>+</span>
+                <span aria-hidden="true" className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xl font-bold leading-none" style={{ background: isOpen ? ACCENT_HEX : "var(--c3)", color: isOpen ? "#17120a" : "var(--cardink2)", transition: "transform .2s, background .2s", transform: isOpen ? "rotate(45deg)" : "none" }}>+</span>
               </button>
               {isOpen && (
                 <div id={`faq-${i}`} className="px-5 pb-5">
-                  <div className="pt-2" style={{ borderTop: "1px solid rgba(255,255,255,.09)" }}>
+                  <div className="pt-2" style={{ borderTop: "1px solid rgba(var(--fg),.09)" }}>
                     {it.a.map((b, bi) => <FaqBlock key={bi} b={b} />)}
                   </div>
                 </div>
@@ -2439,9 +2476,9 @@ function CalcField({ label, value, onChange, suffix, hint }) {
 }
 function Out({ label, value, tone }) {
   return (
-    <div className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+    <div className="rounded-xl p-3" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
       <div className="text-[11px] bx-muted">{label}</div>
-      <div className="mt-0.5 text-xl font-extrabold" style={{ color: tone || "#fff" }}>{value}</div>
+      <div className="mt-0.5 text-xl font-extrabold" style={{ color: tone || "var(--cardink)" }}>{value}</div>
     </div>
   );
 }
@@ -2475,7 +2512,7 @@ function SizeCalc() {
       <div className="mt-4 grid sm:grid-cols-3 gap-3">
         <Out label="Tamaño de lote" value={ok ? (Math.floor(lots * 100) / 100).toFixed(2) : "—"} tone={ACCENT} />
         <Out label="Dinero en riesgo" value={ok ? usd(riskUsd) : "—"} />
-        <Out label="Pérdida si toca el SL" value={ok ? usd(-riskUsd) : "—"} tone="#fb7185" />
+        <Out label="Pérdida si toca el SL" value={ok ? usd(-riskUsd) : "—"} tone="var(--neg)" />
       </div>
       <p className="mt-3 text-[11px] bx-muted">Cálculo de referencia (el lote se redondea hacia abajo a 0.01). Verifica el valor del pip con tu broker.</p>
     </div>
@@ -2503,8 +2540,8 @@ function RrCalc() {
       <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <Out label="Relación R:R" value={ok ? `1 : ${rr.toFixed(2)}` : "—"} tone={ACCENT} />
         <Out label="Win rate de equilibrio" value={ok ? `${be.toFixed(1)}%` : "—"} />
-        <Out label="Ganancia si gana" value={win !== null ? usd(win) : "—"} tone="#34d399" />
-        <Out label="Esperanza por trade" value={exp !== null ? usd(exp) : "—"} tone={exp !== null && exp < 0 ? "#fb7185" : "#34d399"} />
+        <Out label="Ganancia si gana" value={win !== null ? usd(win) : "—"} tone="var(--pos)" />
+        <Out label="Esperanza por trade" value={exp !== null ? usd(exp) : "—"} tone={exp !== null && exp < 0 ? "var(--neg)" : "var(--pos)"} />
       </div>
       <p className="mt-3 text-[11px] bx-muted">El win rate de equilibrio es el porcentaje mínimo de aciertos para no perder dinero con ese R:R.</p>
     </div>
@@ -2531,17 +2568,17 @@ function CompCalc() {
       <div className="mt-4 grid sm:grid-cols-3 gap-3">
         <Out label="Balance final" value={last ? usd(last.bal) : "—"} tone={ACCENT} />
         <Out label="Total aportado" value={last ? usd(last.put) : "—"} />
-        <Out label="Ganancia generada" value={last ? usd(last.bal - last.put) : "—"} tone="#34d399" />
+        <Out label="Ganancia generada" value={last ? usd(last.bal - last.put) : "—"} tone="var(--pos)" />
       </div>
       {rows.length > 0 && (
         <div className="mt-4" style={{ height: 220 }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={rows} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
-              <CartesianGrid stroke="rgba(255,255,255,.06)" vertical={false} />
+              <CartesianGrid stroke="rgba(128,134,150,.22)" vertical={false} />
               <XAxis dataKey="m" tick={{ fill: "#8A8578", fontSize: 11 }} tickLine={false} axisLine={false} />
               <YAxis tick={{ fill: "#8A8578", fontSize: 11 }} tickLine={false} axisLine={false} width={56} />
-              <Tooltip contentStyle={{ background: "#10131c", border: "1px solid rgba(255,255,255,.12)", borderRadius: 10, fontSize: 12 }} formatter={(v) => usd(v)} labelFormatter={(l) => `Mes ${l}`} />
-              <Area type="monotone" dataKey="bal" stroke={ACCENT} fill="rgba(244,127,69,.18)" strokeWidth={2} />
+              <Tooltip contentStyle={{ background: "#10131c", border: "1px solid rgba(var(--fg),.12)", borderRadius: 10, fontSize: 12 }} formatter={(v) => usd(v)} labelFormatter={(l) => `Mes ${l}`} />
+              <Area type="monotone" dataKey="bal" stroke={ACCENT_HEX} fill="rgba(240,180,41,.18)" strokeWidth={2} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -2554,8 +2591,8 @@ function ToolCards({ onPick, active }) {
   return (
     <div className="grid sm:grid-cols-3 gap-3 md:gap-4">
       {TOOLS.map((t) => (
-        <button key={t.k} type="button" onClick={() => onPick(t.k)} className="bx-plan text-left" data-testid="tool-card" style={active === t.k ? { borderColor: "rgba(244,127,69,.85)" } : undefined}>
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: "rgba(244,127,69,.12)", border: "1px solid rgba(244,127,69,.35)" }}>{t.icon}</div>
+        <button key={t.k} type="button" onClick={() => onPick(t.k)} className="bx-plan text-left" data-testid="tool-card" style={active === t.k ? { borderColor: "rgba(240,180,41,.85)" } : undefined}>
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style={{ background: "rgba(240,180,41,.12)", border: "1px solid rgba(240,180,41,.35)" }}>{t.icon}</div>
           <div className="mt-3 text-base font-extrabold text-white leading-snug">{t.name}</div>
           <p className="mt-1.5 text-sm bx-ink2 leading-relaxed">{t.text}</p>
           <div className="flex-1" />
@@ -2571,7 +2608,7 @@ function ToolsPage({ tool, setTool }) {
     <div className="space-y-8" data-testid="tools-page">
       <section className="pt-3 md:pt-8">
         <div className="bx-kicker">Herramientas</div>
-        <h1 className="mt-3 bx-display text-3xl md:text-5xl" style={{ color: "#fff" }}>PLANEA EL TRADE, <span style={{ color: ACCENT }}>TRADEA EL PLAN.</span></h1>
+        <h1 className="mt-3 bx-display text-3xl md:text-5xl" style={{ color: "var(--cardink)" }}>PLANEA EL TRADE, <span style={{ color: ACCENT }}>TRADEA EL PLAN.</span></h1>
       </section>
       <ToolCards onPick={setTool} active={cur.k} />
       <section className="bx-card p-4 md:p-5">
@@ -2599,16 +2636,16 @@ function Testimonios() {
   return (
     <section data-testid="home-testimonios">
       <div className="bx-kicker">Testimonios</div>
-      <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "#fff" }}>RESULTADOS REALES DEL VIP</h2>
+      <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "var(--cardink)" }}>RESULTADOS REALES DEL VIP</h2>
       <p className="mt-3 text-[15px] bx-ink2 max-w-xl leading-relaxed">Cada resultado se puede verificar en el mensaje original del canal gratuito.</p>
       <div className="mt-6 grid sm:grid-cols-3 gap-3 md:gap-4">
         {list.map((t, i) => (
           <div key={i} className="bx-plan" data-testid="testimonio-card">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2"><span className="font-extrabold text-white">{t.asset}</span><DirBadge dir={t.dir === "Sell" ? "SELL" : "BUY"} /></div>
-              {demo && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(244,127,69,.14)", color: ACCENT, border: "1px solid rgba(244,127,69,.4)" }}>EJEMPLO</span>}
+              {demo && <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(240,180,41,.14)", color: ACCENT, border: "1px solid rgba(240,180,41,.4)" }}>EJEMPLO</span>}
             </div>
-            <div className="mt-3 text-3xl font-extrabold leading-none" style={{ color: "#34d399" }}>{t.result}</div>
+            <div className="mt-3 text-3xl font-extrabold leading-none" style={{ color: "var(--pos)" }}>{t.result}</div>
             <div className="mt-2 text-xs bx-muted">{t.date} · Canal VIP</div>
             <div className="flex-1" />
             <a href={t.link} target="_blank" rel="noopener noreferrer" className="mt-4 bx-planbtn">Ver mensaje en el canal ↗</a>
@@ -2620,102 +2657,6 @@ function Testimonios() {
 }
 
 /* ----------------------------- Inicio ----------------------------- */
-/* ----------------------------- Gráfico interactivo SMC (inicio) ----------------------------- */
-const SMC_C = [ // [apertura, máximo, mínimo, cierre]
-  [112, 116, 110, 115], [115, 126, 114, 124], [124, 126, 118, 119], [119, 123, 117, 122], [122, 123, 113, 114],
-  [114, 115, 107, 108], [108, 109, 102, 103], [103, 108, 100, 106], [106, 111, 102, 103], [103, 106, 100, 105],
-  [105, 106, 102, 103], [103, 104, 94, 101], [101, 102, 98, 99], [99, 115, 98.5, 114], [114, 118, 107, 116],
-  [116, 117, 106, 108], [108, 114, 107, 113], [113, 118, 112, 117], [117, 119, 115, 118], [118, 119, 116, 117],
-];
-const SMC_STEPS = [
-  { k: "BSL", tone: "#F47F45", title: "Buy-side liquidity (BSL)", text: "Dos máximos iguales. Todo trader que vendió aquí tiene su stop justo encima. Ese conjunto de órdenes es un imán, y el precio volverá a buscarlo." },
-  { k: "SSL", tone: "#F47F45", title: "Sell-side liquidity (SSL)", text: "Dos mínimos iguales. Quienes compraron aquí tienen su stop justo debajo. Es otro imán de liquidez: el precio querrá ir a buscarlo." },
-  { k: "SWEEP", tone: "#ef4444", title: "El barrido (sweep)", text: "El precio se mete bajo los mínimos, activa todos los stops y cierra de nuevo por encima. Los minoristas salen stopeados. Esa es la trampa y, a la vez, la señal." },
-  { k: "OB", tone: "#F47F45", title: "Order block (OB)", text: "La última vela bajista antes del impulso alcista. Ahí quedaron órdenes institucionales, y el precio suele respetar esa zona cuando regresa." },
-  { k: "CHoCH", tone: "#10b981", title: "Cambio de carácter (CHoCH)", text: "El precio rompe con cuerpo el último máximo menor. La estructura pasó de bajista a alcista: el barrido tuvo intención." },
-  { k: "FVG", tone: "#F47F45", title: "Fair value gap (FVG)", text: "Un hueco que deja el impulso: tres velas donde la del medio no deja solapamiento. El precio tiende a volver a rellenarlo." },
-  { k: "ENTRY", tone: "#10b981", title: "La entrada", text: "Orden limit dentro del FVG, con el stop bajo el OB. Entras en el retroceso, con el riesgo definido y sin perseguir el precio." },
-  { k: "TP", tone: "#10b981", title: "Objetivo 1.5R", text: "El primer objetivo está a 1.5 veces el riesgo: por cada $1 que arriesgas, buscas $1.50. Al llegar, se toma ganancia o se protege la operación." },
-];
-function SmcChart() {
-  const [step, setStep] = useState(0);
-  const [auto, setAuto] = useState(true);
-  useEffect(() => {
-    if (!auto) return;
-    const iv = setInterval(() => setStep((s) => (s + 1) % 8), 5000);
-    return () => clearInterval(iv);
-  }, [auto]);
-  const pick = (i) => { setAuto(false); setStep(i); };
-  const X = (i) => 40 + i * 33, Y = (v) => 345 - (v - 92) * 8.2;
-  const op = (i) => (step === i ? 1 : 0.3);
-  const cur = SMC_STEPS[step];
-  const marks = [[X(1.5), Y(126) - 26], [X(8), Y(100) + 30], [X(11), Y(94) + 24], [X(12) - 2, Y(102) - 32], [X(10), Y(111) - 30], [X(14), Y(98)], [X(17), Y(103)], [X(18.5), Y(118) - 26]];
-  const mono = '"JetBrains Mono", ui-monospace, Menlo, monospace';
-  return (
-    <section data-testid="smc-chart" className="grid md:grid-cols-[1.55fr_1fr] gap-4 items-stretch">
-      <div className="bx-card p-3 md:p-4">
-        <div className="flex items-center justify-between gap-2 text-[11px]" style={{ fontFamily: mono }}>
-          <span><b className="text-white">XAUUSD</b> <span className="bx-muted">· 15M</span></span>
-          <span style={{ color: ACCENT }}>● toca los puntos brillantes</span>
-        </div>
-        <svg viewBox="0 0 780 375" className="w-full h-auto mt-2" role="img" aria-label="Gráfico educativo de una operación SMC en oro">
-          {[60, 140, 220, 300].map((y) => <line key={y} x1="20" x2="760" y1={y} y2={y} stroke="rgba(255,255,255,.05)" />)}
-          {/* BSL */}
-          <g opacity={op(0)}><line x1={X(0)} x2={730} y1={Y(126)} y2={Y(126)} stroke="#F47F45" strokeDasharray="5 4" /><text x="736" y={Y(126) + 4} fill="#F47F45" fontSize="13" fontFamily={mono} fontWeight="700">BSL</text></g>
-          {/* SSL */}
-          <g opacity={op(1)}><line x1={X(6)} x2={730} y1={Y(100)} y2={Y(100)} stroke="#F47F45" strokeDasharray="5 4" /><text x="736" y={Y(100) + 4} fill="#F47F45" fontSize="13" fontFamily={mono} fontWeight="700">SSL</text></g>
-          {/* CHoCH */}
-          <g opacity={op(4)}><line x1={X(8)} x2={X(13) + 10} y1={Y(111)} y2={Y(111)} stroke="#10b981" strokeDasharray="5 4" /><text x={X(13) + 16} y={Y(111) + 4} fill="#10b981" fontSize="12" fontFamily={mono} fontWeight="700">CHoCH</text></g>
-          {/* OB */}
-          <g opacity={op(3)}><rect x={X(12) - 9} y={Y(102)} width={X(15) - X(12) + 9} height={Y(98) - Y(102)} fill="rgba(139,92,246,.20)" stroke="#8b5cf6" /><text x={X(12) - 9} y={Y(98) + 14} fill="#a78bfa" fontSize="12" fontFamily={mono} fontWeight="700">OB</text></g>
-          {/* FVG */}
-          <g opacity={op(5)}><rect x={X(13)} y={Y(107)} width={X(16) - X(13)} height={Y(102) - Y(107)} fill="rgba(244,127,69,.16)" stroke="#F47F45" /><text x={X(13) + 4} y={Y(102) - 5} fill="#F47F45" fontSize="12" fontFamily={mono} fontWeight="700">FVG</text></g>
-          {/* Entrada y SL */}
-          <g opacity={op(6)}><line x1={X(15)} x2={X(19)} y1={Y(106)} y2={Y(106)} stroke="#fff" /><line x1={X(15)} x2={X(19)} y1={Y(98)} y2={Y(98)} stroke="#ef4444" strokeDasharray="4 4" /><text x={X(19) + 8} y={Y(106) + 4} fill="#fff" fontSize="12" fontFamily={mono} fontWeight="700">ENTRY</text><text x={X(19) + 8} y={Y(98) + 4} fill="#ef4444" fontSize="12" fontFamily={mono} fontWeight="700">SL</text></g>
-          {/* Objetivo */}
-          <g opacity={op(7)}><line x1={X(15)} x2={730} y1={Y(118)} y2={Y(118)} stroke="#10b981" strokeDasharray="5 4" /><text x="736" y={Y(118) + 4} fill="#10b981" fontSize="13" fontFamily={mono} fontWeight="700">1.5R</text></g>
-          {/* Sweep */}
-          <g opacity={op(2)}><line x1={X(11) - 14} x2={X(11) + 14} y1={Y(94)} y2={Y(94)} stroke="#ef4444" strokeWidth="2" /></g>
-          {/* velas */}
-          {SMC_C.map(([o, h, l, c], i) => {
-            const up = c >= o, col = up ? "#22c55e" : "#ef4444";
-            return (
-              <g key={i}>
-                <line x1={X(i)} x2={X(i)} y1={Y(h)} y2={Y(l)} stroke={col} strokeWidth="1.6" />
-                <rect x={X(i) - 7} y={Y(Math.max(o, c))} width="14" height={Math.max(2, Math.abs(Y(o) - Y(c)))} rx="1.5" fill={col} />
-              </g>
-            );
-          })}
-          {/* puntos */}
-          {marks.map(([cx, cy], i) => {
-            const on = step === i, col = SMC_STEPS[i].tone;
-            return (
-              <g key={i} role="button" tabIndex={0} aria-label={`Punto ${i + 1}: ${SMC_STEPS[i].k}`} data-testid="smc-dot" onClick={() => pick(i)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(i); } }} style={{ cursor: "pointer", outline: "none" }}>
-                {on && <circle cx={cx} cy={cy} r="16" fill="none" stroke={col} strokeWidth="1.5"><animate attributeName="r" values="15;24;15" dur="1.8s" repeatCount="indefinite" /><animate attributeName="opacity" values=".7;0;.7" dur="1.8s" repeatCount="indefinite" /></circle>}
-                <circle cx={cx} cy={cy} r={on ? 15 : 12} fill={on ? col : "rgba(10,10,12,.85)"} stroke={col} strokeWidth="2" />
-                <text x={cx} y={cy + 4.5} textAnchor="middle" fontSize="13" fontWeight="800" fontFamily={mono} fill={on ? "#0A0A0C" : col}>{i + 1}</text>
-              </g>
-            );
-          })}
-        </svg>
-      </div>
-      <div className="bx-card p-4 md:p-5 flex flex-col" style={{ borderTop: `3px solid ${cur.tone}` }} data-testid="smc-card">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-[11px] bx-muted" style={{ fontFamily: mono }} data-testid="smc-counter">{String(step + 1).padStart(2, "0")} / 8</span>
-          <div className="flex gap-1.5">{SMC_STEPS.map((s, i) => <button key={s.k} type="button" aria-label={`Ir al punto ${i + 1}`} onClick={() => pick(i)} style={{ width: i === step ? 22 : 8, height: 8, borderRadius: 8, background: i === step ? ACCENT : "rgba(255,255,255,.2)", transition: "width .2s" }} />)}</div>
-        </div>
-        <h3 className="mt-3 bx-display text-2xl md:text-3xl" style={{ color: cur.tone }} data-testid="smc-title">{cur.title}</h3>
-        <p className="mt-2 text-sm bx-ink2 leading-relaxed" data-testid="smc-text">{cur.text}</p>
-        <div className="flex-1" />
-        <div className="mt-4 flex items-center justify-between gap-2 flex-wrap">
-          <a href="https://t.me/borkaifxelite/633" target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-white">Leer la guía completa →</a>
-          <button type="button" onClick={() => pick((step + 1) % 8)} className="bx-ghost" data-testid="smc-next">Siguiente punto</button>
-        </div>
-        <p className="mt-3 text-[10px] bx-muted">Ilustración educativa; no es una operación real ni asesoramiento financiero.</p>
-      </div>
-    </section>
-  );
-}
 
 function HomePage({ setPage, openTool, openSignals }) {
   const steps = [
@@ -2728,7 +2669,7 @@ function HomePage({ setPage, openTool, openSignals }) {
       <section data-testid="home-hero" className="pt-3 md:pt-8">
         <div>
           <div className="bx-kicker" style={{ fontSize: "11px" }}>COMUNIDAD DE TRADING</div>
-          <h1 className="mt-4 bx-display bx-hero1" style={{ color: "#fff" }}>
+          <h1 className="mt-4 bx-display bx-hero1" style={{ color: "var(--cardink)" }}>
             <span>SI NO SABES DONDE ESTA LA LIQUIDEZ EN EL GRAFICO, </span>
             <span style={{ color: ACCENT }}>LA LIQUIDEZ ERES TU.</span>
           </h1>
@@ -2738,11 +2679,10 @@ function HomePage({ setPage, openTool, openSignals }) {
         </div>
       </section>
 
-      {/* Gráfico interactivo SMC: oculto por ahora (el componente SmcChart sigue en el código) */}
 
       <section data-testid="home-path">
         <div className="bx-kicker">A tu ritmo</div>
-        <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "#fff" }}>TOMA EL TRADE, NIVEL POR NIVEL.</h2>
+        <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "var(--cardink)" }}>TOMA EL TRADE, NIVEL POR NIVEL.</h2>
         <p className="mt-3 text-[15px] bx-ink2 max-w-xl leading-relaxed">Comienza aquí.</p>
         <div className="mt-6 grid md:grid-cols-3 gap-3 md:gap-4">
           {steps.map((s) => (
@@ -2766,7 +2706,7 @@ function HomePage({ setPage, openTool, openSignals }) {
 
       <section data-testid="home-tools">
         <div className="bx-kicker">Herramientas</div>
-        <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "#fff" }}>PLANEA EL TRADE, TRADEA EL PLAN</h2>
+        <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "var(--cardink)" }}>PLANEA EL TRADE, TRADEA EL PLAN</h2>
         <div className="mt-6"><ToolCards onPick={(k) => { openTool(k); window.scrollTo(0, 0); }} /></div>
       </section>
 
@@ -2822,7 +2762,7 @@ function VipOfferCta({ setPage }) {
   return (
     <div
       className="mt-8 rounded-2xl p-6 md:p-8 text-center"
-      style={{ background: "radial-gradient(600px circle at 50% 0%, rgba(244,127,69,.30), transparent 65%), rgba(30,22,18,.85)", border: `2px solid ${ACCENT}`, boxShadow: "0 0 40px rgba(244,127,69,.25)" }}
+      style={{ background: "radial-gradient(600px circle at 50% 0%, rgba(240,180,41,.30), transparent 65%), var(--c2)", border: `2px solid ${ACCENT}`, boxShadow: "0 0 40px rgba(240,180,41,.25)" }}
     >
       <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">OFERTA EXCLUSIVA</div>
       <h3 className="mt-2 text-xl md:text-3xl font-black leading-tight text-white">¿Quieres ser parte del VIP sin pagar mensualidad?</h3>
@@ -2843,7 +2783,7 @@ function VipOfferCta({ setPage }) {
 /* ----------------------------- Ejemplo de señal (formato del canal ELITE VIP FX) ----------------------------- */
 const CHANNEL_NAME = "ELITE VIP FX";
 const Chip = ({ tone, children }) => {
-  const c = tone === "entry" ? ["rgba(56,189,248,.16)", "#7dd3fc"] : tone === "tp" ? ["rgba(16,185,129,.16)", "#6ee7b7"] : ["rgba(244,63,94,.16)", "#fda4af"];
+  const c = tone === "entry" ? ["rgba(56,189,248,.16)", "var(--sky)"] : tone === "tp" ? ["rgba(16,185,129,.16)", "var(--pos)"] : ["rgba(244,63,94,.16)", "var(--neg)"];
   return <span className="font-mono px-1.5 py-0.5 rounded-md text-[0.9em]" style={{ background: c[0], color: c[1] }}>{children}</span>;
 };
 const SIGNAL_EXAMPLES = {
@@ -2885,10 +2825,10 @@ function SignalShowcase({ kind }) {
   const [openRule, setOpenRule] = useState(null);
   const ex = SIGNAL_EXAMPLES[kind];
   const chName = ex.channel || CHANNEL_NAME;
-  const bubble = { background: "rgba(255,255,255,.06)", border: "1px solid rgba(255,255,255,.09)" };
+  const bubble = { background: "rgba(var(--fg),.06)", border: "1px solid rgba(var(--fg),.09)" };
   const quote = (
     <div className="rounded-lg px-3 py-1.5 text-xs" style={{ background: "rgba(56,189,248,.10)", borderLeft: "3px solid #38bdf8" }}>
-      <div className="font-bold" style={{ color: "#7dd3fc" }}>{chName}</div>
+      <div className="font-bold" style={{ color: "var(--sky)" }}>{chName}</div>
       <div className="bx-muted truncate">{ex.short ? `${ex.title} ${ex.entry} …` : `${ex.head} · Pair: ${ex.pair} 📊 · ${ex.side} …`}</div>
     </div>
   );
@@ -2898,7 +2838,7 @@ function SignalShowcase({ kind }) {
       <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center max-w-5xl mx-auto">
         <div className="bx-card w-full max-w-md mx-auto md:mx-0 md:ml-auto overflow-hidden">
           <div className="flex items-center gap-3 px-4 py-3 bx-bb">
-            <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(244,127,69,.35)" }} />
+            <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(240,180,41,.35)" }} />
             <div>
               <div className="font-extrabold text-white leading-tight">{chName}</div>
               <div className="text-xs bx-muted">Sala de señales VIP</div>
@@ -2928,7 +2868,7 @@ function SignalShowcase({ kind }) {
             {ex.updates.map((u, i) => (
               <div key={u} className="rounded-2xl p-2 space-y-2" style={bubble}>
                 {quote}
-                <div className="px-2 pb-1 text-[15px] text-white font-semibold">{u}{i === 0 && !ex.short ? <span style={{ color: "#fbbf24" }}> ⚠️</span> : null}</div>
+                <div className="px-2 pb-1 text-[15px] text-white font-semibold">{u}{i === 0 && !ex.short ? <span style={{ color: "var(--amb2)" }}> ⚠️</span> : null}</div>
               </div>
             ))}
           </div>
@@ -2942,13 +2882,13 @@ function SignalShowcase({ kind }) {
             </div>
           ))}
 
-          <div className="pt-4 mt-2" style={{ borderTop: "1px solid rgba(255,255,255,.09)" }} data-testid="vip-rules">
+          <div className="pt-4 mt-2" style={{ borderTop: "1px solid rgba(var(--fg),.09)" }} data-testid="vip-rules">
             <div className="font-extrabold text-white mb-2">Gestión de riesgo &amp; reglas VIP</div>
             <div className="space-y-1.5">
               {VIP_RULES.map((r, i) => {
                 const open = openRule === i && !!r.text;
                 return (
-                  <div key={r.t} className="rounded-xl" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+                  <div key={r.t} className="rounded-xl" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
                     <button onClick={() => r.text && setOpenRule(open ? null : i)} aria-expanded={open} className="w-full flex items-center justify-between gap-3 px-3 py-2 text-left" style={{ cursor: r.text ? "pointer" : "default" }}>
                       <span className="text-sm"><span className="bx-accent font-black mr-1.5">{i + 1}.</span><span className="font-bold text-white">{r.t}</span></span>
                       {r.text ? <span className="bx-accent text-lg leading-none">{open ? "–" : "+"}</span> : null}
@@ -2981,12 +2921,12 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
       {/* ACCESOS · PLANES */}
       <section id="precios" className="scroll-mt-24" data-testid="access-plans">
         <div className="bx-kicker">{kicker}</div>
-        <h2 className="bx-display mt-3 text-4xl md:text-5xl" style={{ color: "#fff" }}>
+        <h2 className="bx-display mt-3 text-4xl md:text-5xl" style={{ color: "var(--cardink)" }}>
           <span className="block">Opera con el</span>
           <span className="block" style={{ color: ACCENT }}>canal VIP.</span>
         </h2>
         <p className="mt-4 text-[15px] bx-ink2 max-w-xl leading-relaxed">{intro}</p>
-        <ul className="mt-5 space-y-2 text-sm" style={{ color: "#E8E5DD" }}>
+        <ul className="mt-5 space-y-2 text-sm" style={{ color: "var(--cardink)" }}>
           {bullets.map((x) => (
             <li key={x} className="flex gap-3"><span style={{ color: GREEN }}>✓</span>{x}</li>
           ))}
@@ -2999,7 +2939,7 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
               <div key={p.name} className={`bx-plan ${hot ? "hot" : ""}`} data-testid="plan-card">
                 <div className="text-sm font-semibold text-white">{p.name}</div>
                 <div className="mt-2 text-3xl md:text-4xl font-extrabold leading-none" style={{ color: ACCENT }}>{fmtMoney(p.amount)}</div>
-                {p.perk && !syn && <div className="mt-3 text-[11px] font-bold leading-snug tracking-wide" style={{ color: "#E8E5DD" }} data-testid="plan-perk">{p.perk}</div>}
+                {p.perk && !syn && <div className="mt-3 text-[11px] font-bold leading-snug tracking-wide" style={{ color: "var(--cardink)" }} data-testid="plan-perk">{p.perk}</div>}
                 <div className="flex-1" />
                 <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={`mt-4 ${hot ? "bx-gold" : "bx-planbtn"}`} style={hot ? { padding: ".6rem 1rem", fontSize: ".85rem" } : undefined}>
                   Unirme · {p.name} ↗
@@ -3018,7 +2958,7 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
 }
 
 /* ----------------------------- Calendario & Métricas ----------------------------- */
-const WEEKDAYS = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+const WEEKDAYS = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 const shiftMonth = (ym, d) => {
   const [y, m] = ym.split("-").map(Number);
   const dt = new Date(y, m - 1 + d, 1);
@@ -3094,12 +3034,12 @@ function SignalModal({ t, onClose }) {
   }, [onClose]);
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4" onClick={onClose} data-testid="signal-modal">
-      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl p-5" role="dialog" aria-label="Señal original" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${ACCENT}`, boxShadow: "0 20px 60px rgba(0,0,0,.7)" }}>
+      <div onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-2xl p-5" role="dialog" aria-label="Señal original" style={{ background: "rgba(var(--fg),.03)", border: `1px solid ${ACCENT}`, boxShadow: "0 20px 60px rgba(0,0,0,.7)" }}>
         <div className="flex items-center justify-between gap-2">
           <div className="text-[11px] tracking-[0.25em] font-bold bx-accent">SEÑAL ORIGINAL · {fmtDate(t.date)}</div>
           <button type="button" onClick={onClose} aria-label="Cerrar" className="bx-ghost" style={{ padding: ".25rem .6rem" }}>✕</button>
         </div>
-        <pre className="mt-4 rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap break-words" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)", color: "#F2EEE6", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }}>{buildSignalText(t)}</pre>
+        <pre className="mt-4 rounded-xl p-4 text-sm leading-relaxed whitespace-pre-wrap break-words" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)", color: "var(--cardink)", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" }}>{buildSignalText(t)}</pre>
       </div>
     </div>
   );
@@ -3114,7 +3054,7 @@ function DayTradeCard({ t, onOpen, onSignal, onEdit, onDelete }) {
   const mg = (t.mgmt || "").trim();
   const click = onOpen ? { role: "button", tabIndex: 0, onClick: () => onOpen(t.id), style: { cursor: "pointer" } } : {};
   return (
-    <div {...click} data-testid="day-trade" className="bx-row w-full text-left rounded-xl p-4" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)", ...(click.style || {}) }}>
+    <div {...click} data-testid="day-trade" className="bx-row w-full text-left rounded-xl p-4" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)", ...(click.style || {}) }}>
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="font-extrabold text-base text-white">{t.asset}</span>
@@ -3154,13 +3094,13 @@ function DayTradeCard({ t, onOpen, onSignal, onEdit, onDelete }) {
           type="button"
           onClick={(e) => { e.stopPropagation(); onSignal(t); }}
           className="text-xs font-bold underline underline-offset-4"
-          style={{ color: "#fdc3a0" }}
+          style={{ color: "#fbe3a1" }}
         >
           📡 Ver señal original
         </button>
       </div>
       {note && (
-        <div className="mt-3 rounded-lg px-3 py-2 text-sm whitespace-pre-line" style={{ background: "rgba(244,127,69,.10)", border: "1px solid rgba(244,127,69,.35)", color: "#ffd2b8" }}>
+        <div className="mt-3 rounded-lg px-3 py-2 text-sm whitespace-pre-line" style={{ background: "rgba(240,180,41,.10)", border: "1px solid rgba(240,180,41,.35)", color: "#fde7ad" }}>
           📝 <b>Nota:</b> {note}
         </div>
       )}
@@ -3190,10 +3130,10 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
   const unitL = unit.toLowerCase();
   const today = localDate();
 
-  const monthTrades = useMemo(() => trades.filter((t) => (t.date || "").startsWith(cur)), [trades, cur]);
+  const monthTrades = useMemo(() => trades.filter((t) => tdate(t).startsWith(cur)), [trades, cur]);
   const byDay = useMemo(() => {
     const map = {};
-    monthTrades.forEach((t) => { (map[t.date] = map[t.date] || []).push(t); });
+    monthTrades.forEach((t) => { const k = tdate(t); (map[k] = map[k] || []).push(t); });
     return map;
   }, [monthTrades]);
   const m = useMemo(() => computeMetrics(monthTrades), [monthTrades]);
@@ -3203,7 +3143,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
 
   // Semanas (domingo a sábado) con sus totales
   const weeks = useMemo(() => {
-    const first = new Date(y, mo - 1, 1).getDay();
+    const first = (new Date(y, mo - 1, 1).getDay() + 6) % 7;
     const dim = new Date(y, mo, 0).getDate();
     const cells = [...Array(first).fill(null), ...Array.from({ length: dim }, (_, i) => i + 1)];
     while (cells.length % 7) cells.push(null);
@@ -3308,8 +3248,8 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                       <td className="text-left px-2 font-black" style={{ color: rw.yy === yearCur ? ACCENT : undefined }}>{rw.yy}</td>
                       {rw.monthsRow.map((c, i) => {
                         const has = c.st.shown > 0;
-                        const bg = !has ? "rgba(255,255,255,.03)" : c.st.pips > 0 ? "rgba(16,185,129,.13)" : c.st.pips < 0 ? "rgba(244,63,94,.13)" : "#1B1B1B";
-                        const bd = !has ? "#2A2A2A" : c.st.pips > 0 ? "rgba(16,185,129,.6)" : c.st.pips < 0 ? "rgba(244,63,94,.6)" : "#4A4A4A";
+                        const bg = !has ? "rgba(var(--fg),.03)" : c.st.pips > 0 ? "rgba(16,185,129,.13)" : c.st.pips < 0 ? "rgba(244,63,94,.13)" : "#1B1B1B";
+                        const bd = !has ? "var(--cardline)" : c.st.pips > 0 ? "rgba(16,185,129,.6)" : c.st.pips < 0 ? "rgba(244,63,94,.6)" : "var(--line2)";
                         return (
                           <td key={i} className="p-0">
                             <button
@@ -3329,7 +3269,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                         );
                       })}
                       <td className="p-0">
-                        <div className="rounded-xl px-1 py-2 flex flex-col items-center" style={{ background: "rgba(255,255,255,.03)", border: `1px solid ${ACCENT}`, minHeight: 58 }}>
+                        <div className="rounded-xl px-1 py-2 flex flex-col items-center" style={{ background: "rgba(var(--fg),.03)", border: `1px solid ${ACCENT}`, minHeight: 58 }}>
                           <span className={`font-black ${pnlColor(rw.tot.pips)}`}>{fmtP(rw.tot.pips)}</span>
                           <span className="text-[10px] bx-muted leading-tight">{rw.tot.shown} {rw.tot.shown === 1 ? "trade" : "trades"}{rw.tot.wr !== null ? ` | ${rw.tot.wr}%` : ""}</span>
                         </div>
@@ -3375,8 +3315,8 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                   if (!c) return <div key={di} />;
                   const { st } = c;
                   const has = st.shown > 0;
-                  const border = !has ? "rgba(255,255,255,.09)" : st.pips > 0 ? "rgba(16,185,129,.55)" : st.pips < 0 ? "rgba(244,63,94,.55)" : "rgba(148,163,184,.4)";
-                  const bg = !has ? "rgba(255,255,255,.02)" : st.pips > 0 ? "rgba(16,185,129,.12)" : st.pips < 0 ? "rgba(244,63,94,.12)" : "rgba(255,255,255,.06)";
+                  const border = !has ? "rgba(var(--fg),.09)" : st.pips > 0 ? "rgba(16,185,129,.55)" : st.pips < 0 ? "rgba(244,63,94,.55)" : "rgba(148,163,184,.4)";
+                  const bg = !has ? "rgba(var(--fg),.02)" : st.pips > 0 ? "rgba(16,185,129,.12)" : st.pips < 0 ? "rgba(244,63,94,.12)" : "rgba(var(--fg),.06)";
                   const sel = selDay === c.key;
                   return (
                     <button
@@ -3391,10 +3331,10 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                         <span className={`text-[10px] sm:text-xs font-extrabold text-center my-auto leading-none whitespace-nowrap ${pnlColor(st.pips)}`}>{fmtDayPips(st.pips, "")}<span className="hidden sm:inline font-bold opacity-80">{unitL && !unitL.includes("/") ? ` ${unitL}` : ""}</span></span>
                       )}
                       {isAdmin && st.open > 0 && (
-                        <span className="text-[9px] text-center" style={{ color: "#7dd3fc" }}>⏳ {st.open}</span>
+                        <span className="text-[9px] text-center" style={{ color: "var(--sky)" }}>⏳ {st.open}</span>
                       )}
                       {isAdmin && st.pending > 0 && (
-                        <span className="text-[9px] text-center" style={{ color: "#fcd34d" }}>🕓 {st.pending}</span>
+                        <span className="text-[9px] text-center" style={{ color: "var(--amb)" }}>🕓 {st.pending}</span>
                       )}
                     </button>
                   );
@@ -3426,9 +3366,9 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                 const ds = dayStats(dayList);
                 return (
                   <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
-                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
-                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
+                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Resultado</div><div className={`text-xl font-black ${pnlColor(ds.pips)}`}>{fmtP(ds.pips)}</div><div className="text-xs bx-muted">{unitL}</div></div>
+                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Trades</div><div className="text-xl font-black">{ds.shown}</div></div>
+                    <div className="rounded-xl px-2 py-1.5" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}><div className="text-[11px] uppercase tracking-widest bx-muted">Win Rate</div><div className="text-xl font-black">{ds.wr === null ? "—" : `${ds.wr}%`}</div></div>
                   </div>
                 );
               })()}
@@ -3474,16 +3414,16 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                 <AreaChart data={curve} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                   <defs>
                     <linearGradient id="calFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor={ACCENT} stopOpacity={0.5} />
-                      <stop offset="100%" stopColor={ACCENT} stopOpacity={0.02} />
+                      <stop offset="0%" stopColor={ACCENT_HEX} stopOpacity={0.5} />
+                      <stop offset="100%" stopColor={ACCENT_HEX} stopOpacity={0.02} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
+                  <CartesianGrid stroke="rgba(128,134,150,.22)" vertical={false} />
                   <XAxis dataKey="d" tick={{ fill: GREY, fontSize: 10 }} tickLine={false} axisLine={false} interval="preserveStartEnd" />
                   <YAxis tick={{ fill: GREY, fontSize: 11 }} tickLine={false} axisLine={false} width={60} />
                   <Tooltip content={<ChartTooltip unit={unitL} />} />
-                  <ReferenceLine y={0} stroke="#4A4A4A" strokeDasharray="4 4" />
-                  <Area type="monotone" dataKey="equity" name="Acumulado" stroke={ACCENT} strokeWidth={2.5} fill="url(#calFill)" />
+                  <ReferenceLine y={0} stroke="var(--line2)" strokeDasharray="4 4" />
+                  <Area type="monotone" dataKey="equity" name="Acumulado" stroke={ACCENT_HEX} strokeWidth={2.5} fill="url(#calFill)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -3494,7 +3434,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
         <div className="grid lg:grid-cols-2 gap-4 mt-4">
           <div className="bx-card p-3 md:p-4">
             <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">Desglose de operaciones</div>
-            <div className="h-3 rounded-full overflow-hidden flex" style={{ background: "#2A2A2A" }} role="img" aria-label={`${m.wins} ganadoras, ${m.losses} perdedoras`}>
+            <div className="h-3 rounded-full overflow-hidden flex" style={{ background: "var(--cardline)" }} role="img" aria-label={`${m.wins} ganadoras, ${m.losses} perdedoras`}>
               {dec > 0 && (
                 <>
                   <div data-testid="bar-wins" style={{ width: `${(m.wins / dec) * 100}%`, background: GREEN }} />
@@ -3512,22 +3452,22 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                 ["SL · Perdedoras", m.losses, `${pct(m.losses)}%`, "text-rose-400"],
                 ["Break Even (BE)", m.be, `${pct(m.be)}%`, "text-white"],
               ].map(([label, n, p, cls]) => (
-                <div key={label} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+                <div key={label} className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
                   <span className="bx-muted">{label}</span>
                   <span className={`font-extrabold ${cls}`}>{n} <span className="bx-muted font-normal text-xs">({p})</span></span>
                 </div>
               ))}
               {isAdmin && (
                 <>
-                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
                     <span className="bx-muted">Descartadas / Canceladas</span>
                     <span className="font-extrabold">{m.discarded}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
                     <span className="bx-muted">Activas</span>
                     <span className="font-extrabold">{m.open}</span>
                   </div>
-                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+                  <div className="flex items-center justify-between rounded-lg px-3 py-2" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
                     <span className="bx-muted">Órdenes pendientes</span>
                     <span className="font-extrabold">{m.pending}</span>
                   </div>
@@ -3538,7 +3478,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
 
           <div className="bx-card p-3 md:p-4">
             <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">{unit} totales y extremos</div>
-            <div className="text-center rounded-xl py-4" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)" }}>
+            <div className="text-center rounded-xl py-4" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)" }}>
               <div className="text-[11px] uppercase tracking-widest bx-muted">Neto del mes</div>
               <div className={`text-4xl font-black ${pnlColor(m.totalPips)}`}>{fmtP(m.totalPips)}</div>
               <div className="text-xs bx-muted">{unitL}</div>
@@ -3553,7 +3493,7 @@ function CalendarView({ trades: allTrades, isAdmin, unit, onOpen }) {
                   disabled={!t}
                   onClick={() => t && isAdmin && onOpen(t.id)}
                   className="rounded-xl p-3 text-center"
-                  style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(255,255,255,.09)", cursor: t && isAdmin ? "pointer" : "default" }}
+                  style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(var(--fg),.09)", cursor: t && isAdmin ? "pointer" : "default" }}
                 >
                   <div className="text-[11px] uppercase tracking-widest bx-muted">{label}</div>
                   {t ? (
@@ -3702,15 +3642,15 @@ function AnnualEvolution({ trades, unit }) {
       <div style={{ width: "100%", height: 200 }}>
         <ResponsiveContainer>
           <ComposedChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-            <CartesianGrid stroke="rgba(255,255,255,0.07)" vertical={false} />
+            <CartesianGrid stroke="rgba(128,134,150,.22)" vertical={false} />
             <XAxis dataKey="name" tick={{ fill: GREY, fontSize: 11 }} tickLine={false} axisLine={false} />
             <YAxis tick={{ fill: GREY, fontSize: 10 }} tickLine={false} axisLine={false} width={52} />
-            <Tooltip content={<Tip />} cursor={{ fill: "rgba(255,255,255,0.04)" }} />
-            <ReferenceLine y={0} stroke="#4A4A4A" strokeDasharray="4 4" />
+            <Tooltip content={<Tip />} cursor={{ fill: "rgba(var(--fg),0.04)" }} />
+            <ReferenceLine y={0} stroke="var(--line2)" strokeDasharray="4 4" />
             <Bar dataKey="month" name="Mes" radius={[4, 4, 0, 0]} maxBarSize={28}>
               {data.map((d, i) => <Cell key={i} fill={(d.month || 0) < 0 ? RED : GREEN} fillOpacity={0.75} />)}
             </Bar>
-            <Line type="monotone" dataKey="equity" name="Acumulado" stroke={ACCENT} strokeWidth={2} dot={{ r: 4, fill: ACCENT, stroke: "#0A0A0B", strokeWidth: 1.5 }} activeDot={{ r: 6 }} connectNulls={false} />
+            <Line type="monotone" dataKey="equity" name="Acumulado" stroke={ACCENT_HEX} strokeWidth={2} dot={{ r: 4, fill: ACCENT_HEX, stroke: "#0A0A0B", strokeWidth: 1.5 }} activeDot={{ r: 6 }} connectNulls={false} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -3729,6 +3669,23 @@ const pageFromPath = () => {
 };
 export default function App() {
   const twReady = useTailwind();
+  // Tema: automático según el dispositivo (claro/oscuro), con botón para forzar uno u otro
+  const [themePref, setThemePref] = useState(() => { try { const v = localStorage.getItem("borkaifx_theme"); return v === "light" || v === "dark" ? v : "auto"; } catch (e) { return "auto"; } });
+  const [sysDark, setSysDark] = useState(true);
+  useEffect(() => {
+    let mq;
+    try { mq = window.matchMedia("(prefers-color-scheme: dark)"); } catch (e) { return undefined; }
+    const h = () => setSysDark(mq.matches);
+    h();
+    if (mq.addEventListener) mq.addEventListener("change", h);
+    return () => { if (mq.removeEventListener) mq.removeEventListener("change", h); };
+  }, []);
+  const theme = themePref === "auto" ? (sysDark ? "dark" : "light") : themePref;
+  useEffect(() => { try { document.documentElement.setAttribute("data-theme", theme); } catch (e) {} }, [theme]);
+  const pickTheme = (v) => {
+    setThemePref(v);
+    try { localStorage.setItem("borkaifx_theme", v); } catch (e) {}
+  };
   const [trades, setTrades] = useState([]);
   // Rutas: "/" (Track Record), "/senales", "/vip-gratis" (sin pestaña: se entra desde Señales), "/elpatron" (panel admin)
   const [page, setPageState] = useState(pageFromPath); // home | signals | vip | admin
@@ -3940,7 +3897,7 @@ export default function App() {
   const scopeUnits = Array.from(new Set(market.map(unitWord)));
   const scopeUnit = scopeUnits.length === 1 ? cap(scopeUnits[0]) : scopeUnits.length > 1 ? "Pips/Puntos" : tab === "SINTETICO" ? "Puntos" : "Pips";
 
-  const baseList = useMemo(() => (dateFilter ? market.filter((t) => t.date >= dateFilter.from && t.date <= dateFilter.to) : scoped), [dateFilter, market, scoped]);
+  const baseList = useMemo(() => (dateFilter ? market.filter((t) => tdate(t) >= dateFilter.from && tdate(t) <= dateFilter.to) : scoped), [dateFilter, market, scoped]);
   const marked = useMemo(() => new Set(market.map((t) => t.date)), [market]);
   const dateLabel = dateFilter ? (dateFilter.from === dateFilter.to ? fmtDate(dateFilter.from) : `${fmtDate(dateFilter.from)} – ${fmtDate(dateFilter.to)}`) : "";
   const filtered = useMemo(() => {
@@ -4042,7 +3999,7 @@ export default function App() {
   const adminSingle = adminRange.from === adminRange.to;
   const adminLabel = adminSingle ? fmtDate(adminRange.from) : `${fmtDate(adminRange.from)} – ${fmtDate(adminRange.to)}`;
   const adminList = trades
-    .filter((t) => t.date >= adminRange.from && t.date <= adminRange.to)
+    .filter((t) => tdate(t) >= adminRange.from && tdate(t) <= adminRange.to)
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
   const pendingList = trades.filter((t) => t.status === "Pendiente").sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
   const aStats = (() => {
@@ -4060,19 +4017,19 @@ export default function App() {
     <section
       className="bx-card p-4"
       data-testid="pending-box"
-      style={{ border: "2px solid #fbbf24", background: "radial-gradient(500px circle at 0% 0%, rgba(251,191,36,.14), transparent 60%), rgba(16,19,28,.85)", boxShadow: "0 0 30px rgba(251,191,36,.12)" }}
+      style={{ border: "2px solid var(--amb2)", background: "radial-gradient(500px circle at 0% 0%, rgba(251,191,36,.14), transparent 60%), var(--c2)", boxShadow: "0 0 30px rgba(251,191,36,.12)" }}
     >
       <div className="flex items-center justify-between gap-2">
-        <div className="text-xs uppercase tracking-[0.18em] font-bold" style={{ color: "#fcd34d" }}>🕓 Entradas pendientes</div>
-        <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: "rgba(251,191,36,.18)", border: "1px solid #fbbf24", color: "#fcd34d" }}>{list.length}</span>
+        <div className="text-xs uppercase tracking-[0.18em] font-bold" style={{ color: "var(--amb)" }}>🕓 Entradas pendientes</div>
+        <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: "rgba(251,191,36,.18)", border: "1px solid var(--amb2)", color: "var(--amb)" }}>{list.length}</span>
       </div>
       <div className="text-xs bx-muted mt-1">Entradas enviadas que aún no se activan. Cuando el precio entre, pulsa <b className="text-white">Activar</b>.</div>
       {list.length === 0 ? (
-        <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>No tienes entradas pendientes.</div>
+        <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(var(--fg),.03)", border: "1px dashed #3a3a3a" }}>No tienes entradas pendientes.</div>
       ) : (
         <div className="mt-3 space-y-2 overflow-y-auto" style={{ maxHeight: 420 }}>
           {list.map((t) => (
-            <div key={t.id} data-testid="pending-item" className="rounded-xl p-3" style={{ background: "rgba(255,255,255,.03)", border: "1px solid rgba(251,191,36,.35)" }}>
+            <div key={t.id} data-testid="pending-item" className="rounded-xl p-3" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(251,191,36,.35)" }}>
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-extrabold text-white">{t.asset}</span>
                 <DirBadge dir={t.direction} />
@@ -4138,7 +4095,7 @@ export default function App() {
             </div>
           </div>
           {list.length === 0 ? (
-            <div className="mt-4 rounded-xl p-6 text-center text-sm bx-muted" style={{ background: "rgba(255,255,255,.03)", border: "1px dashed #3a3a3a" }}>
+            <div className="mt-4 rounded-xl p-6 text-center text-sm bx-muted" style={{ background: "rgba(var(--fg),.03)", border: "1px dashed #3a3a3a" }}>
               No hay entradas de {kindName} en esta fecha. Pega una señal arriba o elige otro día en el calendario.
             </div>
           ) : (
@@ -4162,7 +4119,11 @@ export default function App() {
   }
 
   return (
-    <div className={`bx-root ${page === "home" ? "bx-home" : ""}`}>
+    <div className={`bx-root ${page === "home" ? "bx-home" : ""}`} data-theme={theme}>
+      <div className="bx-themefloat" data-testid="theme-toggle" role="group" aria-label="Tema de la página">
+        <button type="button" onClick={() => pickTheme("light")} className={theme === "light" ? "on" : ""} aria-label="Modo claro" aria-pressed={theme === "light"}>☀️</button>
+        <button type="button" onClick={() => pickTheme("dark")} className={theme === "dark" ? "on" : ""} aria-label="Modo oscuro" aria-pressed={theme === "dark"}>🌙</button>
+      </div>
       <style>{CSS}</style>
 
       {/* ------------------------- HEADER ------------------------- */}
@@ -4185,7 +4146,7 @@ export default function App() {
                 <button onClick={() => { setPage("signals"); setSigMenu((v) => !v); }} aria-haspopup="menu" aria-expanded={sigMenu} className={`bx-navbtn ${page === "signals" || page === "vip" ? "on" : ""}`}>{l} <span style={{ fontSize: ".7em" }}>▾</span></button>
                 {sigMenu && (
                   <div role="menu" className="absolute left-0 top-full z-50 pt-1" style={{ minWidth: 170 }}>
-                    <div className="bx-card p-1.5 space-y-1" style={{ background: "rgba(16,19,28,.98)" }}>
+                    <div className="bx-card p-1.5 space-y-1" style={{ background: "var(--c2)" }}>
                       {[["CFD", "CFDS"], ["SINTETICO", "SINTÉTICOS"]].map(([v, t]) => (
                         <button key={v} role="menuitem" onClick={() => { setSignalKind(v); setPage("signals"); setSigMenu(false); }} className={`bx-navbtn w-full text-left ${page === "signals" && signalKind === v ? "on" : ""}`} style={{ display: "block", width: "100%" }}>{t}</button>
                       ))}
@@ -4202,7 +4163,7 @@ export default function App() {
           </div>
         </div>
         {isAdmin && (
-          <div className="text-center text-[11px] tracking-[0.25em] py-1 font-bold" style={{ background: ACCENT, color: "#17120a" }}>
+          <div className="text-center text-[11px] tracking-[0.25em] py-1 font-bold" style={{ background: ACCENT_HEX, color: "#17120a" }}>
             MODO ADMINISTRADOR ACTIVO · {cloudLabel}
           </div>
         )}
@@ -4225,7 +4186,7 @@ export default function App() {
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
         <section className="text-left pt-3 md:pt-8" data-testid="hero">
           <div className="bx-kicker" style={{ fontSize: "12px" }}>Resultados canal VIP</div>
-          <h1 className="mt-4 bx-display bx-h1" style={{ color: "#FFFFFF" }}>
+          <h1 className="mt-4 bx-display bx-h1" style={{ color: "var(--cardink)" }}>
             <span className="block">TRACK RECORD DE NUESTROS</span>
             <span className="block" style={{ color: ACCENT }}>CANALES VIP AL PÚBLICO.</span>
           </h1>
@@ -4316,7 +4277,7 @@ export default function App() {
             <div>
               <h2 className="font-extrabold tracking-wider bx-accent">REGISTRO DE OPERACIONES</h2>
               <div className="text-xs bx-muted">{filtered.length} de {baseList.length} señales · {scopeLabel} · {dateFilter ? dateLabel : periodLabel}</div>
-              {isAdmin && <div className="text-[11px] mt-1" style={{ color: "#fdc3a0" }}>Vista Admin: también ves señales pendientes, activas y descartadas. El público ve las cerradas (TP / SL / BE) y las descartadas, nunca las pendientes ni las activas.</div>}
+              {isAdmin && <div className="text-[11px] mt-1" style={{ color: "#fbe3a1" }}>Vista Admin: también ves señales pendientes, activas y descartadas. El público ve las cerradas (TP / SL / BE) y las descartadas, nunca las pendientes ni las activas.</div>}
             </div>
 
             <div className="flex flex-wrap gap-2 items-center">
@@ -4349,14 +4310,14 @@ export default function App() {
                       <td className="px-3 py-3 font-bold whitespace-nowrap">
                         {t.asset}
                         {t.tags?.includes("VIP Signal") && (
-                          <span className="ml-2 text-[10px] px-1 rounded" style={{ color: "#fdc3a0", border: "1px solid rgba(244,127,69,.5)" }}>VIP</span>
+                          <span className="ml-2 text-[10px] px-1 rounded" style={{ color: "#fbe3a1", border: "1px solid rgba(240,180,41,.5)" }}>VIP</span>
                         )}
                       </td>
                       <td className="px-3 py-3"><DirBadge dir={t.direction} /></td>
                       <td className="px-3 py-3 whitespace-nowrap text-xs">
-                        <div style={{ color: keys.includes("e1") ? "#fff" : "#6B6760", fontWeight: keys.includes("e1") ? 700 : 400 }}>E1 {t.entry1}</div>
+                        <div style={{ color: keys.includes("e1") ? "var(--cardink)" : "var(--cardink2)", fontWeight: keys.includes("e1") ? 700 : 400 }}>E1 {t.entry1}</div>
                         {hasE2(t) && (
-                          <div style={{ color: keys.includes("e2") ? "#fff" : "#6B6760", fontWeight: keys.includes("e2") ? 700 : 400 }}>E2 {t.entry2}</div>
+                          <div style={{ color: keys.includes("e2") ? "var(--cardink)" : "var(--cardink2)", fontWeight: keys.includes("e2") ? 700 : 400 }}>E2 {t.entry2}</div>
                         )}
                       </td>
                       <td className="px-3 py-3 text-rose-300/80">{t.sl === "" ? "—" : t.sl}</td>
@@ -4396,7 +4357,7 @@ export default function App() {
         )}
         {page === "admin" && isAdmin && (
           <div className="space-y-6" data-testid="admin-panel">
-            <section className="bx-card p-5 md:p-6" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(244,127,69,.20), transparent 60%), rgba(16,19,28,.85)" }}>
+            <section className="bx-card p-5 md:p-6" style={{ background: "radial-gradient(700px circle at 100% 0%, rgba(240,180,41,.20), transparent 60%), var(--c2)" }}>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
                   <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">PANEL DE ADMINISTRACIÓN</div>
@@ -4453,10 +4414,10 @@ export default function App() {
         <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-4" data-testid="site-footer">
           {page !== "admin" && (<>
             <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-bold" aria-label="Enlaces">
-              <button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F47F45]">Herramientas</button>
-              <button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F47F45]">Señales CFDs</button>
-              <button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F47F45]">Señales Sintéticos</button>
-              <button type="button" onClick={() => { setPage("vip"); window.scrollTo(0, 0); }} className="text-white hover:text-[#F47F45]" data-testid="footer-vip-free">VIP gratis</button>
+              <button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }} className="text-white hover:text-[color:var(--accent)]">Herramientas</button>
+              <button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[color:var(--accent)]">Señales CFDs</button>
+              <button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[color:var(--accent)]">Señales Sintéticos</button>
+              <button type="button" onClick={() => { setPage("vip"); window.scrollTo(0, 0); }} className="text-white hover:text-[color:var(--accent)]" data-testid="footer-vip-free">VIP gratis</button>
             </nav>
             <p className="max-w-3xl mx-auto leading-relaxed" data-testid="risk-disclaimer">
               El trading es una actividad de alto riesgo. Operar con productos apalancados (CFDs, divisas, índices sintéticos) puede resultar en la pérdida de todo el capital invertido y no es adecuado para todos los inversores. Su dinero está en riesgo. Los resultados pasados no garantizan resultados futuros. Todo el contenido de este sitio es educativo y no constituye asesoramiento financiero.
