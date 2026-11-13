@@ -2490,5 +2490,48 @@
     "status": "BE",
     "pips": 100,
     "r": 0.74
+  },
+  {
+    "id": "soy8itsjmweyfmu8",
+    "date": "2026-11-13",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "VIX25",
+    "direction": "SELL",
+    "entry1": 2917,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 2947.1,
+    "tps": [
+      2857
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "BE",
+        "exit": 2917,
+        "pips": 0,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "VIX25 SELL LIMIT 2917.0\nSL 2947.1\nTP 2857.0",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "BE",
+    "pips": 0,
+    "r": 0
   }
 ]
