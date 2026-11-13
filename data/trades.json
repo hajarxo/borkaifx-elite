@@ -2492,6 +2492,51 @@
     "r": 0.74
   },
   {
+    "id": "f1h9q74tmwfmdyj1",
+    "date": "2026-11-13",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "CRASH 1000",
+    "direction": "SELL",
+    "entry1": 5745,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 5758,
+    "tps": [
+      5735,
+      5730,
+      5725
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 5735,
+        "pips": 10,
+        "tpIdx": 0,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "C1000 SELL LIMIT 5745.0\nSL 5758.0\nTP1: 5735.0\nTP2: 5730.0\nTP3: 5725.0",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 10,
+    "r": 0.77
+  },
+  {
     "id": "pnl60jfemwfaxeqb",
     "date": "2026-11-13",
     "category": "CFD",
