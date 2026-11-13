@@ -1829,6 +1829,7 @@ async function drawRecapImage(trades, mode, ref, scope) {
   const BG = "#0A0C11", INK = "#F5F3EE", MUTED = "#8A8578", POS = "#34d399", NEG = "#fb7185";
   const F = (wt, sz) => `${wt} ${sz}px Inter, "Segoe UI", Arial, sans-serif`;
   const T = (s, px, py, o = {}) => { x.font = F(o.w || 400, o.s || 30); x.fillStyle = o.c || INK; x.textAlign = o.a || "left"; x.textBaseline = "alphabetic"; x.fillText(s, px, py); return x.measureText(s).width; };
+  const fitS = (txt, wt, size, maxW) => { let z = size; x.font = F(wt, z); while (z > 40 && x.measureText(txt).width > maxW) { z -= 4; x.font = F(wt, z); } return z; };
   x.fillStyle = BG; x.fillRect(0, 0, W, H);
   // halo dorado muy suave en la esquina (identidad de la página)
   const g = x.createRadialGradient(W, 0, 0, W, 0, 700); g.addColorStop(0, "rgba(240,180,41,.16)"); g.addColorStop(1, "rgba(240,180,41,0)");
@@ -1869,7 +1870,10 @@ async function drawRecapImage(trades, mode, ref, scope) {
         T(`${t.r >= 0 ? "+" : "-"}${Math.abs(t.r).toFixed(2)}R`, px, 828, { s: 25, c: MUTED, a: "center" });
       });
     } else T("No closed trades", M, 600, { s: 40, c: MUTED });
-    const tw = T(`${sg(total)}${num2(total)}`, M, 990, { s: 150, w: 800, c: col(total) });
+    const dTxt = `${sg(total)}${num2(total)}`;
+    x.font = F(700, 48); const uW = x.measureText(uName).width + 20;
+    const dS = fitS(dTxt, 800, 120, W - 2 * M - uW);
+    const tw = T(dTxt, M, 990, { s: dS, w: 800, c: col(total) });
     T(uName, M + tw + 20, 990, { s: 48, w: 700 });
     const cols = [M, 368, 656];
     T(`${dec ? Math.round((wins / dec) * 100) : 0}%`, cols[0], 1130, { s: 46, w: 700 }); T("Win rate", cols[0], 1170, { s: 28, c: MUTED });
@@ -1903,10 +1907,13 @@ async function drawRecapImage(trades, mode, ref, scope) {
     });
     const by = top + days.length * rowH;
     T("Overall", M, by + 85, { s: 30, c: MUTED });
-    const tw = T(`${sg(total)}${num2(total)} `, M, by + 205, { s: 130, w: 800, c: col(total) });
-    T(uName, M + tw + 6, by + 205, { s: 130, w: 800, c: col(total) });
-    T(`${wins} ${wins === 1 ? "Win" : "Wins"} // ${losses} ${losses === 1 ? "Loss" : "Losses"}`, M, by + 270, { s: 36, w: 500 });
-    T(`${dec ? (Math.round((wins / dec) * 10000) / 100).toFixed(2) : "0.00"}% win rate`, W - M, by + 270, { s: 36, w: 500, a: "right" });
+    const wTxt = `${sg(total)}${num2(total)}`;
+    x.font = F(800, 100); // el número va grande y la unidad más pequeña para que todo quepa
+    const wS = fitS(wTxt, 800, 104, W - 2 * M - 190);
+    const tw = T(wTxt, M, by + 190, { s: wS, w: 800, c: col(total) });
+    T(uName, M + tw + 16, by + 190, { s: Math.round(wS * 0.42), w: 700, c: col(total) });
+    T(`${wins} ${wins === 1 ? "Win" : "Wins"} // ${losses} ${losses === 1 ? "Loss" : "Losses"}`, M, by + 262, { s: 36, w: 500 });
+    T(`${dec ? (Math.round((wins / dec) * 10000) / 100).toFixed(2) : "0.00"}% win rate`, W - M, by + 262, { s: 36, w: 500, a: "right" });
     if (uName === "pips") {
       const gy = by + 345;
       T("Weekly gain", M, gy, { s: 28, c: MUTED });
@@ -1926,6 +1933,131 @@ async function drawRecapImage(trades, mode, ref, scope) {
 
 /* ----------------------------- Resultados del copy (imagen nueva con el diseño de la marca) ----------------------------- */
 const loadImg = (src) => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
+/* ----------------------------- Imagen del resumen MENSUAL (cuadrícula de operaciones por fecha) ----------------------------- */
+const EN_MONTH_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+function monthlyData(trades, ref, scope) {
+  const rg = monthRange(ref.slice(0, 7));
+  const sent = trades
+    .filter((t) => tdate(t) >= rg.from && tdate(t) <= rg.to && t.status !== "Pendiente")
+    .filter((t) => scope === "ALL" || (scope === "CFD" ? t.category === "CFD" : scope === "DERIV" ? t.category === "SINTETICO" && t.broker !== "WELTRADE" : t.category === "SINTETICO" && t.broker === "WELTRADE"))
+    .sort((a, b) => (tdate(a) < tdate(b) ? -1 : tdate(a) > tdate(b) ? 1 : 0));
+  const tiles = [];
+  sent.forEach((t) => {
+    const p = Number(t.pips) || 0, d = tdate(t);
+    if (t.discarded || t.status === "Descartada") tiles.push({ d, k: "dis", p: 0 });
+    else if (isClosed(t)) tiles.push({ d, k: p > 0 ? "win" : p < 0 || (t.status === "SL" && p === 0) ? "loss" : "be", p, unit: unitWord(t) });
+  });
+  const units = Array.from(new Set(tiles.filter((x) => x.unit).map((x) => x.unit)));
+  return { rg, sentCount: sent.length, tiles, units };
+}
+async function drawMonthlyImage(trades, ref, scope) {
+  const { tiles, units, sentCount } = monthlyData(trades, ref, scope);
+  try { await Promise.all([document.fonts.load("800 40px Inter"), document.fonts.load("700 40px Inter"), document.fonts.load("400 30px Inter")]); } catch (e) {}
+  const W = 1024, SC = 2, M = 60;
+  const n = tiles.length;
+  const cols = n > 48 ? 10 : 8, gap = 12, pad = 26;
+  const tw = (W - 2 * M - 2 * pad - (cols - 1) * gap) / cols;
+  const th = cols === 8 ? 70 : 54, labH = cols === 8 ? 30 : 26, pitch = th + labH + 14;
+  const rows = Math.max(1, Math.ceil(n / cols));
+  const panelTop = 470, panelH = pad * 2 + rows * pitch - 14 + 6;
+  const capY = panelTop + panelH + 56;
+  const statsY = capY + 70;
+  const H = statsY + 150 + 70 + 70 + 120 + 110 + 120;
+  const [c, x] = cnv(W, H, SC);
+  const BG = "#0A0C11", INK = "#F5F3EE", MUTED = "#8A8578", POS = "#34d399", NEG = "#fb7185", GOLD = ACCENT_HEX;
+  const F = (wt, sz) => `${wt} ${sz}px Inter, "Segoe UI", Arial, sans-serif`;
+  const T = (txt, px, py, o = {}) => { x.font = F(o.w || 400, o.s || 30); x.fillStyle = o.c || INK; x.textAlign = o.a || "left"; x.textBaseline = "alphabetic"; x.fillText(txt, px, py); return x.measureText(txt).width; };
+  const fitS = (txt, wt, size, maxW) => { let z = size; x.font = F(wt, z); while (z > 18 && x.measureText(txt).width > maxW) { z -= 2; x.font = F(wt, z); } return z; };
+  x.fillStyle = BG; x.fillRect(0, 0, W, H);
+  const g = x.createRadialGradient(W, 0, 0, W, 0, 760); g.addColorStop(0, "rgba(240,180,41,.16)"); g.addColorStop(1, "rgba(240,180,41,0)");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  // cuadrícula tenue de cuaderno
+  x.strokeStyle = "rgba(255,255,255,.035)"; x.lineWidth = 1;
+  for (let gx = 0; gx <= W; gx += 48) { x.beginPath(); x.moveTo(gx, 0); x.lineTo(gx, H); x.stroke(); }
+  for (let gy = 0; gy <= H; gy += 48) { x.beginPath(); x.moveTo(0, gy); x.lineTo(W, gy); x.stroke(); }
+
+  const wins = tiles.filter((t) => t.k === "win"), losses = tiles.filter((t) => t.k === "loss");
+  const be = tiles.filter((t) => t.k === "be").length, dis = tiles.filter((t) => t.k === "dis").length;
+  const dec = wins.length + losses.length;
+  const wr = dec ? Math.round((wins.length / dec) * 1000) / 10 : 0;
+  const sumW = round1(wins.reduce((a, t) => a + t.p, 0)), sumL = round1(losses.reduce((a, t) => a + t.p, 0));
+  const net = round1(sumW + sumL);
+  const uName = units.length === 1 && units[0] === "puntos" ? "points" : "pips";
+  const nf = (v) => Math.abs(v).toLocaleString("en-US", { maximumFractionDigits: 1 });
+  const sg = (v) => (v > 0 ? "+" : v < 0 ? "-" : "");
+
+  // Encabezado
+  T("BORKAIFX ELITE · Monthly Results", M, 100, { s: 28, c: GOLD, w: 600 });
+  const mp = ymdParts(ref.slice(0, 7) + "-01");
+  T("Monthly recap", M, 205, { s: 92, w: 800 });
+  T(`${EN_MONTH_FULL[mp.m - 1]} ${mp.y}`, M, 262, { s: 38, c: MUTED });
+  // Caja: total de trades enviados (incluye descartados) y win rate
+  const chip = `${sentCount} TRADES SENT   |   ${wr}% WIN RATE`;
+  const cs = fitS(chip, 700, 38, W - 2 * M - 60);
+  x.font = F(700, cs); const cw = x.measureText(chip).width + 60;
+  const cx0 = (W - cw) / 2;
+  rrect(x, cx0, 320, cw, 84, 14); x.fillStyle = "rgba(255,255,255,.05)"; x.fill(); x.strokeStyle = "rgba(240,180,41,.55)"; x.lineWidth = 2; x.stroke();
+  T(chip, W / 2, 320 + 56, { s: cs, w: 700, a: "center" });
+
+  // Panel con las operaciones (una casilla por operación, con su fecha)
+  rrect(x, M, panelTop, W - 2 * M, panelH, 22); x.fillStyle = "rgba(255,255,255,.035)"; x.fill(); x.strokeStyle = "rgba(255,255,255,.14)"; x.lineWidth = 2; x.stroke();
+  if (!n) T("No closed trades this month", W / 2, panelTop + panelH / 2 + 12, { s: 34, c: MUTED, a: "center" });
+  tiles.forEach((t, i) => {
+    const col = i % cols, row = Math.floor(i / cols);
+    const tx = M + pad + col * (tw + gap), ty = panelTop + pad + row * pitch;
+    const mx = tx + tw / 2, my = ty + th / 2;
+    if (t.k === "dis") {
+      rrect(x, tx, ty, tw, th, 10); x.setLineDash([6, 5]); x.strokeStyle = "rgba(255,255,255,.28)"; x.lineWidth = 2; x.stroke(); x.setLineDash([]);
+      x.strokeStyle = "rgba(255,255,255,.4)"; x.lineWidth = 5; x.lineCap = "round"; x.beginPath(); x.moveTo(mx - 12, my); x.lineTo(mx + 12, my); x.stroke();
+    } else {
+      const grad = x.createLinearGradient(0, ty, 0, ty + th);
+      if (t.k === "win") { grad.addColorStop(0, "#35d37a"); grad.addColorStop(1, "#1f9d55"); }
+      else if (t.k === "loss") { grad.addColorStop(0, "#f05a5a"); grad.addColorStop(1, "#c42f2f"); }
+      else { grad.addColorStop(0, "#6b7488"); grad.addColorStop(1, "#4b5365"); }
+      rrect(x, tx, ty, tw, th, 10); x.fillStyle = grad; x.fill();
+      x.strokeStyle = "#fff"; x.lineWidth = cols === 8 ? 8 : 6.5; x.lineCap = "round"; x.lineJoin = "round"; x.beginPath();
+      const k = cols === 8 ? 1 : 0.8;
+      if (t.k === "win") { x.moveTo(mx - 15 * k, my + 1 * k); x.lineTo(mx - 4 * k, my + 12 * k); x.lineTo(mx + 17 * k, my - 12 * k); }
+      else if (t.k === "loss") { x.moveTo(mx - 12 * k, my - 12 * k); x.lineTo(mx + 12 * k, my + 12 * k); x.moveTo(mx + 12 * k, my - 12 * k); x.lineTo(mx - 12 * k, my + 12 * k); }
+      else { x.moveTo(mx - 13 * k, my - 6 * k); x.lineTo(mx + 13 * k, my - 6 * k); x.moveTo(mx - 13 * k, my + 7 * k); x.lineTo(mx + 13 * k, my + 7 * k); }
+      x.stroke();
+    }
+    T(enShort(t.d), mx, ty + th + labH - 6, { s: cols === 8 ? 20 : 17, c: MUTED, a: "center" });
+  });
+  // Leyenda
+  const cap = "EVERY TRADE COUNTS";
+  x.font = F(700, 26); const capW = x.measureText(cap).width + 56;
+  rrect(x, (W - capW) / 2, capY - 36, capW, 54, 12); x.fillStyle = "rgba(255,255,255,.06)"; x.fill(); x.strokeStyle = "rgba(255,255,255,.14)"; x.lineWidth = 1.5; x.stroke();
+  T(cap, W / 2, capY, { s: 26, w: 700, a: "center", c: INK });
+
+  // Totales: ganadas, perdidas y neto
+  const bw = (W - 2 * M - 2 * 18) / 3, bh = 150;
+  const boxes = [
+    [`${wins.length} ${wins.length === 1 ? "WIN" : "WINS"}`, `${sg(sumW)}${nf(sumW)} ${uName}`, POS],
+    [`${losses.length} ${losses.length === 1 ? "LOSS" : "LOSSES"}`, `${sg(sumL)}${nf(sumL)} ${uName}`, NEG],
+    ["NET RESULT", `${sg(net)}${nf(net)} ${uName}`, net > 0 ? POS : net < 0 ? NEG : INK],
+  ];
+  boxes.forEach(([lab, val, col], i) => {
+    const bx = M + i * (bw + 18);
+    rrect(x, bx, statsY, bw, bh, 18); x.fillStyle = i === 2 ? "rgba(240,180,41,.08)" : "rgba(255,255,255,.04)"; x.fill();
+    x.strokeStyle = i === 2 ? "rgba(240,180,41,.5)" : "rgba(255,255,255,.12)"; x.lineWidth = 2; x.stroke();
+    T(lab, bx + bw / 2, statsY + 50, { s: 24, w: 700, c: MUTED, a: "center" });
+    const vs = fitS(val, 800, 44, bw - 28);
+    T(val, bx + bw / 2, statsY + 112, { s: vs, w: 800, c: col, a: "center" });
+  });
+  T(`${be} Break-even   ·   ${dis} Discarded`, W / 2, statsY + bh + 56, { s: 28, c: MUTED, a: "center" });
+  // Aviso y llamada al VIP
+  T("Past results don't guarantee future ones.", W / 2, statsY + bh + 124, { s: 24, c: "#6b665c", a: "center" });
+  T("Trading leveraged products carries a high risk to your capital.", W / 2, statsY + bh + 156, { s: 24, c: "#6b665c", a: "center" });
+  const by = statsY + bh + 200, bwid = 560;
+  rrect(x, (W - bwid) / 2, by, bwid, 96, 16);
+  const bg2 = x.createLinearGradient(0, by, 0, by + 96); bg2.addColorStop(0, "#F7C948"); bg2.addColorStop(1, "#DFA01A");
+  x.fillStyle = bg2; x.fill();
+  T("Join the VIP now →", W / 2, by + 62, { s: 40, w: 800, c: "#17120a", a: "center" });
+  T("t.me/borkaifxelite", W / 2, by + 150, { s: 28, c: MUTED, a: "center" });
+  return { url: c.toDataURL("image/png"), mixed: units.length > 1, count: n };
+}
+
 const rrect = (x, px, py, w, h, r) => { x.beginPath(); x.moveTo(px + r, py); x.arcTo(px + w, py, px + w, py + h, r); x.arcTo(px + w, py + h, px, py + h, r); x.arcTo(px, py + h, px, py, r); x.arcTo(px, py, px + w, py, r); x.closePath(); };
 const COPY_FIELDS = [
   ["realisedReturn", "Realised return"], ["liveReturn", "Live return"], ["realisedPL", "Realised P/L"],
@@ -2113,7 +2245,7 @@ function RecapPanel({ trades, defaultScope }) {
     setImgMsg("");
     if (mode === "custom") { const cr = customRg(ref); if (Math.round((new Date(cr.to) - new Date(cr.from)) / 86400000) > 6) { setImgMsg("Para la imagen elige un rango de máximo 7 días (el texto sí admite cualquier rango)."); setImg(null); return; } }
     try {
-      const r = await drawRecapImage(trades, mode, ref, scope);
+      const r = mode === "monthly" ? await drawMonthlyImage(trades, ref, scope) : await drawRecapImage(trades, mode, ref, scope);
       if (r.mixed) { setImgMsg("Hay pips y puntos mezclados: elige un solo mercado (CFDs, Deriv o Weltrade) para generar la imagen."); setImg(null); return; }
       setImg(r.url);
     } catch (e) { setImgMsg("No se pudo generar la imagen."); }
@@ -2177,11 +2309,10 @@ function RecapPanel({ trades, defaultScope }) {
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
         <span className="text-xs bx-muted">Puedes editar el texto antes de copiar</span>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={makeImg} disabled={mode === "monthly"} title={mode === "monthly" ? "El diseño mensual llegará pronto" : ""} className="bx-ghost" data-testid="recap-img-btn">🖼 Generar imagen</button>
+          <button type="button" onClick={makeImg} className="bx-ghost" data-testid="recap-img-btn">🖼 Generar imagen</button>
           <button type="button" onClick={copy} className="bx-btn">{copied ? "✓ ¡Copiado!" : "Copiar al portapapeles"}</button>
         </div>
       </div>
-      {mode === "monthly" && <div className="mt-2 text-xs bx-muted">La imagen mensual todavía no está disponible (diario y semanal sí).</div>}
       {imgMsg && <div className="mt-2 text-xs" style={{ color: "#fbe3a1" }}>{imgMsg}</div>}
       {img && (
         <div className="mt-4 flex flex-col items-center gap-3" data-testid="recap-img">
