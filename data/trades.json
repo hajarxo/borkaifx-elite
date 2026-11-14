@@ -2555,7 +2555,7 @@
       "e1": {
         "status": "TP",
         "exit": 5725,
-        "pips": 200,
+        "pips": 20,
         "tpIdx": 2,
         "reached": null
       },
@@ -2574,8 +2574,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 200,
-    "r": 15.38
+    "pips": 20,
+    "r": 1.54
   },
   {
     "id": "pnl60jfemwfaxeqb",
