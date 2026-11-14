@@ -2578,6 +2578,51 @@
     "r": 0.74
   },
   {
+    "id": "md5v1md9mwgjc747",
+    "date": "2026-11-13",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "CRASH 300",
+    "direction": "SELL",
+    "entry1": 2082,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 2107,
+    "tps": [
+      1982,
+      1932,
+      1782
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "SL",
+        "exit": 2107,
+        "pips": -25,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "CRASH 300 SELL 2082\nSL 2107 \nTP1 1982 \nTP2 1932 \nTP3 1782",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "SL",
+    "pips": -25,
+    "r": -1
+  },
+  {
     "id": "pnl60jfemwfaxeqb",
     "date": "2026-11-13",
     "category": "CFD",
