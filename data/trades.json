@@ -2044,7 +2044,7 @@
       "e1": {
         "status": "BE",
         "exit": 18190,
-        "pips": 0,
+        "pips": 300,
         "tpIdx": null,
         "reached": null
       },
@@ -2063,8 +2063,8 @@
       "VIP Signal"
     ],
     "status": "BE",
-    "pips": 0,
-    "r": 0
+    "pips": 300,
+    "r": 2.48
   },
   {
     "id": "nh6rj60vmwcu5x7j",
