@@ -2252,6 +2252,9 @@ function SynthCalc({ broker }) {
   const [n, setN] = useState(2);
   const [tp, setTp] = useState(["", "", ""]);
   const [copied, setCopied] = useState(false);
+  const [mini, setMini] = useState(() => { try { return localStorage.getItem("borkaifx_calc_min") === "1"; } catch (e) { return false; } });
+  const toggleMini = () => setMini((m) => { const v = !m; try { localStorage.setItem("borkaifx_calc_min", v ? "1" : "0"); } catch (e) {} return v; });
+  const reset = () => { setPsW("1"); setFam(wt ? SC_WELTRADE[0] : "Step Index"); setIdx(100); setMode("pts"); setDir("SELL"); setEntry(""); setSl(""); setN(2); setTp(["", "", ""]); setCopied(false); };
   const name = wt ? fam : `${fam} ${idx}`;
   const ps = wt ? (num(psW) > 0 ? num(psW) : 1) : synthPip(name);
   const e = num(entry);
@@ -2283,7 +2286,14 @@ function SynthCalc({ broker }) {
   const copy = async () => { try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch (err) {} };
   return (
     <section className="bx-card p-4" data-testid="synth-calc">
-      <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Calculadora de puntos · {wt ? "Weltrade" : "Deriv"}</div>
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Calculadora de puntos · {wt ? "Weltrade" : "Deriv"}</div>
+        <div className="flex items-center gap-1">
+          {!mini && <button type="button" className="bx-ghost" onClick={reset} title="Poner todo desde cero" data-testid="calc-reset">↺ Reiniciar</button>}
+          <button type="button" className="bx-ghost" onClick={toggleMini} aria-expanded={!mini} aria-label={mini ? "Expandir calculadora" : "Minimizar calculadora"} title={mini ? "Expandir" : "Minimizar"} data-testid="calc-toggle">{mini ? "▾" : "▴"}</button>
+        </div>
+      </div>
+      {!mini && <>
       <div className="text-xs bx-muted mt-1">Solo para calcular: no cambia lo que guardas en la entrada.</div>
       <div className="mt-3 flex flex-wrap gap-2">
         {[["pts", "Puntos → precios"], ["px", "Precios → puntos"]].map(([k, l]) => (
@@ -2362,6 +2372,7 @@ function SynthCalc({ broker }) {
           <div className="text-xs bx-muted">{mode === "pts" ? "Pon el punto de entrada y el SL en puntos." : "Pon el punto de entrada y el precio del SL."}</div>
         )}
       </div>
+      </>}
     </section>
   );
 }
@@ -2923,6 +2934,197 @@ function Testimonios() {
   );
 }
 
+/* ----------------------------- Conceptos (educación) ----------------------------- */
+// Mini gráfico de velas: cada vela = [apertura, máximo, mínimo, cierre] en escala 0-100.
+function MiniChart({ cs, under, over, label, h = 130 }) {
+  const W = 240;
+  const step = (W - 20) / cs.length;
+  const cw = Math.min(14, step * 0.6);
+  const X = (i) => 10 + step * (i + 0.5);
+  const Y = (v) => h - 8 - (v / 100) * (h - 16);
+  return (
+    <svg viewBox={`0 0 ${W} ${h}`} className="w-full" role="img" aria-label={label} style={{ display: "block" }}>
+      {under && under(X, Y, step)}
+      {cs.map((c, i) => {
+        const up = c[3] >= c[0];
+        const col = up ? "var(--pos)" : "var(--neg)";
+        const top = Y(Math.max(c[0], c[3])), bot = Y(Math.min(c[0], c[3]));
+        return (
+          <g key={i}>
+            <line x1={X(i)} x2={X(i)} y1={Y(c[1])} y2={Y(c[2])} stroke={col} strokeWidth="1.4" opacity=".85" />
+            <rect x={X(i) - cw / 2} y={top} width={cw} height={Math.max(2.5, bot - top)} rx="1.5" fill={col} />
+          </g>
+        );
+      })}
+      {over && over(X, Y, step)}
+    </svg>
+  );
+}
+const zoneP = (x, y, w, h, color, op = 0.16) => (
+  <rect x={x} y={y} width={w} height={h} rx="3" fill={color} fillOpacity={op} stroke={color} strokeOpacity=".7" strokeWidth="1" />
+);
+const lbl = (x, y, t, color, anchor = "start") => (
+  <text x={x} y={y} fill={color} fontSize="8.5" fontWeight="800" textAnchor={anchor} style={{ fontFamily: "Inter, sans-serif" }}>{t}</text>
+);
+
+function ConceptChart({ k }) {
+  if (k === "sweep") {
+    const cs = [[40,50,36,48],[48,54,44,46],[46,53,42,52],[52,54,44,46],[46,50,40,48],[48,53,46,50],[50,80,48,52],[52,53,36,38],[38,40,28,30],[30,32,18,20],[20,22,12,14]];
+    return <MiniChart cs={cs} label="Barrido de liquidez: la mecha supera los máximos y la vela cierra de nuevo adentro"
+      under={(X, Y) => <line x1={X(0) - 6} x2={X(7)} y1={Y(54)} y2={Y(54)} stroke="var(--ink2)" strokeDasharray="3 3" strokeWidth="1" />}
+      over={(X, Y) => (<g>
+        <circle cx={X(6)} cy={Y(80)} r="6" fill="none" stroke="var(--neg)" strokeWidth="1.3" />
+        {lbl(X(6) - 10, Y(80) + 3, "SWEEP", "var(--neg)", "end")}
+        {lbl(X(0) - 4, Y(54) - 4, "highs", "var(--ink2)")}
+        {lbl(X(7) + 8, Y(54) + 12, "cerró adentro", "var(--neg)")}
+      </g>)} />;
+  }
+  if (k === "fvg") {
+    const cs = [[70,74,64,66],[66,68,56,58],[58,60,48,50],[50,82,48,80],[80,90,70,88],[86,87,66,68],[68,86,66,84]];
+    return <MiniChart cs={cs} label="Displacement que deja un Fair Value Gap"
+      under={(X, Y) => zoneP(X(2) - 8, Y(70), X(6) - X(2) + 16, Y(60) - Y(70), "var(--accent)", 0.2)}
+      over={(X, Y) => (<g>
+        {lbl(X(6) + 8, Y(65) + 3, "FVG", "var(--accent)", "end")}
+        {lbl(X(3), Y(40), "displacement", "var(--pos)", "middle")}
+      </g>)} />;
+  }
+  if (k === "ob") {
+    const cs = [[70,72,62,64],[64,66,54,56],[56,58,46,48],[48,50,42,44],[44,66,42,64],[64,76,62,74],[74,86,72,84],[84,86,72,76],[76,92,74,90]];
+    return <MiniChart cs={cs} label="Order block alcista: última vela bajista antes del movimiento que rompe estructura"
+      under={(X, Y) => zoneP(X(3) - 8, Y(50), X(8) - X(3) + 16, Y(42) - Y(50), "var(--pos)", 0.18)}
+      over={(X, Y) => (<g>
+        {lbl(X(8) + 8, Y(36) + 3, "bullish order block", "var(--pos)", "end")}
+        {lbl(X(5), Y(96) + 4, "rompe estructura", "var(--ink)", "middle")}
+      </g>)} />;
+  }
+  if (k === "pd") {
+    const cs = [[14,22,10,20],[20,40,18,38],[38,60,36,58],[58,78,56,76],[76,90,74,88],[88,89,70,72],[72,74,54,56],[56,58,44,46],[46,48,34,36],[36,48,28,46]];
+    return <MiniChart cs={cs} label="Premium arriba del 50 por ciento, discount abajo, zona OTE del 62 al 79 por ciento"
+      under={(X, Y) => (<g>
+        {zoneP(8, Y(90), 224, Y(50) - Y(90), "var(--neg)", 0.1)}
+        {zoneP(8, Y(50), 224, Y(10) - Y(50), "var(--pos)", 0.1)}
+        {zoneP(8, Y(40), 224, Y(27) - Y(40), "var(--accent)", 0.22)}
+        <line x1="8" x2="232" y1={Y(50)} y2={Y(50)} stroke="var(--ink2)" strokeDasharray="3 3" strokeWidth="1" />
+      </g>)}
+      over={(X, Y) => (<g>
+        {lbl(14, Y(90) + 10, "PREMIUM: sell", "var(--neg)")}
+        {lbl(120, Y(10) - 3, "DISCOUNT: buy", "var(--pos)", "middle")}
+        {lbl(120, Y(27) - 3, "OTE 62–79%", "var(--accent)", "middle")}
+        {lbl(228, Y(50) - 3, "50%", "var(--ink2)", "end")}
+      </g>)} />;
+  }
+  if (k === "model") {
+    const cs = [[80,84,74,76],[76,78,68,70],[70,72,62,64],[64,68,60,66],[66,67,56,58],[58,60,30,34],[34,72,32,70],[70,86,66,84],[84,85,62,66],[66,96,64,94]];
+    return <MiniChart cs={cs} h={150} label="Modelo de entrada: sweep, CHoCH, FVG y entrada"
+      under={(X, Y) => (<g>
+        {zoneP(X(5) - 8, Y(66), X(9) - X(5) + 16, Y(60) - Y(66), "var(--accent)", 0.22)}
+        <line x1={X(3)} x2={X(6)} y1={Y(68)} y2={Y(68)} stroke="var(--ink2)" strokeDasharray="3 3" strokeWidth="1" />
+        <line x1={X(7)} x2={X(9) + 8} y1={Y(98)} y2={Y(98)} stroke="var(--pos)" strokeDasharray="3 3" strokeWidth="1" />
+        <line x1={X(7)} x2={X(9) + 8} y1={Y(24)} y2={Y(24)} stroke="var(--neg)" strokeDasharray="3 3" strokeWidth="1" />
+      </g>)}
+      over={(X, Y) => (<g>
+        {lbl(X(5), Y(20) + 11, "1 sweep", "var(--neg)", "middle")}
+        {lbl(X(4), Y(68) - 14, "2 CHoCH", "var(--ink)", "middle")}
+        {lbl(X(9) + 8, Y(60) + 11, "3 FVG", "var(--accent)", "end")}
+        {lbl(X(8), Y(86) - 2, "4 entry", "var(--pos)", "middle")}
+        {lbl(X(7) - 4, Y(98) - 3, "target", "var(--pos)")}
+        {lbl(X(7) - 4, Y(24) + 10, "stop", "var(--neg)")}
+      </g>)} />;
+  }
+  return null;
+}
+
+const CONCEPTS = [
+  { k: "sweep", tag: "01", title: "Sweep vs breakout real", text: "Un barrido perfora un nivel, toma los stops y cierra de nuevo adentro. Un breakout real cierra más allá del nivel y se sostiene.", key: "La clave es el cierre. Nunca persigas la mecha." },
+  { k: "fvg", tag: "02", title: "Displacement y FVG", text: "Un movimiento fuerte y rápido deja un Fair Value Gap: un desequilibrio de 3 velas donde el high de la vela 1 y el low de la vela 3 no se solapan.", key: "El precio suele regresar a reequilibrar el gap. Ese retorno es tu zona de entrada. Gaps aleatorios en un rango: ignóralos." },
+  { k: "ob", tag: "03", title: "Order block", text: "La última vela opuesta antes de un movimiento que rompe estructura. Marca dónde ingresaron las órdenes grandes.", bullets: ["Barrió liquidez primero", "Salió con desplazamiento y dejó un FVG", "Rompió estructura (BOS / CHoCH)", "Sigue sin mitigar", "Está en descuento (compras) o premium (ventas)"], key: "Si faltan 2 o más, es solo una vela, no un order block." },
+  { k: "pd", tag: "04", title: "Premium, discount y OTE", text: "Traza el rango del swing low al swing high. Por encima del 50% es premium (caro), por debajo es discount (barato). Compra en discount, vende en premium.", key: "OTE: el retroceso del 62% al 79% del swing. La zona de entrada de mayor probabilidad." },
+  { k: "model", tag: "05", title: "El modelo de entrada", text: "Júntalo todo. Cuatro pasos, en orden. Si falta uno, no hay trade.", bullets: ["Liquidity sweep: el precio elimina un mínimo (buys) o un máximo (sells) claro, idealmente en killzone", "Change of character: rompe el último máximo más bajo con desplazamiento", "Fair value gap: ese desplazamiento deja un FVG, idealmente en descuento", "Entry: orden límite en el FVG, stop más allá del barrido, objetivo en la siguiente liquidez"], numbered: true, key: "Si falta un paso, no hay trade." },
+  { k: "sessions", tag: "06", title: "Sesiones y killzones", text: "El oro cotiza 24 horas, pero no se mueve igual todo el día. Horas de Nueva York (ET).", key: "Asia construye el rango, Londres lo barre, Nueva York entrega el movimiento real." },
+];
+const SESSIONS = [
+  { n: "Sydney", t: "17:00 – 02:00", d: "Tranquilo, bajo volumen. Evita operar.", c: "var(--ink2)" },
+  { n: "Tokyo (Asia)", t: "19:00 – 04:00", d: "Se forman rangos. La liquidez se acumula arriba y abajo.", c: "var(--ink)" },
+  { n: "London", t: "03:00 – 12:00", d: "Llega volumen. A menudo barre un lado del rango asiático.", c: "var(--accent)" },
+  { n: "New York", t: "08:00 – 17:00", d: "Los movimientos más grandes. Las noticias impulsan el movimiento real.", c: "var(--pos)" },
+];
+const CHECKLIST = [
+  "El BIAS en la temporalidad mayor es claro (H4 / H1)",
+  "El precio está en discount o premium",
+  "Liquidez barrida",
+  "Un change of character con displacement",
+  "FVG limpio o zona de entrada en order block",
+  "Dentro de una killzone (London o New York)",
+  "No hay noticias de alto impacto en los próximos 30 minutos",
+  "Stop colocado más allá del barrido",
+  "El objetivo es de al menos 2R en liquidez clara",
+  "El riesgo es del 1% o menos",
+];
+
+function Conceptos() {
+  const [done, setDone] = useState({});
+  const n = CHECKLIST.filter((_, i) => done[i]).length;
+  return (
+    <section data-testid="home-concepts">
+      <div className="bx-kicker">Educación</div>
+      <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "var(--cardink)" }}>LOS CONCEPTOS QUE USO CADA DÍA</h2>
+      <p className="mt-3 text-[15px] bx-ink2 max-w-xl leading-relaxed">Lo esencial de Smart Money, explicado simple y con dibujo. Si falta una pieza, no hay trade.</p>
+      <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+        {CONCEPTS.map((c) => (
+          <div key={c.k} className="bx-plan" data-testid="concept-card">
+            <div className="flex items-center gap-2 text-[11px] font-bold tracking-[0.18em] uppercase" style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', color: ACCENT }}>{c.tag}</div>
+            <div className="mt-2 text-lg font-extrabold leading-snug" style={{ color: "var(--cardink)" }}>{c.title}</div>
+            <p className="mt-2 text-sm bx-ink2 leading-relaxed">{c.text}</p>
+            {c.k !== "sessions" && <div className="mt-3 rounded-xl p-2" style={{ background: "var(--field)", border: "1px solid var(--line)" }}><ConceptChart k={c.k} /></div>}
+            {c.k === "sessions" && (
+              <div className="mt-3 space-y-2">
+                {SESSIONS.map((s) => (
+                  <div key={s.n} className="rounded-xl px-3 py-2" style={{ background: "var(--field)", border: "1px solid var(--line)" }}>
+                    <div className="flex items-baseline justify-between gap-2"><span className="text-sm font-extrabold" style={{ color: s.c }}>{s.n}</span><span className="text-[11px] bx-muted" style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace' }}>{s.t}</span></div>
+                    <div className="text-xs bx-ink2 mt-0.5 leading-snug">{s.d}</div>
+                  </div>
+                ))}
+                <div className="text-xs bx-ink2 leading-relaxed"><b style={{ color: ACCENT }}>Killzones:</b> London open (02:00 – 05:00) y New York open (07:00 – 10:00). Ahí se forman los setups más limpios.</div>
+              </div>
+            )}
+            {c.bullets && (
+              <ul className="mt-3 space-y-1.5">
+                {c.bullets.map((b, i) => (
+                  <li key={i} className="flex gap-2 text-xs bx-ink2 leading-snug">
+                    {c.numbered ? <span className="shrink-0 rounded-full text-[11px] font-extrabold flex items-center justify-center" style={{ width: 20, height: 20, background: ACCENT_HEX, color: "#1a1405" }}>{i + 1}</span> : <span style={{ color: "var(--pos)" }}>✓</span>}
+                    <span>{b}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            <div className="flex-1" />
+            <div className="mt-4 rounded-xl px-3 py-2 text-[13px] leading-snug" style={{ background: "rgba(240,180,41,.10)", borderLeft: `3px solid ${ACCENT_HEX}`, color: "var(--cardink)" }}>{c.key}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="bx-plan mt-4" data-testid="pretrade-checklist">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div>
+            <div className="text-[11px] font-bold tracking-[0.18em] uppercase" style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', color: ACCENT }}>Checklist</div>
+            <div className="mt-1 text-lg font-extrabold" style={{ color: "var(--cardink)" }}>Antes de cada trade</div>
+          </div>
+          <div className="text-sm font-extrabold" style={{ color: n === CHECKLIST.length ? "var(--pos)" : ACCENT }} data-testid="pretrade-count">{n}/{CHECKLIST.length}</div>
+        </div>
+        <div className="mt-3 grid sm:grid-cols-2 gap-x-6">
+          {CHECKLIST.map((t, i) => (
+            <button key={i} type="button" data-testid={`pretrade-${i}`} onClick={() => setDone((d) => ({ ...d, [i]: !d[i] }))} className="flex items-start gap-3 py-2 text-left text-sm bx-ink2" style={{ borderBottom: "1px solid var(--line)" }}>
+              <span className="shrink-0 rounded-md flex items-center justify-center text-[12px] font-extrabold" style={{ width: 20, height: 20, border: `1.5px solid ${ACCENT_HEX}`, background: done[i] ? ACCENT_HEX : "transparent", color: "#1a1405" }}>{done[i] ? "✓" : ""}</span>
+              <span style={{ opacity: done[i] ? 0.6 : 1 }}>{t}</span>
+            </button>
+          ))}
+        </div>
+        <div className="mt-4 text-xs bx-muted">Solo educación. No es asesoría financiera. Operar implica un riesgo sustancial de pérdida.</div>
+      </div>
+    </section>
+  );
+}
+
 /* ----------------------------- Inicio ----------------------------- */
 
 function HomePage({ setPage, openTool, openSignals }) {
@@ -2977,7 +3179,7 @@ function HomePage({ setPage, openTool, openSignals }) {
         <div className="mt-6"><ToolCards onPick={(k) => { openTool(k); window.scrollTo(0, 0); }} /></div>
       </section>
 
-      <Testimonios />
+      <Conceptos />
     </div>
   );
 }
@@ -4382,6 +4584,7 @@ export default function App() {
           </div>
         )}
         <div className="grid lg:grid-cols-2 gap-6 items-start">
+          <div className="space-y-6">
           <section className="bx-card p-4">
             <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold mb-2">Cargar señal · {kindName}</div>
             <textarea
@@ -4398,10 +4601,12 @@ export default function App() {
               <button onClick={() => importSignal(kind)} disabled={!signalText.trim()} className="bx-btn">Interpretar y revisar</button>
             </div>
           </section>
+          {kind === "synth" ? renderPending(pend, false) : renderActive(actv, false)}
+          </div>
           <div className="space-y-6">
             {kind === "synth" && <SynthCalc key={synthBroker} broker={synthBroker} />}
-            {renderPending(pend, false)}
-            {renderActive(actv, false)}
+            {kind === "cfd" && renderPending(pend, false)}
+            {kind === "synth" && renderActive(actv, false)}
           </div>
         </div>
         <section className="bx-card p-3 md:p-4" data-testid="admin-day">
