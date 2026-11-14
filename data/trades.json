@@ -2794,5 +2794,50 @@
     "status": "SL",
     "pips": -133.4,
     "r": -1
+  },
+  {
+    "id": "tcd17k9umwghww20",
+    "date": "2026-11-14",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "BOOM 900",
+    "direction": "SELL",
+    "entry1": 9122,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 9198,
+    "tps": [
+      9084,
+      9046,
+      8971
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "SL",
+        "exit": 9198,
+        "pips": -76,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "CRASH 900 SELL 9122\nSL 9198 \nTP1 9084\nTP2 9046\nTP3 8971",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "SL",
+    "pips": -76,
+    "r": -1
   }
 ]
