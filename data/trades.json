@@ -1734,9 +1734,9 @@
       "e1": {
         "status": "BE",
         "exit": 3972,
-        "pips": 0,
+        "pips": 200,
         "tpIdx": null,
-        "reached": null
+        "reached": 1
       },
       "e2": {
         "status": "Pendiente",
@@ -1753,8 +1753,8 @@
       "VIP Signal"
     ],
     "status": "BE",
-    "pips": 0,
-    "r": 0
+    "pips": 200,
+    "r": 1
   },
   {
     "id": "pkpughsbmwar2uqx",
