@@ -2753,5 +2753,46 @@
     "status": "BE",
     "pips": 0,
     "r": 0
+  },
+  {
+    "id": "du2d392jmwgi78df",
+    "date": "2026-11-14",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "VOLATILITY 15",
+    "direction": "BUY",
+    "entry1": 101821,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 101687.56,
+    "tps": [],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "SL",
+        "exit": 101687.56,
+        "pips": -133.4,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "VOLATILITY 15 BUY 101821\nSL 101687.56",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "SL",
+    "pips": -133.4,
+    "r": -1
   }
 ]
