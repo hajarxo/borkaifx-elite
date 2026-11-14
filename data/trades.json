@@ -2554,9 +2554,9 @@
     "legs": {
       "e1": {
         "status": "TP",
-        "exit": 5735,
-        "pips": 10,
-        "tpIdx": 0,
+        "exit": 5725,
+        "pips": 20,
+        "tpIdx": 2,
         "reached": null
       },
       "e2": {
@@ -2574,8 +2574,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 10,
-    "r": 0.77
+    "pips": 20,
+    "r": 1.54
   },
   {
     "id": "pnl60jfemwfaxeqb",
