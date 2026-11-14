@@ -2230,6 +2230,142 @@ function CopyPanel() {
   );
 }
 
+/* ----------------------------- Calculadora de puntos (Deriv) — solo ayuda, no afecta lo que se guarda ----------------------------- */
+const SC_FAMS = {
+  "Step Index": [100, 200, 300, 400, 500, 1000, 1500, 2000],
+  Crash: [300, 500, 600, 900, 1000],
+  Boom: [300, 500, 600, 900, 1000],
+  Jump: [10, 25, 50, 75, 100],
+  Volatility: [10, 25, 50, 75, 100],
+};
+const SC_WELTRADE = ["GainX", "PainX", "FlipX", "SwitchX", "BreakX", "TrendX", "FX Vol", "SFX Vol", "Max GainX", "Max PainX"];
+const scFmt = (v, d = 3) => (Number.isFinite(v) ? String(Number(v.toFixed(d))) : "—");
+function SynthCalc({ broker }) {
+  const wt = broker === "WELTRADE";
+  const [psW, setPsW] = useState("1"); // Weltrade: tamaño del punto editable (1 punto = ? de precio)
+  const [fam, setFam] = useState(wt ? SC_WELTRADE[0] : "Step Index");
+  const [idx, setIdx] = useState(100);
+  const [mode, setMode] = useState("pts"); // pts: puntos → precios · px: precios → puntos
+  const [dir, setDir] = useState("SELL");
+  const [entry, setEntry] = useState("");
+  const [sl, setSl] = useState("");
+  const [n, setN] = useState(2);
+  const [tp, setTp] = useState(["", "", ""]);
+  const [copied, setCopied] = useState(false);
+  const name = wt ? fam : `${fam} ${idx}`;
+  const ps = wt ? (num(psW) > 0 ? num(psW) : 1) : synthPip(name);
+  const e = num(entry);
+  const slv = num(sl);
+  const tps = [0, 1, 2].slice(0, n).map((i) => num(tp[i]));
+  const setT = (i, v) => setTp((a) => a.map((x, k) => (k === i ? v : x)));
+  const ok = Number.isFinite(e) && Number.isFinite(slv) && slv > 0 && (mode === "pts" || slv !== e);
+  const lines = [];
+  let dirUsed = dir, warn = "";
+  if (ok) {
+    if (mode === "pts") {
+      const sgn = dir === "SELL" ? 1 : -1; // SELL: SL arriba, TPs abajo
+      lines.push({ k: "SL", price: e + sgn * slv * ps, pts: slv });
+      tps.forEach((t, i) => { if (Number.isFinite(t) && t > 0) lines.push({ k: `TP${i + 1}`, price: e - sgn * t * ps, pts: t, rr: t / slv }); });
+    } else {
+      dirUsed = slv > e ? "SELL" : "BUY";
+      const slPts = Math.abs(slv - e) / ps;
+      lines.push({ k: "SL", price: slv, pts: slPts });
+      tps.forEach((t, i) => {
+        if (!Number.isFinite(t)) return;
+        const side = dirUsed === "SELL" ? t < e : t > e;
+        if (!side) warn = `TP${i + 1} está del lado contrario a tu ${dirUsed}.`;
+        const pts = Math.abs(t - e) / ps;
+        lines.push({ k: `TP${i + 1}`, price: t, pts, rr: slPts ? pts / slPts : NaN });
+      });
+    }
+  }
+  const text = ok ? [`${name.toUpperCase()} ${dirUsed} ${scFmt(e)}`, ...lines.map((l) => `${l.k} ${scFmt(l.price)} (${scFmt(l.pts, 2)} pts)`)].join("\n") : "";
+  const copy = async () => { try { await navigator.clipboard.writeText(text); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch (err) {} };
+  return (
+    <section className="bx-card p-4" data-testid="synth-calc">
+      <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold">Calculadora de puntos · {wt ? "Weltrade" : "Deriv"}</div>
+      <div className="text-xs bx-muted mt-1">Solo para calcular: no cambia lo que guardas en la entrada.</div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {[["pts", "Puntos → precios"], ["px", "Precios → puntos"]].map(([k, l]) => (
+          <button key={k} type="button" onClick={() => setMode(k)} className={`bx-pill ${mode === k ? "on" : ""}`} data-testid={`calc-mode-${k}`}>{l}</button>
+        ))}
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <label className="text-xs bx-muted">Activo
+          <select className="bx-input mt-1" value={fam} onChange={(ev) => { setFam(ev.target.value); if (!wt) setIdx(SC_FAMS[ev.target.value][0]); }} data-testid="calc-fam">
+            {(wt ? SC_WELTRADE : Object.keys(SC_FAMS)).map((f) => <option key={f} value={f}>{f}</option>)}
+          </select>
+        </label>
+        {wt ? (
+          <label className="text-xs bx-muted">1 punto = (de precio)
+            <input className="bx-input mt-1" inputMode="decimal" value={psW} onChange={(ev) => setPsW(ev.target.value)} data-testid="calc-ps" />
+          </label>
+        ) : (
+          <label className="text-xs bx-muted">Índice
+            <select className="bx-input mt-1" value={idx} onChange={(ev) => setIdx(Number(ev.target.value))} data-testid="calc-idx">
+              {SC_FAMS[fam].map((v) => <option key={v} value={v}>{v}</option>)}
+            </select>
+          </label>
+        )}
+      </div>
+      <div className="mt-1 text-[11px] bx-muted">{wt ? `1 punto = ${scFmt(ps)} de precio. Ajústalo según el Specification de tu activo en Weltrade.` : `1 punto = ${scFmt(ps)} de precio = $1 por lote`}</div>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <label className="text-xs bx-muted">Punto de entrada
+          <input className="bx-input mt-1" inputMode="decimal" value={entry} onChange={(ev) => setEntry(ev.target.value)} placeholder="7288" data-testid="calc-entry" />
+        </label>
+        {mode === "pts" ? (
+          <div className="text-xs bx-muted">Dirección
+            <div className="mt-1 flex gap-1">
+              {["BUY", "SELL"].map((d) => <button key={d} type="button" onClick={() => setDir(d)} className={`bx-seg ${dir === d ? `on ${d === "BUY" ? "pos" : "neg"}` : ""}`} data-testid={`calc-dir-${d}`}>{d}</button>)}
+            </div>
+          </div>
+        ) : (
+          <div className="text-xs bx-muted">Dirección
+            <div className="mt-2 font-bold" style={{ color: ok ? (dirUsed === "BUY" ? "var(--pos)" : "var(--neg)") : "var(--cardink2)" }}>{ok ? dirUsed : "—"} <span className="font-normal bx-muted">(según el SL)</span></div>
+          </div>
+        )}
+        <label className="text-xs bx-muted col-span-2">{mode === "pts" ? "SL (puntos)" : "SL (precio)"}
+          <input className="bx-input mt-1" inputMode="decimal" value={sl} onChange={(ev) => setSl(ev.target.value)} placeholder={mode === "pts" ? "50" : "7338"} data-testid="calc-sl" />
+        </label>
+      </div>
+      <div className="mt-3 text-xs bx-muted">Take profits
+        <div className="mt-1 flex gap-1">
+          {[1, 2, 3].map((k) => <button key={k} type="button" onClick={() => setN(k)} className={`bx-seg ${n === k ? "on acc" : ""}`} data-testid={`calc-n-${k}`}>{k} TP</button>)}
+        </div>
+      </div>
+      <div className="mt-2 grid grid-cols-3 gap-2">
+        {[0, 1, 2].slice(0, n).map((i) => (
+          <label key={i} className="text-xs bx-muted">TP{i + 1} {mode === "pts" ? "(puntos)" : "(precio)"}
+            <input className="bx-input mt-1" inputMode="decimal" value={tp[i]} onChange={(ev) => setT(i, ev.target.value)} placeholder={mode === "pts" ? String(50 * (i + 1)) : ""} data-testid={`calc-tp-${i + 1}`} />
+          </label>
+        ))}
+      </div>
+      <div className="mt-4 rounded-xl p-3" style={{ background: "rgba(var(--fg),.04)", border: "1px solid rgba(var(--fg),.1)" }} data-testid="calc-out">
+        {ok ? (
+          <>
+            <div className="flex items-center justify-between gap-2">
+              <div className="font-extrabold text-sm">{name.toUpperCase()} · <span style={{ color: dirUsed === "BUY" ? "var(--pos)" : "var(--neg)" }}>{dirUsed}</span> {scFmt(e)}</div>
+              <button type="button" className="bx-ghost" onClick={copy} data-testid="calc-copy">{copied ? "✓ Copiado" : "Copiar"}</button>
+            </div>
+            <div className="mt-2 space-y-1 text-sm">
+              {lines.map((l) => (
+                <div key={l.k} className="flex items-baseline justify-between gap-2">
+                  <span className="font-bold" style={{ color: l.k === "SL" ? "var(--neg)" : "var(--pos)" }}>{l.k}</span>
+                  <span className="font-mono">{scFmt(l.price)}</span>
+                  <span className="bx-muted text-xs">{scFmt(l.pts, 2)} pts{l.rr && Number.isFinite(l.rr) ? ` · ${l.rr.toFixed(1)}R` : ""}</span>
+                </div>
+              ))}
+            </div>
+            {warn && <div className="mt-2 text-xs" style={{ color: "var(--amb)" }}>⚠ {warn}</div>}
+          </>
+        ) : (
+          <div className="text-xs bx-muted">{mode === "pts" ? "Pon el punto de entrada y el SL en puntos." : "Pon el punto de entrada y el precio del SL."}</div>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function RecapPanel({ trades, defaultScope }) {
   const [mode, setMode] = useState("weekly");
   const [ref, setRef] = useState(localDate());
@@ -3847,6 +3983,7 @@ export default function App() {
   const [showSubs, setShowSubs] = useState(false); // los subfiltros solo aparecen al pulsar CFDS o SINTÉTICOS
   const [cfdSub, setCfdSub] = useState("Todos");
   const [broker, setBroker] = useState("WELTRADE");
+  const [synthBroker, setSynthBroker] = useState("DERIV"); // panel admin: Sintéticos separados por broker
 
   // periodo y búsqueda
   const [period, setPeriod] = useState("cur"); // cur (mes actual) | all | y:2026 | m:2026-10
@@ -4054,7 +4191,7 @@ export default function App() {
     setAdminRange({ from: t.date, to: t.date });
     setTab(t.category);
     if (t.category === "CFD") setCfdSub("Todos");
-    else setBroker(t.broker);
+    else { setBroker(t.broker); setSynthBroker(t.broker === "WELTRADE" ? "WELTRADE" : "DERIV"); }
     setEditing(null);
     const tYM = (t.date || "").slice(0, 7);
     setPeriod(!tYM || tYM === curYM() ? "cur" : `m:${tYM}`);
@@ -4133,6 +4270,8 @@ export default function App() {
     .filter((t) => tdate(t) >= adminRange.from && tdate(t) <= adminRange.to)
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
   const pendingList = trades.filter((t) => t.status === "Pendiente").sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  // Entradas activas: ya entraron al mercado y todavía no tocan TP, SL ni BE (sin importar la fecha)
+  const activeList = trades.filter((t) => t.status === "Abierta" && !t.discarded).sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
   const aStats = (() => {
     const live = adminList.filter((t) => !t.discarded);
     const net = {};
@@ -4182,15 +4321,66 @@ export default function App() {
       )}
     </section>
   );
+  const renderActive = (list, showCat) => {
+    const todayK = localDate();
+    const ago = (d) => { const n = Math.round((new Date(todayK).getTime() - new Date(d).getTime()) / 86400000); return n <= 0 ? "hoy" : n === 1 ? "desde ayer" : `hace ${n} días`; };
+    return (
+      <section className="bx-card p-4" data-testid="active-box" style={{ border: "2px solid var(--pos)", background: "radial-gradient(500px circle at 0% 0%, rgba(52,211,153,.12), transparent 60%), var(--c2)" }}>
+        <div className="flex items-center justify-between gap-2">
+          <div className="text-xs uppercase tracking-[0.18em] font-bold" style={{ color: "var(--pos)" }}>🟢 Entradas activas</div>
+          <span className="text-xs font-black px-2 py-0.5 rounded-full" style={{ background: "rgba(52,211,153,.16)", border: "1px solid var(--pos)", color: "var(--pos)" }}>{list.length}</span>
+        </div>
+        <div className="text-xs bx-muted mt-1">Entradas que ya entraron y aún no tocan TP, SL ni BE. Cuando cierre, pulsa <b className="text-white">Registrar resultado</b>.</div>
+        {list.length === 0 ? (
+          <div className="mt-4 rounded-xl p-5 text-center text-sm bx-muted" style={{ background: "rgba(var(--fg),.03)", border: "1px dashed var(--line2)" }}>No tienes entradas activas.</div>
+        ) : (
+          <div className="mt-3 space-y-2 overflow-y-auto" style={{ maxHeight: 420 }}>
+            {list.map((t) => {
+              const hm = hitMax(t);
+              return (
+                <div key={t.id} data-testid="active-item" className="rounded-xl p-3" style={{ background: "rgba(var(--fg),.03)", border: "1px solid rgba(52,211,153,.35)" }}>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-extrabold text-white">{t.asset}</span>
+                    <DirBadge dir={t.direction} />
+                    <span className="text-[11px] bx-muted">{showCat ? `${t.category === "CFD" ? `CFD · ${t.sub}` : `Sintético · ${t.broker}`} · ` : ""}{fmtDate(t.date)} · {ago(t.date)}</span>
+                  </div>
+                  <div className="mt-2 text-xs bx-muted">
+                    E1 <b className="text-white">{t.entry1}</b>{hasE2(t) ? <> · E2 <b className="text-white">{t.entry2}</b></> : null} · SL <b className="text-rose-300">{t.sl === "" ? "—" : t.sl}</b>
+                    {(t.tps || []).length ? <> · {(t.tps || []).map((x, i) => (x === "OPEN" ? tpLabel(i, x) : `${tpLabel(i, x)} ${x}`)).join(" · ")}</> : null}
+                  </div>
+                  {hm >= 0 && <div className="mt-1 text-xs font-bold" style={{ color: "var(--pos)" }}>✓ TP{hm + 1} ya alcanzado</div>}
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <button type="button" onClick={() => setDetail(t.id)} className="bx-btn" style={{ padding: ".4rem .9rem" }} data-testid="active-result-btn">Registrar resultado</button>
+                    <button type="button" title="Editar" aria-label="Editar" onClick={() => setEditing(toForm(t))} className="bx-muted hover:text-white">✎</button>
+                    <button type="button" title="Eliminar" aria-label="Eliminar" onClick={() => setConfirmDel(t)} className="bx-muted hover:text-rose-400">🗑</button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    );
+  };
+  const brokerOk = (t, kind) => kind !== "synth" || (synthBroker === "WELTRADE" ? t.broker === "WELTRADE" : t.broker !== "WELTRADE");
   const renderCatPage = (kind) => {
-    const list = adminList.filter((t) => catMatch(t, kind));
-    const pend = pendingList.filter((t) => catMatch(t, kind));
+    const list = adminList.filter((t) => catMatch(t, kind) && brokerOk(t, kind));
+    const pend = pendingList.filter((t) => catMatch(t, kind) && brokerOk(t, kind));
+    const actv = activeList.filter((t) => catMatch(t, kind) && brokerOk(t, kind));
     const net = {};
     list.filter((t) => !t.discarded).forEach((t) => { if (legResults(t).length) { const u = unitWord(t); net[u] = round1((net[u] || 0) + (Number(t.pips) || 0)); } });
     const act = list.filter((t) => !t.discarded && t.status !== "Pendiente").length;
     const kindName = kind === "cfd" ? "CFDs" : "Sintéticos";
     return (
       <div className="space-y-6" data-testid={`admin-page-${kind}`}>
+        {kind === "synth" && (
+          <div className="flex flex-wrap gap-2" data-testid="synth-broker-tabs">
+            {[["DERIV", "Deriv"], ["WELTRADE", "Weltrade"]].map(([k, l]) => {
+              const c = pendingList.filter((t) => catMatch(t, "synth") && (k === "WELTRADE" ? t.broker === "WELTRADE" : t.broker !== "WELTRADE")).length;
+              return <button key={k} type="button" onClick={() => setSynthBroker(k)} className={`bx-tab ${synthBroker === k ? "on" : ""}`} data-testid={`synth-broker-${k}`}>{l}{c ? ` · ${c} 🕓` : ""}</button>;
+            })}
+          </div>
+        )}
         <div className="grid lg:grid-cols-2 gap-6 items-start">
           <section className="bx-card p-4">
             <div className="text-xs uppercase tracking-[0.18em] bx-accent font-bold mb-2">Cargar señal · {kindName}</div>
@@ -4208,7 +4398,11 @@ export default function App() {
               <button onClick={() => importSignal(kind)} disabled={!signalText.trim()} className="bx-btn">Interpretar y revisar</button>
             </div>
           </section>
-          {renderPending(pend, false)}
+          <div className="space-y-6">
+            {kind === "synth" && <SynthCalc key={synthBroker} broker={synthBroker} />}
+            {renderPending(pend, false)}
+            {renderActive(actv, false)}
+          </div>
         </div>
         <section className="bx-card p-3 md:p-4" data-testid="admin-day">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -4513,11 +4707,14 @@ export default function App() {
               <div className="space-y-6" data-testid="admin-page-dash">
                 <section className="bx-card p-5">
                   <h2 className="text-xl md:text-2xl font-black text-white">Bienvenido al Dashboard de administración</h2>
-                  <p className="mt-1 text-sm bx-muted">Aquí ves lo importante del día: las noticias USD de impacto alto y las entradas que aún no se activan. Carga señales y revisa tus entradas en las páginas de CFDs y Sintéticos.</p>
+                  <p className="mt-1 text-sm bx-muted">Aquí ves lo importante del día: las noticias USD de impacto alto, las entradas pendientes y las que siguen activas. Carga señales y revisa tus entradas en las páginas de CFDs y Sintéticos.</p>
                 </section>
                 <div className="grid lg:grid-cols-[1.3fr_1fr] gap-6 items-start">
                   <NewsCalendar />
-                  {renderPending(pendingList, true)}
+                  <div className="space-y-6">
+                    {renderPending(pendingList, true)}
+                    {renderActive(activeList, true)}
+                  </div>
                 </div>
                 <section className="bx-card p-4 flex flex-wrap items-center gap-3">
                   <div className="text-xs uppercase tracking-[0.18em] bx-muted mr-auto">Herramientas de administración</div>
