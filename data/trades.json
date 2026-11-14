@@ -2590,9 +2590,9 @@
     "activation": "E1",
     "sl": 5758,
     "tps": [
-      5735,
-      5730,
-      5725
+      5695,
+      5595,
+      5545
     ],
     "pipSize": 1,
     "unit": "puntos",
@@ -2612,7 +2612,7 @@
       }
     },
     "discarded": false,
-    "raw": "C1000 SELL LIMIT 5745.0\nSL 5758.0\nTP1: 5735.0\nTP2: 5730.0\nTP3: 5725.0",
+    "raw": "CRASH 1000 SELL 5745\nSL 5758 \nTP1 5695\nTP2 5595\nTP3 5545",
     "notes": "",
     "mgmt": "",
     "tags": [
