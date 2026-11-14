@@ -2710,5 +2710,48 @@
     "status": "BE",
     "pips": 0,
     "r": 0
+  },
+  {
+    "id": "dxsrlm9smwgje6vi",
+    "date": "2026-11-14",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "CRASH 500",
+    "direction": "BUY",
+    "entry1": 2984,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 2974,
+    "tps": [
+      3042
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 3042,
+        "pips": 58,
+        "tpIdx": 0,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "CRASH 500 BUY 2984\nSL 2974\nTP1 3042",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 58,
+    "r": 5.8
   }
 ]
