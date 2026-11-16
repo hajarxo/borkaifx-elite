@@ -2858,10 +2858,10 @@
     "unit": "puntos",
     "legs": {
       "e1": {
-        "status": "TP",
-        "exit": 7298,
-        "pips": 150,
-        "tpIdx": 1,
+        "status": "BE",
+        "exit": 7283,
+        "pips": 0,
+        "tpIdx": null,
         "reached": null
       },
       "e2": {
@@ -2878,9 +2878,9 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "TP",
-    "pips": 150,
-    "r": 2.14
+    "status": "BE",
+    "pips": 0,
+    "r": 0
   },
   {
     "id": "du2d392jmwgi78df",
