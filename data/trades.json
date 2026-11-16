@@ -2796,6 +2796,49 @@
     "r": -1
   },
   {
+    "id": "m2u2yf4zmwgg2jm0",
+    "date": "2026-11-14",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "JUMP75",
+    "direction": "BUY",
+    "entry1": 4079.02,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 3983,
+    "tps": [
+      4625
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "SL",
+        "exit": 3983,
+        "pips": -96,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "JUMP75 BUY LIMIT 4079.02\nSL 3983.00\nTP 4625.00",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "SL",
+    "pips": -96,
+    "r": -1
+  },
+  {
     "id": "tcd17k9umwghww20",
     "date": "2026-11-14",
     "category": "SINTETICO",
