@@ -2860,9 +2860,9 @@
       "e1": {
         "status": "BE",
         "exit": 7283,
-        "pips": 0,
+        "pips": 150,
         "tpIdx": null,
-        "reached": null
+        "reached": 1
       },
       "e2": {
         "status": "Pendiente",
@@ -2879,8 +2879,8 @@
       "VIP Signal"
     ],
     "status": "BE",
-    "pips": 0,
-    "r": 0
+    "pips": 150,
+    "r": 2.14
   },
   {
     "id": "du2d392jmwgi78df",
