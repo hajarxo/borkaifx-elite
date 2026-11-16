@@ -2776,10 +2776,10 @@
         "reached": 0
       },
       "e2": {
-        "status": "TP",
-        "exit": 3869,
-        "pips": 210,
-        "tpIdx": 2,
+        "status": "BE",
+        "exit": 3890,
+        "pips": 0,
+        "tpIdx": null,
         "reached": null
       }
     },
@@ -2790,9 +2790,9 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "TP",
-    "pips": 260,
-    "r": 2.03
+    "status": "BE",
+    "pips": 50,
+    "r": 0.28
   },
   {
     "id": "soy8itsjmweyfmu8",
