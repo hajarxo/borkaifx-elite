@@ -15,20 +15,20 @@ import {
 } from "recharts";
 
 /* ============================================================
-   BORKAIFX ELITE — Track Record & Portafolio de Trading
+   PRECISION ZONE FX — Track Record & Portafolio de Trading
    Tema "Warm Modern" (crema + antracita + naranja)
    Componente único. Requiere: react, recharts (Tailwind se auto-carga)
    ============================================================ */
 
-const BRAND = "BORKAIFX ELITE";
-const TELEGRAM_URL = "https://t.me/borkaifxelite";
+const BRAND = "PRECISION ZONE FX";
+const TELEGRAM_URL = "https://t.me/precisionzonefx";
 
 /* ============================================================
    CONFIGURACIÓN DE INICIO / SERVICIOS — EDITA AQUÍ TUS DATOS
    ============================================================ */
 const SITE = {
-  // Botón "Únete a Borkaifx" de la cabecera (cambia aquí el texto y el enlace)
-  join: { label: "Telegram", url: "https://t.me/borkaifxelite" },
+  // Botón "Únete a Precision Zone FX" de la cabecera (cambia aquí el texto y el enlace)
+  join: { label: "Telegram", url: "https://t.me/precisionzonefx" },
 
   // WhatsApp oficial: se usa SOLO en el Copytrading (botón "ACTIVAR MI CUENTA AHORA").
   // Acepta enlace corto (wa.link, ya trae su mensaje) o "https://wa.me/58XXXXXXXXXX".
@@ -1628,7 +1628,7 @@ function buildReport(trades, mode, ref, scope) {
   const withPips = (n, o) => `${n}${n ? ` · ${fmtU(o)}` : ""}`;
 
   const L = [];
-  L.push("📊 BORKAIFX ELITE");
+  L.push("📊 PRECISION ZONE FX");
   L.push(title);
   L.push(`Mercado: ${scopeName}`);
   L.push("");
@@ -1795,7 +1795,7 @@ function buildRecap(trades, mode, ref, scope) {
   const dec = wins + losses;
   const wr = dec ? Math.round((wins / dec) * 1000) / 10 : 0;
   const totTxt = Object.keys(tot).length ? Object.entries(tot).map(([u, v]) => `${sgn(v)}${nfmt(v)} ${u}`).join(" | ") : "0";
-  const L = [`📊 BORKAIFX ELITE · ${title}`, `🗓 ${range}`, ""];
+  const L = [`📊 PRECISION ZONE FX · ${title}`, `🗓 ${range}`, ""];
   if (!lines.length) L.push("Sin operaciones cerradas en este período.", "");
   else L.push(...lines, "");
   L.push(`➡️TOTAL: ${totTxt}`, `➡️TAKEN: ${taken}`, `➡️WINS: ${wins}`, `➡️LOSSES: ${losses}`, `➡️BE: ${be}`, `➡️WIN RATE: ${wr}%`);
@@ -1843,7 +1843,7 @@ async function drawRecapImage(trades, mode, ref, scope) {
   const num2 = (v) => Math.abs(v).toLocaleString("en-US", { maximumFractionDigits: 1 });
   const col = (v) => (v > 0 ? POS : v < 0 ? NEG : INK);
   if (mode === "daily") {
-    T("BORKAIFX ELITE · Signal Performance", M, 112, { s: 31, c: ACCENT_HEX, w: 600 });
+    T("PRECISION ZONE FX · Signal Performance", M, 112, { s: 31, c: ACCENT_HEX, w: 600 });
     T("Daily recap", M, 214, { s: 80, w: 800 });
     const p = ymdParts(ref);
     T(`${EN_DAYS[p.dow].slice(0, 3)} ${p.d} ${EN_MON[p.m - 1]}`, M, 270, { s: 36, c: MUTED });
@@ -1987,7 +1987,7 @@ async function drawMonthlyImage(trades, ref, scope) {
   const sg = (v) => (v > 0 ? "+" : v < 0 ? "-" : "");
 
   // Encabezado
-  T("BORKAIFX ELITE · Monthly Results", M, 100, { s: 28, c: GOLD, w: 600 });
+  T("PRECISION ZONE FX · Monthly Results", M, 100, { s: 28, c: GOLD, w: 600 });
   const mp = ymdParts(ref.slice(0, 7) + "-01");
   T("Monthly recap", M, 205, { s: 92, w: 800 });
   T(`${EN_MONTH_FULL[mp.m - 1]} ${mp.y}`, M, 262, { s: 38, c: MUTED });
@@ -2054,7 +2054,7 @@ async function drawMonthlyImage(trades, ref, scope) {
   const bg2 = x.createLinearGradient(0, by, 0, by + 96); bg2.addColorStop(0, "#F7C948"); bg2.addColorStop(1, "#DFA01A");
   x.fillStyle = bg2; x.fill();
   T("Join the VIP now →", W / 2, by + 62, { s: 40, w: 800, c: "#17120a", a: "center" });
-  T("t.me/borkaifxelite", W / 2, by + 150, { s: 28, c: MUTED, a: "center" });
+  T("t.me/precisionzonefx", W / 2, by + 150, { s: 28, c: MUTED, a: "center" });
   return { url: c.toDataURL("image/png"), mixed: units.length > 1, count: n };
 }
 
@@ -2122,7 +2122,7 @@ async function drawCopyImage({ pre, date, f }) {
   x.fillStyle = g2; x.fillRect(0, 0, W, H);
   // Encabezado
   try { const lg = await loadImg(LOGO); const lh = 70, lw = (lg.width / lg.height) * lh; x.drawImage(lg, M, 86, lw, lh); } catch (e) {}
-  T("BORKAIFX ELITE", M + 76, 118, { s: 28, w: 700, ls: 5 });
+  T("PRECISION ZONE FX", M + 76, 118, { s: 28, w: 700, ls: 5 });
   T("COPY TRADING", M + 76, 150, { s: 19, c: ACCENT_HEX, w: 600, ls: 5 });
   T(date, W - M, 128, { s: 30, c: MUTED, a: "right" });
   // Título grande
@@ -2236,7 +2236,8 @@ const SC_FAMS = {
   Crash: [300, 500, 600, 900, 1000],
   Boom: [300, 500, 600, 900, 1000],
   Jump: [10, 25, 50, 75, 100],
-  Volatility: [10, 25, 50, 75, 100],
+  Volatility: [5, 10, 15, 25, 30, 50, 75, 90, 100],
+  "Volatility (1s)": [5, 10, 15, 25, 30, 50, 75, 90, 100, 150, 250],
 };
 const SC_WELTRADE = ["GainX", "PainX", "FlipX", "SwitchX", "BreakX", "TrendX", "FX Vol", "SFX Vol", "Max GainX", "Max PainX"];
 const scFmt = (v, d = 3) => (Number.isFinite(v) ? String(Number(v.toFixed(d))) : "—");
@@ -2255,7 +2256,7 @@ function SynthCalc({ broker }) {
   const [mini, setMini] = useState(() => { try { return localStorage.getItem("borkaifx_calc_min") === "1"; } catch (e) { return false; } });
   const toggleMini = () => setMini((m) => { const v = !m; try { localStorage.setItem("borkaifx_calc_min", v ? "1" : "0"); } catch (e) {} return v; });
   const reset = () => { setPsW("1"); setFam(wt ? SC_WELTRADE[0] : "Step Index"); setIdx(100); setMode("pts"); setDir("SELL"); setEntry(""); setSl(""); setN(2); setTp(["", "", ""]); setCopied(false); };
-  const name = wt ? fam : `${fam} ${idx}`;
+  const name = wt ? fam : fam === "Volatility (1s)" ? `Volatility ${idx} (1s)` : `${fam} ${idx}`;
   const ps = wt ? (num(psW) > 0 ? num(psW) : 1) : synthPip(name);
   const e = num(entry);
   const slv = num(sl);
@@ -2588,7 +2589,7 @@ const goTo = (id) => {
 
 // Enlace de WhatsApp oficial (con mensaje opcional). Si no está configurado, usa Telegram.
 const waHref = (msg) => {
-  return SITE.join.url; // se usa Telegram (@borkaifxelite) en lugar de WhatsApp
+  return SITE.join.url; // se usa Telegram (@precisionzonefx) en lugar de WhatsApp
   const base = SITE.whatsapp;
   if (!base) return TELEGRAM_URL;
   // Los enlaces cortos (wa.link) ya incluyen su mensaje: se usan tal cual
@@ -2901,12 +2902,12 @@ function ToolsPage({ tool, setTool }) {
 
 /* ----------------------------- Testimonios (diseño provisional) ----------------------------- */
 // Cuando tengas los resultados reales, llena esta lista y desaparecen las tarjetas de ejemplo:
-// { asset: "XAUUSD", dir: "Buy", result: "+120 pips", date: "04/11/2026", link: "https://t.me/borkaifxelite/123" }
+// { asset: "XAUUSD", dir: "Buy", result: "+120 pips", date: "04/11/2026", link: "https://t.me/precisionzonefx/123" }
 const TESTIMONIOS = [];
 const TESTIMONIO_DEMO = [
-  { asset: "XAUUSD", dir: "Buy", result: "+000 pips", date: "00/00/0000", link: "https://t.me/borkaifxelite" },
-  { asset: "NAS100", dir: "Sell", result: "+000 pips", date: "00/00/0000", link: "https://t.me/borkaifxelite" },
-  { asset: "CRASH 900", dir: "Sell", result: "+000 puntos", date: "00/00/0000", link: "https://t.me/borkaifxelite" },
+  { asset: "XAUUSD", dir: "Buy", result: "+000 pips", date: "00/00/0000", link: "https://t.me/precisionzonefx" },
+  { asset: "NAS100", dir: "Sell", result: "+000 pips", date: "00/00/0000", link: "https://t.me/precisionzonefx" },
+  { asset: "CRASH 900", dir: "Sell", result: "+000 puntos", date: "00/00/0000", link: "https://t.me/precisionzonefx" },
 ];
 function Testimonios() {
   const demo = TESTIMONIOS.length === 0;
@@ -3131,7 +3132,7 @@ function HomePage({ setPage, openTool, openSignals }) {
   const steps = [
     { tag: "Entry", name: "FREE", tone: GREEN, title: "Smart Money Action", text: "Una guía gratuita de 15 páginas, el playbook que necesitas: estructura, liquidez, FVG, las cuatro sesiones y un modelo simple.", cta: "Obtener la guía gratis", href: "https://t.me/borkaifxelite/633" },
     { tag: "TP1", name: "EL CURSO", tone: ACCENT, title: "El curso", price: "$299", text: "El curso para traders que, con o sin experiencia, buscan operar con claridad y estrategia institucional: XAUUSD, índices bursátiles y divisas, con estrategias por separado y ordenadas.", cta: "Quiero el curso", href: SITE.join.url },
-    { tag: "TP2", name: "VIP", tone: ACCENT, hot: true, title: "Tradea con nosotros", text: "Todas nuestras señales con punto de entrada, stop y take profit, con seguimiento a cada señal desde su activación.", cta: "Acceso al Telegram", href: "https://t.me/borkaifxelite", gold: true },
+    { tag: "TP2", name: "VIP", tone: ACCENT, hot: true, title: "Tradea con nosotros", text: "Todas nuestras señales con punto de entrada, stop y take profit, con seguimiento a cada señal desde su activación.", cta: "Acceso al Telegram", href: "https://t.me/precisionzonefx", gold: true },
   ];
   return (
     <div className="space-y-16" data-testid="home-page">
@@ -3143,7 +3144,7 @@ function HomePage({ setPage, openTool, openSignals }) {
             <span style={{ color: ACCENT }}>LA LIQUIDEZ ERES TU.</span>
           </h1>
           <p className="mt-5 text-[15px] bx-ink2 max-w-xl leading-relaxed">
-            El mercado no se adivina, se entiende. En BORKAIFX ELITE transformamos tu operativa mediante conceptos SMC. Aprende a identificar las huellas del dinero, protege tu capital con precisión y desarrolla la consistencia real que define a un trader profesional.
+            El mercado no se adivina, se entiende. En PRECISION ZONE FX transformamos tu operativa mediante conceptos SMC. Aprende a identificar las huellas del dinero, protege tu capital con precisión y desarrolla la consistencia real que define a un trader profesional.
           </p>
         </div>
       </section>
@@ -3250,13 +3251,15 @@ function VipOfferCta({ setPage }) {
 }
 
 /* ----------------------------- Ejemplo de señal (formato del canal ELITE VIP FX) ----------------------------- */
-const CHANNEL_NAME = "ELITE VIP FX";
+const CHANNEL_NAME = "Precisionzonefx | GOLD";
+const SIGNAL_AVATAR = "data:image/jpeg;base64,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"; // foto de perfil SOLO para los ejemplos de señal
 const Chip = ({ tone, children }) => {
   const c = tone === "entry" ? ["rgba(56,189,248,.16)", "var(--sky)"] : tone === "tp" ? ["rgba(16,185,129,.16)", "var(--pos)"] : ["rgba(244,63,94,.16)", "var(--neg)"];
   return <span className="font-mono px-1.5 py-0.5 rounded-md text-[0.9em]" style={{ background: c[0], color: c[1] }}>{children}</span>;
 };
 const SIGNAL_EXAMPLES = {
   CFD: {
+    channel: "Precisionzonefx | GOLD",
     head: "Gold 🏆", pair: "XAUUSD", side: "Long / Buy Limit", entries: ["4100", "4096"], sl: "4083", unit: "pips",
     tps: [["4105", "50"], ["4110", "100"], ["4115", "150"]],
     updates: ["XAUUSD 4100 ENTRADA ACTIVA", "XAUUSD HIT TP1 ✅"],
@@ -3269,7 +3272,7 @@ const SIGNAL_EXAMPLES = {
     ],
   },
   SINTETICO: {
-    channel: "SINTETICOS VIP",
+    channel: "Precisionzonefx | SINTETICOS",
     short: true,
     title: "CRASH 900 INDEX SELL LIMIT", entry: "17826.00", sl: "17843.00",
     tps: [["17726.00"], ["17676.00"], ["17526.00"]],
@@ -3307,7 +3310,7 @@ function SignalShowcase({ kind }) {
       <div className="grid md:grid-cols-2 gap-6 md:gap-10 items-center max-w-5xl mx-auto">
         <div className="bx-card w-full max-w-md mx-auto md:mx-0 md:ml-auto overflow-hidden">
           <div className="flex items-center gap-3 px-4 py-3 bx-bb">
-            <img src={LOGO} alt="" className="w-10 h-10 rounded-full object-contain" style={{ background: "#0A0A0B", border: "1px solid rgba(240,180,41,.35)" }} />
+            <img src={SIGNAL_AVATAR} alt="" className="w-10 h-10 rounded-full object-cover" style={{ border: "1px solid rgba(240,180,41,.35)" }} />
             <div>
               <div className="font-extrabold text-white leading-tight">{chName}</div>
               <div className="text-xs bx-muted">Sala de señales VIP</div>
@@ -4199,7 +4202,7 @@ export default function App() {
   const [signalText, setSignalText] = useState("");
 
   useEffect(() => {
-    document.title = "BORKAIFX ELITE · Track Record";
+    document.title = "PRECISION ZONE FX · Track Record";
     document.body.style.margin = "0";
     let link = document.querySelector("link[rel='icon']");
     if (!link) {
@@ -4660,9 +4663,9 @@ export default function App() {
       <header className="bx-header relative z-30">
         <div className="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
           <a href={PAGE_PATHS.home} onClick={(e) => { e.preventDefault(); setPage("home"); window.scrollTo(0, 0); }} className="flex items-center gap-3" data-testid="brand-link" aria-label="Ir al inicio" style={{ textDecoration: "none" }}>
-            <img src={LOGO} alt="BORKAIFX ELITE" className="w-7 h-7 md:w-8 md:h-8 object-contain" />
+            <img src={LOGO} alt="PRECISION ZONE FX" className="w-7 h-7 md:w-8 md:h-8 object-contain" />
             <div>
-              <div className="bx-display bx-brand text-lg md:text-xl tracking-[0.06em] leading-none whitespace-nowrap" style={{ color: "var(--ink)" }}>BORKAIFX <span style={{ color: ACCENT }}>ELITE</span></div>
+              <div className="bx-display bx-brand text-lg md:text-xl tracking-[0.06em] leading-none whitespace-nowrap" style={{ color: "var(--ink)" }}>PRECISION <span style={{ color: ACCENT }}>ZONE FX</span></div>
             </div>
           </a>
 
