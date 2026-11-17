@@ -2753,7 +2753,7 @@ function FaqMessage({ text }) {
     if (ok) setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div className="mt-3 rounded-xl p-3 text-left" style={{ background: "#0B0B0B", border: "1px solid rgba(var(--fg),.09)" }}>
+    <div className="mt-3 rounded-xl p-3 text-left" style={{ background: "var(--field)", border: "1px solid var(--cardline)" }}>
       <div className="whitespace-pre-wrap text-[13px] leading-relaxed" style={{ color: "var(--cardink)" }}>“{text}”</div>
       <div className="mt-2 text-right">
         <button type="button" onClick={copy} className="bx-ghost text-xs">{copied ? "✓ Copiado" : "Copiar mensaje"}</button>
@@ -2769,7 +2769,7 @@ function FaqBlock({ b }) {
   if (b.t === "msg") return <FaqMessage text={b.x} />;
   return (
     <ul className="mt-3 space-y-2 text-sm leading-relaxed text-left list-disc pl-5" style={{ color: "var(--cardink2)" }}>
-      {b.x.map(([lead, rest], i) => (<li key={i}><b className="text-white">{lead}</b> {rest}</li>))}
+      {b.x.map(([lead, rest], i) => (<li key={i}><b style={{ color: "var(--cardink)" }}>{lead}</b> {rest}</li>))}
     </ul>
   );
 }
@@ -2778,7 +2778,7 @@ function FaqVip() {
   const [openIdx, setOpenIdx] = useState(-1); // una pregunta abierta a la vez
   return (
     <div data-testid="faq-vip">
-      <div className="text-[11px] font-bold tracking-[0.3em] mb-3" style={{ color: "#3A362F" }}>PREGUNTAS FRECUENTES</div>
+      <div className="text-[11px] font-bold tracking-[0.3em] mb-3" style={{ color: "var(--ink2)" }}>PREGUNTAS FRECUENTES</div>
       <div className="space-y-3">
         {FAQ_ITEMS.map((it, i) => {
           const isOpen = openIdx === i;
@@ -4389,7 +4389,161 @@ function AnnualEvolution({ trades, unit }) {
   );
 }
 
-const PAGE_PATHS = { home: "/", track: "/track-record", signals: "/senales", vip: "/vip-gratis", tools: "/herramientas", admin: "/elpatron" }; // el panel de administración vive en /elpatron
+/* ============================================================
+   LANDING TIPO "LINKS" (/links): una pantalla corta con todos los enlaces.
+   Edita aquí los enlaces. Si "url" queda vacío, el botón se muestra como "Próximamente".
+   ============================================================ */
+const LINKS_CFG = {
+  pill: "MERCADOS EN VIVO · XAUUSD & SINTÉTICOS",
+  bio: "Trading institucional en Oro (XAUUSD), Índices y Sintéticos. Señales verificadas, psicología y gestión de riesgo real.",
+  socials: [
+    { id: "instagram", label: "Instagram @precisionzone.fx", url: "https://instagram.com/precisionzone.fx" },
+    { id: "tiktok", label: "TikTok @precisionzonfx", url: "https://www.tiktok.com/@precisionzonfx" },
+    { id: "youtube", label: "YouTube @precisionzonfx", url: "https://www.youtube.com/@precisionzonfx" },
+    { id: "whatsapp", label: "WhatsApp +1 772 207 1549", url: "https://wa.me/17722071549" },
+  ],
+  guideUrl: "https://t.me/borkaifxelite/633", // guía gratuita
+  ebookUrl: "", // ebook "Domina tu mente": pega aquí su enlace
+};
+
+const LK_ICON = {
+  instagram: <><rect x="3.5" y="3.5" width="17" height="17" rx="5" fill="none" stroke="currentColor" strokeWidth="1.8" /><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" strokeWidth="1.8" /><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" /></>,
+  tiktok: <path fill="currentColor" d="M12.5.02c1.3-.02 2.6-.01 3.9-.02.1 1.5.6 3.1 1.8 4.2 1.1 1.1 2.7 1.6 4.2 1.8v4c-1.4 0-2.9-.3-4.2-1-.6-.3-1.1-.6-1.6-.9 0 2.9 0 5.8 0 8.7-.1 1.4-.5 2.8-1.4 3.9-1.3 1.9-3.6 3.2-5.9 3.2-1.4.1-2.9-.3-4.1-1-2-1.2-3.4-3.4-3.7-5.7 0-.5 0-1 0-1.5.2-1.9 1.1-3.7 2.6-5 1.7-1.4 4-2.1 6.2-1.7 0 1.5 0 3-.1 4.4-1-.3-2.2-.2-3 .4-.6.4-1.1 1-1.4 1.8-.2.5-.1 1.1-.1 1.6.2 1.6 1.8 3 3.5 2.9 1.1 0 2.2-.7 2.8-1.6.2-.3.4-.7.4-1.1.1-1.8.1-3.6.1-5.4 0-4 0-8 0-12.1z" />,
+  youtube: <><rect x="2.5" y="5.5" width="19" height="13" rx="4" fill="none" stroke="currentColor" strokeWidth="1.8" /><path fill="currentColor" d="M10 9.2v5.6l5-2.8z" /></>,
+  whatsapp: <><path d="M12 3.2a8.8 8.8 0 0 0-7.5 13.4L3.2 20.8l4.3-1.2A8.8 8.8 0 1 0 12 3.2z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path fill="currentColor" d="M9.2 8.2c-.3.4-.6 1-.4 1.8.5 1.9 2.6 4 4.6 4.6.8.2 1.4-.1 1.8-.5l.3-.8-1.9-1-.9.7c-1-.4-2-1.4-2.4-2.4l.7-.9-.9-1.9z" /></>,
+};
+
+const LK_CSS = `
+.lk{--lk-bg:#F6F4EE;--lk-ink:#0A0C11;--lk-ink2:#566070;--lk-gold:#F0B429;--lk-gold2:#C98A0B;--lk-line:rgba(10,12,17,.12);--ease:cubic-bezier(.23,1,.32,1);position:relative;min-height:100vh;min-height:100dvh;background:var(--lk-bg);color:var(--lk-ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;color-scheme:light}
+.lk canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.lk-veil{position:absolute;inset:0;pointer-events:none;background:radial-gradient(520px circle at 50% 32%,rgba(246,244,238,.92),rgba(246,244,238,.55) 55%,transparent 78%)}
+.lk-wrap{position:relative;z-index:1;max-width:420px;margin:0 auto;padding:44px 20px 32px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.lk-av{width:104px;height:104px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 0 0 2px rgba(240,180,41,.7),0 14px 34px rgba(10,12,17,.18)}
+.lk-pill{margin-top:18px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:9999px;background:var(--lk-ink);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.09em}
+.lk-pill i{width:7px;height:7px;border-radius:50%;background:#2ECC71;box-shadow:0 0 0 0 rgba(46,204,113,.6);animation:lkpulse 2s infinite}
+@keyframes lkpulse{0%{box-shadow:0 0 0 0 rgba(46,204,113,.55)}70%,100%{box-shadow:0 0 0 8px rgba(46,204,113,0)}}
+.lk-title{margin:14px 0 0;font-family:Anton,"Bebas Neue",Impact,"Arial Narrow",sans-serif;font-weight:400;font-size:clamp(2.3rem,11vw,3.1rem);line-height:1.02;letter-spacing:.02em;background:linear-gradient(100deg,#0A0C11 0%,#0A0C11 38%,#C98A0B 78%,#F0B429 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lk-bio{margin:12px 0 0;font-size:14.5px;line-height:1.55;color:var(--lk-ink2);max-width:34ch}
+.lk-soc{margin-top:18px;display:flex;gap:10px}
+.lk-soc a{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;color:var(--lk-ink);border:1px solid var(--lk-line);box-shadow:0 4px 12px rgba(10,12,17,.06);transition:transform .16s var(--ease),background .16s,color .16s}
+.lk-soc svg{width:21px;height:21px}
+.lk-sep{width:100%;margin:26px 0 12px;display:flex;align-items:center;gap:12px;font-size:10.5px;font-weight:800;letter-spacing:.16em;color:var(--lk-ink2)}
+.lk-sep::before,.lk-sep::after{content:"";flex:1;height:1px;background:var(--lk-line)}
+.lk-btn{width:100%;min-height:54px;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 20px;border-radius:9999px;border:0;cursor:pointer;text-decoration:none;font-family:Anton,"Bebas Neue",Impact,"Arial Narrow",sans-serif;font-size:1.06rem;letter-spacing:.05em;text-transform:uppercase;background:var(--lk-ink);color:#fff;box-shadow:0 10px 24px rgba(10,12,17,.18);transition:transform .16s var(--ease),box-shadow .16s var(--ease),filter .16s}
+.lk-btn svg{width:16px;height:16px;color:var(--lk-gold);flex:none}
+.lk-btn.hi{background:linear-gradient(180deg,#F7C948,#EBA717);color:#17120a;box-shadow:0 12px 30px rgba(240,180,41,.4)}
+.lk-btn.hi svg{color:#17120a}
+.lk-btn.soft{background:#fff;color:var(--lk-ink);border:1.5px solid var(--lk-ink);box-shadow:0 6px 16px rgba(10,12,17,.08)}
+.lk-btn.soft svg{color:var(--lk-ink)}
+.lk-btn[aria-disabled="true"]{opacity:.55;cursor:default;box-shadow:none}
+.lk-btn small{font-family:Inter,sans-serif;font-size:.62rem;letter-spacing:.08em;padding:3px 8px;border-radius:9999px;background:rgba(255,255,255,.18)}
+.lk-foot{margin-top:26px;font-size:11.5px;color:var(--lk-ink2);line-height:1.8}
+.lk-foot a,.lk-foot button{background:none;border:0;padding:0;cursor:pointer;color:var(--lk-ink);font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.lk a:focus-visible,.lk button:focus-visible{outline:3px solid var(--lk-gold2);outline-offset:3px}
+.lk-in{opacity:0;transform:translateY(14px);animation:lkin .6s var(--ease) forwards;animation-delay:var(--d,0ms)}
+@keyframes lkin{to{opacity:1;transform:none}}
+@media (hover:hover){.lk-soc a:hover{transform:translateY(-2px);background:var(--lk-ink);color:var(--lk-gold)}.lk-btn:not([aria-disabled="true"]):hover{transform:translateY(-2px);filter:brightness(1.06)}}
+.lk-btn:not([aria-disabled="true"]):active,.lk-soc a:active{transform:scale(.97)}
+@media (prefers-reduced-motion:reduce){.lk-in{animation:none;opacity:1;transform:none}.lk-pill i{animation:none}}
+`;
+
+const LK_ARROW = <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7M5.5 4.5h6v6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+const LK_NEXT = <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+
+// Fondo: velas japonesas minimalistas que flotan despacio
+function CandleBg() {
+  const ref = useRef(null);
+  useEffect(() => {
+    const cv = ref.current;
+    if (!cv) return undefined;
+    const ctx = cv.getContext("2d");
+    if (!ctx) return undefined;
+    let raf = 0, W = 0, H = 0, candles = [];
+    let still = false;
+    try { still = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    const build = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = cv.clientWidth; H = cv.clientHeight;
+      cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const step = W < 600 ? 26 : 34, n = Math.ceil(W / step) + 1;
+      let y = H * 0.55; candles = [];
+      for (let i = 0; i < n; i++) {
+        const up = Math.random() > 0.46;
+        const body = 14 + Math.random() * 46, wick = 8 + Math.random() * 26;
+        y += (Math.random() - 0.5) * 70 - (up ? 4 : -4);
+        y = Math.max(H * 0.18, Math.min(H * 0.86, y));
+        candles.push({ x: i * step + step / 2, y, body, wick, up, w: step * 0.42, ph: Math.random() * 6.28, sp: 0.35 + Math.random() * 0.5, amp: 5 + Math.random() * 9 });
+      }
+    };
+    const draw = (t) => {
+      ctx.clearRect(0, 0, W, H);
+      candles.forEach((c) => {
+        const dy = Math.sin(t / 1000 * c.sp + c.ph) * c.amp;
+        const grow = 1 + Math.sin(t / 1400 * c.sp + c.ph * 2) * 0.12;
+        const col = c.up ? "46,204,113" : "239,68,68";
+        const b = c.body * grow, top = c.y + dy - b / 2;
+        ctx.strokeStyle = `rgba(${col},.30)`; ctx.fillStyle = `rgba(${col},.20)`; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.moveTo(c.x, top - c.wick); ctx.lineTo(c.x, top + b + c.wick); ctx.stroke();
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(c.x - c.w / 2, top, c.w, b, 3); else ctx.rect(c.x - c.w / 2, top, c.w, b);
+        ctx.fill(); ctx.stroke();
+      });
+    };
+    const loop = (t) => { draw(t); raf = requestAnimationFrame(loop); };
+    const start = () => { cancelAnimationFrame(raf); if (still) draw(0); else raf = requestAnimationFrame(loop); };
+    build(); start();
+    let rt;
+    const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { build(); start(); }, 150); };
+    const onVis = () => { if (document.hidden) cancelAnimationFrame(raf); else start(); };
+    window.addEventListener("resize", onResize);
+    document.addEventListener("visibilitychange", onVis);
+    return () => { cancelAnimationFrame(raf); clearTimeout(rt); window.removeEventListener("resize", onResize); document.removeEventListener("visibilitychange", onVis); };
+  }, []);
+  return <canvas ref={ref} aria-hidden="true" data-testid="links-candles" />;
+}
+
+function LinksPage({ setPage }) {
+  const go = (k) => { setPage(k); window.scrollTo(0, 0); };
+  const ext = { target: "_blank", rel: "noopener noreferrer" };
+  const d = (i) => ({ "--d": `${120 + i * 70}ms` });
+  return (
+    <div className="lk" data-testid="links-page">
+      <style>{LK_CSS}</style>
+      <CandleBg />
+      <div className="lk-veil" />
+      <div className="lk-wrap">
+        <img src={SIGNAL_AVATAR} alt="PRECISION ZONE FX" className="lk-av lk-in" style={d(0)} />
+        <div className="lk-pill lk-in" style={d(1)}><i />{LINKS_CFG.pill}</div>
+        <h1 className="lk-title lk-in" style={d(2)}>PRECISION ZONE FX</h1>
+        <p className="lk-bio lk-in" style={d(3)}>{LINKS_CFG.bio}</p>
+        <div className="lk-soc lk-in" style={d(4)}>
+          {LINKS_CFG.socials.map((s) => (
+            <a key={s.id} href={s.url} {...ext} aria-label={s.label} title={s.label} data-testid={`links-${s.id}`}><svg viewBox="0 0 24 24" aria-hidden="true">{LK_ICON[s.id]}</svg></a>
+          ))}
+        </div>
+
+        <div className="lk-sep lk-in" style={d(5)}>OPERATIVA &amp; SEÑALES</div>
+        <a href={TELEGRAM_URL} {...ext} className="lk-btn hi lk-in" style={d(6)} data-testid="links-telegram">Canal gratuito de Telegram {LK_ARROW}</a>
+        <button type="button" onClick={() => go("track")} className="lk-btn lk-in" style={d(7)} data-testid="links-track">Ver track record &amp; canales VIP {LK_NEXT}</button>
+
+        <div className="lk-sep lk-in" style={d(8)}>EDUCACIÓN &amp; RECURSOS</div>
+        <a href={LINKS_CFG.guideUrl} {...ext} className="lk-btn soft lk-in" style={d(9)} data-testid="links-guide">Guía gratuita de trading {LK_ARROW}</a>
+        {LINKS_CFG.ebookUrl
+          ? <a href={LINKS_CFG.ebookUrl} {...ext} className="lk-btn lk-in" style={d(10)} data-testid="links-ebook">Ebook: domina tu mente {LK_ARROW}</a>
+          : <span className="lk-btn lk-in" style={d(10)} aria-disabled="true" data-testid="links-ebook">Ebook: domina tu mente <small>PRÓXIMAMENTE</small></span>}
+        <button type="button" onClick={() => go("vip")} className="lk-btn lk-in" style={d(11)} data-testid="links-vip">Brokers recomendados · VIP gratis {LK_NEXT}</button>
+
+        <div className="lk-foot lk-in" style={d(12)}>
+          <button type="button" onClick={() => go("home")} data-testid="links-site">Ir a la web completa</button><br />
+          © 2026 PRECISION ZONE FX · Contenido educativo, no es asesoría financiera.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const PAGE_PATHS = { links: "/links", home: "/", track: "/track-record", signals: "/senales", vip: "/vip-gratis", tools: "/herramientas", admin: "/elpatron" }; // el panel de administración vive en /elpatron
 const pageFromPath = () => {
   try {
     const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
@@ -4909,6 +5063,8 @@ export default function App() {
     );
   }
 
+  if (page === "links") return <LinksPage setPage={setPage} />;
+
   return (
     <div className={`bx-root ${page === "home" ? "bx-home" : ""}`} data-theme={theme}>
       {page !== "admin" && <TelegramFab />}
@@ -4949,7 +5105,7 @@ export default function App() {
             {[["CFD", "Señales CFDs"], ["SINTETICO", "Sintéticos"]].map(([v, t]) => (
               <button key={v} onClick={() => { setSignalKind(v); setPage("signals"); }} className={`bx-navbtn md:hidden ${page === "signals" && signalKind === v ? "on" : ""}`}>{t}</button>
             ))}
-            {[["tools", "Herramientas"], ["vip", "VIP gratis"], ["track", "Track Record"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => (
+            {[["tools", "Herramientas"], ["track", "Track Record"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => (
               <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`} aria-current={page === k ? "page" : undefined}>{l}</button>
             ))}
           </nav>
