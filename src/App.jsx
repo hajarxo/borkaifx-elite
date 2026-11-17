@@ -94,8 +94,8 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 .bx-navbtn{padding:.5rem .875rem;border-radius:.75rem;font-size:.8125rem;font-weight:800;letter-spacing:.03em;color:var(--ink2);cursor:pointer;background:transparent;border:1px solid transparent;transition:all .15s}
 .bx-navbtn:hover{color:var(--ink)}
 .bx-navbtn.on{background:rgba(240,180,41,.12);color:var(--accent)}
-.bx-root{color-scheme:dark;--bg:#0A0C11;--ink:#ECEEF3;--ink2:#9AA0AE;--line:#1C212C;--card:#141821;--cardink:#F4F5F8;--cardink2:#A3A9B7;--cardline:#262C3A;--accent:#F0B429;--field:#0E1118;--fg:255,255,255;--c2:#141821;--c3:#1B2030;--line2:#3A4152;--pos:#34d399;--neg:#fb7185;--sky:#7dd3fc;--amb:#fcd34d;--amb2:#fbbf24;--btnink:#17120a;background:radial-gradient(900px circle at -5% 0%,rgba(176,128,20,.20),transparent 62%),radial-gradient(700px circle at 100% 8%,rgba(70,84,120,.22),transparent 60%),radial-gradient(900px circle at 10% 105%,rgba(150,110,20,.12),transparent 60%),var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px}
-.bx-root[data-theme="light"]{color-scheme:light;--bg:#F4F5F8;--ink:#0F1219;--ink2:#5A6272;--line:#DADEE6;--card:#FFFFFF;--cardink:#0F1219;--cardink2:#5A6272;--cardline:#D3D8E2;--accent:#9A6700;--field:#FFFFFF;--fg:15,18,25;--c2:#FFFFFF;--c3:#EEF0F5;--line2:#B7BECB;--pos:#047857;--neg:#be123c;--sky:#0369a1;--amb:#92400e;--amb2:#b45309;background:radial-gradient(900px circle at -5% 0%,rgba(240,180,41,.20),transparent 62%),radial-gradient(700px circle at 100% 8%,rgba(120,140,190,.16),transparent 60%),var(--bg)}
+.bx-root{color-scheme:dark;--bg:#0A0C11;--ink:#ECEEF3;--ink2:#9AA0AE;--line:#1C212C;--card:#141821;--cardink:#F4F5F8;--cardink2:#A3A9B7;--cardline:#262C3A;--accent:#F0B429;--field:#0E1118;--fg:255,255,255;--c2:#141821;--c3:#1B2030;--line2:#3A4152;--pos:#34d399;--neg:#fb7185;--sky:#7dd3fc;--amb:#fcd34d;--amb2:#fbbf24;--btnink:#17120a;background:var(--bg);color:var(--ink);min-height:100vh;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px}
+.bx-root[data-theme="light"]{color-scheme:light;--bg:#F4F5F8;--ink:#0F1219;--ink2:#5A6272;--line:#DADEE6;--card:#FFFFFF;--cardink:#0F1219;--cardink2:#5A6272;--cardline:#D3D8E2;--accent:#9A6700;--field:#FFFFFF;--fg:15,18,25;--c2:#FFFFFF;--c3:#EEF0F5;--line2:#B7BECB;--pos:#047857;--neg:#be123c;--sky:#0369a1;--amb:#92400e;--amb2:#b45309;background:var(--bg)}
 .bx-header{background:rgba(var(--bgrgb,10,12,17),.72);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
 @keyframes bxpulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.6)}70%{box-shadow:0 0 0 8px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
 .bx-dot{width:9px;height:9px;border-radius:9999px;display:inline-block;flex:none}
@@ -109,7 +109,7 @@ a.bx-btn,a.bx-btn:hover,button.bx-btn{color:#17120a;text-decoration:none}
 @media(min-width:640px){.bx-hero1{font-size:2.9rem}}
 @media(min-width:1024px){.bx-hero1{font-size:3.7rem}}
 .bx-home{position:relative;isolation:isolate}
-.bx-home::before{content:"";position:absolute;left:0;right:0;top:0;height:780px;z-index:-1;pointer-events:none;background:radial-gradient(620px 360px at 22% 26%,rgba(240,180,41,.22),transparent 70%),radial-gradient(520px 300px at 6% 40%,rgba(140,100,16,.16),transparent 70%),linear-gradient(rgba(240,180,41,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(90deg,rgba(240,180,41,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(rgba(var(--fg),.05) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(var(--fg),.05) 1px,transparent 1px) 0 0/48px 48px;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
+.bx-home::before{display:none;content:"";position:absolute;left:0;right:0;top:0;height:780px;z-index:-1;pointer-events:none;background:radial-gradient(620px 360px at 22% 26%,rgba(240,180,41,.22),transparent 70%),radial-gradient(520px 300px at 6% 40%,rgba(140,100,16,.16),transparent 70%),linear-gradient(rgba(240,180,41,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(90deg,rgba(240,180,41,.13) 1px,transparent 1px) 0 0/192px 192px,linear-gradient(rgba(var(--fg),.05) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(90deg,rgba(var(--fg),.05) 1px,transparent 1px) 0 0/48px 48px;-webkit-mask-image:linear-gradient(#000 50%,transparent);mask-image:linear-gradient(#000 50%,transparent)}
 @media(min-width:640px){.bx-h1{font-size:2.6rem}}
 @media(min-width:1024px){.bx-h1{font-size:2.9rem}}
 .bx-hero-filters .bx-tab{padding:.4rem 1.05rem;font-size:.72rem;letter-spacing:.08em;border-radius:.65rem}
@@ -4390,7 +4390,7 @@ function AnnualEvolution({ trades, unit }) {
 }
 
 /* ============================================================
-   LANDING TIPO "LINKS" (/links): una pantalla corta con todos los enlaces.
+   LANDING DE ENTRADA ("/"): una pantalla corta con todos los enlaces.
    Edita aquí los enlaces. Si "url" queda vacío, el botón se muestra como "Próximamente".
    ============================================================ */
 const LINKS_CFG = {
@@ -4398,12 +4398,27 @@ const LINKS_CFG = {
   bio: "Trading institucional en Oro (XAUUSD), Índices y Sintéticos. Señales verificadas, psicología y gestión de riesgo real.",
   socials: [
     { id: "instagram", label: "Instagram @precisionzone.fx", url: "https://instagram.com/precisionzone.fx" },
-    { id: "tiktok", label: "TikTok @precisionzonfx", url: "https://www.tiktok.com/@precisionzonfx" },
-    { id: "youtube", label: "YouTube @precisionzonfx", url: "https://www.youtube.com/@precisionzonfx" },
+    { id: "tiktok", label: "TikTok @precisionzonefx", url: "https://www.tiktok.com/@precisionzonefx" },
+    { id: "youtube", label: "YouTube @precisionzonefx", url: "https://www.youtube.com/@precisionzonefx" },
     { id: "whatsapp", label: "WhatsApp +1 772 207 1549", url: "https://wa.me/17722071549" },
   ],
   guideUrl: "https://t.me/borkaifxelite/633", // guía gratuita
   ebookUrl: "", // ebook "Domina tu mente": pega aquí su enlace
+  // Panel "Brokers y recursos"
+  resources: [
+    { group: "Brokers", items: [
+      { name: "Weltrade", tag: "Sintéticos y Forex", url: "https://es.gowt.net/ib62502" },
+      { name: "Deriv", tag: "Sintéticos", url: "https://t.deriv.link/?t=BTTB98WZMRTQ" },
+      { name: "Vantage", tag: "CFDs y Oro", url: "https://vigco.co/la-com-inv/r9mYycMr" },
+      { name: "AXI", tag: "CFDs y copytrading", url: "https://records.axiaffiliates.com/visit/?bta=39248&brand=axitrader" },
+    ] },
+    { group: "Herramientas", items: [
+      { name: "TradingView", tag: "Gráficos y análisis", url: "https://www.tradingview.com/pricing/?share_your_love=nagervillegas" },
+    ] },
+    { group: "Fondeo", items: [
+      { name: "FORTRADERS", tag: "Empresa de fondeo", url: "https://app.fortraders.com/trading/new-challenge?affiliateCode=67UZB6XX14" },
+    ] },
+  ],
 };
 
 const LK_ICON = {
@@ -4411,107 +4426,256 @@ const LK_ICON = {
   tiktok: <path fill="currentColor" d="M12.5.02c1.3-.02 2.6-.01 3.9-.02.1 1.5.6 3.1 1.8 4.2 1.1 1.1 2.7 1.6 4.2 1.8v4c-1.4 0-2.9-.3-4.2-1-.6-.3-1.1-.6-1.6-.9 0 2.9 0 5.8 0 8.7-.1 1.4-.5 2.8-1.4 3.9-1.3 1.9-3.6 3.2-5.9 3.2-1.4.1-2.9-.3-4.1-1-2-1.2-3.4-3.4-3.7-5.7 0-.5 0-1 0-1.5.2-1.9 1.1-3.7 2.6-5 1.7-1.4 4-2.1 6.2-1.7 0 1.5 0 3-.1 4.4-1-.3-2.2-.2-3 .4-.6.4-1.1 1-1.4 1.8-.2.5-.1 1.1-.1 1.6.2 1.6 1.8 3 3.5 2.9 1.1 0 2.2-.7 2.8-1.6.2-.3.4-.7.4-1.1.1-1.8.1-3.6.1-5.4 0-4 0-8 0-12.1z" />,
   youtube: <><rect x="2.5" y="5.5" width="19" height="13" rx="4" fill="none" stroke="currentColor" strokeWidth="1.8" /><path fill="currentColor" d="M10 9.2v5.6l5-2.8z" /></>,
   whatsapp: <><path d="M12 3.2a8.8 8.8 0 0 0-7.5 13.4L3.2 20.8l4.3-1.2A8.8 8.8 0 1 0 12 3.2z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path fill="currentColor" d="M9.2 8.2c-.3.4-.6 1-.4 1.8.5 1.9 2.6 4 4.6 4.6.8.2 1.4-.1 1.8-.5l.3-.8-1.9-1-.9.7c-1-.4-2-1.4-2.4-2.4l.7-.9-.9-1.9z" /></>,
+  // iconos de los botones
+  telegram: <path fill="currentColor" d="M20.7 4.2L3.4 10.9c-.9.4-.9 1 0 1.2l4.4 1.4 1.7 5.2c.2.6.4.8.9.8.4 0 .6-.2.9-.4l2.1-2 4.4 3.2c.8.5 1.4.2 1.6-.8l2.9-13.7c.3-1.2-.4-1.7-1.6-1.2zM9 13.2l9.2-5.8c.4-.3.8-.1.5.2l-7.6 6.9-.3 3.2-1.8-4.5z" />,
+  chart: <path d="M4 19V5M4 19h16M8 15l3.5-4 3 2.5L19 7.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />,
+  book: <path d="M5 4.5h8.5a3 3 0 0 1 3 3V20H8a3 3 0 0 1-3-3V4.5zM16.5 7.5H19V20h-2.5M8.5 8.5h5M8.5 12h5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />,
+  mind: <path d="M9.5 4.5a3.5 3.5 0 0 0-3.4 4.3A3.6 3.6 0 0 0 6.5 15.5 3.3 3.3 0 0 0 10 19.5h1V5.5a2 2 0 0 0-1.5-1zm5 0a3.5 3.5 0 0 1 3.4 4.3 3.6 3.6 0 0 1-.4 6.7 3.3 3.3 0 0 1-3.5 4h-1V5.5a2 2 0 0 1 1.5-1z" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />,
+  link: <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3A4 4 0 0 0 11 18.7l1-1" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" />,
 };
 
 const LK_CSS = `
-.lk{--lk-bg:#F6F4EE;--lk-ink:#0A0C11;--lk-ink2:#566070;--lk-gold:#F0B429;--lk-gold2:#C98A0B;--lk-line:rgba(10,12,17,.12);--ease:cubic-bezier(.23,1,.32,1);position:relative;min-height:100vh;min-height:100dvh;background:var(--lk-bg);color:var(--lk-ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;overflow:hidden;color-scheme:light}
-.lk canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.lk-veil{position:absolute;inset:0;pointer-events:none;background:radial-gradient(520px circle at 50% 32%,rgba(246,244,238,.92),rgba(246,244,238,.55) 55%,transparent 78%)}
-.lk-wrap{position:relative;z-index:1;max-width:420px;margin:0 auto;padding:44px 20px 32px;display:flex;flex-direction:column;align-items:center;text-align:center}
-.lk-av{width:104px;height:104px;border-radius:50%;object-fit:cover;border:3px solid #fff;box-shadow:0 0 0 2px rgba(240,180,41,.7),0 14px 34px rgba(10,12,17,.18)}
-.lk-pill{margin-top:18px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:9999px;background:var(--lk-ink);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.09em}
-.lk-pill i{width:7px;height:7px;border-radius:50%;background:#2ECC71;box-shadow:0 0 0 0 rgba(46,204,113,.6);animation:lkpulse 2s infinite}
+.lk{position:relative;min-height:100vh;min-height:100dvh;overflow-x:hidden}
+.lk-wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:40px 18px 56px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.lk-av{width:104px;height:104px;border-radius:50%;object-fit:cover;border:3px solid var(--card);box-shadow:0 0 0 2px rgba(240,180,41,.75),0 14px 34px rgba(0,0,0,.25)}
+.lk-pill{margin-top:18px;display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:9999px;background:var(--c3);border:1px solid var(--cardline);color:var(--ink);font-size:10.5px;font-weight:800;letter-spacing:.09em}
+.lk-pill i{width:7px;height:7px;border-radius:50%;background:#2ECC71;animation:lkpulse 2s infinite}
 @keyframes lkpulse{0%{box-shadow:0 0 0 0 rgba(46,204,113,.55)}70%,100%{box-shadow:0 0 0 8px rgba(46,204,113,0)}}
-.lk-title{margin:14px 0 0;font-family:Anton,"Bebas Neue",Impact,"Arial Narrow",sans-serif;font-weight:400;font-size:clamp(2.3rem,11vw,3.1rem);line-height:1.02;letter-spacing:.02em;background:linear-gradient(100deg,#0A0C11 0%,#0A0C11 38%,#C98A0B 78%,#F0B429 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
-.lk-bio{margin:12px 0 0;font-size:14.5px;line-height:1.55;color:var(--lk-ink2);max-width:34ch}
+.lk-title{margin:14px 0 0;font-family:Anton,"Bebas Neue",Impact,"Arial Narrow",sans-serif;font-weight:400;font-size:clamp(2.3rem,11vw,3.2rem);line-height:1.02;letter-spacing:.02em;background:linear-gradient(100deg,var(--ink) 0%,var(--ink) 40%,var(--accent) 85%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lk-bio{margin:12px 0 0;font-size:14.5px;line-height:1.55;color:var(--ink2);max-width:36ch}
 .lk-soc{margin-top:18px;display:flex;gap:10px}
-.lk-soc a{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff;color:var(--lk-ink);border:1px solid var(--lk-line);box-shadow:0 4px 12px rgba(10,12,17,.06);transition:transform .16s var(--ease),background .16s,color .16s}
+.lk-soc a{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--card);color:var(--ink);border:1px solid var(--cardline);transition:transform .16s var(--ease),background .16s,color .16s}
 .lk-soc svg{width:21px;height:21px}
-.lk-sep{width:100%;margin:26px 0 12px;display:flex;align-items:center;gap:12px;font-size:10.5px;font-weight:800;letter-spacing:.16em;color:var(--lk-ink2)}
-.lk-sep::before,.lk-sep::after{content:"";flex:1;height:1px;background:var(--lk-line)}
-.lk-btn{width:100%;min-height:54px;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 20px;border-radius:9999px;border:0;cursor:pointer;text-decoration:none;font-family:Anton,"Bebas Neue",Impact,"Arial Narrow",sans-serif;font-size:1.06rem;letter-spacing:.05em;text-transform:uppercase;background:var(--lk-ink);color:#fff;box-shadow:0 10px 24px rgba(10,12,17,.18);transition:transform .16s var(--ease),box-shadow .16s var(--ease),filter .16s}
-.lk-btn svg{width:16px;height:16px;color:var(--lk-gold);flex:none}
-.lk-btn.hi{background:linear-gradient(180deg,#F7C948,#EBA717);color:#17120a;box-shadow:0 12px 30px rgba(240,180,41,.4)}
-.lk-btn.hi svg{color:#17120a}
-.lk-btn.soft{background:#fff;color:var(--lk-ink);border:1.5px solid var(--lk-ink);box-shadow:0 6px 16px rgba(10,12,17,.08)}
-.lk-btn.soft svg{color:var(--lk-ink)}
-.lk-btn[aria-disabled="true"]{opacity:.55;cursor:default;box-shadow:none}
-.lk-btn small{font-family:Inter,sans-serif;font-size:.62rem;letter-spacing:.08em;padding:3px 8px;border-radius:9999px;background:rgba(255,255,255,.18)}
-.lk-foot{margin-top:26px;font-size:11.5px;color:var(--lk-ink2);line-height:1.8}
-.lk-foot a,.lk-foot button{background:none;border:0;padding:0;cursor:pointer;color:var(--lk-ink);font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px}
-.lk a:focus-visible,.lk button:focus-visible{outline:3px solid var(--lk-gold2);outline-offset:3px}
+/* gráfico operativo */
+.lk-chart{width:100%;margin-top:24px;border-radius:20px;background:var(--card);border:1px solid var(--cardline);overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.14)}
+.lk-chart canvas{display:block;width:100%;height:230px}
+@media(min-width:640px){.lk-chart canvas{height:270px}}
+.lk-sep{width:100%;margin:26px 0 6px;display:flex;align-items:center;gap:12px;font-size:10.5px;font-weight:800;letter-spacing:.16em;color:var(--ink2)}
+.lk-sep::before,.lk-sep::after{content:"";flex:1;height:1px;background:var(--cardline)}
+/* tarjetas de enlace */
+.lk-card{position:relative;width:100%;margin-top:10px;display:flex;align-items:center;gap:14px;padding:12px 14px 12px 12px;border-radius:20px;border:1px solid var(--cardline);background:var(--card);color:var(--cardink);text-align:left;text-decoration:none;cursor:pointer;font:inherit;overflow:hidden;isolation:isolate;transition:transform .2s var(--ease),border-color .2s,box-shadow .2s var(--ease)}
+.lk-card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(110deg,transparent 30%,rgba(240,180,41,.18) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s var(--ease)}
+.lk-ico{flex:none;width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;background:var(--c3);color:var(--accent);border:1px solid var(--cardline);transition:transform .25s var(--ease),background .25s,color .25s}
+.lk-ico svg{width:22px;height:22px}
+.lk-tx{flex:1;min-width:0}
+.lk-tx b{display:block;font-family:Anton,"Bebas Neue",Impact,"Arial Narrow",sans-serif;font-weight:400;font-size:1.06rem;letter-spacing:.05em;text-transform:uppercase;line-height:1.15}
+.lk-tx span{display:block;margin-top:2px;font-size:12.5px;color:var(--cardink2);line-height:1.35}
+.lk-go{flex:none;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--c3);color:var(--cardink);transition:transform .25s var(--ease),background .25s,color .25s}
+.lk-go svg{width:15px;height:15px;transition:transform .25s var(--ease)}
+.lk-card.hi{border-color:transparent;background:linear-gradient(var(--card),var(--card)) padding-box,linear-gradient(120deg,#F7C948,#9A6700,#F7C948,#FFE29A) border-box;background-size:100% 100%,300% 300%;animation:lkin .6s var(--ease) var(--d,0ms) forwards,lkborder 5s linear infinite;box-shadow:0 14px 34px rgba(240,180,41,.22)}
+@keyframes lkborder{0%{background-position:0 0,0% 50%}100%{background-position:0 0,300% 50%}}
+.lk-card.hi .lk-ico{background:linear-gradient(180deg,#F7C948,#E3A21A);color:#17120a;border-color:transparent}
+.lk-card.hi .lk-go{background:#F0B429;color:#17120a}
+.lk-card.hi::after{animation:lksheen 4.5s var(--ease) 1.2s infinite}
+@keyframes lksheen{0%{transform:translateX(-120%)}40%,100%{transform:translateX(120%)}}
+.lk-card[aria-disabled="true"]{opacity:.6;cursor:default}
+.lk-soon{flex:none;font-size:9.5px;font-weight:800;letter-spacing:.08em;padding:5px 9px;border-radius:9999px;background:var(--c3);color:var(--ink2);border:1px solid var(--cardline)}
+.lk-go.open svg{transform:rotate(90deg)}
+/* panel de recursos */
+.lk-panel{width:100%;display:grid;grid-template-rows:0fr;transition:grid-template-rows .45s var(--ease)}
+.lk-panel.open{grid-template-rows:1fr}
+.lk-panel>div{overflow:hidden;min-height:0}
+.lk-grp{margin:14px 4px 6px;text-align:left;font-size:10.5px;font-weight:800;letter-spacing:.16em;color:var(--accent)}
+.lk-row{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;margin-top:6px;border-radius:14px;border:1px solid var(--cardline);background:var(--c3);color:var(--cardink);text-decoration:none;text-align:left;transition:transform .18s var(--ease),border-color .18s,background .18s;opacity:0;transform:translateY(8px)}
+.lk-panel.open .lk-row{animation:lkin .45s var(--ease) forwards;animation-delay:calc(var(--i,0) * 55ms + 120ms)}
+.lk-row b{font-weight:800;font-size:14.5px}
+.lk-row span{margin-left:auto;font-size:12px;color:var(--cardink2)}
+.lk-row svg{flex:none;width:14px;height:14px;color:var(--accent)}
+.lk-note{margin:12px 4px 4px;font-size:11px;color:var(--ink2);text-align:left}
+.lk-foot{margin-top:28px;font-size:11.5px;color:var(--ink2);line-height:1.8}
+.lk-foot button{background:none;border:0;padding:0;cursor:pointer;color:var(--ink);font:inherit;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.lk a:focus-visible,.lk button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 .lk-in{opacity:0;transform:translateY(14px);animation:lkin .6s var(--ease) forwards;animation-delay:var(--d,0ms)}
 @keyframes lkin{to{opacity:1;transform:none}}
-@media (hover:hover){.lk-soc a:hover{transform:translateY(-2px);background:var(--lk-ink);color:var(--lk-gold)}.lk-btn:not([aria-disabled="true"]):hover{transform:translateY(-2px);filter:brightness(1.06)}}
-.lk-btn:not([aria-disabled="true"]):active,.lk-soc a:active{transform:scale(.97)}
-@media (prefers-reduced-motion:reduce){.lk-in{animation:none;opacity:1;transform:none}.lk-pill i{animation:none}}
+@media (hover:hover){
+  .lk-soc a:hover{transform:translateY(-2px);background:var(--ink);color:var(--bg)}
+  .lk-card:not([aria-disabled="true"]):hover{transform:translateY(-3px);border-color:var(--accent);box-shadow:0 16px 34px rgba(0,0,0,.18)}
+  .lk-card.hi:hover{border-color:transparent}
+  .lk-card:not([aria-disabled="true"]):hover::after{transform:translateX(120%)}
+  .lk-card:not([aria-disabled="true"]):hover .lk-ico{transform:rotate(-6deg) scale(1.08)}
+  .lk-card:not([aria-disabled="true"]):hover .lk-go{background:var(--accent);color:var(--btnink)}
+  .lk-card:not([aria-disabled="true"]):hover .lk-go svg{transform:translateX(3px)}
+  .lk-card:not([aria-disabled="true"]):hover .lk-go.open svg{transform:rotate(90deg)}
+  .lk-row:hover{transform:translateX(3px);border-color:var(--accent)}
+}
+.lk-card:not([aria-disabled="true"]):active,.lk-soc a:active,.lk-row:active{transform:scale(.98)}
+@media (prefers-reduced-motion:reduce){.lk-in{animation:none;opacity:1;transform:none}.lk-pill i,.lk-card.hi::after{animation:none}.lk-card.hi{animation:none;opacity:1;transform:none}.lk-panel.open .lk-row{animation:none;opacity:1;transform:none}.lk-panel{transition:none}}
 `;
 
 const LK_ARROW = <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 11.5l7-7M5.5 4.5h6v6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 const LK_NEXT = <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
+const LK_CHEV = <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5l5 4.5-5 4.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>;
 
-// Fondo: velas japonesas minimalistas que flotan despacio
-function CandleBg() {
+// Datos del ejemplo PO3 (Power of 3) en XAUUSD: acumulación → manipulación → distribución
+const PO3 = (() => {
+  const closes = [];
+  for (let i = 0; i < 14; i++) closes.push(50 + 4.5 * Math.sin(i * 1.3) + 2.5 * Math.sin(i * 2.9));
+  [47, 43, 39, 36, 41].forEach((v) => closes.push(v));
+  for (let i = 0; i < 21; i++) closes.push(44 + i * 2.35 + 1.8 * Math.sin(i * 1.9));
+  const cs = closes.map((c, i) => {
+    const o = i === 0 ? 50 : closes[i - 1];
+    const w = 1.2 + Math.abs(Math.sin(i * 3.1)) * 2.2;
+    return { o, c, h: Math.max(o, c) + w, l: Math.min(o, c) - w * (i >= 14 && i < 19 ? 1.6 : 1) };
+  });
+  const acc = cs.slice(0, 14), man = cs.slice(14, 19);
+  const hi = Math.max(...acc.map((k) => k.h)), lo = Math.min(...acc.map((k) => k.l));
+  const sweep = Math.min(...man.map((k) => k.l));
+  const entry = cs[18].c, sl = sweep - 2.5, tp = cs[cs.length - 1].c + 2;
+  return { cs, hi, lo, sweep, entry, sl, tp, rr: Math.round((tp - entry) / (entry - sl)) };
+})();
+
+// Gráfico animado: se dibuja vela a vela y marca cada fase del PO3
+function Po3Chart({ theme }) {
   const ref = useRef(null);
   useEffect(() => {
     const cv = ref.current;
     if (!cv) return undefined;
     const ctx = cv.getContext("2d");
     if (!ctx) return undefined;
-    let raf = 0, W = 0, H = 0, candles = [];
+    let raf = 0, W = 0, H = 0, t0 = 0, col = null, frame = 0;
     let still = false;
     try { still = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
-    const build = () => {
+    const N = PO3.cs.length, SPEED = 3.4, HOLD = 3.6, FADE = 0.7;
+    const total = N / SPEED + HOLD + FADE;
+    const size = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       W = cv.clientWidth; H = cv.clientHeight;
       cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const step = W < 600 ? 26 : 34, n = Math.ceil(W / step) + 1;
-      let y = H * 0.55; candles = [];
-      for (let i = 0; i < n; i++) {
-        const up = Math.random() > 0.46;
-        const body = 14 + Math.random() * 46, wick = 8 + Math.random() * 26;
-        y += (Math.random() - 0.5) * 70 - (up ? 4 : -4);
-        y = Math.max(H * 0.18, Math.min(H * 0.86, y));
-        candles.push({ x: i * step + step / 2, y, body, wick, up, w: step * 0.42, ph: Math.random() * 6.28, sp: 0.35 + Math.random() * 0.5, amp: 5 + Math.random() * 9 });
-      }
     };
-    const draw = (t) => {
+    const colors = () => {
+      const cs = getComputedStyle(cv);
+      const g = (n, f) => (cs.getPropertyValue(n) || f).trim() || f;
+      col = { ink: g("--cardink", "#fff"), ink2: g("--cardink2", "#999"), line: g("--cardline", "#333"), acc: g("--accent", "#F0B429"), pos: "#2ECC71", neg: "#EF4444" };
+    };
+    const draw = (sec) => {
+      if (!col || frame++ % 40 === 0) colors();
       ctx.clearRect(0, 0, W, H);
-      candles.forEach((c) => {
-        const dy = Math.sin(t / 1000 * c.sp + c.ph) * c.amp;
-        const grow = 1 + Math.sin(t / 1400 * c.sp + c.ph * 2) * 0.12;
-        const col = c.up ? "46,204,113" : "239,68,68";
-        const b = c.body * grow, top = c.y + dy - b / 2;
-        ctx.strokeStyle = `rgba(${col},.30)`; ctx.fillStyle = `rgba(${col},.20)`; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.moveTo(c.x, top - c.wick); ctx.lineTo(c.x, top + b + c.wick); ctx.stroke();
-        ctx.beginPath();
-        if (ctx.roundRect) ctx.roundRect(c.x - c.w / 2, top, c.w, b, 3); else ctx.rect(c.x - c.w / 2, top, c.w, b);
-        ctx.fill(); ctx.stroke();
-      });
+      const padL = 12, padR = 62, padT = 38, padB = 14;
+      const cw = W - padL - padR, ch = H - padT - padB;
+      const X = (i) => padL + (i + 0.5) * (cw / N);
+      const Y = (v) => padT + ch * (1 - (v - 22) / 82);
+      const step = cw / N, bw = Math.max(3, step * 0.56);
+      const prog = Math.min(N, sec * SPEED);                 // velas reveladas (fraccionario)
+      const fade = sec > total - FADE ? Math.max(0, (total - sec) / FADE) : 1;
+      ctx.globalAlpha = fade;
+      // rejilla
+      ctx.strokeStyle = col.line; ctx.lineWidth = 1; ctx.globalAlpha = 0.5 * fade;
+      for (let k = 0; k < 5; k++) { const y = padT + (ch * k) / 4; ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(W - padR, y); ctx.stroke(); }
+      ctx.globalAlpha = fade;
+      // título
+      ctx.fillStyle = col.ink; ctx.font = "800 12px Inter, sans-serif"; ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+      ctx.fillText("XAUUSD · M15", padL, 22);
+      // fase actual (chips)
+      const phase = prog < 14 ? 0 : prog < 19 ? 1 : 2;
+      const names = ["1 Acumulación", "2 Manipulación", "3 Distribución"];
+      ctx.font = "700 10.5px Inter, sans-serif";
+      let cx = W - padR;
+      for (let k = 2; k >= 0; k--) {
+        if (k !== phase) continue;
+        const tw = ctx.measureText(names[k]).width + 16;
+        cx -= tw; const on = k === phase;
+        ctx.fillStyle = on ? col.acc : "transparent"; ctx.strokeStyle = on ? col.acc : col.line; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.roundRect ? ctx.roundRect(cx, 9, tw, 20, 10) : ctx.rect(cx, 9, tw, 20); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = on ? "#17120a" : col.ink2; ctx.textAlign = "center"; ctx.fillText(names[k], cx + tw / 2, 23); ctx.textAlign = "left";
+        cx -= 6;
+      }
+      // zona de rango (acumulación)
+      if (prog > 3) {
+        const a = Math.min(1, (prog - 3) / 4);
+        const x0 = X(0) - step / 2, x1 = X(Math.min(prog, 14) - 1) + step / 2;
+        ctx.fillStyle = `rgba(240,180,41,${0.10 * a})`; ctx.fillRect(x0, Y(PO3.hi), x1 - x0, Y(PO3.lo) - Y(PO3.hi));
+        ctx.setLineDash([4, 4]); ctx.strokeStyle = `rgba(240,180,41,${0.7 * a})`; ctx.lineWidth = 1;
+        ctx.strokeRect(x0, Y(PO3.hi), x1 - x0, Y(PO3.lo) - Y(PO3.hi)); ctx.setLineDash([]);
+        if (prog >= 8) { ctx.fillStyle = col.acc; ctx.globalAlpha = fade * Math.min(1, (prog - 8) / 2); ctx.font = "700 10px Inter, sans-serif"; ctx.fillText("RANGO · ASIA", x0 + 2, Y(PO3.hi) - 5); ctx.globalAlpha = fade; }
+      }
+      // línea de liquidez (mínimo del rango) que se extiende hasta la barrida
+      if (prog > 14) {
+        const x0 = X(0), x1 = X(Math.min(prog, 24) - 1);
+        ctx.setLineDash([3, 4]); ctx.strokeStyle = col.neg; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, Y(PO3.lo)); ctx.lineTo(x1 + step, Y(PO3.lo)); ctx.stroke(); ctx.setLineDash([]);
+      }
+      // velas
+      const full = Math.floor(prog);
+      for (let i = 0; i < Math.min(N, full + 1); i++) {
+        const k = PO3.cs[i], g = i === full ? prog - full : 1;
+        const c = k.o + (k.c - k.o) * g, h = k.o + (k.h - k.o) * Math.min(1, g * 1.4) > k.h ? k.h : Math.max(k.o, c, k.o + (k.h - k.o) * g);
+        const l = Math.min(k.o, c, k.o - (k.o - k.l) * g);
+        const up = c >= k.o, cc = up ? col.pos : col.neg, x = X(i);
+        ctx.strokeStyle = cc; ctx.fillStyle = cc; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.moveTo(x, Y(Math.max(h, k.o, c))); ctx.lineTo(x, Y(Math.min(l, k.o, c))); ctx.stroke();
+        const yt = Y(Math.max(k.o, c)), hh = Math.max(2, Math.abs(Y(k.o) - Y(c)));
+        ctx.fillRect(x - bw / 2, yt, bw, hh);
+      }
+      // etiqueta de barrida de liquidez
+      if (prog > 17) {
+        const a = Math.min(1, (prog - 17) / 1.5), x = X(16);
+        ctx.globalAlpha = fade * a; ctx.fillStyle = col.neg; ctx.font = "700 10px Inter, sans-serif"; ctx.textAlign = "center";
+        ctx.fillText("LIQUIDEZ BARRIDA", Math.min(W - padR - 50, x + 10), Y(PO3.sweep) + 20); ctx.textAlign = "left"; ctx.globalAlpha = fade;
+      }
+      // entrada, SL y TP
+      if (prog > 19.5) {
+        const a = Math.min(1, (prog - 19.5) / 1.5), xs = X(19), xe = W - padR;
+        ctx.globalAlpha = fade * a; ctx.lineWidth = 1.2; ctx.font = "700 10px Inter, sans-serif";
+        const ln = (v, c, t) => { ctx.setLineDash([5, 4]); ctx.strokeStyle = c; ctx.beginPath(); ctx.moveTo(xs, Y(v)); ctx.lineTo(xe, Y(v)); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = c; ctx.fillText(t, xe + 5, Y(v) + 3.5); };
+        ln(PO3.entry, col.acc, "ENTRADA"); ln(PO3.sl, col.neg, "SL"); ln(PO3.tp, col.pos, "TP");
+        // flecha de entrada
+        ctx.fillStyle = col.acc; ctx.beginPath(); ctx.moveTo(xs, Y(PO3.entry) + 3); ctx.lineTo(xs - 6, Y(PO3.entry) + 14); ctx.lineTo(xs + 6, Y(PO3.entry) + 14); ctx.closePath(); ctx.fill();
+        ctx.globalAlpha = fade;
+      }
+      // resultado
+      if (prog >= N - 0.5) {
+        const a = Math.min(1, (sec - (N - 0.5) / SPEED) / 0.5), pulse = 1 + Math.sin(sec * 5) * 0.03;
+        ctx.save(); ctx.globalAlpha = fade * a; ctx.translate(padL + 8, padT + 6);
+        ctx.scale(pulse, pulse);
+        ctx.fillStyle = col.pos; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(0, 0, 120, 26, 13) : ctx.rect(0, 0, 120, 26); ctx.fill();
+        ctx.fillStyle = "#06210f"; ctx.font = "800 11.5px Inter, sans-serif"; ctx.textAlign = "center"; ctx.fillText(`TP · R:R 1:${PO3.rr}`, 60, 17); ctx.restore();
+      }
+      // precio actual
+      const kk = PO3.cs[Math.min(N - 1, full)], cur = kk.o + (kk.c - kk.o) * (full >= N ? 1 : prog - full);
+      const yc = Y(cur); ctx.globalAlpha = fade;
+      ctx.fillStyle = cur >= kk.o ? col.pos : col.neg; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(W - padR + 4, yc - 9, 54, 18, 5) : ctx.rect(W - padR + 4, yc - 9, 54, 18); ctx.fill();
+      ctx.fillStyle = "#07130c"; ctx.font = "700 10.5px 'JetBrains Mono', monospace"; ctx.textAlign = "center"; ctx.fillText((3990 + cur * 1.2).toFixed(1), W - padR + 31, yc + 3.5); ctx.textAlign = "left";
+      ctx.globalAlpha = 1;
     };
-    const loop = (t) => { draw(t); raf = requestAnimationFrame(loop); };
-    const start = () => { cancelAnimationFrame(raf); if (still) draw(0); else raf = requestAnimationFrame(loop); };
-    build(); start();
+    const loop = (ts) => { if (!t0) t0 = ts; draw(((ts - t0) / 1000) % total); raf = requestAnimationFrame(loop); };
+    const start = () => { cancelAnimationFrame(raf); t0 = 0; col = null; if (still) draw(N / SPEED + 0.8); else raf = requestAnimationFrame(loop); };
+    size(); start();
     let rt;
-    const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { build(); start(); }, 150); };
+    const onResize = () => { clearTimeout(rt); rt = setTimeout(() => { size(); start(); }, 150); };
     const onVis = () => { if (document.hidden) cancelAnimationFrame(raf); else start(); };
     window.addEventListener("resize", onResize);
     document.addEventListener("visibilitychange", onVis);
     return () => { cancelAnimationFrame(raf); clearTimeout(rt); window.removeEventListener("resize", onResize); document.removeEventListener("visibilitychange", onVis); };
-  }, []);
-  return <canvas ref={ref} aria-hidden="true" data-testid="links-candles" />;
+  }, [theme]);
+  return <canvas ref={ref} role="img" aria-label="Ejemplo animado de PO3 en XAUUSD: acumulación, manipulación y distribución" data-testid="links-chart" />;
 }
 
-function LinksPage({ setPage }) {
+function LinkCard({ icon, title, sub, href, onClick, hi, soon, open, style, testid, expanded }) {
+  const inner = (
+    <>
+      <span className="lk-ico"><svg viewBox="0 0 24 24" aria-hidden="true">{LK_ICON[icon]}</svg></span>
+      <span className="lk-tx"><b>{title}</b><span>{sub}</span></span>
+      {soon ? <span className="lk-soon">PRÓXIMAMENTE</span> : <span className={`lk-go ${open ? "open" : ""}`}>{href ? LK_ARROW : open !== undefined ? LK_CHEV : LK_NEXT}</span>}
+    </>
+  );
+  const cls = `lk-card lk-in ${hi ? "hi" : ""}`;
+  if (soon) return <div className={cls} style={style} aria-disabled="true" data-testid={testid}>{inner}</div>;
+  if (href) return <a href={href} target="_blank" rel="noopener noreferrer" className={cls} style={style} data-testid={testid}>{inner}</a>;
+  return <button type="button" onClick={onClick} className={cls} style={style} data-testid={testid} aria-expanded={expanded}>{inner}</button>;
+}
+
+function LinksPage({ setPage, theme, pickTheme }) {
+  const [res, setRes] = useState(false);
   const go = (k) => { setPage(k); window.scrollTo(0, 0); };
-  const ext = { target: "_blank", rel: "noopener noreferrer" };
-  const d = (i) => ({ "--d": `${120 + i * 70}ms` });
+  const d = (i) => ({ "--d": `${100 + i * 65}ms` });
   return (
-    <div className="lk" data-testid="links-page">
+    <div className="bx-root lk" data-theme={theme} data-testid="links-page">
+      <style>{CSS}</style>
       <style>{LK_CSS}</style>
-      <CandleBg />
-      <div className="lk-veil" />
+      <div className="bx-themefloat" data-testid="theme-toggle" role="group" aria-label="Tema de la página">
+        <button type="button" onClick={() => pickTheme("light")} className={theme === "light" ? "on" : ""} aria-label="Modo claro" aria-pressed={theme === "light"}>☀️</button>
+        <button type="button" onClick={() => pickTheme("dark")} className={theme === "dark" ? "on" : ""} aria-label="Modo oscuro" aria-pressed={theme === "dark"}>🌙</button>
+      </div>
       <div className="lk-wrap">
         <img src={SIGNAL_AVATAR} alt="PRECISION ZONE FX" className="lk-av lk-in" style={d(0)} />
         <div className="lk-pill lk-in" style={d(1)}><i />{LINKS_CFG.pill}</div>
@@ -4519,23 +4683,40 @@ function LinksPage({ setPage }) {
         <p className="lk-bio lk-in" style={d(3)}>{LINKS_CFG.bio}</p>
         <div className="lk-soc lk-in" style={d(4)}>
           {LINKS_CFG.socials.map((s) => (
-            <a key={s.id} href={s.url} {...ext} aria-label={s.label} title={s.label} data-testid={`links-${s.id}`}><svg viewBox="0 0 24 24" aria-hidden="true">{LK_ICON[s.id]}</svg></a>
+            <a key={s.id} href={s.url} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label} data-testid={`links-${s.id}`}><svg viewBox="0 0 24 24" aria-hidden="true">{LK_ICON[s.id]}</svg></a>
           ))}
         </div>
 
-        <div className="lk-sep lk-in" style={d(5)}>OPERATIVA &amp; SEÑALES</div>
-        <a href={TELEGRAM_URL} {...ext} className="lk-btn hi lk-in" style={d(6)} data-testid="links-telegram">Canal gratuito de Telegram {LK_ARROW}</a>
-        <button type="button" onClick={() => go("track")} className="lk-btn lk-in" style={d(7)} data-testid="links-track">Ver track record &amp; canales VIP {LK_NEXT}</button>
+        <div className="lk-chart lk-in" style={d(5)}><Po3Chart theme={theme} /></div>
 
-        <div className="lk-sep lk-in" style={d(8)}>EDUCACIÓN &amp; RECURSOS</div>
-        <a href={LINKS_CFG.guideUrl} {...ext} className="lk-btn soft lk-in" style={d(9)} data-testid="links-guide">Guía gratuita de trading {LK_ARROW}</a>
+        <div className="lk-sep lk-in" style={d(6)}>OPERATIVA &amp; SEÑALES</div>
+        <LinkCard hi icon="telegram" title="Canal gratuito de Telegram" sub="Únete al canal oficial" href={TELEGRAM_URL} style={d(7)} testid="links-telegram" />
+        <LinkCard icon="chart" title="Track record & canales VIP" sub="Resultados, calendario y planes" onClick={() => go("track")} style={d(8)} testid="links-track" />
+
+        <div className="lk-sep lk-in" style={d(9)}>EDUCACIÓN &amp; RECURSOS</div>
+        <LinkCard icon="book" title="Guía gratuita de trading" sub="Smart Money paso a paso" href={LINKS_CFG.guideUrl} style={d(10)} testid="links-guide" />
         {LINKS_CFG.ebookUrl
-          ? <a href={LINKS_CFG.ebookUrl} {...ext} className="lk-btn lk-in" style={d(10)} data-testid="links-ebook">Ebook: domina tu mente {LK_ARROW}</a>
-          : <span className="lk-btn lk-in" style={d(10)} aria-disabled="true" data-testid="links-ebook">Ebook: domina tu mente <small>PRÓXIMAMENTE</small></span>}
-        <button type="button" onClick={() => go("vip")} className="lk-btn lk-in" style={d(11)} data-testid="links-vip">Brokers recomendados · VIP gratis {LK_NEXT}</button>
+          ? <LinkCard icon="mind" title="Ebook: domina tu mente" sub="Psicotrading" href={LINKS_CFG.ebookUrl} style={d(11)} testid="links-ebook" />
+          : <LinkCard soon icon="mind" title="Ebook: domina tu mente" sub="Psicotrading" style={d(11)} testid="links-ebook" />}
+        <LinkCard icon="link" title="Brokers y recursos" sub="Brokers, TradingView y fondeo" onClick={() => setRes((v) => !v)} open={res} expanded={res} style={d(12)} testid="links-brokers" />
+        <div className={`lk-panel ${res ? "open" : ""}`} data-testid="links-panel" aria-hidden={!res}>
+          <div>
+            {LINKS_CFG.resources.map((g, gi) => (
+              <div key={g.group}>
+                <div className="lk-grp">{g.group.toUpperCase()}</div>
+                {g.items.map((it, ii) => (
+                  <a key={it.name} href={it.url} target="_blank" rel="noopener noreferrer" className="lk-row" style={{ "--i": gi * 3 + ii }} tabIndex={res ? 0 : -1}>
+                    <b>{it.name}</b><span>{it.tag}</span>{LK_ARROW}
+                  </a>
+                ))}
+              </div>
+            ))}
+            <p className="lk-note">Son enlaces de afiliado: abrir tu cuenta por aquí no te cuesta nada extra.</p>
+          </div>
+        </div>
 
-        <div className="lk-foot lk-in" style={d(12)}>
-          <button type="button" onClick={() => go("home")} data-testid="links-site">Ir a la web completa</button><br />
+        <div className="lk-foot lk-in" style={d(13)}>
+          <button type="button" onClick={() => go("home")} data-testid="links-site">Entrar a la web completa</button><br />
           © 2026 PRECISION ZONE FX · Contenido educativo, no es asesoría financiera.
         </div>
       </div>
@@ -4543,13 +4724,14 @@ function LinksPage({ setPage }) {
   );
 }
 
-const PAGE_PATHS = { links: "/links", home: "/", track: "/track-record", signals: "/senales", vip: "/vip-gratis", tools: "/herramientas", admin: "/elpatron" }; // el panel de administración vive en /elpatron
+const PAGE_PATHS = { links: "/", home: "/home", track: "/track-record", signals: "/senales", vip: "/vip-gratis", tools: "/herramientas", admin: "/elpatron" }; // el panel de administración vive en /elpatron
 const pageFromPath = () => {
   try {
     const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
+    if (p === "/links") return "links";
     const hit = Object.entries(PAGE_PATHS).find(([, v]) => v === p);
-    return hit ? hit[0] : "home";
-  } catch (e) { return "home"; }
+    return hit ? hit[0] : "links";
+  } catch (e) { return "links"; }
 };
 export default function App() {
   const twReady = useTailwind();
@@ -4565,7 +4747,7 @@ export default function App() {
     return () => { if (mq.removeEventListener) mq.removeEventListener("change", h); };
   }, []);
   const theme = themePref === "auto" ? (sysDark ? "dark" : "light") : themePref;
-  useEffect(() => { try { document.documentElement.setAttribute("data-theme", theme); } catch (e) {} }, [theme]);
+  useEffect(() => { try { document.documentElement.setAttribute("data-theme", theme); document.documentElement.style.background = theme === "light" ? "#F4F5F8" : "#0A0C11"; document.body.style.background = theme === "light" ? "#F4F5F8" : "#0A0C11"; } catch (e) {} }, [theme]);
   const pickTheme = (v) => {
     setThemePref(v);
     try { localStorage.setItem("borkaifx_theme", v); } catch (e) {}
@@ -5063,7 +5245,7 @@ export default function App() {
     );
   }
 
-  if (page === "links") return <LinksPage setPage={setPage} />;
+  if (page === "links") return <LinksPage setPage={setPage} theme={theme} pickTheme={pickTheme} />;
 
   return (
     <div className={`bx-root ${page === "home" ? "bx-home" : ""}`} data-theme={theme}>
