@@ -192,6 +192,82 @@ select.bx-input option{background:var(--c2);color:var(--cardink)}
 .bx-themefloat button.on{opacity:1;background:rgba(240,180,41,.28);box-shadow:inset 0 0 0 1px rgba(240,180,41,.6)}
 .bx-file{font-size:.75rem;color:var(--cardink2)}
 .bx-file::file-selector-button{margin-right:.75rem;border:0;border-radius:.5rem;background:#F0B429;color:#17120a;font-weight:800;font-size:.75rem;padding:.375rem .75rem;cursor:pointer}
+
+/* ===== Rediseño 2.0: sistema de diseño ===== */
+.bx-root{--ease:cubic-bezier(.23,1,.32,1)}
+.bx-root :is(h1,h2,h3){text-wrap:balance}
+.bx-root p{text-wrap:pretty}
+.bx-num{font-variant-numeric:tabular-nums}
+.bx-h2{font-family:"Anton","Bebas Neue",Impact,"Arial Narrow",sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:1.04;font-size:2.05rem;color:var(--cardink)}
+@media(min-width:768px){.bx-h2{font-size:2.9rem}}
+.bx-kicker{display:block;font-family:Inter,ui-sans-serif,system-ui,sans-serif;font-size:.9rem;letter-spacing:0;font-weight:700;color:var(--accent);text-transform:none}
+.bx-kicker::before{display:none}
+.bx-kicker.center{text-align:center}
+.bx-cta{padding:.8rem 1.4rem;font-size:.95rem;border-radius:.9rem;min-height:46px;text-decoration:none}
+.bx-gold,.bx-btn,.bx-planbtn,.bx-ghost,.bx-ghost-page,.bx-tab,.bx-pill,.bx-seg,.bx-navbtn{transition:transform .16s var(--ease),background-color .16s,border-color .16s,color .16s,filter .16s,box-shadow .2s}
+.bx-gold:active,.bx-btn:active,.bx-planbtn:active,.bx-ghost:active,.bx-tab:active,.bx-pill:active,.bx-seg:active,.bx-navbtn:active{transform:scale(.97)}
+.bx-root :is(a,button,input,select,textarea,summary,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@keyframes bxrise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.bx-rise{animation:bxrise .6s var(--ease) both;animation-delay:var(--d,0ms)}
+@media(prefers-reduced-motion:reduce){.bx-rise{animation:none}.bx-dot.live{animation:none}.bx-acc,.bx-faq i::before,.bx-faq i::after,.bx-tk-row,.bx-tk-step,.bx-fab{transition:none}}
+.bx-ticket{position:relative;border-radius:28px;padding:1.4rem;background:linear-gradient(160deg,rgba(var(--fg),.07),rgba(var(--fg),.012) 60%),var(--card);border:1px solid var(--cardline);box-shadow:0 30px 70px -30px rgba(0,0,0,.65),inset 0 0 0 1px rgba(240,180,41,.07)}
+.bx-root[data-theme="light"] .bx-ticket{background:#fff;box-shadow:0 24px 60px -28px rgba(15,18,25,.35)}
+.bx-tk-side{font-size:.72rem;font-weight:800;padding:.25rem .65rem;border-radius:9999px;background:rgba(52,211,153,.14);color:var(--pos);border:1px solid rgba(52,211,153,.35);white-space:nowrap}
+.bx-tk-rows{list-style:none;margin:1rem 0 0;padding:0;display:grid;gap:.4rem}
+.bx-tk-row{display:grid;grid-template-columns:4.1rem minmax(0,1fr) 1.4rem;align-items:center;gap:.5rem;padding:.6rem .8rem;border-radius:.9rem;background:rgba(var(--fg),.045);border:1px solid transparent;transition:background-color .3s var(--ease),border-color .3s var(--ease)}
+.bx-tk-k{font-size:.75rem;font-weight:700;color:var(--cardink2)}
+.bx-tk-v{font-weight:700;color:var(--cardink);font-variant-numeric:tabular-nums;font-size:.95rem;white-space:pre}
+.bx-tk-row.sl .bx-tk-v{color:var(--neg)}
+.bx-tk-row.on{background:rgba(56,189,248,.10);border-color:rgba(56,189,248,.35)}
+.bx-tk-row.on .bx-tk-mark{color:var(--sky)}
+.bx-tk-row.hit{background:rgba(52,211,153,.12);border-color:rgba(52,211,153,.4)}
+.bx-tk-row.hit .bx-tk-mark{color:var(--pos);font-weight:900}
+.bx-tk-mark{text-align:center;font-size:.9rem}
+.bx-tk-status{display:flex;align-items:center;gap:.7rem;padding-top:1rem;border-top:1px solid var(--cardline)}
+.bx-tk-step{position:relative;flex:1;height:5px;border-radius:9999px;border:0;padding:0;background:rgba(var(--fg),.16);cursor:pointer;transition:background-color .3s var(--ease)}
+.bx-tk-step::before{content:"";position:absolute;left:0;right:0;top:-14px;bottom:-14px}
+.bx-tk-step.on{background:var(--accent)}
+.bx-cmp{border-radius:22px;padding:1.5rem;border:1px solid var(--cardline);background:rgba(var(--fg),.025)}
+.bx-cmp h3{font-size:1.15rem;font-weight:800;color:var(--cardink)}
+.bx-cmp ul{list-style:none;margin:1.1rem 0 0;padding:0;display:grid;gap:.85rem}
+.bx-cmp li{display:flex;gap:.75rem;font-size:.95rem;line-height:1.45;color:var(--cardink2)}
+.bx-cmp li span{flex:none;width:22px;height:22px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:900;margin-top:1px}
+.bx-cmp.no li span{background:rgba(251,113,133,.14);color:var(--neg)}
+.bx-cmp.yes{border-color:rgba(240,180,41,.55);background:linear-gradient(160deg,rgba(240,180,41,.09),transparent 60%),rgba(var(--fg),.03)}
+.bx-cmp.yes li{color:var(--cardink)}
+.bx-cmp.yes li span{background:rgba(52,211,153,.16);color:var(--pos)}
+.bx-step{position:relative}
+@media(min-width:768px){.bx-step:not(:last-child)::after{content:"›";position:absolute;right:-18px;top:1.9rem;width:16px;text-align:center;color:var(--accent);font-weight:900;font-size:1.3rem;line-height:1;z-index:2}}
+.bx-stepnum{width:30px;height:30px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:#17120a;font-size:.9rem;flex:none}
+.bx-faq{border-bottom:1px solid var(--line)}
+.bx-faq h3{margin:0;font-size:inherit;font-weight:inherit}
+.bx-faq h3>button{width:100%;display:flex;align-items:center;justify-content:space-between;gap:1rem;text-align:left;padding:1rem .2rem;font-size:1.05rem;font-weight:700;color:var(--ink);background:transparent;border:0;cursor:pointer;min-height:56px}
+.bx-faq i{flex:none;width:12px;height:12px;position:relative}
+.bx-faq i::before,.bx-faq i::after{content:"";position:absolute;left:0;right:0;top:5px;height:2px;background:var(--accent);border-radius:2px;transition:transform .25s var(--ease)}
+.bx-faq i::after{transform:rotate(90deg)}
+.bx-faq.open i::after{transform:rotate(0)}
+.bx-acc{display:grid;grid-template-rows:0fr;transition:grid-template-rows .28s var(--ease)}
+.bx-faq.open .bx-acc{grid-template-rows:1fr}
+.bx-acc>div{overflow:hidden;min-height:0;visibility:hidden;transition:visibility 0s .28s}
+.bx-faq.open .bx-acc>div{visibility:visible;transition-delay:0s}
+.bx-acc p{margin:0;padding:0 .2rem 1.1rem;color:var(--ink2);line-height:1.6;max-width:62ch}
+.bx-link{color:var(--accent);font-weight:700;font-size:.9rem;background:transparent;border:0;padding:0 .2rem 1.2rem;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.bx-finalcta{border-radius:28px;padding:2rem 1.5rem;border:1px solid rgba(240,180,41,.4);background:radial-gradient(520px circle at 88% 0%,rgba(240,180,41,.22),transparent 70%),var(--card)}
+.bx-root[data-theme="light"] .bx-finalcta{background:radial-gradient(520px circle at 88% 0%,rgba(240,180,41,.3),transparent 70%),#fff}
+@media(min-width:768px){.bx-finalcta{padding:3rem}}
+.bx-hnav{display:flex;gap:.15rem;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin:0 -.25rem;padding:0 .25rem}
+.bx-hnav::-webkit-scrollbar{display:none}
+.bx-hnav .bx-navbtn{white-space:nowrap;flex:none;min-height:40px}
+@media(min-width:768px){.bx-hnav{overflow:visible;margin:0;padding:0}}
+.bx-navbtn{font-size:.85rem;letter-spacing:0}
+.bx-foot{border-top:1px solid var(--line);margin-top:2rem;padding:2.5rem 0 2rem;text-align:left}
+.bx-foot h4{font-size:.85rem;font-weight:800;color:var(--ink);margin:0 0 .8rem}
+.bx-foot ul{list-style:none;margin:0;padding:0;display:grid;gap:.15rem}
+.bx-foot li>a,.bx-foot li>button{display:inline-flex;align-items:center;min-height:36px;color:var(--ink2);font-size:.9rem;background:transparent;border:0;padding:0;cursor:pointer;text-decoration:none;text-align:left;transition:color .15s}
+.bx-foot li>a:hover,.bx-foot li>button:hover{color:var(--accent)}
+.bx-fab{position:fixed;left:14px;bottom:14px;z-index:60;display:inline-flex;align-items:center;gap:.5rem;min-height:44px;padding:0 1rem 0 .85rem;border-radius:9999px;font-weight:800;font-size:.88rem;color:#17120a;background:linear-gradient(180deg,#F7C948,#DFA01A);box-shadow:0 10px 30px rgba(240,180,41,.35);text-decoration:none;opacity:0;transform:translateY(12px);pointer-events:none;transition:opacity .25s var(--ease),transform .25s var(--ease)}
+.bx-fab.show{opacity:1;transform:none;pointer-events:auto}
+.bx-fab:active{transform:scale(.97)}
 `;
 
 /* ----------------------------- Tailwind auto-carga ----------------------------- */
@@ -2599,10 +2675,10 @@ const waHref = (msg) => {
 const fmtMoney = (n) => `$${Number.isInteger(n) ? n : n.toFixed(2)}`;
 
 const SectionTitle = ({ kicker, title, text }) => (
-  <div className="mb-8 text-center">
-    <div className="bx-kicker center">{kicker}</div>
-    <h2 className="mt-3 bx-display text-3xl md:text-5xl" style={{ color: "var(--ink)" }}>{title}</h2>
-    {text && <p className="mt-4 text-base md:text-lg bx-ink2 max-w-2xl text-center mx-auto leading-relaxed">{text}</p>}
+  <div className="mb-8">
+    {kicker && <div className="bx-kicker">{kicker}</div>}
+    <h2 className="mt-2 bx-h2">{title}</h2>
+    {text && <p className="mt-4 text-base md:text-lg bx-ink2 max-w-2xl leading-relaxed">{text}</p>}
   </div>
 );
 
@@ -3067,8 +3143,7 @@ function Conceptos() {
   const n = CHECKLIST.filter((_, i) => done[i]).length;
   return (
     <section data-testid="home-concepts">
-      <div className="bx-kicker">Educación</div>
-      <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "var(--cardink)" }}>LOS CONCEPTOS QUE USO CADA DÍA</h2>
+      <h2 className="bx-h2 md:!text-[2.6rem]">LOS CONCEPTOS QUE USO CADA DÍA</h2>
       <p className="mt-3 text-[15px] bx-ink2 max-w-xl leading-relaxed">Lo esencial de Smart Money, explicado simple y con dibujo. Si falta una pieza, no hay trade.</p>
       <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
         {CONCEPTS.map((c) => (
@@ -3127,60 +3202,243 @@ function Conceptos() {
 }
 
 /* ----------------------------- Inicio ----------------------------- */
+const useReducedMotion = () => {
+  const [r, setR] = useState(false);
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+    const m = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setR(m.matches);
+    const f = () => setR(m.matches);
+    if (m.addEventListener) m.addEventListener("change", f);
+    return () => { if (m.removeEventListener) m.removeEventListener("change", f); };
+  }, []);
+  return r;
+};
 
-function HomePage({ setPage, openTool, openSignals }) {
-  const steps = [
-    { tag: "Entry", name: "FREE", tone: GREEN, title: "Smart Money Action", text: "Una guía gratuita de 15 páginas, el playbook que necesitas: estructura, liquidez, FVG, las cuatro sesiones y un modelo simple.", cta: "Obtener la guía gratis", href: "https://t.me/borkaifxelite/633" },
-    { tag: "TP1", name: "EL CURSO", tone: ACCENT, title: "El curso", price: "$299", text: "El curso para traders que, con o sin experiencia, buscan operar con claridad y estrategia institucional: XAUUSD, índices bursátiles y divisas, con estrategias por separado y ordenadas.", cta: "Quiero el curso", href: SITE.join.url },
-    { tag: "TP2", name: "VIP", tone: ACCENT, hot: true, title: "Tradea con nosotros", text: "Todas nuestras señales con punto de entrada, stop y take profit, con seguimiento a cada señal desde su activación.", cta: "Acceso al Telegram", href: "https://t.me/precisionzonefx", gold: true },
+// Señal de ejemplo que avanza por sus estados: es lo que recibe el canal VIP
+const TICKET_STAGES = [
+  { label: "Orden pendiente", sub: "Buy Limit esperando el nivel" },
+  { label: "Entrada activa", sub: "El precio tocó 4100" },
+  { label: "TP1 alcanzado", sub: "+50 pips" },
+  { label: "TP2 alcanzado", sub: "+100 pips" },
+  { label: "TP3 alcanzado", sub: "+150 pips" },
+];
+function SignalTicket() {
+  const ex = SIGNAL_EXAMPLES.CFD;
+  const reduced = useReducedMotion();
+  const [i, setI] = useState(0);
+  const [auto, setAuto] = useState(true);
+  useEffect(() => {
+    if (reduced) { setI(TICKET_STAGES.length - 1); return undefined; }
+    if (!auto) return undefined;
+    const id = setInterval(() => setI((v) => (v + 1) % TICKET_STAGES.length), 2000);
+    return () => clearInterval(id);
+  }, [auto, reduced]);
+  const st = TICKET_STAGES[i];
+  const rows = [
+    { k: "Entrada", v: ex.entries.join("  ·  "), state: i >= 1 ? "on" : "" },
+    { k: "Stop", v: ex.sl, state: "sl" },
+    ...ex.tps.map(([p, pips], n) => ({ k: `TP${n + 1}`, v: `${p}  ·  ${pips} pips`, state: i >= n + 2 ? "hit" : "" })),
   ];
   return (
-    <div className="space-y-16" data-testid="home-page">
-      <section data-testid="home-hero" className="pt-3 md:pt-8">
+    <div className="bx-ticket" data-testid="signal-ticket" role="group" aria-label="Ejemplo ilustrativo de una señal del canal VIP">
+      <div className="flex items-center gap-3">
+        <img src={SIGNAL_AVATAR} alt="" className="w-10 h-10 rounded-full object-cover" style={{ border: "1px solid rgba(240,180,41,.4)" }} />
+        <div className="min-w-0">
+          <div className="font-extrabold leading-tight truncate" style={{ color: "var(--cardink)" }}>{ex.channel}</div>
+          <div className="text-xs bx-muted">Ejemplo ilustrativo</div>
+        </div>
+      </div>
+      <div className="mt-5 flex items-baseline justify-between gap-3">
+        <div className="bx-display text-4xl" style={{ color: "var(--cardink)" }}>{ex.pair}</div>
+        <span className="bx-tk-side">{ex.side}</span>
+      </div>
+      <ul className="mt-4 bx-tk-rows">
+        {rows.map((r) => (
+          <li key={r.k} className={`bx-tk-row ${r.state}`}>
+            <span className="bx-tk-k">{r.k}</span>
+            <span className="bx-tk-v">{r.v}</span>
+            <span className="bx-tk-mark" aria-hidden="true">{r.state === "hit" ? "✓" : r.state === "on" ? "●" : ""}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-4 bx-tk-status" data-testid="ticket-status">
+        <span className={`bx-dot ${i >= 1 ? "live" : "off"}`} style={i >= 1 ? undefined : { background: "var(--amb2)" }} />
+        <div className="min-w-0">
+          <div className="text-sm font-extrabold" style={{ color: "var(--cardink)" }}>{st.label}</div>
+          <div className="text-xs bx-muted">{st.sub}</div>
+        </div>
+      </div>
+      <div className="mt-4 flex gap-1.5" role="group" aria-label="Ver cada etapa de la señal">
+        {TICKET_STAGES.map((s, n) => (
+          <button key={s.label} type="button" onClick={() => { setAuto(false); setI(n); }} aria-label={s.label} aria-pressed={i === n} className={`bx-tk-step ${n <= i ? "on" : ""}`} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const CMP_NO = [
+  "Entras por impulso, sin un nivel ni un stop definidos.",
+  "Mueves el stop cuando el precio se acerca.",
+  "No sabes si ganaste por método o por suerte.",
+  "Miras cada vela del gráfico durante todo el día.",
+];
+const CMP_YES = [
+  "Entrada, stop y take profit definidos antes de operar.",
+  "Riesgo del 1% o menos de la cuenta por operación.",
+  "Cada señal tiene seguimiento hasta su cierre.",
+  "Track record público para verificar cada resultado.",
+  "Operas en las killzones de Londres y Nueva York.",
+];
+function CompareBlock() {
+  return (
+    <section data-testid="home-compare">
+      <h2 className="bx-h2">Dos formas de operar el mismo gráfico</h2>
+      <div className="mt-7 grid md:grid-cols-2 gap-4 md:gap-5">
+        <div className="bx-cmp no">
+          <h3>Operar sin plan</h3>
+          <ul>{CMP_NO.map((t) => <li key={t}><span aria-hidden="true">✕</span>{t}</li>)}</ul>
+        </div>
+        <div className="bx-cmp yes">
+          <h3>Operar con Precision Zone FX</h3>
+          <ul>{CMP_YES.map((t) => <li key={t}><span aria-hidden="true">✓</span>{t}</li>)}</ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const HOME_FAQ = [
+  { q: "¿Sirve si estoy empezando?", a: "Sí. La guía gratuita y el curso están pensados para traders con o sin experiencia. Cada señal trae entrada, stop y take profit definidos, y en la sección de conceptos puedes repasar la lógica de cada movimiento." },
+  { q: "¿Qué activos se operan?", a: "En CFDs: oro (XAUUSD), índices como NAS100 y divisas. Por separado, índices sintéticos en Deriv y Weltrade." },
+  { q: "¿Cómo verifico los resultados?", a: "En Track Record está cada operación publicada, con su fecha, su entrada y su resultado. Puedes filtrar por mes y por mercado." },
+  { q: "¿Cómo entro al VIP sin pagar el pase?", a: "Abres una cuenta en uno de los brokers afiliados con nuestro enlace, haces el depósito mínimo y verificas tu cuenta por WhatsApp. Los pasos están en la página VIP gratis.", link: "vip" },
+  { q: "¿Esto es asesoría financiera?", a: "No. Todo el contenido es educativo. Operar con apalancamiento puede hacerte perder todo el capital, y los resultados pasados no garantizan resultados futuros." },
+];
+function FaqHome({ setPage }) {
+  const [open, setOpen] = useState(0);
+  return (
+    <section data-testid="home-faq">
+      <h2 className="bx-h2">Preguntas frecuentes</h2>
+      <div className="mt-6 max-w-3xl">
+        {HOME_FAQ.map((f, n) => {
+          const on = open === n;
+          return (
+            <div key={f.q} className={`bx-faq ${on ? "open" : ""}`}>
+              <h3>
+                <button type="button" aria-expanded={on} aria-controls={`faq-${n}`} id={`faq-h-${n}`} onClick={() => setOpen(on ? -1 : n)}>
+                  <span>{f.q}</span><i aria-hidden="true" />
+                </button>
+              </h3>
+              <div className="bx-acc" id={`faq-${n}`} role="region" aria-labelledby={`faq-h-${n}`}>
+                <div>
+                  <p>{f.a}</p>
+                  {f.link && <button type="button" className="bx-link" onClick={() => { setPage(f.link); window.scrollTo(0, 0); }}>Ver los pasos</button>}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function TelegramFab() {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    const f = () => setShow(window.scrollY > 520);
+    f(); window.addEventListener("scroll", f, { passive: true });
+    return () => window.removeEventListener("scroll", f);
+  }, []);
+  return (
+    <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={`bx-fab ${show ? "show" : ""}`} data-testid="telegram-fab" tabIndex={show ? 0 : -1} aria-hidden={show ? undefined : "true"}>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 3.6 2.6 11c-1.3.5-1.3 1.3-.2 1.6l4.9 1.5 1.9 5.8c.2.6.1.8.7.8.5 0 .7-.2 1-.5l2.4-2.3 4.9 3.6c.9.5 1.5.2 1.8-.8L23 5c.3-1.3-.5-1.9-1.1-1.4zM8.4 13.8l9.3-5.9c.4-.3.8-.1.5.2l-7.6 6.9-.3 3.2-1.9-4.4z"/></svg>
+      Unirme al canal
+    </a>
+  );
+}
+function HomePage({ setPage, openTool, openSignals, trades = [] }) {
+  const m = useMemo(() => computeMetrics(trades), [trades]);
+  const showStats = m.executed >= 3;
+  const cfd = cfdMarketOpen(new Date());
+  const steps = [
+    { n: 1, name: "Gratis", tone: GREEN, title: "Smart Money Action", text: "Una guía gratuita de 15 páginas, el playbook que necesitas: estructura, liquidez, FVG, las cuatro sesiones y un modelo simple.", cta: "Obtener la guía gratis", href: "https://t.me/borkaifxelite/633" },
+    { n: 2, name: "El curso", tone: ACCENT, title: "El curso", price: "$299", text: "El curso para traders que, con o sin experiencia, buscan operar con claridad y estrategia institucional: XAUUSD, índices bursátiles y divisas, con estrategias por separado y ordenadas.", cta: "Quiero el curso", href: SITE.join.url },
+    { n: 3, name: "VIP", tone: ACCENT, hot: true, title: "Tradea con nosotros", text: "Todas nuestras señales con punto de entrada, stop y take profit, con seguimiento a cada señal desde su activación.", cta: "Acceso al Telegram", href: TELEGRAM_URL, gold: true },
+  ];
+  return (
+    <div className="space-y-20 md:space-y-28" data-testid="home-page">
+      <section data-testid="home-hero" className="bx-hero grid md:grid-cols-[minmax(0,1.1fr)_minmax(0,.9fr)] gap-10 md:gap-14 items-center pt-4 md:pt-12">
         <div>
-          <div className="bx-kicker" style={{ fontSize: "11px" }}>COMUNIDAD DE TRADING</div>
-          <h1 className="mt-4 bx-display bx-hero1" style={{ color: "var(--cardink)" }}>
-            <span>SI NO SABES DONDE ESTA LA LIQUIDEZ EN EL GRAFICO, </span>
-            <span style={{ color: ACCENT }}>LA LIQUIDEZ ERES TU.</span>
+          <h1 className="bx-display bx-hero1 bx-rise" style={{ color: "var(--cardink)", "--d": "0ms" }}>
+            <span>SI NO SABES DÓNDE ESTÁ LA LIQUIDEZ EN EL GRÁFICO, </span>
+            <span style={{ color: ACCENT, display: "block" }}>LA LIQUIDEZ ERES TÚ.</span>
           </h1>
-          <p className="mt-5 text-[15px] bx-ink2 max-w-xl leading-relaxed">
+          <p className="mt-5 text-base md:text-lg bx-ink2 max-w-xl leading-relaxed bx-rise" style={{ "--d": "80ms" }}>
             El mercado no se adivina, se entiende. En PRECISION ZONE FX transformamos tu operativa mediante conceptos SMC. Aprende a identificar las huellas del dinero, protege tu capital con precisión y desarrolla la consistencia real que define a un trader profesional.
           </p>
+          <div className="mt-7 flex flex-wrap gap-3 bx-rise" style={{ "--d": "160ms" }}>
+            <button type="button" className="bx-gold bx-cta" onClick={() => { setPage("vip"); window.scrollTo(0, 0); }} data-testid="hero-cta-vip">Entrar al VIP gratis</button>
+            <button type="button" className="bx-planbtn bx-cta" onClick={() => { setPage("track"); window.scrollTo(0, 0); }} data-testid="hero-cta-track">Ver el track record</button>
+          </div>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm bx-rise" style={{ "--d": "230ms" }} data-testid="hero-facts">
+            {showStats && (<>
+              <div><span className="bx-num text-2xl font-extrabold" style={{ color: "var(--cardink)" }}>{Math.round(m.winRate)}%</span><span className="ml-2 bx-muted">de acierto en {m.executed} operaciones cerradas</span></div>
+            </>)}
+            <div className="flex items-center gap-2 bx-muted"><span className={`bx-dot ${cfd ? "live" : "off"}`} />{cfd ? "Mercado CFD abierto" : "Mercado CFD cerrado · abre el domingo 5:00 PM (NY)"}</div>
+          </div>
         </div>
+        <div className="bx-rise" style={{ "--d": "260ms" }}><SignalTicket /></div>
       </section>
 
+      <CompareBlock />
 
       <section data-testid="home-path">
-        <div className="bx-kicker">A tu ritmo</div>
-        <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "var(--cardink)" }}>TOMA EL TRADE, NIVEL POR NIVEL.</h2>
-        <p className="mt-3 text-[15px] bx-ink2 max-w-xl leading-relaxed">Comienza aquí.</p>
-        <div className="mt-6 grid md:grid-cols-3 gap-3 md:gap-4">
+        <h2 className="bx-h2">Toma el trade, nivel por nivel</h2>
+        <p className="mt-3 text-base bx-ink2 max-w-xl leading-relaxed">Empieza por la guía gratuita. Cuando quieras ir más a fondo, sigue con el curso o con las señales.</p>
+        <ol className="mt-8 grid md:grid-cols-3 gap-4 md:gap-5 list-none p-0">
           {steps.map((s) => (
-            <div key={s.tag} className={`bx-plan ${s.hot ? "hot" : ""}`} data-testid="path-card">
-              <div className="flex items-center gap-2 text-[11px] font-bold tracking-[0.18em] uppercase" style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace' }}>
-                <span style={{ color: s.tone }}>{s.tag}</span><span className="bx-muted">•</span><span className="text-white">{s.name}</span>
+            <li key={s.n} className="bx-step">
+              <div className={`bx-plan h-full ${s.hot ? "hot" : ""}`} data-testid="path-card">
+                <div className="flex items-center gap-3">
+                  <span className="bx-stepnum" style={{ background: s.tone === GREEN ? GREEN : ACCENT_HEX }}>{s.n}</span>
+                  <span className="text-sm font-bold" style={{ color: s.tone }}>{s.name}</span>
+                </div>
+                <div className="mt-4 text-xl font-extrabold leading-snug" style={{ color: "var(--cardink)" }}>{s.title}</div>
+                <p className="mt-3 text-sm bx-ink2 leading-relaxed">{s.text}</p>
+                <div className="flex-1" />
+                {s.price && <div className="mt-5 bx-num text-4xl font-extrabold leading-none" style={{ color: ACCENT }} data-testid="course-price">{s.price}</div>}
+                {s.gold ? (
+                  <a href={s.href} target="_blank" rel="noopener noreferrer" className="mt-5 bx-gold bx-cta" data-testid="home-vip-btn">{s.cta}</a>
+                ) : (
+                  <a href={s.href} target="_blank" rel="noopener noreferrer" className="mt-5 bx-planbtn bx-cta">{s.cta}</a>
+                )}
               </div>
-              <div className="mt-3 text-lg font-extrabold text-white leading-snug">{s.title}</div>
-              <p className="mt-3 text-sm bx-ink2 leading-relaxed">{s.text}</p>
-              <div className="flex-1" />
-              {s.price && <div className="mt-4 text-3xl md:text-4xl font-extrabold leading-none" style={{ color: ACCENT }} data-testid="course-price">{s.price}</div>}
-              {s.gold ? (
-                <a href={s.href} target="_blank" rel="noopener noreferrer" className="mt-4 bx-gold" style={{ padding: ".6rem 1rem", fontSize: ".85rem" }} data-testid="home-vip-btn">{s.cta}</a>
-              ) : (
-                <a href={s.href} target="_blank" rel="noopener noreferrer" className="mt-4 bx-planbtn">{s.cta} ↗</a>
-              )}
-            </div>
+            </li>
           ))}
-        </div>
+        </ol>
       </section>
 
       <section data-testid="home-tools">
-        <div className="bx-kicker">Herramientas</div>
-        <h2 className="bx-display mt-3 text-3xl md:text-5xl" style={{ color: "var(--cardink)" }}>PLANEA EL TRADE, TRADEA EL PLAN</h2>
-        <div className="mt-6"><ToolCards onPick={(k) => { openTool(k); window.scrollTo(0, 0); }} /></div>
+        <h2 className="bx-h2">Planea el trade, tradea el plan</h2>
+        <p className="mt-3 text-base bx-ink2 max-w-xl leading-relaxed">Calcula el tamaño de tu posición, tu relación riesgo/beneficio y el crecimiento de tu cuenta antes de entrar.</p>
+        <div className="mt-7"><ToolCards onPick={(k) => { openTool(k); window.scrollTo(0, 0); }} /></div>
       </section>
 
       <Conceptos />
+
+      <FaqHome setPage={setPage} />
+
+      <section className="bx-finalcta" data-testid="home-final-cta">
+        <h2 className="bx-h2">Empieza con la guía gratis</h2>
+        <p className="mt-3 text-base bx-ink2 max-w-xl leading-relaxed">Quince páginas con estructura, liquidez, FVG, sesiones y un modelo de entrada completo. Sin costo.</p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <a href="https://t.me/borkaifxelite/633" target="_blank" rel="noopener noreferrer" className="bx-gold bx-cta">Obtener la guía gratis</a>
+          <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-planbtn bx-cta">Unirme al canal</a>
+        </div>
+      </section>
     </div>
   );
 }
@@ -4653,6 +4911,7 @@ export default function App() {
 
   return (
     <div className={`bx-root ${page === "home" ? "bx-home" : ""}`} data-theme={theme}>
+      {page !== "admin" && <TelegramFab />}
       <div className="bx-themefloat" data-testid="theme-toggle" role="group" aria-label="Tema de la página">
         <button type="button" onClick={() => pickTheme("light")} className={theme === "light" ? "on" : ""} aria-label="Modo claro" aria-pressed={theme === "light"}>☀️</button>
         <button type="button" onClick={() => pickTheme("dark")} className={theme === "dark" ? "on" : ""} aria-label="Modo oscuro" aria-pressed={theme === "dark"}>🌙</button>
@@ -4660,40 +4919,40 @@ export default function App() {
       <style>{CSS}</style>
 
       {/* ------------------------- HEADER ------------------------- */}
-      <header className="bx-header relative z-30">
-        <div className="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-          <a href={PAGE_PATHS.home} onClick={(e) => { e.preventDefault(); setPage("home"); window.scrollTo(0, 0); }} className="flex items-center gap-3" data-testid="brand-link" aria-label="Ir al inicio" style={{ textDecoration: "none" }}>
+      <header className="bx-header sticky top-0 z-30">
+        <div className="max-w-5xl mx-auto px-4 py-2.5 md:py-3 flex flex-wrap items-center gap-x-4 gap-y-1">
+          <a href={PAGE_PATHS.home} onClick={(e) => { e.preventDefault(); setPage("home"); window.scrollTo(0, 0); }} className="flex items-center gap-3 order-1" data-testid="brand-link" aria-label="Ir al inicio" style={{ textDecoration: "none" }}>
             <img src={LOGO} alt="PRECISION ZONE FX" className="w-7 h-7 md:w-8 md:h-8 object-contain" />
             <div>
               <div className="bx-display bx-brand text-lg md:text-xl tracking-[0.06em] leading-none whitespace-nowrap" style={{ color: "var(--ink)" }}>PRECISION <span style={{ color: ACCENT }}>ZONE FX</span></div>
             </div>
           </a>
 
-          <div className="flex flex-wrap items-center justify-end gap-2 md:gap-4">
-          {(
-          <nav className="bx-nav" data-testid="main-nav">
-            {(isAdmin ? [["track", "Track Record"], ["admin", "Panel Admin"]] : [["track", "Track Record"]]).map(([k, l]) => k !== "signals" ? (
-              <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`}>{l}</button>
-            ) : (
-              <div key={k} className="relative" onMouseEnter={() => setSigMenu(true)} onMouseLeave={() => setSigMenu(false)} data-testid="signals-menu">
-                <button onClick={() => { setPage("signals"); setSigMenu((v) => !v); }} aria-haspopup="menu" aria-expanded={sigMenu} className={`bx-navbtn ${page === "signals" || page === "vip" ? "on" : ""}`}>{l} <span style={{ fontSize: ".7em" }}>▾</span></button>
-                {sigMenu && (
-                  <div role="menu" className="absolute left-0 top-full z-50 pt-1" style={{ minWidth: 170 }}>
-                    <div className="bx-card p-1.5 space-y-1" style={{ background: "var(--c2)" }}>
-                      {[["CFD", "CFDS"], ["SINTETICO", "SINTÉTICOS"]].map(([v, t]) => (
-                        <button key={v} role="menuitem" onClick={() => { setSignalKind(v); setPage("signals"); setSigMenu(false); }} className={`bx-navbtn w-full text-left ${page === "signals" && signalKind === v ? "on" : ""}`} style={{ display: "block", width: "100%" }}>{t}</button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </nav>
-          )}
-
+          <div className="order-2 md:order-3 ml-auto md:ml-0 flex items-center gap-2">
             <a href={SITE.join.url} target="_blank" rel="noopener noreferrer" className="bx-gold bx-gold-sm" data-testid="join-btn">{SITE.join.label}</a>
             {isAdmin && <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>}
           </div>
+
+          <nav className="bx-hnav order-3 md:order-2 w-full md:w-auto md:mr-auto md:ml-3" data-testid="main-nav" aria-label="Principal">
+            <div className="relative hidden md:block" onMouseEnter={() => setSigMenu(true)} onMouseLeave={() => setSigMenu(false)} data-testid="signals-menu">
+              <button onClick={() => { setPage("signals"); setSigMenu((v) => !v); }} aria-haspopup="menu" aria-expanded={sigMenu} className={`bx-navbtn ${page === "signals" ? "on" : ""}`}>Señales <span style={{ fontSize: ".7em" }}>▾</span></button>
+              {sigMenu && (
+                <div role="menu" className="absolute left-0 top-full z-50 pt-1" style={{ minWidth: 170 }}>
+                  <div className="bx-card p-1.5 space-y-1" style={{ background: "var(--c2)" }}>
+                    {[["CFD", "CFDs"], ["SINTETICO", "Sintéticos"]].map(([v, t]) => (
+                      <button key={v} role="menuitem" onClick={() => { setSignalKind(v); setPage("signals"); setSigMenu(false); }} className={`bx-navbtn w-full text-left ${page === "signals" && signalKind === v ? "on" : ""}`} style={{ display: "block" }}>{t}</button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+            {[["CFD", "Señales CFDs"], ["SINTETICO", "Sintéticos"]].map(([v, t]) => (
+              <button key={v} onClick={() => { setSignalKind(v); setPage("signals"); }} className={`bx-navbtn md:hidden ${page === "signals" && signalKind === v ? "on" : ""}`}>{t}</button>
+            ))}
+            {[["tools", "Herramientas"], ["vip", "VIP gratis"], ["track", "Track Record"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => (
+              <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`} aria-current={page === k ? "page" : undefined}>{l}</button>
+            ))}
+          </nav>
         </div>
         {isAdmin && (
           <div className="text-center text-[11px] tracking-[0.25em] py-1 font-bold" style={{ background: ACCENT_HEX, color: "#17120a" }}>
@@ -4703,7 +4962,6 @@ export default function App() {
       </header>
 
       <Ticker />
-      {page === "home" && <LiveStatus />}
 
       {cloudState === "error" && (
         <div className="text-center text-xs py-2 px-4 bg-rose-500/20 text-rose-500">
@@ -4713,7 +4971,7 @@ export default function App() {
 
       <main className={`${page === "admin" ? "max-w-6xl" : "max-w-5xl"} mx-auto px-4 py-6 space-y-6`}>
         {page === "vip" && <VipPage />}
-        {page === "home" && <HomePage setPage={setPage} openSignals={(k) => { setSignalKind(k); setPage("signals"); }} openTool={(k) => { setTool(k); setPage("tools"); }} />}
+        {page === "home" && <HomePage trades={visible} setPage={setPage} openSignals={(k) => { setSignalKind(k); setPage("signals"); }} openTool={(k) => { setTool(k); setPage("tools"); }} />}
         {page === "tools" && <ToolsPage tool={tool} setTool={setTool} />}
         {page === "track" && (<>
         {/* ------------------------- HERO (título + descripción + filtros) ------------------------- */}
@@ -4947,19 +5205,40 @@ export default function App() {
         {page === "signals" && <ServicesPricing setPage={setPage} kind={signalKind} />}
 
         {/* ------------------------- FOOTER ------------------------- */}
-        <footer className="pt-6 pb-10 text-center text-xs bx-ink2 space-y-4" data-testid="site-footer">
+        <footer className="bx-foot bx-ink2" data-testid="site-footer">
           {page !== "admin" && (<>
-            <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm font-bold" aria-label="Enlaces">
-              <button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }} className="text-white hover:text-[color:var(--accent)]">Herramientas</button>
-              <button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[color:var(--accent)]">Señales CFDs</button>
-              <button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }} className="text-white hover:text-[color:var(--accent)]">Señales Sintéticos</button>
-              <button type="button" onClick={() => { setPage("vip"); window.scrollTo(0, 0); }} className="text-white hover:text-[color:var(--accent)]" data-testid="footer-vip-free">VIP gratis</button>
-            </nav>
-            <p className="max-w-3xl mx-auto leading-relaxed" data-testid="risk-disclaimer">
+            <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-4">
+              <div>
+                <div className="flex items-center gap-2"><img src={LOGO} alt="" className="w-7 h-7 object-contain" /><span className="bx-display text-lg" style={{ color: "var(--ink)" }}>PRECISION <span style={{ color: ACCENT }}>ZONE FX</span></span></div>
+                <p className="mt-3 text-sm leading-relaxed max-w-xs">Señales, educación y herramientas para operar con un plan.</p>
+              </div>
+              <nav aria-label="Explorar">
+                <h4>Explorar</h4>
+                <ul>
+                  <li><button type="button" onClick={() => { setPage("track"); window.scrollTo(0, 0); }}>Track Record</button></li>
+                  <li><button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }}>Herramientas</button></li>
+                  <li><button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }}>Señales CFDs</button></li>
+                  <li><button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }}>Señales Sintéticos</button></li>
+                  <li><button type="button" onClick={() => { setPage("vip"); window.scrollTo(0, 0); }} data-testid="footer-vip-free">VIP gratis</button></li>
+                </ul>
+              </nav>
+              <div>
+                <h4>Comunidad</h4>
+                <ul>
+                  <li><a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">Telegram @precisionzonefx</a></li>
+                  <li><a href="https://instagram.com/precisionzonefx" target="_blank" rel="noopener noreferrer">Instagram @precisionzonefx</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4>Legal</h4>
+                <p className="text-sm leading-relaxed">Contenido educativo. No es asesoría financiera.</p>
+              </div>
+            </div>
+            <p className="mt-8 text-xs leading-relaxed max-w-4xl" data-testid="risk-disclaimer">
               El trading es una actividad de alto riesgo. Operar con productos apalancados (CFDs, divisas, índices sintéticos) puede resultar en la pérdida de todo el capital invertido y no es adecuado para todos los inversores. Su dinero está en riesgo. Los resultados pasados no garantizan resultados futuros. Todo el contenido de este sitio es educativo y no constituye asesoramiento financiero.
             </p>
           </>)}
-          <div className="tracking-[0.25em]">© {new Date().getFullYear()} {BRAND}</div>
+          <div className="mt-6 text-xs bx-num">© {new Date().getFullYear()} {BRAND}</div>
         </footer>
       </main>
 
