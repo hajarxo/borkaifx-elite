@@ -3390,11 +3390,11 @@
     "pipSize": 0.1,
     "legs": {
       "e1": {
-        "status": "TP",
-        "exit": 3864,
+        "status": "BE",
+        "exit": 3875,
         "pips": 110,
-        "tpIdx": 0,
-        "reached": null
+        "tpIdx": null,
+        "reached": 0
       },
       "e2": {
         "status": "Pendiente",
@@ -3410,7 +3410,7 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "TP",
+    "status": "BE",
     "pips": 110,
     "r": 0.65
   }
