@@ -3324,6 +3324,51 @@
     "r": 1
   },
   {
+    "id": "xnyte74qmwl1h87c",
+    "date": "2026-11-16",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "STEP INDEX 100",
+    "direction": "BUY",
+    "entry1": 7270,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 7253,
+    "tps": [
+      7310,
+      7360,
+      7410
+    ],
+    "pipSize": 0.1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "MANUAL",
+        "exit": "",
+        "pips": 200,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "STEP INDEX 100 BUY 7270\nSL 7253 \nTP1 7310 \nTP2 7360 \nTP3 7410",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 200,
+    "r": 1.18
+  },
+  {
     "id": "y1zly187mwjn8mqk",
     "date": "2026-11-16",
     "category": "CFD",
