@@ -4403,7 +4403,7 @@ const LINKS_CFG = {
     { id: "whatsapp", label: "WhatsApp +1 772 207 1549", url: "https://wa.me/17722071549" },
   ],
   guideUrl: "https://t.me/borkaifxelite/633", // guía gratuita
-  tradingViewUrl: "https://www.tradingview.com/pricing/?share_your_love=nagervillegas", // TradingView (afiliado)
+  tradingViewUrl: "https://www.tradingview.com/pricing/?share_your_love=precisionzonefx", // TradingView (afiliado)
   ebookUrl: "", // ebook "Domina tu mente": pega aquí su enlace
   // Panel "Brokers y recursos"
   resources: [
