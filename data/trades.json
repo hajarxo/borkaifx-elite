@@ -3125,9 +3125,9 @@
       "e1": {
         "status": "BE",
         "exit": 3876,
-        "pips": 0,
+        "pips": 50,
         "tpIdx": null,
-        "reached": null
+        "reached": 0
       },
       "e2": {
         "status": "Pendiente",
@@ -3144,8 +3144,8 @@
       "VIP Signal"
     ],
     "status": "BE",
-    "pips": 0,
-    "r": 0
+    "pips": 50,
+    "r": 0.5
   },
   {
     "id": "m35pj0lkmwjn92zv",
