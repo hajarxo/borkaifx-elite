@@ -2838,6 +2838,50 @@
     "r": 0
   },
   {
+    "id": "vopyt2s6mwfaydoy",
+    "date": "2026-11-13",
+    "category": "CFD",
+    "sub": "Forex",
+    "broker": "",
+    "asset": "EURAUD",
+    "direction": "SELL",
+    "entry1": 1.63279,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 1.636,
+    "tps": [
+      1.63,
+      1.6,
+      "OPEN"
+    ],
+    "pipSize": 0.0001,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 1.63,
+        "pips": 27.9,
+        "tpIdx": 0,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "Forex 💱\nPair: EURAUD 📊\nSide: Short / Sell Limit\nEntry: 1.63279\nTP: Open\nSL: 1.63600\nNote: past profits do not predict future profits \nRisk 0.5-1-2% \n\nTP1 1.63000 28pips ✅\nTP2 1.60000 328pips ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 27.9,
+    "r": 0.87
+  },
+  {
     "id": "8zvjoiezmwghlqdh",
     "date": "2026-11-14",
     "category": "SINTETICO",
