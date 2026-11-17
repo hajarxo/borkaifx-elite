@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useLayoutEffect, useRef } from "react";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -209,6 +209,15 @@ select.bx-input option{background:var(--c2);color:var(--cardink)}
 .bx-root :is(a,button,input,select,textarea,summary,[tabindex]):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @keyframes bxrise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .bx-rise{animation:bxrise .6s var(--ease) both;animation-delay:var(--d,0ms)}
+/* Efecto "agua" al pasar el mouse + aparición suave al hacer scroll */
+.bx-card:not(.absolute):not(.fixed):not(.sticky),.bx-plan,.bx-cmp,.bx-finalcta{position:relative}
+.bx-card::after,.bx-plan::after,.bx-cmp::after,.bx-ticket::after,.bx-finalcta::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;background:linear-gradient(105deg,transparent 0%,transparent 36%,rgba(255,255,255,.06) 44%,rgba(240,180,41,.15) 50%,rgba(255,255,255,.05) 56%,transparent 64%,transparent 100%) no-repeat 130% 0/260% 100%,radial-gradient(110% 70% at 50% 130%,rgba(240,180,41,.10),transparent 62%) no-repeat}
+@keyframes bxflow{from{background-position:130% 0,0 0}to{background-position:-30% 0,0 0}}
+@media (hover:hover){.bx-card:hover::after,.bx-plan:hover::after,.bx-cmp:hover::after,.bx-ticket:hover::after,.bx-finalcta:hover::after{opacity:1;animation:bxflow 1.15s var(--ease) forwards}}
+[data-rv]{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+[data-rv="1"]{opacity:1;transform:none}
+[data-rv-i="1"]{transition-delay:70ms}[data-rv-i="2"]{transition-delay:140ms}[data-rv-i="3"]{transition-delay:210ms}[data-rv-i="4"]{transition-delay:280ms}[data-rv-i="5"]{transition-delay:350ms}
+@media(prefers-reduced-motion:reduce){[data-rv]{opacity:1;transform:none;transition:none}.bx-card:hover::after,.bx-plan:hover::after,.bx-cmp:hover::after,.bx-ticket:hover::after,.bx-finalcta:hover::after{animation:none}}
 @media(prefers-reduced-motion:reduce){.bx-rise{animation:none}.bx-dot.live{animation:none}.bx-acc,.bx-faq i::before,.bx-faq i::after,.bx-tk-row,.bx-tk-step,.bx-fab{transition:none}}
 .bx-ticket{position:relative;border-radius:28px;padding:1.4rem;background:linear-gradient(160deg,rgba(var(--fg),.07),rgba(var(--fg),.012) 60%),var(--card);border:1px solid var(--cardline);box-shadow:0 30px 70px -30px rgba(0,0,0,.65),inset 0 0 0 1px rgba(240,180,41,.07)}
 .bx-root[data-theme="light"] .bx-ticket{background:#fff;box-shadow:0 24px 60px -28px rgba(15,18,25,.35)}
@@ -2695,7 +2704,7 @@ const BrokerBtn = ({ b, wa = false }) =>
   );
 
 /* ----------------------------- Página /vip-gratis ----------------------------- */
-const VIP_CONTACT = "ddazafx";
+const VIP_CONTACT = "majorkyze";
 const FAQ_ITEMS = [
   {
     q: "¿Puedo afiliarme si ya tengo cuenta en Weltrade?",
@@ -3370,6 +3379,9 @@ function HomePage({ setPage, openTool, openSignals, trades = [] }) {
   ];
   return (
     <div className="space-y-20 md:space-y-28" data-testid="home-page">
+      <div className="flex justify-center -mb-2 md:-mb-6 bx-rise" data-testid="market-status">
+        <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 text-[13px] font-semibold" style={{ background: "rgba(var(--fg),.06)", border: "1px solid var(--cardline)", color: "var(--cardink)" }}><span className={`bx-dot ${cfd ? "live" : "off"}`} />{cfd ? "Mercado CFD abierto" : "Mercado CFD cerrado · abre el domingo 5:00 PM (NY)"}</div>
+      </div>
       <section data-testid="home-hero" className="bx-hero grid md:grid-cols-[minmax(0,1.1fr)_minmax(0,.9fr)] gap-10 md:gap-14 items-center pt-4 md:pt-12">
         <div>
           <h1 className="bx-display bx-hero1 bx-rise" style={{ color: "var(--cardink)", "--d": "0ms" }}>
@@ -3387,7 +3399,6 @@ function HomePage({ setPage, openTool, openSignals, trades = [] }) {
             {showStats && (<>
               <div><span className="bx-num text-2xl font-extrabold" style={{ color: "var(--cardink)" }}>{Math.round(m.winRate)}%</span><span className="ml-2 bx-muted">de acierto en {m.executed} operaciones cerradas</span></div>
             </>)}
-            <div className="flex items-center gap-2 bx-muted"><span className={`bx-dot ${cfd ? "live" : "off"}`} />{cfd ? "Mercado CFD abierto" : "Mercado CFD cerrado · abre el domingo 5:00 PM (NY)"}</div>
           </div>
         </div>
         <div className="bx-rise" style={{ "--d": "260ms" }}><SignalTicket /></div>
@@ -4735,6 +4746,40 @@ const pageFromPath = () => {
     return hit ? hit[0] : "links";
   } catch (e) { return "links"; }
 };
+// Aparición suave de las secciones y cajas al desplazarse (todas las páginas públicas)
+function useScrollReveal(page, ready) {
+  useLayoutEffect(() => {
+    if (!ready || page === "admin" || page === "links") return undefined;
+    let reduce = false;
+    try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+    const main = document.querySelector("main");
+    if (reduce || !main || !("IntersectionObserver" in window)) return undefined;
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => { if (e.isIntersecting) { e.target.setAttribute("data-rv", "1"); io.unobserve(e.target); } });
+    }, { threshold: 0.06, rootMargin: "0px 0px -5% 0px" });
+    const tag = (el) => {
+      if (el.hasAttribute("data-rv")) return;
+      el.setAttribute("data-rv", "0");
+      const sib = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
+      el.setAttribute("data-rv-i", String(Math.min(5, Math.max(0, sib))));
+      io.observe(el);
+    };
+    const scan = (root) => {
+      if (root.nodeType !== 1) return;
+      const cand = [];
+      if (root.parentElement === main) cand.push(root);
+      root.querySelectorAll && root.querySelectorAll(":scope > *").forEach((c) => { if (c.parentElement === main) cand.push(c); });
+      if (root !== main) root.querySelectorAll(".grid").forEach((g) => { if (g.children.length <= 8 && !g.closest(".bx-calgrid")) Array.prototype.forEach.call(g.children, (c) => cand.push(c)); });
+      else main.querySelectorAll(".grid").forEach((g) => { if (g.children.length <= 8 && !g.closest(".bx-calgrid") && !g.classList.contains("bx-calgrid")) Array.prototype.forEach.call(g.children, (c) => cand.push(c)); });
+      cand.forEach(tag);
+    };
+    scan(main);
+    const mo = new MutationObserver((ms) => { ms.forEach((m) => m.addedNodes.forEach((n) => scan(n))); });
+    mo.observe(main, { childList: true, subtree: true });
+    return () => { mo.disconnect(); io.disconnect(); main.querySelectorAll("[data-rv]").forEach((el) => { el.removeAttribute("data-rv"); el.removeAttribute("data-rv-i"); }); };
+  }, [page, ready]);
+}
+
 export default function App() {
   const twReady = useTailwind();
   // Modo oscuro fijo (sin selector de tema)
@@ -5225,11 +5270,11 @@ export default function App() {
     );
   };
 
+  useScrollReveal(page, twReady);
+
   if (!twReady) {
     return (
-      <div style={{ minHeight: "100vh", background: "#0A0A0C", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <img src={LOGO} alt="" style={{ height: 96 }} />
-      </div>
+      <div style={{ minHeight: "100vh", background: "#0A0C11" }} aria-hidden="true" />
     );
   }
 
@@ -5251,7 +5296,6 @@ export default function App() {
           </a>
 
           <div className="order-2 md:order-3 ml-auto md:ml-0 flex items-center gap-2">
-            <a href={SITE.join.url} target="_blank" rel="noopener noreferrer" className="bx-gold bx-gold-sm" data-testid="join-btn">{SITE.join.label}</a>
             {isAdmin && <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>}
           </div>
 
@@ -5548,7 +5592,7 @@ export default function App() {
                 <h4>Comunidad</h4>
                 <ul>
                   <li><a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer">Telegram @precisionzonefx</a></li>
-                  <li><a href="https://instagram.com/precisionzonefx" target="_blank" rel="noopener noreferrer">Instagram @precisionzonefx</a></li>
+                  <li><a href="https://instagram.com/precisionzone.fx" target="_blank" rel="noopener noreferrer">Instagram @precisionzone.fx</a></li>
                 </ul>
               </div>
               <div>
