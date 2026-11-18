@@ -3785,9 +3785,9 @@
     "legs": {
       "e1": {
         "status": "TP",
-        "exit": 3732,
-        "pips": 250,
-        "tpIdx": 2,
+        "exit": "OPEN",
+        "pips": "",
+        "tpIdx": 3,
         "reached": null
       },
       "e2": {
@@ -3804,9 +3804,9 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "TP",
-    "pips": 250,
-    "r": 1.47
+    "status": "BE",
+    "pips": 0,
+    "r": 0
   },
   {
     "id": "qmfutghjmwmcuxf8",
