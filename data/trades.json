@@ -3785,7 +3785,7 @@
       "e1": {
         "status": "TP",
         "exit": 3732,
-        "pips": 150,
+        "pips": 250,
         "tpIdx": 2,
         "reached": null
       },
@@ -3804,8 +3804,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 150,
-    "r": 0.88
+    "pips": 250,
+    "r": 1.47
   },
   {
     "id": "qmfutghjmwmcuxf8",
