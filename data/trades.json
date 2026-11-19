@@ -4017,9 +4017,9 @@
       "e2": {
         "status": "BE",
         "exit": 3676,
-        "pips": 0,
+        "pips": 140,
         "tpIdx": null,
-        "reached": null
+        "reached": 0
       }
     },
     "discarded": false,
@@ -4030,8 +4030,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 100,
-    "r": 0.5
+    "pips": 240,
+    "r": 1.38
   },
   {
     "id": "qm2z5gyrmwnsfsyb",
