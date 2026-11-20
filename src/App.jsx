@@ -218,6 +218,34 @@ select.bx-input option{background:var(--c2);color:var(--cardink)}
 .bx-cmp{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .bx-cmp.yes{background:linear-gradient(160deg,rgba(240,180,41,.12),transparent 60%),rgba(255,255,255,.05)}
 .bx-finalcta{background:radial-gradient(520px circle at 88% 0%,rgba(240,180,41,.22),transparent 70%),rgba(16,19,27,.6);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+/* Mi Acceso */
+.mb-badge{display:inline-block;padding:.2rem .6rem;border-radius:9999px;font-size:.72rem;font-weight:800;white-space:nowrap}
+.mb-table{width:100%;min-width:760px;border-collapse:collapse;font-size:.85rem;color:var(--cardink2)}
+.mb-table th{text-align:left;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:700;color:var(--cardink2);padding:.5rem .6rem;border-bottom:1px solid var(--cardline)}
+.mb-table td{padding:.65rem .6rem;border-bottom:1px solid rgba(var(--fg),.07);vertical-align:middle}
+.mb-act{padding:.3rem .6rem!important;font-size:.75rem!important}
+.mb-act.danger{color:var(--neg)}
+.mb-box{border:1px solid var(--cardline);border-radius:1rem;padding:1rem;background:rgba(var(--fg),.04)}
+.mb-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;padding:.4rem .55rem;border-radius:.6rem;background:rgba(var(--fg),.05)}
+.mb-warn{border:1px solid rgba(240,180,41,.55);background:rgba(240,180,41,.1);border-radius:1.1rem;padding:1.1rem 1.25rem;color:var(--cardink2)}
+.mb-num{flex:none;width:28px;height:28px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:.82rem;color:#17120a;background:linear-gradient(180deg,#F7C948,#DFA01A)}
+.mb-level.on{border-color:rgba(240,180,41,.8)!important;box-shadow:0 0 0 1px rgba(240,180,41,.3),0 10px 40px rgba(240,180,41,.15)}
+.mb-level.elite{background:linear-gradient(160deg,rgba(240,180,41,.14),transparent 60%),rgba(255,255,255,.04)}
+.mb-nosel,.mb-nosel *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.mb-video{position:relative;aspect-ratio:16/9;background:#000;border-radius:1.1rem;overflow:hidden;border:1px solid var(--cardline)}
+.mb-video video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.mb-video:fullscreen{border-radius:0}
+.mb-overlay{position:absolute;inset:0;z-index:2;background:transparent;cursor:pointer}
+.mb-bigplay{position:absolute;z-index:4;left:50%;top:50%;transform:translate(-50%,-50%);width:68px;height:68px;border-radius:50%;border:0;display:flex;align-items:center;justify-content:center;color:#17120a;background:rgba(240,180,41,.95);cursor:pointer}
+.mb-wm{position:absolute;z-index:3;pointer-events:none;font-size:.75rem;font-weight:700;color:rgba(255,255,255,.3);text-shadow:0 1px 3px rgba(0,0,0,.5);transition:left 1.6s ease,top 1.6s ease;white-space:nowrap}
+.mb-ctrl{position:absolute;z-index:5;left:0;right:0;bottom:0;display:flex;align-items:center;gap:.6rem;padding:.55rem .75rem;background:linear-gradient(0deg,rgba(0,0,0,.8),transparent);color:#fff}
+.mb-ctrl button{background:none;border:0;color:#fff;font-size:.95rem;cursor:pointer;min-width:28px;min-height:28px}
+.mb-range{accent-color:#F0B429;height:4px}
+.mb-range.grow{flex:1;min-width:0}
+.mb-soon{display:flex;align-items:center;justify-content:center;text-align:center}
+.mb-lesson{display:flex;gap:.55rem;width:100%;text-align:left;padding:.5rem .6rem;border-radius:.7rem;border:1px solid transparent;font-size:.85rem;color:var(--cardink2);background:transparent;cursor:pointer}
+.mb-lesson:hover{background:rgba(var(--fg),.06);color:var(--cardink)}
+.mb-lesson.on{border-color:rgba(240,180,41,.6);color:var(--cardink);background:rgba(240,180,41,.1)}
 /* Aparición suave al hacer scroll */
 .bx-card:not(.absolute):not(.fixed):not(.sticky),.bx-plan,.bx-cmp,.bx-finalcta{position:relative}
 [data-rv]{opacity:0;transform:translateY(22px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
@@ -4407,6 +4435,752 @@ function AnnualEvolution({ trades, unit }) {
 }
 
 /* ============================================================
+   MIEMBROS VIP — "MI ACCESO"
+   Edita aquí: soporte, enlaces de los canales VIP y los videos del curso.
+   ============================================================ */
+const MEMBER_SUPPORT = "ddazafx"; // soporte directo por Telegram
+const VIP_CHANNEL_LINKS = { SINT: "", GOLD: "" }; // enlace de invitación de cada canal VIP (vacío = el botón abre el chat de soporte)
+// Curso: pega en "src" el enlace directo (.mp4 / .webm) de cada clase. Sin enlace se muestra "Próximamente".
+const COURSE_MODULES = [
+  { title: "Módulo 1 · Fundamentos", lessons: [
+    { title: "Bienvenida y cómo usar el curso", src: "" },
+    { title: "Estructura de mercado", src: "" },
+    { title: "Liquidez: dónde está el dinero", src: "" },
+  ] },
+  { title: "Módulo 2 · Ejecución", lessons: [
+    { title: "Cómo tomar una señal", src: "" },
+    { title: "Gestión de riesgo y lotaje", src: "" },
+    { title: "Break Even y parciales", src: "" },
+  ] },
+  { title: "Módulo 3 · Mentalidad", lessons: [
+    { title: "Disciplina y control emocional", src: "" },
+    { title: "Plan de crecimiento de cuenta", src: "" },
+  ] },
+];
+
+const MEMBERS_PUB = "data/members.json"; // público: nombre + huella (hash) del usuario/teléfono + plan. Nunca el usuario ni el teléfono en claro
+const MEMBERS_ENC = "data/members.enc.json"; // cifrado con el token del admin: lista completa
+const MEMBER_STORE = "pzfx_member_ident";
+const M_CH = { SINT: "Precisionzonefx | SINTETICOS", GOLD: "Precisionzonefx | GOLD", AMBOS: "Ambos canales" };
+const M_PLAN = { "1M": { label: "1 Mes", days: 31 }, "3M": { label: "3 Meses", days: 93 }, SOCIO: { label: "Plan Socio", days: 31 } };
+const WARN_DAYS = 5; // "Por vencer" cuando faltan 5 días o menos
+
+// Días reales (calendario). 1 mes = 31 días completos, 3 meses = 93: se suman los días que falten cuando el mes siguiente es más corto.
+const dayNum = (s) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ""); return m ? Math.floor(Date.UTC(+m[1], +m[2] - 1, +m[3]) / 86400000) : NaN; };
+const numToDate = (n) => new Date(n * 86400000).toISOString().slice(0, 10);
+const todayNum = () => { const n = new Date(); return Math.floor(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) / 86400000); };
+const memberLeft = (m) => dayNum(m.start) + m.days - todayNum(); // el día de inicio cuenta como día 1
+const memberEnd = (m) => numToDate(dayNum(m.start) + m.days - 1); // último día con acceso
+const memberStatus = (m) => (m.revoked ? "Revocado" : memberLeft(m) <= 0 ? "Vencido" : memberLeft(m) <= WARN_DAYS ? "Por vencer" : "Activo");
+const renewCalc = (m, plan) => {
+  const pd = M_PLAN[plan].days;
+  if (m && !m.revoked && memberLeft(m) > 0) return { start: m.start, days: m.days + pd };
+  return { start: localDate(), days: pd };
+};
+
+// Usuario de Telegram (@usuario) o teléfono → forma normalizada
+function parseIdent(input) {
+  const t = String(input || "").trim();
+  if (!t) return null;
+  if (/[a-z@_]/i.test(t)) {
+    const u = t.replace(/^https?:\/\/t\.me\//i, "").replace(/^@/, "").toLowerCase().replace(/[^a-z0-9_]/g, "");
+    return u.length >= 3 ? { kind: "u", norm: u } : null;
+  }
+  const d = t.replace(/\D/g, "");
+  return d.length >= 7 ? { kind: "p", norm: d } : null;
+}
+async function sha256Hex(str) {
+  if (!subtle()) throw cloudErr("NO_CRYPTO", 500);
+  const b = await subtle().digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(b)).map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+// Teléfonos: se guardan dos huellas (número completo y últimos 10 dígitos) para tolerar con o sin código de país
+async function identHashes(p) {
+  const salt = "pzfx1|";
+  if (p.kind === "u") return [await sha256Hex(salt + "u:" + p.norm)];
+  const out = [await sha256Hex(salt + "p:" + p.norm)];
+  if (p.norm.length > 10) out.push(await sha256Hex(salt + "p:" + p.norm.slice(-10)));
+  return out;
+}
+async function memberLookup(input) {
+  const p = parseIdent(input);
+  if (!p) throw cloudErr("BAD_ID", 400);
+  const hs = await identHashes(p);
+  const { data } = await ghReadJson(MEMBERS_PUB, false, []);
+  const list = Array.isArray(data) ? data : [];
+  return { p, rec: list.find((m) => m && Array.isArray(m.hs) && m.hs.some((h) => hs.includes(h))) || null };
+}
+async function membersAdminLoad() {
+  const { data } = await ghReadJson(MEMBERS_ENC, true, null);
+  if (!data || !data.data) return { list: [], locked: false };
+  try { return { list: await decryptOpen(data, authToken()), locked: false }; } catch (e) { return { list: [], locked: true }; }
+}
+async function membersAdminSave(list) {
+  const pub = list.filter((m) => !m.revoked).map((m) => ({ id: m.id, n: m.name, hs: m.hs, ch: m.ch, plan: m.plan, start: m.start, days: m.days }));
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const enc = await ghReadJson(MEMBERS_ENC, true, null);
+    const pb = await ghReadJson(MEMBERS_PUB, true, []);
+    try {
+      await ghWriteJson(MEMBERS_ENC, await encryptOpen(list, authToken()), enc.sha, "Miembros VIP (cifrado)");
+      await ghWriteJson(MEMBERS_PUB, pub, pb.sha, "Miembros VIP (acceso)");
+      return;
+    } catch (e) { if ((e.code === 409 || e.code === 422) && attempt < 2) continue; throw e; }
+  }
+}
+
+const MEMBER_STATUS_STYLE = {
+  Activo: ["rgba(52,211,153,.14)", "var(--pos)"],
+  "Por vencer": ["rgba(251,191,36,.16)", "var(--amb2)"],
+  Vencido: ["rgba(251,113,133,.14)", "var(--neg)"],
+  Revocado: ["rgba(var(--fg),.08)", "var(--cardink2)"],
+};
+const MemberBadge = ({ s }) => <span className="mb-badge" style={{ background: MEMBER_STATUS_STYLE[s][0], color: MEMBER_STATUS_STYLE[s][1] }}>{s}</span>;
+
+/* ----------------------------- ADMIN: miembros ----------------------------- */
+function MembersAdmin() {
+  const [list, setList] = useState(null);
+  const [locked, setLocked] = useState(false);
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [form, setForm] = useState(null);
+  const [q, setQ] = useState("");
+  useEffect(() => {
+    let alive = true;
+    membersAdminLoad().then((r) => { if (alive) { setList(r.list); setLocked(r.locked); } }).catch((e) => { if (alive) { setList([]); setErr("No se pudo leer la lista: " + (e.message || "error de conexión")); } });
+    return () => { alive = false; };
+  }, []);
+  const persist = async (next) => {
+    setBusy(true); setErr("");
+    try { await membersAdminSave(next); setList(next); return true; }
+    catch (e) { setErr("No se pudo guardar en GitHub: " + (e.message || "error")); return false; }
+    finally { setBusy(false); }
+  };
+  const openNew = () => setForm({ mode: "new", name: "", ident: "", ch: "AMBOS", plan: "1M", start: localDate(), days: 31, error: "" });
+  const openEdit = (m) => setForm({ mode: "edit", id: m.id, created: m.created, name: m.name, ident: m.ident, ch: m.ch, plan: m.plan, start: m.start, days: m.days, error: "" });
+  const openRenew = (m) => setForm({ mode: "renew", id: m.id, created: m.created, name: m.name, ident: m.ident, ch: m.ch, plan: m.plan, ...renewCalc(m, m.plan), error: "" });
+  const setF = (patch) => setForm((f) => ({ ...f, ...patch, error: "" }));
+  const onPlan = (plan) => {
+    if (form.mode === "renew") { const m = list.find((x) => x.id === form.id); setF({ plan, ...renewCalc(m, plan) }); }
+    else setF({ plan, days: M_PLAN[plan].days });
+  };
+  const submit = async () => {
+    const f = form;
+    const nm = f.name.trim();
+    const p = parseIdent(f.ident);
+    const days = Math.round(Number(f.days) || 0);
+    if (!nm) return setForm({ ...f, error: "Escribe el nombre del miembro." });
+    if (!p) return setForm({ ...f, error: "Escribe un usuario de Telegram (@usuario) o un teléfono válido." });
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(f.start)) return setForm({ ...f, error: "Elige la fecha de inicio." });
+    if (days < 1) return setForm({ ...f, error: "Los días de acceso deben ser 1 o más." });
+    let hs;
+    try { hs = await identHashes(p); } catch (e) { return setForm({ ...f, error: "Este navegador no permite cifrar. Usa Chrome, Edge o Safari actualizados." }); }
+    if (list.some((m) => m.id !== f.id && m.hs.some((h) => hs.includes(h)))) return setForm({ ...f, error: "Ya existe un miembro con ese usuario o teléfono. Usa Editar o Renovar." });
+    const rec = { id: f.id || uid(), name: nm, ident: f.ident.trim(), hs, ch: f.ch, plan: f.plan, start: f.start, days, revoked: false, created: f.created || localDate() };
+    const next = f.id ? list.map((m) => (m.id === f.id ? rec : m)) : [...list, rec];
+    if (await persist(next)) setForm(null);
+  };
+  const revoke = async (m) => { if (window.confirm(`¿Revocar el acceso de ${m.name}? Dejará de poder entrar a Mi Acceso.`)) await persist(list.map((x) => (x.id === m.id ? { ...x, revoked: true } : x))); };
+  const remove = async (m) => { if (window.confirm(`¿Eliminar definitivamente a ${m.name} de la lista?`)) await persist(list.filter((x) => x.id !== m.id)); };
+
+  const rows = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    return (list || [])
+      .filter((m) => !term || m.name.toLowerCase().includes(term) || m.ident.toLowerCase().includes(term))
+      .sort((a, b) => (a.revoked ? 9999 : memberLeft(a)) - (b.revoked ? 9999 : memberLeft(b)));
+  }, [list, q]);
+  const count = (s) => (list || []).filter((m) => memberStatus(m) === s).length;
+  const preview = form && /^\d{4}-\d{2}-\d{2}$/.test(form.start) && form.days > 0 ? { ...form, days: Math.round(Number(form.days)) } : null;
+
+  return (
+    <div className="space-y-5" data-testid="members-admin">
+      <section className="bx-card p-5 md:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-xl md:text-2xl font-black text-white">Miembros VIP · Mi Acceso</h2>
+            <p className="mt-1 text-sm bx-muted max-w-2xl">Autoriza a tus miembros con su usuario de Telegram o teléfono. Cada mes cuenta 31 días completos (3 meses = 93), así nadie pierde días cuando el mes siguiente es más corto.</p>
+          </div>
+          {!locked && <button type="button" className="bx-btn px-4 py-2 text-sm" onClick={openNew} data-testid="member-add">+ Autorizar miembro</button>}
+        </div>
+        <div className="mt-4 flex flex-wrap gap-2 text-xs">
+          {["Activo", "Por vencer", "Vencido"].map((s) => <span key={s} className="mb-badge" style={{ background: MEMBER_STATUS_STYLE[s][0], color: MEMBER_STATUS_STYLE[s][1] }}>{count(s)} {s === "Activo" ? "activos" : s === "Vencido" ? "vencidos" : "por vencer"}</span>)}
+        </div>
+        {err && <div className="mt-3 text-sm text-rose-400" role="alert">{err}</div>}
+        {locked && <div className="mt-3 text-sm text-amber-300" role="alert">La lista está cifrada con otro token. Entra con el mismo token con el que la creaste para verla y editarla (no se sobrescribe nada).</div>}
+      </section>
+
+      {form && (
+        <section className="bx-card p-5 md:p-6" data-testid="member-form">
+          <h3 className="text-lg font-black text-white">{form.mode === "new" ? "Autorizar nuevo miembro" : form.mode === "edit" ? "Editar miembro" : `Renovar a ${form.name}`}</h3>
+          <div className="mt-4 grid gap-4 md:grid-cols-2">
+            <div><label className="bx-label" htmlFor="mf-name">Nombre del miembro</label><input id="mf-name" className="bx-input" value={form.name} disabled={form.mode === "renew"} onChange={(e) => setF({ name: e.target.value })} placeholder="Ej.: Carlos Pérez" /></div>
+            <div><label className="bx-label" htmlFor="mf-id">Usuario de Telegram o teléfono</label><input id="mf-id" className="bx-input" value={form.ident} disabled={form.mode === "renew"} onChange={(e) => setF({ ident: e.target.value })} placeholder="@usuario  ·  +58 412 0000000" /></div>
+            <div><label className="bx-label" htmlFor="mf-ch">Canal</label>
+              <select id="mf-ch" className="bx-input" value={form.ch} disabled={form.mode === "renew"} onChange={(e) => setF({ ch: e.target.value })}>
+                {Object.entries(M_CH).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select></div>
+            <div><label className="bx-label" htmlFor="mf-plan">Plan</label>
+              <select id="mf-plan" className="bx-input" value={form.plan} onChange={(e) => onPlan(e.target.value)}>
+                <option value="1M">1 Mes (31 días)</option><option value="3M">3 Meses (93 días)</option><option value="SOCIO">Plan Socio · acceso gratis por afiliación (31 días, renovable)</option>
+              </select></div>
+            <div><label className="bx-label" htmlFor="mf-start">Fecha de inicio</label><input id="mf-start" type="date" className="bx-input" value={form.start} disabled={form.mode === "renew"} onChange={(e) => setF({ start: e.target.value })} /></div>
+            <div><label className="bx-label" htmlFor="mf-days">Días de acceso</label><input id="mf-days" type="number" min="1" className="bx-input" value={form.days} onChange={(e) => setF({ days: e.target.value })} /></div>
+          </div>
+          {preview && <p className="mt-3 text-sm bx-ink2" data-testid="member-preview">Acceso desde <b className="text-white">{fmtDate(preview.start)}</b> hasta <b className="text-white">{fmtDate(memberEnd(preview))}</b> · {preview.days} días reales · quedan <b className="text-white">{Math.max(0, memberLeft(preview))}</b> hoy.</p>}
+          {form.error && <div className="mt-3 text-sm text-rose-400" role="alert">{form.error}</div>}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <button type="button" className="bx-btn px-4 py-2 text-sm" disabled={busy} onClick={submit} data-testid="member-save">{busy ? "Guardando…" : form.mode === "new" ? "Autorizar acceso" : form.mode === "edit" ? "Guardar cambios" : "Confirmar renovación"}</button>
+            <button type="button" className="bx-ghost" onClick={() => setForm(null)}>Cancelar</button>
+          </div>
+        </section>
+      )}
+
+      <section className="bx-card p-4 md:p-5">
+        <div className="flex flex-wrap items-center gap-3 mb-3">
+          <div className="text-xs uppercase tracking-[0.18em] bx-muted mr-auto">{list === null ? "Cargando miembros…" : `${rows.length} miembro${rows.length === 1 ? "" : "s"}`}</div>
+          <input className="bx-input" style={{ maxWidth: 240 }} value={q} onChange={(e) => setQ(e.target.value)} placeholder="Buscar nombre o usuario" aria-label="Buscar miembro" />
+        </div>
+        <div className="overflow-x-auto">
+          <table className="mb-table" data-testid="members-table">
+            <thead><tr><th>Nombre</th><th>Usuario / Teléfono</th><th>Canal</th><th>Plan</th><th>Inicio</th><th>Días restantes</th><th>Estado</th><th>Acciones</th></tr></thead>
+            <tbody>
+              {rows.map((m) => {
+                const st = memberStatus(m), left = memberLeft(m);
+                return (
+                  <tr key={m.id} data-testid="member-row">
+                    <td className="font-bold text-white">{m.name}</td>
+                    <td>{m.ident}</td>
+                    <td>{M_CH[m.ch]}</td>
+                    <td>{M_PLAN[m.plan].label}</td>
+                    <td className="bx-num">{fmtDate(m.start)}</td>
+                    <td><span className="bx-num text-lg font-black" style={{ color: st === "Activo" ? "var(--cardink)" : MEMBER_STATUS_STYLE[st][1] }}>{m.revoked ? "—" : Math.max(0, left)}</span>{!m.revoked && <div className="text-[11px] bx-muted">hasta {fmtDate(memberEnd(m))}</div>}</td>
+                    <td><MemberBadge s={st} /></td>
+                    <td><div className="flex flex-wrap gap-1.5">
+                      <button type="button" className="bx-ghost mb-act" onClick={() => openRenew(m)}>Renovar</button>
+                      <button type="button" className="bx-ghost mb-act" onClick={() => openEdit(m)}>Editar</button>
+                      {!m.revoked && <button type="button" className="bx-ghost mb-act danger" onClick={() => revoke(m)}>Revocar</button>}
+                      <button type="button" className="bx-ghost mb-act danger" onClick={() => remove(m)} aria-label={`Eliminar ${m.name}`}>✕</button>
+                    </div></td>
+                  </tr>
+                );
+              })}
+              {list !== null && rows.length === 0 && <tr><td colSpan={8} className="text-center bx-muted py-6">Aún no hay miembros. Pulsa «Autorizar miembro» para agregar el primero.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+/* ----------------------------- Conteo de salidas (día / semana / mes) ----------------------------- */
+const weekStartNum = (n) => n - ((new Date(n * 86400000).getUTCDay() + 6) % 7); // semana de lunes a domingo
+const inRange = (date, mode, ref) => {
+  const n = dayNum(date), r = dayNum(ref);
+  if (isNaN(n) || isNaN(r)) return false;
+  if (mode === "day") return n === r;
+  if (mode === "week") { const s = weekStartNum(r); return n >= s && n <= s + 6; }
+  return String(date).slice(0, 7) === String(ref).slice(0, 7);
+};
+const rangeText = (mode, ref) => {
+  if (mode === "day") return fmtDate(ref);
+  if (mode === "week") { const s = weekStartNum(dayNum(ref)); return `${fmtDate(numToDate(s))} – ${fmtDate(numToDate(s + 6))}`; }
+  return monthLabel(String(ref).slice(0, 7));
+};
+const EXIT_GROUPS = [
+  ["be", "Break Even (BE)", "Entradas que cerraron en BE"],
+  ["manual", "Cierre manual", "Entradas con cierre manual"],
+  ["big", "+3 TPs / grandes recorridos", "Más de 3 TPs o recorridos de 500+ pips"],
+];
+// cats = { be: [], manual: [], big: [] }; cada ítem: { id, date, asset, dir, pips, unit, label }
+function ExitCounts({ cats, testid }) {
+  const [mode, setMode] = useState("day");
+  const [ref, setRef] = useState(localDate());
+  const safeRef = /^\d{4}-\d{2}-\d{2}$/.test(ref) ? ref : localDate();
+  return (
+    <div data-testid={testid}>
+      <div className="flex flex-wrap items-center gap-2">
+        {[["day", "Día"], ["week", "Semana"], ["month", "Mes"]].map(([k, l]) => <button key={k} type="button" className={`bx-pill ${mode === k ? "on" : ""}`} onClick={() => setMode(k)} aria-pressed={mode === k}>{l}</button>)}
+        <input type="date" className="bx-input" style={{ maxWidth: 170 }} value={ref} onChange={(e) => setRef(e.target.value)} aria-label="Fecha de referencia" />
+        <span className="text-sm bx-muted" data-testid="exit-range">{rangeText(mode, safeRef)}</span>
+      </div>
+      <div className="mt-4 grid gap-4 md:grid-cols-3">
+        {EXIT_GROUPS.map(([k, title, sub]) => {
+          const items = (cats[k] || []).filter((i) => inRange(i.date, mode, safeRef)).sort((a, b) => (a.date < b.date ? 1 : -1));
+          const c = (m) => (cats[k] || []).filter((i) => inRange(i.date, m, safeRef)).length;
+          return (
+            <div key={k} className="mb-box" data-testid={`exit-${k}`}>
+              <div className="text-sm font-extrabold text-white">{title}</div>
+              <div className="text-[11px] bx-muted">{sub}</div>
+              <div className="mt-2 flex items-baseline gap-2"><span className="bx-num text-4xl font-black" style={{ color: "var(--accent)" }} data-testid={`exit-${k}-n`}>{items.length}</span><span className="text-xs bx-muted">{mode === "day" ? "en el día" : mode === "week" ? "en la semana" : "en el mes"}</span></div>
+              <div className="mt-1 text-[11px] bx-muted">Día {c("day")} · Semana {c("week")} · Mes {c("month")}</div>
+              <ul className="mt-3 space-y-1.5 max-h-56 overflow-y-auto pr-1">
+                {items.map((i) => (
+                  <li key={i.id} className="mb-item"><span className="bx-num text-[11px] bx-muted">{fmtDate(i.date)}</span><b className="text-white">{i.asset}</b><span className="bx-muted text-[11px]">{i.dir}{i.label ? ` · ${i.label}` : ""}</span><span className="ml-auto bx-num text-xs font-bold" style={{ color: i.pips > 0 ? "var(--pos)" : i.pips < 0 ? "var(--neg)" : "var(--cardink2)" }}>{fmtP(i.pips)} {i.unit}</span></li>
+                ))}
+                {items.length === 0 && <li className="text-xs bx-muted">Ninguna en este periodo.</li>}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Admin: salidas del Track Record (todas las señales cerradas)
+function ExitMetrics({ trades }) {
+  const [big, setBig] = useState(500);
+  const cats = useMemo(() => {
+    const out = { be: [], manual: [], big: [] };
+    trades.forEach((t) => {
+      if (t.discarded || !isClosed(t)) return;
+      const unit = unitWord(t), two = hasE2(t);
+      legKeys(t).forEach((k) => {
+        const L = legOf(t, k), p = num(L.pips) ?? 0;
+        const base = { id: t.id + k, date: t.date, asset: t.asset, dir: t.direction, pips: p, unit, label: two ? k.toUpperCase() : "" };
+        if (L.status === "BE") out.be.push(base);
+        if (L.status === "MANUAL") out.manual.push(base);
+      });
+      const hm = hitMax(t), maxLeg = Math.max(...legKeys(t).map((k) => num(legOf(t, k).pips) ?? 0), num(t.pips) ?? 0);
+      const open = legKeys(t).some((k) => isRun(legOf(t, k)));
+      if (hm >= 3 || maxLeg >= big) out.big.push({ id: t.id, date: t.date, asset: t.asset, dir: t.direction, pips: num(t.pips) ?? 0, unit, label: [hm >= 3 ? `TP${hm + 1}` : "", open ? "OPEN" : "", maxLeg >= big ? `${big}+` : ""].filter(Boolean).join(" · ") });
+    });
+    return out;
+  }, [trades, big]);
+  return (
+    <section className="bx-card p-5 md:p-6" data-testid="exit-metrics">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl md:text-2xl font-black text-white">Salidas y recorridos</h2>
+          <p className="mt-1 text-sm bx-muted max-w-2xl">Cuántas entradas cerraron en BE, con cierre manual o con +3 TPs / grandes recorridos, y cuáles fueron, por día, semana y mes.</p>
+        </div>
+        <label className="text-xs bx-muted flex items-center gap-2">Recorrido grande desde <input type="number" min="1" className="bx-input" style={{ width: 90 }} value={big} onChange={(e) => setBig(Math.max(1, Number(e.target.value) || 500))} aria-label="Recorrido grande en pips" /> pips/puntos</label>
+      </div>
+      <div className="mt-4"><ExitCounts cats={cats} testid="exit-admin" /></div>
+    </section>
+  );
+}
+
+/* ----------------------------- Video del curso con protección ----------------------------- */
+const fmtClock = (s) => { s = Math.max(0, Math.floor(s || 0)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`; };
+function SecureVideo({ src, mark }) {
+  const box = useRef(null), vid = useRef(null);
+  const [playing, setPlaying] = useState(false);
+  const [t, setT] = useState(0);
+  const [dur, setDur] = useState(0);
+  const [vol, setVol] = useState(1);
+  const [pos, setPos] = useState({ x: 8, y: 12 });
+  useEffect(() => {
+    const iv = setInterval(() => setPos({ x: 4 + Math.random() * 52, y: 8 + Math.random() * 68 }), 7000);
+    return () => clearInterval(iv);
+  }, []);
+  const stop = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
+  const toggle = () => { const v = vid.current; if (!v) return; if (v.paused) v.play().catch(() => {}); else v.pause(); };
+  const seek = (e) => { const v = vid.current; if (v && dur) { v.currentTime = (Number(e.target.value) / 1000) * dur; setT(v.currentTime); } };
+  const setVolume = (e) => { const v = vid.current, x = Number(e.target.value) / 100; setVol(x); if (v) { v.volume = x; v.muted = x === 0; } };
+  const canFs = !!(typeof document !== "undefined" && document.fullscreenEnabled);
+  const fs = () => { const b = box.current; if (!b) return; if (document.fullscreenElement) document.exitFullscreen(); else if (b.requestFullscreen) b.requestFullscreen().catch(() => {}); };
+  return (
+    <div ref={box} className="mb-video" onContextMenu={stop} onDragStart={stop} onCopy={stop} data-testid="secure-video">
+      <video ref={vid} src={src} controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture disableRemotePlayback playsInline preload="metadata" draggable={false} onContextMenu={stop}
+        onPlay={() => setPlaying(true)} onPause={() => setPlaying(false)} onEnded={() => setPlaying(false)}
+        onTimeUpdate={(e) => setT(e.target.currentTime)} onLoadedMetadata={(e) => setDur(e.target.duration)} />
+      <div className="mb-overlay" onClick={toggle} onContextMenu={stop} onDragStart={stop} aria-hidden="true" data-testid="video-overlay" />
+      {!playing && <button type="button" className="mb-bigplay" onClick={toggle} aria-label="Reproducir"><svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z" /></svg></button>}
+      <div className="mb-wm" style={{ left: pos.x + "%", top: pos.y + "%" }} aria-hidden="true">{mark}</div>
+      <div className="mb-ctrl" onContextMenu={stop}>
+        <button type="button" onClick={toggle} aria-label={playing ? "Pausar" : "Reproducir"}>{playing ? "❚❚" : "▶"}</button>
+        <span className="bx-num text-[11px]">{fmtClock(t)}</span>
+        <input type="range" min="0" max="1000" value={dur ? Math.round((t / dur) * 1000) : 0} onChange={seek} aria-label="Progreso del video" className="mb-range grow" />
+        <span className="bx-num text-[11px]">{fmtClock(dur)}</span>
+        <input type="range" min="0" max="100" value={Math.round(vol * 100)} onChange={setVolume} aria-label="Volumen" className="mb-range" style={{ width: 70 }} />
+        {canFs && <button type="button" onClick={fs} aria-label="Pantalla completa">⛶</button>}
+      </div>
+    </div>
+  );
+}
+
+function CourseView({ mark }) {
+  const first = COURSE_MODULES.findIndex((m) => m.lessons.some((l) => l.src));
+  const [sel, setSel] = useState({ m: Math.max(0, first), l: Math.max(0, first >= 0 ? COURSE_MODULES[first].lessons.findIndex((l) => l.src) : 0) });
+  // Bloquea atajos de guardado / inspección solo dentro del curso
+  useEffect(() => {
+    const onKey = (e) => {
+      const k = String(e.key || "").toLowerCase();
+      if (k === "f12" || ((e.ctrlKey || e.metaKey) && (k === "s" || k === "u")) || ((e.ctrlKey || e.metaKey) && e.shiftKey && (k === "i" || k === "j" || k === "c"))) { e.preventDefault(); e.stopPropagation(); }
+    };
+    window.addEventListener("keydown", onKey, true);
+    return () => window.removeEventListener("keydown", onKey, true);
+  }, []);
+  const lesson = COURSE_MODULES[sel.m]?.lessons[sel.l];
+  return (
+    <div className="grid lg:grid-cols-[1fr_300px] gap-5 mb-nosel" data-testid="course-view" onContextMenu={(e) => e.preventDefault()}>
+      <div>
+        {lesson?.src
+          ? <SecureVideo key={lesson.src} src={lesson.src} mark={mark} />
+          : <div className="mb-video mb-soon"><div><div className="text-3xl">🎬</div><div className="mt-2 font-extrabold text-white">Video próximamente</div><div className="text-sm bx-muted">Esta clase se publicará pronto.</div></div></div>}
+        <h3 className="mt-4 text-lg font-black text-white">{lesson?.title}</h3>
+        <p className="text-sm bx-muted">{COURSE_MODULES[sel.m]?.title}</p>
+      </div>
+      <div className="space-y-3">
+        {COURSE_MODULES.map((mod, mi) => (
+          <div key={mod.title} className="mb-box">
+            <div className="text-xs font-extrabold tracking-wide" style={{ color: "var(--accent)" }}>{mod.title}</div>
+            <ul className="mt-2 space-y-1">
+              {mod.lessons.map((ls, li) => (
+                <li key={ls.title}><button type="button" className={`mb-lesson ${sel.m === mi && sel.l === li ? "on" : ""}`} onClick={() => setSel({ m: mi, l: li })}><span aria-hidden="true">{ls.src ? "▶" : "🔒"}</span><span>{ls.title}</span></button></li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ----------------------------- Bitácora del alumno (localStorage) ----------------------------- */
+const LOG_CLOSE = { TP1: "TP1", TP2: "TP2", TP3: "TP3", "TP3+": "+3 TPs / 500–600+ pips", BE: "BE (Break Even)", MANUAL: "Cierre manual", SL: "SL" };
+const emptyLog = () => ({ id: "", date: localDate(), open: "", asset: "", dir: "BUY", result: "", unit: "pips", close: "TP1", notes: "" });
+function Logbook({ storeKey }) {
+  const read = () => { try { const v = JSON.parse(localStorage.getItem(storeKey) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
+  const [entries, setEntries] = useState(read);
+  const [form, setForm] = useState(emptyLog);
+  const [gear, setGear] = useState(false);
+  const [msg, setMsg] = useState("");
+  const fileRef = useRef(null);
+  const save = (next) => { setEntries(next); try { localStorage.setItem(storeKey, JSON.stringify(next)); } catch (e) { setMsg("No se pudo guardar en este navegador (almacenamiento bloqueado)."); } };
+  const submit = (e) => {
+    e.preventDefault();
+    if (!form.asset.trim()) return setMsg("Escribe el activo.");
+    const r = Number(String(form.result).replace(",", "."));
+    if (form.result === "" || isNaN(r)) return setMsg("Escribe el resultado (usa − para pérdidas).");
+    const rec = { ...form, asset: form.asset.trim().toUpperCase(), result: r, id: form.id || uid() };
+    save(form.id ? entries.map((x) => (x.id === form.id ? rec : x)) : [...entries, rec]);
+    setForm(emptyLog()); setMsg("Operación guardada.");
+  };
+  const del = (id) => { if (window.confirm("¿Eliminar esta operación de tu bitácora?")) save(entries.filter((x) => x.id !== id)); };
+  const download = (name, text, type) => { const a = document.createElement("a"); const url = URL.createObjectURL(new Blob([text], { type })); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500); };
+  const backup = () => { download(`bitacora-respaldo-${localDate()}.json`, JSON.stringify({ app: "precisionzonefx-bitacora", v: 1, entries }, null, 2), "application/json"); setMsg("Respaldo descargado. Guárdalo en un lugar seguro."); };
+  const restore = (e) => {
+    const f = e.target.files && e.target.files[0]; e.target.value = "";
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try {
+        const j = JSON.parse(String(rd.result)); const arr = Array.isArray(j) ? j : j.entries;
+        if (!Array.isArray(arr)) throw new Error("x");
+        const ok = arr.filter((x) => x && x.date && x.asset && x.result !== undefined).map((x) => ({ ...emptyLog(), ...x, id: x.id || uid(), result: Number(x.result) || 0 }));
+        if (entries.length && !window.confirm(`Esto reemplaza tus ${entries.length} operaciones actuales por ${ok.length} del respaldo. ¿Continuar?`)) return;
+        save(ok); setMsg(`Respaldo restaurado: ${ok.length} operaciones.`);
+      } catch (err) { setMsg("Ese archivo no es un respaldo válido de la bitácora."); }
+    };
+    rd.readAsText(f);
+  };
+  const exportXls = () => {
+    const q = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const head = ["Fecha", "OPEN", "Activo", "Dirección", "Resultado", "Unidad", "Tipo de cierre", "Notas"];
+    const rows = [...entries].sort((a, b) => (a.date < b.date ? -1 : 1)).map((x) => [fmtDate(x.date), x.open, x.asset, x.dir, String(x.result).replace(".", ","), x.unit, LOG_CLOSE[x.close] || x.close, x.notes].map(q).join(";"));
+    download(`bitacora-${localDate()}.csv`, "﻿" + [head.map(q).join(";"), ...rows].join("\r\n"), "text/csv;charset=utf-8");
+    setMsg("Archivo listo: ábrelo con Excel o impórtalo en Google Sheets.");
+  };
+  const cats = useMemo(() => {
+    const out = { be: [], manual: [], big: [] };
+    entries.forEach((x) => {
+      const it = { id: x.id, date: x.date, asset: x.asset, dir: x.dir, pips: Number(x.result) || 0, unit: x.unit, label: LOG_CLOSE[x.close] || x.close };
+      if (x.close === "BE") out.be.push(it);
+      if (x.close === "MANUAL") out.manual.push(it);
+      if (x.close === "TP3+" || (x.unit === "pips" && Number(x.result) >= 500)) out.big.push(it);
+    });
+    return out;
+  }, [entries]);
+  const sorted = [...entries].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+  const set = (k, v) => { setMsg(""); setForm((f) => ({ ...f, [k]: v })); };
+  return (
+    <div className="space-y-5" data-testid="logbook">
+      <div className="mb-warn" role="note" data-testid="log-warning">
+        <div className="font-black text-white">⚠️ Importante:</div>
+        <ul className="mt-2 space-y-1.5 text-sm">
+          <li>📱 Usa siempre el mismo celular y el mismo navegador. Tus datos se guardan ahí, no en una cuenta.</li>
+          <li>🗑️ No borres los datos del navegador, o pierdes tu bitácora.</li>
+          <li>💾 Cada semana toca ⚙️ y “Guardar respaldo”. Si cambias de celular, usa “Restaurar respaldo”.</li>
+          <li>📊 “Exportar Excel” lleva tus datos a Excel o Sheets.</li>
+        </ul>
+      </div>
+
+      <section className="bx-card p-5">
+        <div className="flex items-center justify-between gap-3">
+          <h3 className="text-lg font-black text-white">{form.id ? "Editar operación" : "Registrar operación"}</h3>
+          <button type="button" className="bx-ghost" onClick={() => setGear((g) => !g)} aria-expanded={gear} aria-label="Respaldo y exportación" data-testid="log-gear">⚙️</button>
+        </div>
+        {gear && (
+          <div className="mt-3 flex flex-wrap gap-2" data-testid="log-tools">
+            <button type="button" className="bx-ghost" onClick={backup} data-testid="log-backup">💾 Guardar respaldo</button>
+            <button type="button" className="bx-ghost" onClick={() => fileRef.current?.click()} data-testid="log-restore">📂 Restaurar respaldo</button>
+            <button type="button" className="bx-ghost" onClick={exportXls} data-testid="log-export">📊 Exportar Excel</button>
+            <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={restore} data-testid="log-file" />
+          </div>
+        )}
+        <form onSubmit={submit} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div><label className="bx-label" htmlFor="lg-date">Fecha</label><input id="lg-date" type="date" className="bx-input" value={form.date} onChange={(e) => set("date", e.target.value)} required /></div>
+          <div><label className="bx-label" htmlFor="lg-open">OPEN (precio)</label><input id="lg-open" className="bx-input" inputMode="decimal" value={form.open} onChange={(e) => set("open", e.target.value)} placeholder="Ej.: 4100" /></div>
+          <div><label className="bx-label" htmlFor="lg-asset">Activo</label><input id="lg-asset" className="bx-input" value={form.asset} onChange={(e) => set("asset", e.target.value)} placeholder="XAUUSD, Step Index…" /></div>
+          <div><label className="bx-label" htmlFor="lg-dir">Dirección</label><select id="lg-dir" className="bx-input" value={form.dir} onChange={(e) => set("dir", e.target.value)}><option>BUY</option><option>SELL</option></select></div>
+          <div><label className="bx-label" htmlFor="lg-res">Resultado</label><input id="lg-res" className="bx-input" inputMode="decimal" value={form.result} onChange={(e) => set("result", e.target.value)} placeholder="Ej.: 120 o -50" /></div>
+          <div><label className="bx-label" htmlFor="lg-unit">Unidad</label><select id="lg-unit" className="bx-input" value={form.unit} onChange={(e) => set("unit", e.target.value)}><option value="pips">pips</option><option value="USD">USD</option></select></div>
+          <div className="sm:col-span-2"><label className="bx-label" htmlFor="lg-close">Tipo de cierre</label><select id="lg-close" className="bx-input" value={form.close} onChange={(e) => set("close", e.target.value)}>{Object.entries(LOG_CLOSE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
+          <div className="sm:col-span-2 lg:col-span-4"><label className="bx-label" htmlFor="lg-notes">Notas</label><input id="lg-notes" className="bx-input" value={form.notes} onChange={(e) => set("notes", e.target.value)} placeholder="Qué pasó, qué aprendiste…" /></div>
+          <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center gap-2">
+            <button type="submit" className="bx-btn px-4 py-2 text-sm" data-testid="log-save">{form.id ? "Guardar cambios" : "Guardar operación"}</button>
+            {form.id && <button type="button" className="bx-ghost" onClick={() => setForm(emptyLog())}>Cancelar</button>}
+            {msg && <span className="text-sm bx-ink2" role="status" data-testid="log-msg">{msg}</span>}
+          </div>
+        </form>
+      </section>
+
+      <section className="bx-card p-5">
+        <h3 className="text-lg font-black text-white">Mis salidas</h3>
+        <p className="text-sm bx-muted">Cuántas operaciones cerraron en BE, con cierre manual o con +3 TPs / 500–600+ pips.</p>
+        <div className="mt-4"><ExitCounts cats={cats} testid="exit-member" /></div>
+      </section>
+
+      <section className="bx-card p-4 md:p-5">
+        <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">{sorted.length} operación{sorted.length === 1 ? "" : "es"}</div>
+        <div className="overflow-x-auto">
+          <table className="mb-table" data-testid="log-table">
+            <thead><tr><th>Fecha</th><th>OPEN</th><th>Activo</th><th>Dir.</th><th>Resultado</th><th>Cierre</th><th>Notas</th><th /></tr></thead>
+            <tbody>
+              {sorted.map((x) => (
+                <tr key={x.id}>
+                  <td className="bx-num">{fmtDate(x.date)}</td><td className="bx-num">{x.open || "—"}</td><td className="font-bold text-white">{x.asset}</td><td>{x.dir}</td>
+                  <td className="bx-num font-bold" style={{ color: x.result > 0 ? "var(--pos)" : x.result < 0 ? "var(--neg)" : "var(--cardink2)" }}>{fmtP(x.result)} {x.unit}</td>
+                  <td>{LOG_CLOSE[x.close] || x.close}</td><td className="bx-muted" style={{ maxWidth: 220 }}>{x.notes}</td>
+                  <td><div className="flex gap-1.5"><button type="button" className="bx-ghost mb-act" onClick={() => { setForm({ ...emptyLog(), ...x, result: String(x.result) }); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Editar</button><button type="button" className="bx-ghost mb-act danger" onClick={() => del(x.id)} aria-label="Eliminar">✕</button></div></td>
+                </tr>
+              ))}
+              {sorted.length === 0 && <tr><td colSpan={8} className="text-center bx-muted py-6">Todavía no has registrado operaciones.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+/* ----------------------------- Tutorial ----------------------------- */
+const TUT_STEPS = [
+  "Lee el mensaje de la señal completo: activo, dirección (BUY o SELL), PE, SL y los TP.",
+  "Copia los parámetros exactos tal como llegan al canal; no los redondees ni los cambies.",
+  "Abre el activo en tu plataforma y elige BUY o SELL según la señal.",
+  "Coloca el PE (orden límite o a mercado, según indique el mensaje), el SL y el TP.",
+  "Usa el lotaje que te toque según tu riesgo. Nunca sobrelotees.",
+  "Cuando el precio llegue al primer TP, gestiona el parcial como indique el canal.",
+  "Mueve el SL al precio de entrada (BE) cuando se indique, para cerrar sin pérdida si el mercado se devuelve.",
+  "Sigue las actualizaciones del canal hasta el cierre y registra el resultado en tu Bitácora.",
+];
+const TUT_LANG = [
+  ["BUY (compra) / SELL (venta) 📊", "Cuando compras ganas si el precio sube y cuando vendes ganas si el precio baja."],
+  ["PE (punto de entrada) 🟢", "Es el nivel exacto en el que abriste tu operación (compra o venta)."],
+  ["SL (stop loss) ❌", "Es el nivel exacto en el que se cerrará tu operación para tener una pérdida controlada y proteger el capital."],
+  ["TP (take profit) ✅", "Es el nivel exacto que colocas en el mercado para que tu operación se cierre automáticamente cuando alcanza la ganancia definida."],
+  ["BE (break even) 🟰", "Acción de mover el stop loss al precio de entrada para cerrar sin pérdida ni ganancia si el mercado se devuelve."],
+  ["RR (Riesgo-Beneficio) 📏", "Lo que estamos dispuestos a perder por operación buscando X veces lo arriesgado. Ejemplos: arriesgar $2 buscando $20 es RR 1:10; arriesgar $2 buscando $10 es RR 1:5."],
+];
+const TUT_RULES = [
+  ["Gestión del Tiempo", "Prioriza tu familia y tus actividades laborales. Dedica tiempo únicamente a las sesiones de ejecución de señales."],
+  ["En caso de pérdida", "Acepta el resultado como parte del proceso. Si tocas Stop Loss, cierra la plataforma hasta el día siguiente y no envíes comentarios negativos al chat."],
+  ["En caso de ganancia", "Toma profit y retírate hasta la siguiente jornada, manteniendo la calma aunque no alcance el objetivo exacto."],
+  ["Ejecución de Operaciones", "Sigue al pie de la letra las instrucciones: cierra en negativo cuando se indique, aguantando máximo 1 o 2 velas adicionales solo dentro de la zona de invalidez. Respeta el SL. Prohibido el sobreloteo y las reentradas no autorizadas."],
+  ["Evaluación Semanal", "Haz el balance los viernes al finalizar la última sesión, enfocándote en la gestión semanal y no en las fluctuaciones diarias."],
+  ["Mentalidad sobre el Dinero", "Es una herramienta de trabajo. No operes por necesidad y no retires fondos hasta alcanzar la meta."],
+];
+const PLAN_LEVELS = [
+  { n: 1, from: 100, to: 350, title: "Nivel 1", range: "De $100 a $350 USD", lines: ["Monto inicial: $116 USD", "Lotaje: bajo"], tp: "+$10", sl: "-$5" },
+  { n: 2, from: 350, to: 760, title: "Nivel 2", range: "De $350 a $760 USD", lines: ["Lotaje: bajo-medio"], tp: "+$25", sl: "-$10" },
+  { n: 3, from: 760, to: 1200, title: "Nivel 3", range: "De $760 a $1,200 USD", lines: ["Lotaje: medio"], tp: "+$45", sl: "-$20" },
+];
+function TutorialView() {
+  const [bal, setBal] = useState("");
+  const b = Number(String(bal).replace(",", "."));
+  const has = bal !== "" && !isNaN(b) && b > 0;
+  const lvl = !has ? null : b >= 1200 ? "elite" : b >= 760 ? 3 : b >= 350 ? 2 : 1;
+  const cur = PLAN_LEVELS.find((l) => l.n === lvl);
+  const pct = !has ? 0 : lvl === "elite" ? 100 : Math.max(0, Math.min(100, ((b - cur.from) / (cur.to - cur.from)) * 100));
+  return (
+    <div className="space-y-6" data-testid="tutorial-view">
+      <section className="bx-card p-5 md:p-6">
+        <h3 className="text-xl font-black text-white">Cómo tomar una señal, paso a paso</h3>
+        <ol className="mt-4 space-y-3">
+          {TUT_STEPS.map((s, i) => <li key={i} className="flex gap-3 text-sm leading-relaxed" style={{ color: "var(--cardink2)" }}><span className="mb-num" aria-hidden="true">{i + 1}</span><span>{s}</span></li>)}
+        </ol>
+        <p className="mt-4 text-xs bx-muted">Las instrucciones del canal siempre mandan sobre esta guía.</p>
+      </section>
+
+      <section>
+        <h3 className="text-xl font-black text-white">Lenguaje que más usamos</h3>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          {TUT_LANG.map(([k, v]) => <div key={k} className="bx-card p-4"><div className="font-extrabold text-white">{k}</div><p className="mt-1 text-sm leading-relaxed bx-ink2">{v}</p></div>)}
+        </div>
+      </section>
+
+      <section>
+        <h3 className="text-xl font-black text-white">Reglas de disciplina 🏆</h3>
+        <p className="mt-1 text-sm bx-muted max-w-3xl">Estas reglas y el plan de crecimiento nacen de la operativa de Sintéticos de PRECISION ZONE FX y sirven como base de disciplina para todo lo que operes.</p>
+        <div className="mt-3 grid gap-3 md:grid-cols-2">
+          {TUT_RULES.map(([k, v]) => <div key={k} className="bx-card p-4" data-testid={`rule-${k.split(" ")[0].toLowerCase()}`}><div className="font-extrabold" style={{ color: "var(--accent)" }}>{k}</div><p className="mt-1 text-sm leading-relaxed bx-ink2">{v}</p></div>)}
+        </div>
+      </section>
+
+      <section data-testid="plan-100-1200">
+        <h3 className="text-xl font-black text-white">Plan para subir una cuenta de $100 a $1,200 USD</h3>
+        <p className="mt-1 text-sm bx-muted">Enfoque Sintéticos — PRECISION ZONE FX</p>
+        <div className="bx-card p-5 mt-3">
+          <div className="font-extrabold text-white">Objetivos clave</div>
+          <ul className="mt-2 space-y-1.5 text-sm bx-ink2 list-disc pl-5">
+            <li>La meta principal es llegar a $1,200 USD, sin importar el tiempo que tome.</li>
+            <li>Cero retiros durante la fase de crecimiento.</li>
+            <li>Paciencia y estricta disciplina.</li>
+            <li>Después, usar los $1,200 USD como base para retiros semanales o quincenales constantes.</li>
+          </ul>
+        </div>
+        <div className="mt-3 grid gap-3 md:grid-cols-3">
+          {PLAN_LEVELS.map((l) => (
+            <div key={l.n} className={`bx-card p-5 mb-level ${lvl === l.n ? "on" : ""}`}>
+              <div className="flex items-center gap-2"><span className="mb-num" aria-hidden="true">{l.n}</span><div><div className="font-black text-white">{l.title}</div><div className="text-xs bx-muted">{l.range}</div></div></div>
+              <ul className="mt-3 space-y-1 text-sm bx-ink2">{l.lines.map((x) => <li key={x}>{x}</li>)}</ul>
+              <div className="mt-3 text-[11px] bx-muted">Salida diaria</div>
+              <div className="flex gap-2 mt-1"><span className="mb-badge" style={{ background: "rgba(52,211,153,.14)", color: "var(--pos)" }}>TP {l.tp} USD</span><span className="mb-badge" style={{ background: "rgba(251,113,133,.14)", color: "var(--neg)" }}>SL {l.sl} USD</span></div>
+            </div>
+          ))}
+        </div>
+        <div className={`bx-card p-5 mt-3 mb-level elite ${lvl === "elite" ? "on" : ""}`}>
+          <div className="font-black text-white">Nivel Elite · $1,200 USD</div>
+          <div className="text-sm" style={{ color: "var(--accent)" }}>Hora de vivir del trading</div>
+          <p className="mt-2 text-sm bx-ink2">Mantén consistencia y rentabilidad durante un año completo, con retiros semanales, controlando el miedo y la avaricia.</p>
+        </div>
+        <div className="bx-card p-5 mt-3" data-testid="plan-calc">
+          <label className="bx-label" htmlFor="pl-bal">¿Cuánto tiene tu cuenta hoy? (USD)</label>
+          <input id="pl-bal" className="bx-input" style={{ maxWidth: 220 }} inputMode="decimal" value={bal} onChange={(e) => setBal(e.target.value)} placeholder="Ej.: 280" />
+          {has && (
+            <div className="mt-3" data-testid="plan-result">
+              <div className="text-sm text-white font-bold">{lvl === "elite" ? "Estás en el Nivel Elite 🎯" : `Estás en el Nivel ${lvl}`}{lvl !== "elite" && <span className="bx-muted font-normal"> · te falta ${Math.max(0, cur.to - b).toLocaleString("en-US", { maximumFractionDigits: 2 })} para el siguiente nivel</span>}</div>
+              <div className="mt-2 h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--fg),.1)" }}><div className="h-full rounded-full" style={{ width: pct + "%", background: "linear-gradient(90deg,#F0B429,#2ECC71)", transition: "width .5s var(--ease)" }} /></div>
+            </div>
+          )}
+        </div>
+        <p className="mt-3 text-xs bx-muted">Contenido educativo. No es asesoría financiera: operar conlleva riesgo de pérdida.</p>
+      </section>
+    </div>
+  );
+}
+
+/* ----------------------------- Mi Acceso (portal del miembro) ----------------------------- */
+function MemberPage({ setPage }) {
+  const [phase, setPhase] = useState("boot"); // boot | login | loading | denied | ok
+  const [input, setInput] = useState("");
+  const [rec, setRec] = useState(null);
+  const [who, setWho] = useState(null); // { p, ident }
+  const [deny, setDeny] = useState(null); // { why, rec }
+  const [sec, setSec] = useState("home");
+  const supportUrl = `https://t.me/${MEMBER_SUPPORT}`;
+  const verify = async (value) => {
+    setPhase("loading");
+    try {
+      const { p, rec: r } = await memberLookup(value);
+      if (!r) { setDeny({ why: "none" }); setPhase("denied"); return; }
+      if (memberLeft(r) <= 0) { setDeny({ why: "expired", rec: r }); setPhase("denied"); return; }
+      try { localStorage.setItem(MEMBER_STORE, value); } catch (e) {}
+      setRec(r); setWho({ p, ident: value.trim() }); setSec("home"); setPhase("ok");
+    } catch (e) {
+      if (e && e.code === 400) { setDeny({ why: "bad" }); setPhase("denied"); }
+      else { setDeny({ why: "net" }); setPhase("denied"); }
+    }
+  };
+  useEffect(() => {
+    let saved = "";
+    try { saved = localStorage.getItem(MEMBER_STORE) || ""; } catch (e) {}
+    if (saved) { setInput(saved); verify(saved); } else setPhase("login");
+    // eslint-disable-next-line
+  }, []);
+  const logout = () => { try { localStorage.removeItem(MEMBER_STORE); } catch (e) {} setRec(null); setWho(null); setInput(""); setPhase("login"); };
+
+  if (phase === "boot" || phase === "loading") return <div className="max-w-md mx-auto py-16 text-center bx-muted" data-testid="member-loading" role="status">Verificando tu acceso…</div>;
+
+  if (phase === "login" || phase === "denied") {
+    return (
+      <div className="max-w-md mx-auto py-6 md:py-12" data-testid="member-login">
+        <h1 className="bx-display text-4xl md:text-5xl text-white">MI ACCESO</h1>
+        <p className="mt-3 text-[15px] bx-ink2 leading-relaxed">Entra con tu usuario de Telegram o con el número que registraste. No necesitas contraseña.</p>
+        <form onSubmit={(e) => { e.preventDefault(); if (input.trim()) verify(input); }} className="bx-card p-5 mt-5">
+          <label className="bx-label" htmlFor="ma-id">Usuario de Telegram o teléfono</label>
+          <input id="ma-id" className="bx-input" value={input} onChange={(e) => setInput(e.target.value)} placeholder="@usuario  ·  +58 412 0000000" autoComplete="username" autoCapitalize="off" autoFocus data-testid="member-input" />
+          <button type="submit" className="bx-btn w-full mt-4 py-3 text-base" data-testid="member-enter">Entrar</button>
+        </form>
+        {phase === "denied" && (
+          <div className="mt-4 bx-card p-5" role="alert" data-testid="member-denied" style={{ borderColor: "rgba(251,113,133,.5)" }}>
+            <div className="font-black text-white">{deny?.why === "expired" ? "Tu acceso VIP venció" : deny?.why === "bad" ? "Revisa lo que escribiste" : deny?.why === "net" ? "No pudimos verificar tu acceso" : "Tu acceso no está activo"}</div>
+            <p className="mt-1 text-sm bx-ink2 leading-relaxed">
+              {deny?.why === "expired" ? `Tu plan terminó el ${fmtDate(memberEnd(deny.rec))}. Escribe a soporte para renovarlo.`
+                : deny?.why === "bad" ? "Escribe tu usuario de Telegram (por ejemplo @usuario) o tu número de teléfono completo."
+                : deny?.why === "net" ? "Revisa tu conexión e inténtalo de nuevo. Si sigue igual, escribe a soporte."
+                : "No encontramos ese usuario o teléfono entre los miembros VIP. Si ya pagaste o te afiliaste, escribe a soporte para activarte."}
+            </p>
+            <a href={supportUrl} target="_blank" rel="noopener noreferrer" className="bx-btn inline-block mt-3 px-4 py-2 text-sm" data-testid="member-support">Contactar soporte en Telegram</a>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const left = memberLeft(rec), total = rec.days, used = Math.min(100, Math.max(0, ((total - left) / total) * 100));
+  const st = memberStatus(rec);
+  const chans = rec.ch === "AMBOS" ? ["SINT", "GOLD"] : [rec.ch];
+  const mark = `${rec.n} · ${who.ident}`;
+  const storeKey = `pzfx_logbook_v1:${who.p.norm}`;
+  const SECS = [["home", "Inicio"], ["course", "Curso"], ["log", "Bitácora"], ["tut", "Tutorial"]];
+  return (
+    <div className="max-w-5xl mx-auto" data-testid="member-portal">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-2" role="tablist" aria-label="Secciones de Mi Acceso">
+          {SECS.map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={sec === k} data-testid={`msec-${k}`} onClick={() => { setSec(k); window.scrollTo(0, 0); }} className={`bx-pill ${sec === k ? "on" : ""}`}>{l}</button>)}
+        </div>
+        <button type="button" className="bx-ghost" onClick={logout} data-testid="member-logout">Salir</button>
+      </div>
+
+      {sec === "home" && (
+        <div className="mt-5 space-y-5" data-testid="member-home">
+          <section className="bx-card p-6 md:p-8">
+            <div className="text-xs font-bold tracking-[0.2em] bx-accent">BIENVENIDO</div>
+            <h1 className="bx-display text-4xl md:text-5xl text-white mt-2" data-testid="member-welcome">Hola, {rec.n}</h1>
+            <p className="mt-2 text-[15px] bx-ink2">Tu plan activo: <b className="text-white">{M_PLAN[rec.plan].label}</b> · {rec.ch === "AMBOS" ? "ambos canales VIP" : M_CH[rec.ch]}</p>
+            <div className="mt-5 flex flex-wrap items-end gap-x-8 gap-y-3">
+              <div><div className="bx-num font-black text-white" style={{ fontSize: "3.2rem", lineHeight: 1 }} data-testid="member-days">{left}</div><div className="text-sm bx-muted">día{left === 1 ? "" : "s"} restante{left === 1 ? "" : "s"}</div></div>
+              <div className="text-sm bx-muted">Último día de acceso: <b className="text-white">{fmtDate(memberEnd(rec))}</b><div className="mt-1"><MemberBadge s={st} /></div></div>
+            </div>
+            <div className="mt-4 h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--fg),.1)" }}><div className="h-full rounded-full" style={{ width: used + "%", background: st === "Por vencer" ? "var(--amb2)" : "linear-gradient(90deg,#F0B429,#2ECC71)" }} /></div>
+            {st === "Por vencer" && <p className="mt-3 text-sm" style={{ color: "var(--amb2)" }}>Tu acceso vence pronto. Escribe a soporte para renovar y no perder tus días.</p>}
+          </section>
+          <section className="bx-card p-6">
+            <h2 className="text-lg font-black text-white">Tu canal VIP</h2>
+            <div className="mt-3 flex flex-wrap gap-3">
+              {chans.map((c) => <a key={c} href={VIP_CHANNEL_LINKS[c] || `https://t.me/${MEMBER_SUPPORT}`} target="_blank" rel="noopener noreferrer" className="bx-btn px-5 py-3 text-sm" data-testid={`channel-${c}`}>{VIP_CHANNEL_LINKS[c] ? `Entrar a ${M_CH[c]}` : `Pedir acceso a ${M_CH[c]}`}</a>)}
+            </div>
+            <p className="mt-3 text-xs bx-muted">¿Algún problema con tu acceso? <a className="underline font-bold" style={{ color: "var(--accent)" }} href={`https://t.me/${MEMBER_SUPPORT}`} target="_blank" rel="noopener noreferrer">Escribe a soporte</a>.</p>
+          </section>
+          <div className="grid sm:grid-cols-3 gap-3">
+            {[["course", "🎬", "Curso", "Módulos y clases en video"], ["log", "📓", "Bitácora", "Registra y revisa tus operaciones"], ["tut", "📘", "Tutorial", "Operativa, disciplina y plan $100 → $1,200"]].map(([k, i, t, d]) => (
+              <button key={k} type="button" className="bx-card p-4 text-left" onClick={() => { setSec(k); window.scrollTo(0, 0); }}><div className="text-2xl" aria-hidden="true">{i}</div><div className="mt-1 font-black text-white">{t}</div><div className="text-xs bx-muted">{d}</div></button>
+            ))}
+          </div>
+        </div>
+      )}
+      {sec === "course" && <div className="mt-5"><CourseView mark={mark} /></div>}
+      {sec === "log" && <div className="mt-5"><Logbook storeKey={storeKey} /></div>}
+      {sec === "tut" && <div className="mt-5"><TutorialView /></div>}
+    </div>
+  );
+}
+
+/* ============================================================
    LANDING DE ENTRADA ("/"): una pantalla corta con todos los enlaces.
    Edita aquí los enlaces. Si "url" queda vacío, el botón se muestra como "Próximamente".
    ============================================================ */
@@ -4443,6 +5217,7 @@ const LK_ICON = {
   whatsapp: <><path d="M12 3.2a8.8 8.8 0 0 0-7.5 13.4L3.2 20.8l4.3-1.2A8.8 8.8 0 1 0 12 3.2z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" /><path fill="currentColor" d="M9.2 8.2c-.3.4-.6 1-.4 1.8.5 1.9 2.6 4 4.6 4.6.8.2 1.4-.1 1.8-.5l.3-.8-1.9-1-.9.7c-1-.4-2-1.4-2.4-2.4l.7-.9-.9-1.9z" /></>,
   // iconos de los botones
   chartline: <path d="M3 17l5-5 4 3 8-9M16 6h4v4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />,
+  key: <path d="M14.5 9.5a4 4 0 1 0-3.4 3.96L11 15H9v2H7v2H4v-2.6l6.3-6.3A4 4 0 0 0 14.5 9.5zm1.5-.5h.01" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />,
   telegram: <path fill="currentColor" d="M20.7 4.2L3.4 10.9c-.9.4-.9 1 0 1.2l4.4 1.4 1.7 5.2c.2.6.4.8.9.8.4 0 .6-.2.9-.4l2.1-2 4.4 3.2c.8.5 1.4.2 1.6-.8l2.9-13.7c.3-1.2-.4-1.7-1.6-1.2zM9 13.2l9.2-5.8c.4-.3.8-.1.5.2l-7.6 6.9-.3 3.2-1.8-4.5z" />,
   chart: <path d="M4 19V5M4 19h16M8 15l3.5-4 3 2.5L19 7.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />,
   book: <path d="M5 4.5h8.5a3 3 0 0 1 3 3V20H8a3 3 0 0 1-3-3V4.5zM16.5 7.5H19V20h-2.5M8.5 8.5h5M8.5 12h5" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />,
@@ -4710,6 +5485,7 @@ function LinksPage({ setPage }) {
 
         <div className="lk-sep lk-in" style={d(6)}>OPERATIVA &amp; SEÑALES</div>
         <LinkCard hi icon="telegram" title="Canal gratuito de Telegram" sub="Únete al canal oficial" href={TELEGRAM_URL} style={d(7)} testid="links-telegram" />
+        <LinkCard icon="key" title="Mi Acceso" sub="Entra con tu usuario de Telegram" onClick={() => go("member")} style={d(7)} testid="links-member" />
         <LinkCard icon="chart" title="Track record & canales VIP" sub="Resultados, calendario y planes" onClick={() => go("track")} style={d(8)} testid="links-track" />
 
         <div className="lk-sep lk-in" style={d(9)}>EDUCACIÓN &amp; RECURSOS</div>
@@ -4744,7 +5520,7 @@ function LinksPage({ setPage }) {
   );
 }
 
-const PAGE_PATHS = { links: "/", home: "/home", track: "/track-record", signals: "/senales", vip: "/vip-gratis", tools: "/herramientas", admin: "/elpatron" }; // el panel de administración vive en /elpatron
+const PAGE_PATHS = { links: "/", home: "/home", member: "/mi-acceso", track: "/track-record", signals: "/senales", vip: "/vip-gratis", tools: "/herramientas", admin: "/elpatron" }; // el panel de administración vive en /elpatron
 const pageFromPath = () => {
   try {
     const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
@@ -4756,7 +5532,7 @@ const pageFromPath = () => {
 // Aparición suave de las secciones y cajas al desplazarse (todas las páginas públicas)
 function useScrollReveal(page, ready) {
   useLayoutEffect(() => {
-    if (!ready || page === "admin" || page === "links") return undefined;
+    if (!ready || page === "admin" || page === "links" || page === "member") return undefined;
     let reduce = false;
     try { reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
     const main = document.querySelector("main");
@@ -5304,6 +6080,7 @@ export default function App() {
           </a>
 
           <div className="order-2 md:order-3 ml-auto md:ml-0 flex items-center gap-2">
+            <button type="button" className="bx-gold bx-gold-sm" onClick={() => { setPage("member"); window.scrollTo(0, 0); }} data-testid="member-btn">Mi Acceso</button>
             {isAdmin && <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>}
           </div>
 
@@ -5344,6 +6121,7 @@ export default function App() {
       )}
 
       <main className={`${page === "admin" ? "max-w-6xl" : "max-w-5xl"} mx-auto px-4 py-6 space-y-6`}>
+        {page === "member" && <MemberPage setPage={setPage} />}
         {page === "vip" && <VipPage />}
         {page === "home" && <HomePage trades={visible} setPage={setPage} openSignals={(k) => { setSignalKind(k); setPage("signals"); }} openTool={(k) => { setTool(k); setPage("tools"); }} />}
         {page === "tools" && <ToolsPage tool={tool} setTool={setTool} />}
@@ -5535,7 +6313,7 @@ export default function App() {
                 </div>
               </div>
               <div className="mt-4 flex flex-wrap gap-2" data-testid="admin-tabs">
-                {[["dash", "🏠 Dashboard"], ["cfd", "📈 CFDs"], ["synth", "🎲 Sintéticos"], ["recap", "📄 Resúmenes"], ["copy", "🖼 Copy"]].map(([k, l]) => (
+                {[["dash", "🏠 Dashboard"], ["cfd", "📈 CFDs"], ["synth", "🎲 Sintéticos"], ["recap", "📄 Resúmenes"], ["copy", "🖼 Copy"], ["members", "👥 Miembros"]].map(([k, l]) => (
                   <button key={k} type="button" data-testid={`atab-${k}`} onClick={() => setAdminTab(k)} className={`bx-pill ${adminTab === k ? "on" : ""}`}>
                     {l}{k === "cfd" && pendingList.some((t) => t.category === "CFD") ? ` · ${pendingList.filter((t) => t.category === "CFD").length}🕓` : ""}{k === "synth" && pendingList.some((t) => t.category !== "CFD") ? ` · ${pendingList.filter((t) => t.category !== "CFD").length}🕓` : ""}
                   </button>
@@ -5556,6 +6334,7 @@ export default function App() {
                     {renderActive(activeList, true)}
                   </div>
                 </div>
+                <ExitMetrics trades={trades} />
                 <section className="bx-card p-4 flex flex-wrap items-center gap-3">
                   <div className="text-xs uppercase tracking-[0.18em] bx-muted mr-auto">Herramientas de administración</div>
                   <button onClick={exportJson} className="bx-ghost">⬇ Exportar respaldo (JSON)</button>
@@ -5574,6 +6353,7 @@ export default function App() {
             {adminTab === "synth" && renderCatPage("synth")}
             {adminTab === "recap" && <RecapPanel trades={trades} defaultScope="ALL" />}
             {adminTab === "copy" && <CopyPanel />}
+            {adminTab === "members" && <MembersAdmin />}
           </div>
         )}
         {page === "signals" && <ServicesPricing setPage={setPage} kind={signalKind} />}
@@ -5590,6 +6370,7 @@ export default function App() {
                 <h4>Explorar</h4>
                 <ul>
                   <li><button type="button" onClick={() => { setPage("track"); window.scrollTo(0, 0); }}>Track Record</button></li>
+                  <li><button type="button" onClick={() => { setPage("member"); window.scrollTo(0, 0); }} data-testid="footer-member">Mi Acceso</button></li>
                   <li><button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }}>Herramientas</button></li>
                   <li><button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }}>Señales CFDs</button></li>
                   <li><button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }}>Señales Sintéticos</button></li>
