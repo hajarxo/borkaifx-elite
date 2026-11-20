@@ -4258,6 +4258,51 @@
     "r": 4.62
   },
   {
+    "id": "pbcqem74mwp59fwb",
+    "date": "2026-11-20",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "CRASH 900",
+    "direction": "SELL",
+    "entry1": 17514,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 17552,
+    "tps": [
+      17464,
+      17414,
+      17364
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "SL",
+        "exit": 17552,
+        "pips": -38,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "CRASH 900 SELL 17514\nSL 17552 \nTP1 17464 \nTP2 17414 \nTP3 17364",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "SL",
+    "pips": -38,
+    "r": -1
+  },
+  {
     "id": "w8h7jl08mwp5ly69",
     "date": "2026-11-20",
     "category": "CFD",
