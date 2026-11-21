@@ -4315,7 +4315,7 @@
     "activation": "E1",
     "sl": 5745,
     "tps": [
-      5694
+      5689
     ],
     "pipSize": 1,
     "unit": "puntos",
@@ -4335,7 +4335,7 @@
       }
     },
     "discarded": false,
-    "raw": "CRASH 1000 SELL NOW 5719\nSL 5745\nTP 5694\nTP 5619\nTP 5569",
+    "raw": "CRASH 1000 SELL NOW 5719\nSL 5732\nTP 5689",
     "notes": "",
     "mgmt": "",
     "tags": [
