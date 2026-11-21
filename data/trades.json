@@ -4347,5 +4347,50 @@
     "status": "TP",
     "pips": 20,
     "r": 0.14
+  },
+  {
+    "id": "9o22qmzmmwqg0itl",
+    "date": "2026-11-21",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "STEP INDEX 300",
+    "direction": "SELL",
+    "entry1": 13696,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 13717,
+    "tps": [
+      13686,
+      13671,
+      13646
+    ],
+    "pipSize": 0.1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 13646,
+        "pips": 500,
+        "tpIdx": 2,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "STEP INDEX 300 SELL LIMIT 13696\nSL 13717\nTP1 13686\nTP2 13671 \nTP3 13646",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 500,
+    "r": 2.38
   }
 ]
