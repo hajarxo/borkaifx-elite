@@ -8,6 +8,8 @@
     "ch": "SINT",
     "plan": "1M",
     "start": "2026-11-19",
-    "days": 31
+    "days": 31,
+    "ps": "9873f7d208430629e219ff416fe6a5df",
+    "pw": "ffc70ee265d7c4894a69317e5a0bad7ca9fce781f835c08ea76af67620f1388d"
   }
 ]
