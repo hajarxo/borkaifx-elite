@@ -5,10 +5,10 @@
     "hs": [
       "35bd18c480593029db40042349e3c58e342ffde45a4aebcbdf27da9ce7d4f08b"
     ],
-    "ch": "SINT",
-    "plan": "1M",
+    "ch": "GOLD",
+    "plan": "12M",
     "start": "2026-11-20",
-    "days": 31,
+    "days": 372,
     "ps": "b29ff0cb602772a8fb407f988f2a66af",
     "pw": "104f714a688abdef3473a0209102fba22d27a5880ce18999f0366eadbce500e3"
   }
