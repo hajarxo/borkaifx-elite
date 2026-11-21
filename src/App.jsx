@@ -1775,6 +1775,64 @@ function buildReport(trades, mode, ref, scope) {
   const pc0 = (v) => (v === null ? "—" : `${v}%`);
   const withPips = (n, o) => `${n}${n ? ` · ${fmtU(o)}` : ""}`;
 
+  if (mode === "daily") {
+    const uu = (t) => unitWord(t).toUpperCase();
+    const blocks = list.map((t) => {
+      const B = [`${t.asset} ${t.direction} ${t.entry1}${hasE2(t) ? "-" + t.entry2 : ""}`];
+      if (t.discarded) { B.push("Entrada descartada."); return B.join("\n"); }
+      if (stat(t) === "PENDIENTE") { B.push("Orden pendiente, aún sin activar."); return B.join("\n"); }
+      const legs = legKeys(t).map((k) => ({ k, L: legOf(t, k), e: k === "e1" ? t.entry1 : t.entry2 }));
+      const ref = legs.find((x) => x.L.status && x.L.status !== "Pendiente") || legs[0];
+      const hm = hitMax(t);
+      const run = legs.find((x) => isRun(x.L));
+      for (let i = 0; i <= hm; i++) {
+        const lvl = (t.tps || [])[i];
+        let p = lvl === "OPEN" || lvl === undefined ? null : calcPips(t, ref.k, lvl);
+        if (p === null && run) p = num(run.L.pips);
+        B.push(`TP ${i + 1} HIT${p !== null ? ` ${fmtP(p)} ${uu(t)}` : ""} ✅`);
+      }
+      if (hm < 0) {
+        const slL = legs.filter((x) => x.L.status === "SL");
+        if (slL.length) B.push(`SL HIT ${fmtP(round1(slL.reduce((a, x) => a + (num(x.L.pips) ?? 0), 0)))} ${uu(t)} ❌`);
+        else if (legs.length && legs.every((x) => x.L.status === "BE")) B.push("BE ➖ (cerró sin pérdida ni ganancia)");
+      }
+      const both = hasE2(t) && t.activation === "BOTH";
+      const cl = [];
+      if (hasE2(t)) cl.push(both ? "Ambas entradas abiertas" : `Solo se activó la entrada ${t.activation === "E2" ? "2" : "1"} (${legs[0].e})`);
+      legs.forEach(({ L, e: e0 }) => {
+        const e = hasE2(t) ? e0 : "La entrada";
+        const p = num(L.pips);
+        const ps = p === null ? "" : ` ${fmtP(p)} ${unitWord(t)}`;
+        if (L.status === "MANUAL") cl.push(`${e} se cerró manual${ps}`);
+        else if (L.status === "SL" && hm >= 0) cl.push(`${e} cerró en SL${ps}`);
+        else if (L.status === "BE" && hm >= 0) cl.push(`${e} cerró en BE${p ? ps : ""}`);
+        else if (L.status === "TP" && L.exit !== "OPEN" && L.tpIdx !== null && L.tpIdx !== undefined && L.tpIdx < hm) cl.push(`${e} cerró en TP ${L.tpIdx + 1}${ps}`);
+        else if (isRun(L)) cl.push(`${e} dejada correr (TP open)${ps}`);
+        else if (!L.status || L.status === "Abierta") cl.push(`${e} sigue activa`);
+      });
+      if (cl.length) { const txt = cl.join(", ") + "."; B.push("", txt.charAt(0).toUpperCase() + txt.slice(1)); }
+      const note = (t.notes || "").trim();
+      if (note) B.push(`📝 ${note.replace(/\s*\n\s*/g, " ")}`);
+      return B.join("\n");
+    });
+    const D = ["📊 PRECISION ZONE FX", title, `Mercado: ${scopeName}`, ""];
+    if (!list.length) D.push("Sin operaciones en este día.");
+    else D.push(blocks.join("\n\n"));
+    D.push("", "RESUMEN DEL DÍA");
+    D.push(`• Entradas enviadas: ${list.length}`);
+    D.push(`• Entradas activadas: ${activated} de ${list.length}`);
+    D.push(`• Sin activar (pendientes): ${pend}`);
+    D.push(`• Descartadas: ${dis}`);
+    if (open) D.push(`• Aún en curso: ${open}`);
+    D.push(`• Cerradas: ${closed.length}  (TP: ${kinds.TP.length} · TP open: ${kinds.OPEN.length} · Cierre manual: ${kinds.MANUAL.length} · BE: ${kinds.BE.length} · SL: ${kinds.SL.length})`);
+    D.push(`• Objetivos alcanzados: ${reach.map((n, i) => `TP${i + 1}: ${n}`).join("  |  ")}`);
+    D.push(`• Resultado neto: ${perUnit((x, u) => `${fmtP(round1(x.net))} ${u}`)}`);
+    if (closed.length) { D.push(`• Win Rate: ${wr}% (${tp} TP / ${dec} decisivas · BE no cuenta)`); D.push(`• Entradas rentables: ${pc0(pctProf)} (${profitable} de ${closed.length})`); }
+    D.push("");
+    D.push("Telegram: " + TELEGRAM_URL);
+    return { text: D.join("\n"), count: list.length };
+  }
+
   const L = [];
   L.push("📊 PRECISION ZONE FX");
   L.push(title);
@@ -6181,7 +6239,6 @@ function LinksPage({ setPage }) {
 
         <div className="lk-sep lk-in" style={d(6)}>OPERATIVA &amp; SEÑALES</div>
         <LinkCard hi icon="telegram" title="Canal gratuito de Telegram" sub="Únete al canal oficial" href={TELEGRAM_URL} style={d(7)} testid="links-telegram" />
-        <LinkCard icon="key" title="Mi Acceso" sub="Entra con tu usuario de Telegram" onClick={() => go("member")} style={d(7)} testid="links-member" />
         <LinkCard icon="chart" title="Track record & canales VIP" sub="Resultados, calendario y planes" onClick={() => go("track")} style={d(8)} testid="links-track" />
 
         <div className="lk-sep lk-in" style={d(9)}>EDUCACIÓN &amp; RECURSOS</div>
