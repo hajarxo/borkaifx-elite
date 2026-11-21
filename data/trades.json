@@ -4412,9 +4412,9 @@
     "legs": {
       "e1": {
         "status": "TP",
-        "exit": 7287.5,
-        "pips": 100,
-        "tpIdx": 0,
+        "exit": 7307.5,
+        "pips": 300,
+        "tpIdx": 1,
         "reached": null
       },
       "e2": {
@@ -4432,8 +4432,8 @@
       "VIP Signal"
     ],
     "status": "TP",
-    "pips": 100,
-    "r": 1.25
+    "pips": 300,
+    "r": 3.75
   },
   {
     "id": "9o22qmzmmwqg0itl",
