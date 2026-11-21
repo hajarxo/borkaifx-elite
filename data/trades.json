@@ -4303,6 +4303,49 @@
     "r": -1
   },
   {
+    "id": "rozi2027mwp56ssj",
+    "date": "2026-11-20",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "CRASH 1000",
+    "direction": "SELL",
+    "entry1": 5719,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 5745,
+    "tps": [
+      5694
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "BE",
+        "exit": 5719,
+        "pips": 0,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "CRASH 1000 SELL NOW 5719\nSL 5745\nTP 5694\nTP 5619\nTP 5569",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "BE",
+    "pips": 0,
+    "r": 0
+  },
+  {
     "id": "w8h7jl08mwp5ly69",
     "date": "2026-11-20",
     "category": "CFD",
