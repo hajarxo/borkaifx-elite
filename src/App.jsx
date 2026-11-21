@@ -32,7 +32,7 @@ const SITE = {
 
   // WhatsApp oficial: se usa SOLO en el Copytrading (botón "ACTIVAR MI CUENTA AHORA").
   // Acepta enlace corto (wa.link, ya trae su mensaje) o "https://wa.me/58XXXXXXXXXX".
-  whatsapp: "https://wa.link/2myrg1",
+  whatsapp: "https://wa.me/17722071549",
 
   // Brokers afiliados para el acceso VIP gratis (url vacío = el botón lleva a Telegram)
   affiliates: [
@@ -231,6 +231,31 @@ linear-gradient(180deg,rgba(255,90,31,.045) 0 1px,transparent 1px) 0 0/100% 160p
 .mb-act.danger{color:var(--neg)}
 .mb-box{border:1px solid var(--cardline);border-radius:1rem;padding:1rem;background:rgba(var(--fg),.04)}
 .mb-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;padding:.4rem .55rem;border-radius:.6rem;background:rgba(var(--fg),.05)}
+.pz-ov{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,7,10,.58);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:pzov .22s ease both}
+.pz-glass{position:relative;width:100%;max-width:440px;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;border-radius:26px;padding:26px 24px 22px;color:var(--cardink);background:linear-gradient(160deg,rgba(255,255,255,.11),rgba(255,255,255,.035) 55%,rgba(255,90,31,.08));border:1px solid rgba(255,255,255,.17);-webkit-backdrop-filter:blur(28px) saturate(1.5);backdrop-filter:blur(28px) saturate(1.5);box-shadow:0 40px 90px -30px rgba(0,0,0,.85),0 0 0 1px rgba(255,90,31,.10),inset 0 1px 0 rgba(255,255,255,.15);animation:pzin .3s cubic-bezier(.2,.8,.2,1) both}
+.pz-glass .bx-input{background:rgba(5,8,12,.45);border-color:rgba(255,255,255,.15)}
+.pz-x{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--cardink2);cursor:pointer;font-size:.85rem}
+.pz-x:hover{color:#fff;border-color:var(--accent)}
+.pz-seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:14px;background:rgba(5,8,12,.45);border:1px solid rgba(255,255,255,.12)}
+.pz-seg button{padding:.55rem .5rem;border-radius:10px;font-size:.85rem;font-weight:800;color:var(--cardink2);background:transparent;border:0;cursor:pointer;transition:background .2s,color .2s}
+.pz-seg button.on{background:var(--accent);color:#17120a}
+.pz-eye{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:0;background:transparent;color:var(--cardink2);cursor:pointer;border-radius:10px}
+.pz-eye:hover{color:#fff}
+.pz-check{width:17px;height:17px;accent-color:#FF5A1F;flex:none;cursor:pointer}
+.pz-alert{border:1px solid rgba(244,63,94,.45);background:rgba(244,63,94,.10);border-radius:14px;padding:.8rem .95rem}
+.pz-detect{border:1px solid rgba(255,90,31,.38);background:rgba(255,90,31,.08);border-radius:14px;padding:.8rem .95rem}
+.pz-drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.25rem;min-height:92px;padding:.8rem;border:1.5px dashed rgba(255,255,255,.24);border-radius:14px;background:rgba(5,8,12,.35);cursor:pointer;text-align:center}
+.pz-drop:hover,.pz-drop:focus-within{border-color:var(--accent)}
+.pz-prev{max-height:120px;max-width:100%;border-radius:10px;object-fit:contain}
+.mb-tile{border:1px solid var(--cardline);border-radius:1rem;padding:.8rem .9rem;background:rgba(var(--fg),.04)}
+.mb-tile-k{font-size:.64rem;letter-spacing:.12em;font-weight:800;color:var(--cardink2)}
+.mb-tile-v{margin-top:.25rem;font-family:"JetBrains Mono",ui-monospace,monospace;font-weight:700;font-size:1.3rem;line-height:1.15;color:var(--cardink);font-variant-numeric:tabular-nums}
+.mb-tile-s{margin-top:.15rem;font-size:.72rem;color:var(--cardink2)}
+.mb-thumb{width:44px;height:32px;border-radius:6px;overflow:hidden;border:1px solid var(--cardline);padding:0;background:#000;cursor:zoom-in}
+.mb-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+@keyframes pzov{from{opacity:0}to{opacity:1}}
+@keyframes pzin{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.pz-ov,.pz-glass{animation:none}}
 .mb-warn{border:1px solid rgba(255,90,31,.55);background:rgba(255,90,31,.1);border-radius:1.1rem;padding:1.1rem 1.25rem;color:var(--cardink2)}
 .mb-num{flex:none;width:28px;height:28px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:.82rem;color:#17120a;background:linear-gradient(180deg,#FF8A3D,#FF5A1F)}
 .mb-level.on{border-color:rgba(255,90,31,.8)!important;box-shadow:0 0 0 1px rgba(255,90,31,.3),0 10px 40px rgba(255,90,31,.15)}
@@ -3534,7 +3559,7 @@ function VipPage() {
 
 // Bloque de oferta exclusiva (VIP gratis): se usa en Señales y en Educación
 // WhatsApp de verificación del VIP gratis (botón "Verifica tu cuenta" en /vip-gratis), con el mensaje ya escrito
-const OFFER_WA_URL = "https://wa.me/15168316363?text=Hola%20Daniela,%20mi%20nombre%20es%20__________%20vi%20la%20promocion%20para%20unirse%20al%20VIP%20siendo%20afiliado,%20me%20gustaria%20aprovechar%20la%20promocion%20con%20el%20broker%20_____";
+const OFFER_WA_URL = "https://wa.me/17722071549?text=Hola,%20mi%20nombre%20es%20__________%20vi%20la%20promocion%20para%20unirse%20al%20VIP%20siendo%20afiliado,%20me%20gustaria%20aprovechar%20la%20promocion%20con%20el%20broker%20_____";
 function VipOfferCta({ setPage }) {
   return (
     <div
@@ -3691,7 +3716,7 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
   const intro = syn
     ? "Compra directa del pase VIP para la comunidad donde operamos sintéticos en Deriv y Weltrade."
     : "Canal de señales donde operamos los dos activos más volátiles y lucrativos del mercado con precisión quirúrgica: NAS100 & XAUUSD.";
-  const plans = syn ? [{ name: "1 Mes", amount: 50 }, { name: "3 Meses", amount: 120 }] : SITE.plans;
+  const plans = syn ? SYN_PLANS : SITE.plans;
   const bullets = syn
     ? ["De 3 a 5 señales diarias con entrada, Stop Loss y Take Profit", "Seguimiento de cada señal con indicaciones", "Meta semanal de 1000 a 1500 pips", "Curso estratégico", "1 Reto flipping al mes"]
     : ["De 2 a 3 señales diarias con entrada, Stop Loss y múltiples Take Profits", "Seguimiento en tiempo real: parciales, Breakeven y cierres anticipados", "Sesiones de Asia y New York", "Gestión de riesgo recomendada"];
@@ -4464,9 +4489,8 @@ const COURSE_MODULES = [
 
 const MEMBERS_PUB = "data/members.json"; // público: nombre + huella (hash) del usuario/teléfono + plan. Nunca el usuario ni el teléfono en claro
 const MEMBERS_ENC = "data/members.enc.json"; // cifrado con el token del admin: lista completa
-const MEMBER_STORE = "pzfx_member_ident";
 const M_CH = { SINT: "Precisionzonefx | SINTETICOS", GOLD: "Precisionzonefx | GOLD", AMBOS: "Ambos canales" };
-const M_PLAN = { "1M": { label: "1 Mes", days: 31 }, "3M": { label: "3 Meses", days: 93 }, SOCIO: { label: "Plan Socio", days: 31 } };
+const M_PLAN = { "1M": { label: "1 Mes", days: 31 }, "3M": { label: "3 Meses", days: 93 }, "12M": { label: "Anual", days: 372 }, SOCIO: { label: "Plan Socio", days: 31 } };
 const WARN_DAYS = 5; // "Por vencer" cuando faltan 5 días o menos
 
 // Días reales (calendario). 1 mes = 31 días completos, 3 meses = 93: se suman los días que falten cuando el mes siguiente es más corto.
@@ -4475,7 +4499,7 @@ const numToDate = (n) => new Date(n * 86400000).toISOString().slice(0, 10);
 const todayNum = () => { const n = new Date(); return Math.floor(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) / 86400000); };
 const memberLeft = (m) => dayNum(m.start) + m.days - todayNum(); // el día de inicio cuenta como día 1
 const memberEnd = (m) => numToDate(dayNum(m.start) + m.days - 1); // último día con acceso
-const memberStatus = (m) => (m.revoked ? "Revocado" : memberLeft(m) <= 0 ? "Vencido" : memberLeft(m) <= WARN_DAYS ? "Por vencer" : "Activo");
+const memberStatus = (m) => (m.pending ? "Pendiente" : m.revoked ? "Revocado" : memberLeft(m) <= 0 ? "Vencido" : memberLeft(m) <= WARN_DAYS ? "Por vencer" : "Activo");
 const renewCalc = (m, plan) => {
   const pd = M_PLAN[plan].days;
   if (m && !m.revoked && memberLeft(m) > 0) return { start: m.start, days: m.days + pd };
@@ -4514,13 +4538,68 @@ async function memberLookup(input) {
   const list = Array.isArray(data) ? data : [];
   return { p, rec: list.find((m) => m && Array.isArray(m.hs) && m.hs.some((h) => hs.includes(h))) || null };
 }
+/* ---- Acceso con contraseña (solo Telegram) ---- */
+const PW_ITER = 200000;
+const pwOk = (s) => /^(?=.*[A-Za-z])(?=.*\d).{8,64}$/.test(String(s || ""));
+const derId = (p) => (p.kind === "u" ? "u:" + p.norm : "p:" + p.norm.slice(-10));
+const randHex = (n = 16) => Array.from(crypto.getRandomValues(new Uint8Array(n))).map((x) => x.toString(16).padStart(2, "0")).join("");
+const genPass = () => { const a = "abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ", d = "23456789"; const r = (s) => s[crypto.getRandomValues(new Uint32Array(1))[0] % s.length]; let o = r(a) + r(d); for (let i = 0; i < 8; i++) o += r(a + d); return o; };
+// Contraseña → huella PBKDF2 (la sal incluye el usuario: no sirve para otro usuario ni se puede probar sin conocerlo)
+async function pwDerive(password, p, ps) {
+  if (!subtle()) throw cloudErr("NO_CRYPTO", 500);
+  const enc = new TextEncoder();
+  const key = await subtle().importKey("raw", enc.encode(String(password)), "PBKDF2", false, ["deriveBits"]);
+  const bits = await subtle().deriveBits({ name: "PBKDF2", hash: "SHA-256", salt: enc.encode("pzfx|" + ps + "|" + derId(p)), iterations: PW_ITER }, key, 256);
+  return Array.from(new Uint8Array(bits)).map((x) => x.toString(16).padStart(2, "0")).join("");
+}
+async function memberAuth(input, password) {
+  const { p, rec } = await memberLookup(input);
+  if (!rec || !rec.pw || !rec.ps) return { ok: false, p, found: !!rec };
+  const k = await pwDerive(password, p, rec.ps);
+  return k === rec.pw ? { ok: true, p, rec, k } : { ok: false, p, found: true };
+}
+const MEMBER_STORE = "pzfx_member_sess_v2";
+const PENDING_STORE = "pzfx_member_pending";
+const readSess = () => {
+  for (const s of ["localStorage", "sessionStorage"]) { try { const v = JSON.parse(window[s].getItem(MEMBER_STORE) || "null"); if (v && v.u && v.k) return v; } catch (e) {} }
+  return null;
+};
+const clearSess = () => { for (const s of ["localStorage", "sessionStorage"]) { try { window[s].removeItem(MEMBER_STORE); } catch (e) {} } };
+const writeSess = (v, remember) => { clearSess(); try { window[remember ? "localStorage" : "sessionStorage"].setItem(MEMBER_STORE, JSON.stringify(v)); } catch (e) {} };
+
+// Precios por canal: el monto pagado identifica el plan y el canal
+const SYN_PLANS = [{ name: "1 Mes", amount: 50, plan: "1M" }, { name: "3 Meses", amount: 120, plan: "3M" }];
+const PRICE_TABLE = [
+  ...SITE.plans.map((p) => ({ ch: "GOLD", plan: p.months === 1 ? "1M" : p.months === 3 ? "3M" : "12M", amount: p.amount })),
+  ...SYN_PLANS.map((p) => ({ ch: "SINT", plan: p.plan, amount: p.amount })),
+];
+const detectPlan = (amt) => PRICE_TABLE.filter((x) => Math.abs(x.amount - amt) < 0.005);
+const priceOf = (ch, plan) => (PRICE_TABLE.find((x) => x.ch === ch && x.plan === plan) || {}).amount;
+
+// Solicitud de nuevo miembro → código que se envía a soporte por Telegram y se pega en el Dashboard
+const REQ_PREFIX = "PZFX1:";
+const b64uEnc = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+const b64uDec = (s) => decodeURIComponent(escape(atob(s.replace(/-/g, "+").replace(/_/g, "/"))));
+function parseRequests(text) {
+  const out = [];
+  (String(text || "").match(/PZFX1:[A-Za-z0-9_-]+/g) || []).forEach((tok) => {
+    try {
+      const j = JSON.parse(b64uDec(tok.slice(REQ_PREFIX.length)));
+      const p = parseIdent(j.u);
+      if (!j.i || !j.n || !p || !M_CH[j.ch] || !M_PLAN[j.pl] || !/^\d{4}-\d{2}-\d{2}$/.test(j.d) || !Number.isFinite(Number(j.a)) || !/^[0-9a-f]{32}$/.test(j.ps || "") || !/^[0-9a-f]{64}$/.test(j.pw || "")) return;
+      out.push({ id: String(j.i), name: String(j.n).slice(0, 80), ident: String(j.u).slice(0, 80), ch: j.ch, plan: j.pl, paid: j.d, amount: Number(j.a), sent: Number(j.t) || 0, file: String(j.f || "").slice(0, 80), ps: j.ps, pw: j.pw });
+    } catch (e) {}
+  });
+  return out;
+}
+
 async function membersAdminLoad() {
   const { data } = await ghReadJson(MEMBERS_ENC, true, null);
   if (!data || !data.data) return { list: [], locked: false };
   try { return { list: await decryptOpen(data, authToken()), locked: false }; } catch (e) { return { list: [], locked: true }; }
 }
 async function membersAdminSave(list) {
-  const pub = list.filter((m) => !m.revoked).map((m) => ({ id: m.id, n: m.name, hs: m.hs, ch: m.ch, plan: m.plan, start: m.start, days: m.days }));
+  const pub = list.filter((m) => !m.revoked && !m.pending).map((m) => ({ id: m.id, n: m.name, hs: m.hs, ch: m.ch, plan: m.plan, start: m.start, days: m.days, ps: m.ps, pw: m.pw }));
   for (let attempt = 0; attempt < 3; attempt++) {
     const enc = await ghReadJson(MEMBERS_ENC, true, null);
     const pb = await ghReadJson(MEMBERS_PUB, true, []);
@@ -4537,6 +4616,7 @@ const MEMBER_STATUS_STYLE = {
   "Por vencer": ["rgba(251,191,36,.16)", "var(--amb2)"],
   Vencido: ["rgba(251,113,133,.14)", "var(--neg)"],
   Revocado: ["rgba(var(--fg),.08)", "var(--cardink2)"],
+  Pendiente: ["rgba(255,90,31,.16)", "var(--accent)"],
 };
 const MemberBadge = ({ s }) => <span className="mb-badge" style={{ background: MEMBER_STATUS_STYLE[s][0], color: MEMBER_STATUS_STYLE[s][1] }}>{s}</span>;
 
@@ -4548,6 +4628,8 @@ function MembersAdmin() {
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState(null);
   const [q, setQ] = useState("");
+  const [paste, setPaste] = useState("");
+  const [importMsg, setImportMsg] = useState("");
   useEffect(() => {
     let alive = true;
     membersAdminLoad().then((r) => { if (alive) { setList(r.list); setLocked(r.locked); } }).catch((e) => { if (alive) { setList([]); setErr("No se pudo leer la lista: " + (e.message || "error de conexión")); } });
@@ -4559,8 +4641,9 @@ function MembersAdmin() {
     catch (e) { setErr("No se pudo guardar en GitHub: " + (e.message || "error")); return false; }
     finally { setBusy(false); }
   };
-  const openNew = () => setForm({ mode: "new", name: "", ident: "", ch: "AMBOS", plan: "1M", start: localDate(), days: 31, error: "" });
-  const openEdit = (m) => setForm({ mode: "edit", id: m.id, created: m.created, name: m.name, ident: m.ident, ch: m.ch, plan: m.plan, start: m.start, days: m.days, error: "" });
+  const openNew = () => setForm({ mode: "new", name: "", ident: "", ch: "AMBOS", plan: "1M", start: localDate(), days: 31, pass: genPass(), error: "" });
+  const openEdit = (m) => setForm({ mode: "edit", id: m.id, created: m.created, name: m.name, ident: m.ident, ch: m.ch, plan: m.plan, start: m.start, days: m.days, pass: "", error: "" });
+  const openApprove = (m) => setForm({ mode: "approve", id: m.id, created: m.created, name: m.name, ident: m.ident, ch: m.ch, plan: m.plan, start: m.req.paid, days: M_PLAN[m.plan].days, error: "" });
   const openRenew = (m) => setForm({ mode: "renew", id: m.id, created: m.created, name: m.name, ident: m.ident, ch: m.ch, plan: m.plan, ...renewCalc(m, m.plan), error: "" });
   const setF = (patch) => setForm((f) => ({ ...f, ...patch, error: "" }));
   const onPlan = (plan) => {
@@ -4578,22 +4661,51 @@ function MembersAdmin() {
     if (days < 1) return setForm({ ...f, error: "Los días de acceso deben ser 1 o más." });
     let hs;
     try { hs = await identHashes(p); } catch (e) { return setForm({ ...f, error: "Este navegador no permite cifrar. Usa Chrome, Edge o Safari actualizados." }); }
-    if (list.some((m) => m.id !== f.id && m.hs.some((h) => hs.includes(h)))) return setForm({ ...f, error: "Ya existe un miembro con ese usuario o teléfono. Usa Editar o Renovar." });
-    const rec = { id: f.id || uid(), name: nm, ident: f.ident.trim(), hs, ch: f.ch, plan: f.plan, start: f.start, days, revoked: false, created: f.created || localDate() };
+    const dup = list.find((m) => !m.pending && m.id !== f.id && m.hs.some((h) => hs.includes(h)));
+    if (dup && f.mode !== "approve") return setForm({ ...f, error: "Ya existe un miembro con ese usuario o teléfono. Usa Editar o Renovar." });
+    const old = f.id ? list.find((m) => m.id === f.id) : null;
+    let ps = old && old.ps, pw = old && old.pw;
+    if (f.mode === "new" || (f.mode === "edit" && f.pass)) {
+      if (!pwOk(f.pass)) return setForm({ ...f, error: "La contraseña necesita mínimo 8 caracteres, con letras y números (usa «Generar»)." });
+      ps = randHex(16); pw = await pwDerive(f.pass, p, ps);
+    }
+    if (f.mode === "approve" && dup) {
+      // ya es miembro: la solicitud renueva su plan (suma días si aún está activo)
+      const rn = renewCalc(dup, f.plan);
+      const next = list.filter((m) => m.id !== f.id).map((m) => (m.id === dup.id ? { ...m, plan: f.plan, revoked: false, ps: m.ps || old.ps, pw: m.pw || old.pw, ...rn } : m));
+      if (await persist(next)) setForm(null);
+      return;
+    }
+    const rec = { id: f.id || uid(), name: nm, ident: f.ident.trim(), hs, ch: f.ch, plan: f.plan, start: f.start, days, revoked: false, created: f.created || localDate(), ps, pw };
     const next = f.id ? list.map((m) => (m.id === f.id ? rec : m)) : [...list, rec];
     if (await persist(next)) setForm(null);
   };
+  const importReq = async () => {
+    const reqs = parseRequests(paste);
+    if (!reqs.length) return setImportMsg("No encontré ninguna solicitud en ese texto. Pega el mensaje completo que te llegó por Telegram (incluye la línea que empieza con PZFX1:).");
+    const fresh = reqs.filter((r) => !list.some((m) => m.req && m.req.rid === r.id));
+    if (!fresh.length) return setImportMsg("Esa solicitud ya está en la lista.");
+    const recs = [];
+    for (const r of fresh) {
+      const p = parseIdent(r.ident);
+      recs.push({ id: uid(), name: r.name, ident: r.ident, hs: await identHashes(p), ch: r.ch, plan: r.plan, start: r.paid, days: M_PLAN[r.plan].days, revoked: false, pending: true, created: localDate(), ps: r.ps, pw: r.pw, req: { rid: r.id, paid: r.paid, amount: r.amount, sent: r.sent, file: r.file } });
+    }
+    if (await persist([...list, ...recs])) { setPaste(""); setImportMsg(`${recs.length} solicitud${recs.length === 1 ? "" : "es"} agregada${recs.length === 1 ? "" : "s"}. Revisa la captura en tu chat de Telegram y aprueba.`); }
+  };
+  const reject = async (m) => { if (window.confirm(`¿Rechazar la solicitud de ${m.name}? Se borra de la lista.`)) await persist(list.filter((x) => x.id !== m.id)); };
   const revoke = async (m) => { if (window.confirm(`¿Revocar el acceso de ${m.name}? Dejará de poder entrar a Mi Acceso.`)) await persist(list.map((x) => (x.id === m.id ? { ...x, revoked: true } : x))); };
   const remove = async (m) => { if (window.confirm(`¿Eliminar definitivamente a ${m.name} de la lista?`)) await persist(list.filter((x) => x.id !== m.id)); };
 
   const rows = useMemo(() => {
     const term = q.trim().toLowerCase();
     return (list || [])
+      .filter((m) => !m.pending)
       .filter((m) => !term || m.name.toLowerCase().includes(term) || m.ident.toLowerCase().includes(term))
       .sort((a, b) => (a.revoked ? 9999 : memberLeft(a)) - (b.revoked ? 9999 : memberLeft(b)));
   }, [list, q]);
   const count = (s) => (list || []).filter((m) => memberStatus(m) === s).length;
-  const preview = form && /^\d{4}-\d{2}-\d{2}$/.test(form.start) && form.days > 0 ? { ...form, days: Math.round(Number(form.days)) } : null;
+  const pend = (list || []).filter((m) => m.pending);
+  const preview = form && form.mode !== "xx" && /^\d{4}-\d{2}-\d{2}$/.test(form.start) && form.days > 0 ? { ...form, days: Math.round(Number(form.days)) } : null;
 
   return (
     <div className="space-y-5" data-testid="members-admin">
@@ -4601,7 +4713,7 @@ function MembersAdmin() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-xl md:text-2xl font-black text-white">Miembros VIP · Mi Acceso</h2>
-            <p className="mt-1 text-sm bx-muted max-w-2xl">Autoriza a tus miembros con su usuario de Telegram o teléfono. Cada mes cuenta 31 días completos (3 meses = 93), así nadie pierde días cuando el mes siguiente es más corto.</p>
+            <p className="mt-1 text-sm bx-muted max-w-2xl">Autoriza a tus miembros con su usuario de Telegram o teléfono; entran con la contraseña que tú o ellos definen. Cada mes cuenta 31 días completos (3 meses = 93), así nadie pierde días cuando el mes siguiente es más corto.</p>
           </div>
           {!locked && <button type="button" className="bx-btn px-4 py-2 text-sm" onClick={openNew} data-testid="member-add">+ Autorizar miembro</button>}
         </div>
@@ -4612,27 +4724,62 @@ function MembersAdmin() {
         {locked && <div className="mt-3 text-sm text-amber-300" role="alert">La lista está cifrada con otro token. Entra con el mismo token con el que la creaste para verla y editarla (no se sobrescribe nada).</div>}
       </section>
 
+      <section className="bx-card p-5 md:p-6" data-testid="requests-box">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-lg font-black text-white">Solicitudes de nuevos miembros {pend.length > 0 && <span className="mb-badge ml-1" style={{ background: "rgba(255,90,31,.18)", color: "var(--accent)" }}>{pend.length} pendiente{pend.length === 1 ? "" : "s"}</span>}</h3>
+        </div>
+        <p className="mt-1 text-sm bx-muted max-w-2xl">Cuando alguien se registra, te llega un mensaje por Telegram con su comprobante. Pega aquí ese mensaje para ver los datos, compara con la captura y aprueba.</p>
+        <textarea className="bx-input mt-3" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); setImportMsg(""); }} placeholder="Pega aquí el mensaje de la solicitud (incluye la línea PZFX1:…)" aria-label="Solicitud pegada" data-testid="request-paste" />
+        <div className="mt-2 flex flex-wrap items-center gap-2"><button type="button" className="bx-btn px-4 py-2 text-sm" disabled={busy || !paste.trim() || locked} onClick={importReq} data-testid="request-add">Agregar solicitud</button>{importMsg && <span className="text-sm bx-ink2" role="status" data-testid="request-msg">{importMsg}</span>}</div>
+        {pend.length > 0 && (
+          <div className="mt-4 grid gap-3 md:grid-cols-2">
+            {pend.map((m) => {
+              const exp = priceOf(m.ch, m.plan), okAmt = exp !== undefined && Math.abs(exp - m.req.amount) < 0.005;
+              return (
+                <div key={m.id} className="mb-box" data-testid="request-card">
+                  <div className="flex items-start justify-between gap-2"><div><div className="font-black text-white">{m.name}</div><div className="text-sm bx-ink2">{m.ident}</div></div><MemberBadge s="Pendiente" /></div>
+                  <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
+                    <dt className="bx-muted">Canal</dt><dd className="text-white">{M_CH[m.ch]}</dd>
+                    <dt className="bx-muted">Plan detectado</dt><dd className="text-white">{M_PLAN[m.plan].label}</dd>
+                    <dt className="bx-muted">Monto pagado</dt><dd className="text-white bx-num">${m.req.amount}{" "}<span style={{ color: okAmt ? "var(--pos)" : "var(--amb2)" }}>{okAmt ? "✓ coincide" : `⚠ el plan cuesta $${exp ?? "?"}`}</span></dd>
+                    <dt className="bx-muted">Fecha del pago</dt><dd className="text-white bx-num">{fmtDate(m.req.paid)}</dd>
+                    <dt className="bx-muted">Comprobante</dt><dd className="text-white break-all">{m.req.file || "—"} <span className="bx-muted">(revísalo en Telegram)</span></dd>
+                  </dl>
+                  <div className="mt-3 flex flex-wrap gap-2"><button type="button" className="bx-btn px-4 py-2 text-sm" onClick={() => openApprove(m)} data-testid="request-approve">Revisar y aprobar</button><button type="button" className="bx-ghost mb-act danger" onClick={() => reject(m)}>Rechazar</button></div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
       {form && (
         <section className="bx-card p-5 md:p-6" data-testid="member-form">
-          <h3 className="text-lg font-black text-white">{form.mode === "new" ? "Autorizar nuevo miembro" : form.mode === "edit" ? "Editar miembro" : `Renovar a ${form.name}`}</h3>
+          <h3 className="text-lg font-black text-white">{form.mode === "new" ? "Autorizar nuevo miembro" : form.mode === "edit" ? "Editar miembro" : form.mode === "approve" ? `Aprobar solicitud de ${form.name}` : `Renovar a ${form.name}`}</h3>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <div><label className="bx-label" htmlFor="mf-name">Nombre del miembro</label><input id="mf-name" className="bx-input" value={form.name} disabled={form.mode === "renew"} onChange={(e) => setF({ name: e.target.value })} placeholder="Ej.: Carlos Pérez" /></div>
-            <div><label className="bx-label" htmlFor="mf-id">Usuario de Telegram o teléfono</label><input id="mf-id" className="bx-input" value={form.ident} disabled={form.mode === "renew"} onChange={(e) => setF({ ident: e.target.value })} placeholder="@usuario  ·  +58 412 0000000" /></div>
+            <div><label className="bx-label" htmlFor="mf-name">Nombre del miembro</label><input id="mf-name" className="bx-input" value={form.name} disabled={form.mode === "renew" || form.mode === "approve"} onChange={(e) => setF({ name: e.target.value })} placeholder="Ej.: Carlos Pérez" /></div>
+            <div><label className="bx-label" htmlFor="mf-id">Usuario de Telegram o teléfono</label><input id="mf-id" className="bx-input" value={form.ident} disabled={form.mode === "renew" || form.mode === "approve"} onChange={(e) => setF({ ident: e.target.value })} placeholder="@usuario  ·  +58 412 0000000" /></div>
             <div><label className="bx-label" htmlFor="mf-ch">Canal</label>
-              <select id="mf-ch" className="bx-input" value={form.ch} disabled={form.mode === "renew"} onChange={(e) => setF({ ch: e.target.value })}>
+              <select id="mf-ch" className="bx-input" value={form.ch} disabled={form.mode === "renew" || form.mode === "approve"} onChange={(e) => setF({ ch: e.target.value })}>
                 {Object.entries(M_CH).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select></div>
             <div><label className="bx-label" htmlFor="mf-plan">Plan</label>
               <select id="mf-plan" className="bx-input" value={form.plan} onChange={(e) => onPlan(e.target.value)}>
-                <option value="1M">1 Mes (31 días)</option><option value="3M">3 Meses (93 días)</option><option value="SOCIO">Plan Socio · acceso gratis por afiliación (31 días, renovable)</option>
+                <option value="1M">1 Mes (31 días)</option><option value="3M">3 Meses (93 días)</option><option value="12M">Anual (372 días)</option><option value="SOCIO">Plan Socio · acceso gratis por afiliación (31 días, renovable)</option>
               </select></div>
             <div><label className="bx-label" htmlFor="mf-start">Fecha de inicio</label><input id="mf-start" type="date" className="bx-input" value={form.start} disabled={form.mode === "renew"} onChange={(e) => setF({ start: e.target.value })} /></div>
             <div><label className="bx-label" htmlFor="mf-days">Días de acceso</label><input id="mf-days" type="number" min="1" className="bx-input" value={form.days} onChange={(e) => setF({ days: e.target.value })} /></div>
+            {(form.mode === "new" || form.mode === "edit") && (
+              <div className="md:col-span-2"><label className="bx-label" htmlFor="mf-pass">{form.mode === "new" ? "Contraseña inicial del miembro" : "Nueva contraseña (déjala vacía para mantener la actual)"}</label>
+                <div className="flex gap-2"><input id="mf-pass" className="bx-input" value={form.pass || ""} onChange={(e) => setF({ pass: e.target.value })} placeholder="Mínimo 8 caracteres, letras y números" autoComplete="off" data-testid="member-pass-input" /><button type="button" className="bx-ghost" onClick={() => setF({ pass: genPass() })}>Generar</button></div>
+                <p className="mt-1 text-xs bx-muted">Cópiala y envíasela por Telegram: después no se puede volver a ver (se guarda cifrada).</p></div>
+            )}
           </div>
+          {form.mode === "approve" && (() => { const me = list.find((x) => x.id === form.id); const ex = me && list.find((m) => !m.pending && m.hs.some((h) => me.hs.includes(h))); return ex ? <p className="mt-3 text-sm" style={{ color: "var(--amb2)" }} data-testid="approve-renew">Este usuario ya es miembro: al aprobar se renovará su plan (si sigue activo, se suman los días).</p> : null; })()}
           {preview && <p className="mt-3 text-sm bx-ink2" data-testid="member-preview">Acceso desde <b className="text-white">{fmtDate(preview.start)}</b> hasta <b className="text-white">{fmtDate(memberEnd(preview))}</b> · {preview.days} días reales · quedan <b className="text-white">{Math.max(0, memberLeft(preview))}</b> hoy.</p>}
           {form.error && <div className="mt-3 text-sm text-rose-400" role="alert">{form.error}</div>}
           <div className="mt-4 flex flex-wrap gap-2">
-            <button type="button" className="bx-btn px-4 py-2 text-sm" disabled={busy} onClick={submit} data-testid="member-save">{busy ? "Guardando…" : form.mode === "new" ? "Autorizar acceso" : form.mode === "edit" ? "Guardar cambios" : "Confirmar renovación"}</button>
+            <button type="button" className="bx-btn px-4 py-2 text-sm" disabled={busy} onClick={submit} data-testid="member-save">{busy ? "Guardando…" : form.mode === "new" ? "Autorizar acceso" : form.mode === "edit" ? "Guardar cambios" : form.mode === "approve" ? "Aprobar y activar" : "Confirmar renovación"}</button>
             <button type="button" className="bx-ghost" onClick={() => setForm(null)}>Cancelar</button>
           </div>
         </section>
@@ -4652,7 +4799,7 @@ function MembersAdmin() {
                 return (
                   <tr key={m.id} data-testid="member-row">
                     <td className="font-bold text-white">{m.name}</td>
-                    <td>{m.ident}</td>
+                    <td>{m.ident}{!m.pw && <div className="text-[11px]" style={{ color: "var(--amb2)" }}>Sin contraseña</div>}</td>
                     <td>{M_CH[m.ch]}</td>
                     <td>{M_PLAN[m.plan].label}</td>
                     <td className="bx-num">{fmtDate(m.start)}</td>
@@ -4843,62 +4990,241 @@ function CourseView({ mark }) {
 }
 
 /* ----------------------------- Bitácora del alumno (localStorage) ----------------------------- */
-const LOG_CLOSE = { TP1: "TP1", TP2: "TP2", TP3: "TP3", "TP3+": "+3 TPs / 500–600+ pips", BE: "BE (Break Even)", MANUAL: "Cierre manual", SL: "SL" };
-const emptyLog = () => ({ id: "", date: localDate(), open: "", asset: "", dir: "BUY", result: "", unit: "pips", close: "TP1", notes: "" });
+/* ----------------------------- BITÁCORA · SINTÉTICOS ----------------------------- */
+const SYN_ASSETS = ["Boom 300", "Boom 500", "Boom 1000", "Crash 300", "Crash 500", "Crash 1000", "Volatility 10", "Volatility 25", "Volatility 50", "Volatility 75", "Volatility 100", "Volatility 10 (1s)", "Volatility 25 (1s)", "Volatility 50 (1s)", "Volatility 75 (1s)", "Volatility 100 (1s)", "Step Index 100", "Step Index 200", "Step Index 300", "Step Index 400", "Step Index 500", "Jump 10", "Jump 25", "Jump 50", "Jump 75", "Jump 100", "Range Break 100", "Range Break 200", "PainX 400", "GainX 400", "FlipX 1", "SwitchX 600"];
+const SYN_RES = { G: "GANADOR", P: "PERDEDOR", B: "BREAK EVEN" };
+const SYN_TYPE = { C: "COMPRA", V: "VENTA" };
+const SYN_CHECK = [
+  { k: "pre", t: "Pre-mercado", items: [
+    "Revisé mi plan del día y el nivel de mi cuenta.",
+    "Definí mi riesgo máximo por operación y mi pérdida máxima del día.",
+    "Sé cuántas operaciones haré como máximo hoy.",
+    "Estoy descansado y con la mente tranquila (sin prisa ni revancha).",
+    "Cerré distracciones: redes, chats y notificaciones.",
+  ] },
+  { k: "antes", t: "Antes de cada operación", items: [
+    "La entrada coincide con la señal o con mi estrategia.",
+    "Definí SL y TP antes de entrar.",
+    "Calculé el lote según mi riesgo; no sobrelotear.",
+    "El riesgo-beneficio tiene sentido para el plan.",
+    "No estoy entrando por emoción o para recuperar una pérdida.",
+  ] },
+  { k: "durante", t: "Durante cada operación", items: [
+    "No muevo el SL en mi contra.",
+    "No agrego lotes ni hago reentradas no autorizadas.",
+    "Sigo las indicaciones del canal (BE, parciales, cierres).",
+    "Respeto el plan aunque el precio fluctúe.",
+  ] },
+  { k: "post", t: "Post-mercado", items: [
+    "Registré cada operación con sus capturas (Imagen I e Imagen II).",
+    "Anoté qué hice bien y qué debo corregir.",
+    "Cerré la plataforma al cumplir mi meta o tocar mi pérdida del día.",
+    "Los viernes: revisé las métricas de la semana.",
+  ] },
+];
+const emptySyn = () => ({ id: "", date: localDate(), asset: "", type: "C", lot: "", entry: "", sl: "", tp: "", res: "G", amt: "", pips: "", img1: "", img2: "", d1: "", d2: "", ts: 0 });
+const nn = (v) => { const n = Number(String(v ?? "").replace(",", ".")); return v === "" || v == null || !Number.isFinite(n) ? NaN : n; };
+const r2 = (n) => Math.round(n * 100) / 100;
+const fm = (n, d = 2) => (Number.isFinite(n) ? n.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d }) : "—");
+const fsm = (n) => (Number.isFinite(n) ? (n > 0 ? "+" : n < 0 ? "−" : "") + "$" + fm(Math.abs(n)) : "—");
+
+// Pips automáticos: ganador = distancia entrada→TP, perdedor = entrada→SL (en pips/puntos del índice)
+function autoPips(f) {
+  const e = nn(f.entry), ps = synPip(f.asset);
+  if (!Number.isFinite(e)) return NaN;
+  if (f.res === "G") { const t = nn(f.tp); return Number.isFinite(t) ? r2(Math.abs(t - e) / ps) : NaN; }
+  if (f.res === "P") { const s = nn(f.sl); return Number.isFinite(s) ? -r2(Math.abs(e - s) / ps) : NaN; }
+  return 0;
+}
+const synPip = (asset) => synthPip(String(asset || "").replace(/\s*\(1s\)/i, ""));
+
+function synRows(trades, inv) {
+  const rows = [...trades].sort((a, b) => (a.date === b.date ? (a.ts || 0) - (b.ts || 0) : a.date < b.date ? -1 : 1));
+  let bal = Number.isFinite(inv) ? inv : 0;
+  return rows.map((t, i) => { bal = r2(bal + t.amt); return { ...t, n: i + 1, bal }; });
+}
+function synStats(rows, inv) {
+  const w = rows.filter((t) => t.res === "G"), l = rows.filter((t) => t.res === "P"), b = rows.filter((t) => t.res === "B");
+  const buy = rows.filter((t) => t.type === "C"), sell = rows.filter((t) => t.type === "V");
+  const tot = rows.length;
+  const sumW = w.reduce((s, t) => s + t.amt, 0), sumL = l.reduce((s, t) => s + Math.abs(t.amt), 0);
+  const avgW = w.length ? sumW / w.length : 0, avgL = l.length ? sumL / l.length : 0;
+  const net = rows.reduce((s, t) => s + t.amt, 0);
+  const exp = tot ? (w.length / tot) * avgW - (l.length / tot) * avgL : 0;
+  const pct = (n) => (tot ? (n / tot) * 100 : 0);
+  return {
+    tot, w: w.length, l: l.length, b: b.length, pw: pct(w.length), pl: pct(l.length), pb: pct(b.length),
+    buy: buy.length, sell: sell.length, pbuy: pct(buy.length), psell: pct(sell.length),
+    sumW, sumL, avgW, avgL, ratio: avgL > 0 ? avgW / avgL : NaN, exp, expR: avgL > 0 ? exp / avgL : NaN,
+    pf: sumL > 0 ? sumW / sumL : sumW > 0 ? Infinity : NaN, pips: rows.reduce((s, t) => s + (t.pips || 0), 0),
+    net, rent: inv > 0 ? (net / inv) * 100 : NaN, bal: (Number.isFinite(inv) ? inv : 0) + net,
+  };
+}
+
+/* --- imágenes: se guardan comprimidas en IndexedDB (localStorage se llenaría) --- */
+const idbOpen = () => new Promise((res, rej) => { try { const r = indexedDB.open("pzfx_synlog", 1); r.onupgradeneeded = () => r.result.createObjectStore("img"); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); } catch (e) { rej(e); } });
+const idbDo = async (mode, fn) => { const db = await idbOpen(); return new Promise((res, rej) => { const tx = db.transaction("img", mode); const rq = fn(tx.objectStore("img")); tx.oncomplete = () => { db.close(); res(rq && rq.result); }; tx.onerror = () => rej(tx.error); }); };
+const imgPut = (k, v) => idbDo("readwrite", (s) => s.put(v, k));
+const imgGet = (k) => idbDo("readonly", (s) => s.get(k));
+const imgDel = (k) => idbDo("readwrite", (s) => s.delete(k));
+const shrinkImg = (file, max = 1000, q = 0.72) => new Promise((res, rej) => {
+  const url = URL.createObjectURL(file); const im = new Image();
+  im.onload = () => { const s = Math.min(1, max / Math.max(im.width, im.height)); const c = document.createElement("canvas"); c.width = Math.max(1, Math.round(im.width * s)); c.height = Math.max(1, Math.round(im.height * s)); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); res(c.toDataURL("image/jpeg", q)); };
+  im.onerror = () => { URL.revokeObjectURL(url); rej(new Error("img")); };
+  im.src = url;
+});
+
+/* --- Excel (.xlsx) sin librerías: un ZIP sin compresión con XML --- */
+const CRC_T = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = (b) => { let c = 0xffffffff; for (let i = 0; i < b.length; i++) c = CRC_T[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xffffffff) >>> 0; };
+function zipStore(files) {
+  const enc = new TextEncoder(), u16 = (n) => [n & 255, (n >> 8) & 255], u32 = (n) => [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255];
+  const parts = [], cen = []; let off = 0;
+  files.forEach((f) => {
+    const name = enc.encode(f.name), data = enc.encode(f.text), crc = crc32(data);
+    const lh = new Uint8Array([0x50, 0x4b, 3, 4, ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0)]);
+    parts.push(lh, name, data);
+    cen.push(new Uint8Array([0x50, 0x4b, 1, 2, ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), name);
+    off += lh.length + name.length + data.length;
+  });
+  const cdSize = cen.reduce((s, x) => s + x.length, 0);
+  const end = new Uint8Array([0x50, 0x4b, 5, 6, ...u16(0), ...u16(0), ...u16(files.length), ...u16(files.length), ...u32(cdSize), ...u32(off), ...u16(0)]);
+  return new Blob([...parts, ...cen, end], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+}
+const colL = (i) => { let s = "", n = i + 1; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+const xesc = (s) => String(s).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "").replace(/[<>&"']/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" }[c]));
+const sheetXml = (rows) => `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${rows.map((r, ri) => `<row r="${ri + 1}">${r.map((v, ci) => (v === "" || v == null || (typeof v === "number" && !Number.isFinite(v)) ? "" : typeof v === "number" ? `<c r="${colL(ci)}${ri + 1}"><v>${v}</v></c>` : `<c r="${colL(ci)}${ri + 1}" t="inlineStr"><is><t xml:space="preserve">${xesc(v)}</t></is></c>`)).join("")}</row>`).join("")}</sheetData></worksheet>`;
+function makeXlsx(sheets) {
+  const X = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  return zipStore([
+    { name: "[Content_Types].xml", text: `${X}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${sheets.map((_, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join("")}</Types>` },
+    { name: "_rels/.rels", text: `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>` },
+    { name: "xl/workbook.xml", text: `${X}<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s, i) => `<sheet name="${xesc(s.name)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join("")}</sheets></workbook>` },
+    { name: "xl/_rels/workbook.xml.rels", text: `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join("")}</Relationships>` },
+    ...sheets.map((s, i) => ({ name: `xl/worksheets/sheet${i + 1}.xml`, text: sheetXml(s.rows) })),
+  ]);
+}
+
+function Thumb({ ikey, url, onOpen, label }) {
+  const [src, setSrc] = useState(url || "");
+  useEffect(() => { let alive = true; if (ikey) imgGet(ikey).then((v) => { if (alive && v) setSrc(v); }).catch(() => {}); return () => { alive = false; }; }, [ikey]);
+  if (!src) return <span className="bx-muted">—</span>;
+  return <button type="button" className="mb-thumb" onClick={() => onOpen(src)} aria-label={`Ver ${label}`}><img src={src} alt={label} /></button>;
+}
+
 function Logbook({ storeKey }) {
-  const read = () => { try { const v = JSON.parse(localStorage.getItem(storeKey) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } };
-  const [entries, setEntries] = useState(read);
-  const [form, setForm] = useState(emptyLog);
+  const readJ = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k) || "null"); return v == null ? d : v; } catch (e) { return d; } };
+  const [db, setDb] = useState(() => { const v = readJ(storeKey, null); return v && Array.isArray(v.trades) ? v : { v: 2, setup: { inv: "", meta: "", why: "" }, trades: [] }; });
+  const chKey = storeKey.replace("synlog", "synchk");
+  const [chk, setChk] = useState(() => readJ(chKey, { date: "", done: {} }));
+  const [tab, setTab] = useState("ops");
+  const [form, setForm] = useState(emptySyn);
   const [gear, setGear] = useState(false);
   const [msg, setMsg] = useState("");
+  const [view, setView] = useState("");
+  const [busy, setBusy] = useState(false);
   const fileRef = useRef(null);
-  const save = (next) => { setEntries(next); try { localStorage.setItem(storeKey, JSON.stringify(next)); } catch (e) { setMsg("No se pudo guardar en este navegador (almacenamiento bloqueado)."); } };
-  const submit = (e) => {
-    e.preventDefault();
-    if (!form.asset.trim()) return setMsg("Escribe el activo.");
-    const r = Number(String(form.result).replace(",", "."));
-    if (form.result === "" || isNaN(r)) return setMsg("Escribe el resultado (usa − para pérdidas).");
-    const rec = { ...form, asset: form.asset.trim().toUpperCase(), result: r, id: form.id || uid() };
-    save(form.id ? entries.map((x) => (x.id === form.id ? rec : x)) : [...entries, rec]);
-    setForm(emptyLog()); setMsg("Operación guardada.");
+  const today = localDate();
+  const done = chk.date === today ? chk.done : {};
+  const persist = (next) => { setDb(next); try { localStorage.setItem(storeKey, JSON.stringify(next)); } catch (e) { setMsg("No se pudo guardar en este navegador (almacenamiento bloqueado)."); } };
+  const setSetup = (patch) => persist({ ...db, setup: { ...db.setup, ...patch } });
+  const tick = (id) => { const nd = { ...done, [id]: !done[id] }; const n = { date: today, done: nd }; setChk(n); try { localStorage.setItem(chKey, JSON.stringify(n)); } catch (e) {} };
+  const resetGroup = (g) => { const nd = { ...done }; g.items.forEach((_, i) => delete nd[`${g.k}${i}`]); const n = { date: today, done: nd }; setChk(n); try { localStorage.setItem(chKey, JSON.stringify(n)); } catch (e) {} };
+
+  const inv = nn(db.setup.inv);
+  const rows = useMemo(() => synRows(db.trades, inv), [db.trades, inv]);
+  const st = useMemo(() => synStats(rows, Number.isFinite(inv) ? inv : 0), [rows, inv]);
+  const meta = nn(db.setup.meta);
+  const metaPct = Number.isFinite(meta) && meta > 0 && Number.isFinite(inv) ? Math.max(0, Math.min(100, ((st.bal - inv) / (meta - inv)) * 100)) : null;
+
+  const set = (k, v) => { setMsg(""); setForm((f) => ({ ...f, [k]: v })); };
+  const pickImg = async (k, file) => {
+    if (!file) return;
+    try { const d = await shrinkImg(file); setForm((f) => ({ ...f, ["d" + k]: d, ["img" + k]: "" })); setMsg(""); } catch (e) { setMsg("No se pudo leer esa imagen. Prueba con otra captura."); }
   };
-  const del = (id) => { if (window.confirm("¿Eliminar esta operación de tu bitácora?")) save(entries.filter((x) => x.id !== id)); };
-  const download = (name, text, type) => { const a = document.createElement("a"); const url = URL.createObjectURL(new Blob([text], { type })); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500); };
-  const backup = () => { download(`bitacora-respaldo-${localDate()}.json`, JSON.stringify({ app: "precisionzonefx-bitacora", v: 1, entries }, null, 2), "application/json"); setMsg("Respaldo descargado. Guárdalo en un lugar seguro."); };
+  const auto = autoPips(form);
+  const submit = async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    if (!form.asset.trim()) return setMsg("Escribe el activo o índice.");
+    if (!form.date) return setMsg("Elige la fecha.");
+    const raw = nn(form.amt);
+    if (form.res !== "B" && !(Number.isFinite(raw) && raw !== 0)) return setMsg("Escribe el monto obtenido (en USD, sin signo).");
+    const amt = form.res === "G" ? Math.abs(raw) : form.res === "P" ? -Math.abs(raw) : Number.isFinite(raw) ? raw : 0;
+    let pips = nn(form.pips);
+    if (!Number.isFinite(pips)) pips = Number.isFinite(auto) ? auto : 0;
+    else if (form.res === "G") pips = Math.abs(pips); else if (form.res === "P") pips = -Math.abs(pips);
+    const id = form.id || uid();
+    setBusy(true);
+    const rec = { id, date: form.date, asset: form.asset.trim(), type: form.type, lot: form.lot, entry: form.entry, sl: form.sl, tp: form.tp, res: form.res, amt, pips, img1: form.img1, img2: form.img2, ts: form.ts || Date.now() };
+    let warn = "";
+    for (const k of [1, 2]) {
+      const key = `${storeKey}|${id}|${k}`;
+      try {
+        if (form["d" + k]) { await imgPut(key, form["d" + k]); rec["img" + k] = "idb"; }
+        else if (!rec["img" + k] || rec["img" + k] !== "idb") await imgDel(key).catch(() => {});
+      } catch (err) { rec["img" + k] = ""; warn = " La imagen no se pudo guardar en este navegador: usa un enlace."; }
+    }
+    persist({ ...db, trades: form.id ? db.trades.map((x) => (x.id === form.id ? rec : x)) : [...db.trades, rec] });
+    setForm(emptySyn()); setBusy(false); setMsg("Operación guardada." + warn);
+  };
+  const edit = (t) => { setForm({ ...emptySyn(), ...t, amt: String(Math.abs(t.amt)), pips: String(t.pips), d1: "", d2: "" }); setTab("ops"); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  const del = async (t) => {
+    if (!window.confirm("¿Eliminar esta operación de tu bitácora?")) return;
+    persist({ ...db, trades: db.trades.filter((x) => x.id !== t.id) });
+    for (const k of [1, 2]) await imgDel(`${storeKey}|${t.id}|${k}`).catch(() => {});
+  };
+
+  const download = (name, blob) => { const a = document.createElement("a"); const url = URL.createObjectURL(blob); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500); };
+  const backup = async () => {
+    const images = {};
+    for (const t of db.trades) for (const k of [1, 2]) if (t["img" + k] === "idb") { try { const v = await imgGet(`${storeKey}|${t.id}|${k}`); if (v) images[`${t.id}|${k}`] = v; } catch (e) {} }
+    download(`bitacora-sinteticos-respaldo-${localDate()}.json`, new Blob([JSON.stringify({ app: "precisionzonefx-bitacora-sinteticos", v: 2, setup: db.setup, trades: db.trades, images }, null, 2)], { type: "application/json" }));
+    setMsg("Respaldo descargado. Guárdalo en un lugar seguro.");
+  };
   const restore = (e) => {
     const f = e.target.files && e.target.files[0]; e.target.value = "";
     if (!f) return;
     const rd = new FileReader();
-    rd.onload = () => {
+    rd.onload = async () => {
       try {
-        const j = JSON.parse(String(rd.result)); const arr = Array.isArray(j) ? j : j.entries;
-        if (!Array.isArray(arr)) throw new Error("x");
-        const ok = arr.filter((x) => x && x.date && x.asset && x.result !== undefined).map((x) => ({ ...emptyLog(), ...x, id: x.id || uid(), result: Number(x.result) || 0 }));
-        if (entries.length && !window.confirm(`Esto reemplaza tus ${entries.length} operaciones actuales por ${ok.length} del respaldo. ¿Continuar?`)) return;
-        save(ok); setMsg(`Respaldo restaurado: ${ok.length} operaciones.`);
-      } catch (err) { setMsg("Ese archivo no es un respaldo válido de la bitácora."); }
+        const j = JSON.parse(String(rd.result));
+        if (!j || j.app !== "precisionzonefx-bitacora-sinteticos" || !Array.isArray(j.trades)) throw new Error("x");
+        const ok = j.trades.filter((x) => x && x.date && x.asset && Number.isFinite(Number(x.amt))).map((x) => ({ ...emptySyn(), ...x, id: x.id || uid(), amt: Number(x.amt), pips: Number(x.pips) || 0, d1: "", d2: "" }));
+        if (db.trades.length && !window.confirm(`Esto reemplaza tus ${db.trades.length} operaciones actuales por ${ok.length} del respaldo. ¿Continuar?`)) return;
+        for (const t of ok) for (const k of [1, 2]) { const v = j.images && j.images[`${t.id}|${k}`]; if (v) { try { await imgPut(`${storeKey}|${t.id}|${k}`, v); t["img" + k] = "idb"; } catch (er) { t["img" + k] = ""; } } else if (t["img" + k] === "idb") t["img" + k] = ""; }
+        persist({ v: 2, setup: { inv: "", meta: "", why: "", ...(j.setup || {}) }, trades: ok });
+        setMsg(`Respaldo restaurado: ${ok.length} operaciones.`);
+      } catch (err) { setMsg("Ese archivo no es un respaldo válido de la bitácora de Sintéticos."); }
     };
     rd.readAsText(f);
   };
-  const exportXls = () => {
+  const HEAD = ["N°", "FECHA", "ACTIVO/ÍNDICE", "TIPO", "LOTE", "P. ENTRADA", "P. STOP LOSS", "P. TAKE PROFIT", "RESULTADO", "MONTO OBTENIDO", "PIPS", "BALANCE", "IMAGEN I", "IMAGEN II"];
+  const imgTxt = (t, k) => (t["img" + k] === "idb" ? "Captura guardada en la app" : t["img" + k] || "");
+  const tableRows = () => rows.map((t) => [t.n, fmtDate(t.date), t.asset, SYN_TYPE[t.type], nn(t.lot), nn(t.entry), nn(t.sl), nn(t.tp), SYN_RES[t.res], t.amt, t.pips, t.bal, imgTxt(t, 1), imgTxt(t, 2)]);
+  const sumRows = () => [
+    ["RESUMEN", ""], ["INVERSIÓN", Number.isFinite(inv) ? inv : 0], ["BALANCE", r2(st.bal)], ["RENTABILIDAD %", Number.isFinite(st.rent) ? r2(st.rent) : ""],
+    ["GANADOR", st.w], ["% GANADOR", r2(st.pw)], ["PERDEDOR", st.l], ["% PERDEDOR", r2(st.pl)], ["BREAK EVEN", st.b], ["% BREAK EVEN", r2(st.pb)], ["TOTAL", st.tot],
+    ["GANANCIA MEDIA", r2(st.avgW)], ["RIESGO MEDIO", r2(st.avgL)], ["RELACIÓN RIESGO-BENEFICIO", Number.isFinite(st.ratio) ? r2(st.ratio) : ""],
+    ["ESP. MATEMÁT (monto)", r2(st.exp)], ["ESP. MATEMÁT (R)", Number.isFinite(st.expR) ? r2(st.expR) : ""], ["PROFIT FACTOR", Number.isFinite(st.pf) ? r2(st.pf) : st.pf === Infinity ? "∞" : ""], ["PIPS", r2(st.pips)],
+    ["COMPRA", st.buy], ["% COMPRA", r2(st.pbuy)], ["VENTA", st.sell], ["% VENTA", r2(st.psell)], ["GANANCIA TOTAL", r2(st.sumW)], ["PÉRDIDAS TOTAL", -r2(st.sumL)],
+  ];
+  const exportXlsx = () => { download(`bitacora-sinteticos-${localDate()}.xlsx`, makeXlsx([{ name: "Operaciones", rows: [HEAD, ...tableRows()] }, { name: "Resumen", rows: sumRows() }])); setMsg("Archivo Excel (.xlsx) descargado."); };
+  const exportCsv = () => {
     const q = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const head = ["Fecha", "OPEN", "Activo", "Dirección", "Resultado", "Unidad", "Tipo de cierre", "Notas"];
-    const rows = [...entries].sort((a, b) => (a.date < b.date ? -1 : 1)).map((x) => [fmtDate(x.date), x.open, x.asset, x.dir, String(x.result).replace(".", ","), x.unit, LOG_CLOSE[x.close] || x.close, x.notes].map(q).join(";"));
-    download(`bitacora-${localDate()}.csv`, "﻿" + [head.map(q).join(";"), ...rows].join("\r\n"), "text/csv;charset=utf-8");
-    setMsg("Archivo listo: ábrelo con Excel o impórtalo en Google Sheets.");
+    const cell = (v) => q(typeof v === "number" ? String(v).replace(".", ",") : v);
+    const lines = [HEAD.map(q).join(";"), ...tableRows().map((r) => r.map(cell).join(";")), "", ...sumRows().map((r) => r.map(cell).join(";"))];
+    download(`bitacora-sinteticos-${localDate()}.csv`, new Blob(["﻿" + lines.join("\r\n")], { type: "text/csv;charset=utf-8" }));
+    setMsg("Archivo CSV listo: ábrelo con Excel o Google Sheets.");
   };
-  const cats = useMemo(() => {
-    const out = { be: [], manual: [], big: [] };
-    entries.forEach((x) => {
-      const it = { id: x.id, date: x.date, asset: x.asset, dir: x.dir, pips: Number(x.result) || 0, unit: x.unit, label: LOG_CLOSE[x.close] || x.close };
-      if (x.close === "BE") out.be.push(it);
-      if (x.close === "MANUAL") out.manual.push(it);
-      if (x.close === "TP3+" || (x.unit === "pips" && Number(x.result) >= 500)) out.big.push(it);
-    });
-    return out;
-  }, [entries]);
-  const sorted = [...entries].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
-  const set = (k, v) => { setMsg(""); setForm((f) => ({ ...f, [k]: v })); };
+  const resetAll = () => { if (window.confirm("¿Borrar TODA tu bitácora de este navegador? Antes guarda un respaldo.")) { db.trades.forEach((t) => [1, 2].forEach((k) => imgDel(`${storeKey}|${t.id}|${k}`).catch(() => {}))); persist({ v: 2, setup: { inv: "", meta: "", why: "" }, trades: [] }); setMsg("Bitácora vaciada."); } };
+
+  const Tile = ({ k, v, sub, tone, tid }) => (
+    <div className="mb-tile" data-testid={tid}><div className="mb-tile-k">{k}</div><div className="mb-tile-v" style={tone ? { color: tone } : undefined}>{v}</div>{sub && <div className="mb-tile-s">{sub}</div>}</div>
+  );
+  const POS = "var(--pos)", NEG = "var(--neg)";
+  const totalChk = SYN_CHECK.reduce((s, g) => s + g.items.length, 0), doneChk = Object.values(done).filter(Boolean).length;
+
   return (
     <div className="space-y-5" data-testid="logbook">
       <div className="mb-warn" role="note" data-testid="log-warning">
@@ -4911,66 +5237,158 @@ function Logbook({ storeKey }) {
         </ul>
       </div>
 
-      <section className="bx-card p-5">
+      {/* CONFIGURACIÓN + BALANCE */}
+      <section className="bx-card p-5 md:p-6" data-testid="log-setup">
         <div className="flex items-center justify-between gap-3">
-          <h3 className="text-lg font-black text-white">{form.id ? "Editar operación" : "Registrar operación"}</h3>
+          <div><h3 className="text-lg font-black text-white">Mi gestión de riesgo · Sintéticos</h3><p className="text-sm bx-muted">Configura tu capital y tu meta. El balance y la rentabilidad se calculan solos.</p></div>
           <button type="button" className="bx-ghost" onClick={() => setGear((g) => !g)} aria-expanded={gear} aria-label="Respaldo y exportación" data-testid="log-gear">⚙️</button>
         </div>
         {gear && (
           <div className="mt-3 flex flex-wrap gap-2" data-testid="log-tools">
             <button type="button" className="bx-ghost" onClick={backup} data-testid="log-backup">💾 Guardar respaldo</button>
             <button type="button" className="bx-ghost" onClick={() => fileRef.current?.click()} data-testid="log-restore">📂 Restaurar respaldo</button>
-            <button type="button" className="bx-ghost" onClick={exportXls} data-testid="log-export">📊 Exportar Excel</button>
+            <button type="button" className="bx-ghost" onClick={exportXlsx} data-testid="log-xlsx">📊 Exportar Excel (.xlsx)</button>
+            <button type="button" className="bx-ghost" onClick={exportCsv} data-testid="log-export">📄 Exportar CSV</button>
+            <button type="button" className="bx-ghost mb-act danger" onClick={resetAll}>Vaciar bitácora</button>
             <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={restore} data-testid="log-file" />
           </div>
         )}
-        <form onSubmit={submit} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <div><label className="bx-label" htmlFor="lg-date">Fecha</label><input id="lg-date" type="date" className="bx-input" value={form.date} onChange={(e) => set("date", e.target.value)} required /></div>
-          <div><label className="bx-label" htmlFor="lg-open">OPEN (precio)</label><input id="lg-open" className="bx-input" inputMode="decimal" value={form.open} onChange={(e) => set("open", e.target.value)} placeholder="Ej.: 4100" /></div>
-          <div><label className="bx-label" htmlFor="lg-asset">Activo</label><input id="lg-asset" className="bx-input" value={form.asset} onChange={(e) => set("asset", e.target.value)} placeholder="XAUUSD, Step Index…" /></div>
-          <div><label className="bx-label" htmlFor="lg-dir">Dirección</label><select id="lg-dir" className="bx-input" value={form.dir} onChange={(e) => set("dir", e.target.value)}><option>BUY</option><option>SELL</option></select></div>
-          <div><label className="bx-label" htmlFor="lg-res">Resultado</label><input id="lg-res" className="bx-input" inputMode="decimal" value={form.result} onChange={(e) => set("result", e.target.value)} placeholder="Ej.: 120 o -50" /></div>
-          <div><label className="bx-label" htmlFor="lg-unit">Unidad</label><select id="lg-unit" className="bx-input" value={form.unit} onChange={(e) => set("unit", e.target.value)}><option value="pips">pips</option><option value="USD">USD</option></select></div>
-          <div className="sm:col-span-2"><label className="bx-label" htmlFor="lg-close">Tipo de cierre</label><select id="lg-close" className="bx-input" value={form.close} onChange={(e) => set("close", e.target.value)}>{Object.entries(LOG_CLOSE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
-          <div className="sm:col-span-2 lg:col-span-4"><label className="bx-label" htmlFor="lg-notes">Notas</label><input id="lg-notes" className="bx-input" value={form.notes} onChange={(e) => set("notes", e.target.value)} placeholder="Qué pasó, qué aprendiste…" /></div>
-          <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center gap-2">
-            <button type="submit" className="bx-btn px-4 py-2 text-sm" data-testid="log-save">{form.id ? "Guardar cambios" : "Guardar operación"}</button>
-            {form.id && <button type="button" className="bx-ghost" onClick={() => setForm(emptyLog())}>Cancelar</button>}
-            {msg && <span className="text-sm bx-ink2" role="status" data-testid="log-msg">{msg}</span>}
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div><label className="bx-label" htmlFor="sl-inv">Inversión (USD)</label><input id="sl-inv" className="bx-input" inputMode="decimal" value={db.setup.inv} onChange={(e) => setSetup({ inv: e.target.value })} placeholder="Ej.: 100" data-testid="log-inv" /></div>
+          <div><label className="bx-label" htmlFor="sl-meta">Meta (USD)</label><input id="sl-meta" className="bx-input" inputMode="decimal" value={db.setup.meta} onChange={(e) => setSetup({ meta: e.target.value })} placeholder="Ej.: 1200" data-testid="log-meta" /></div>
+          <div className="sm:col-span-2"><label className="bx-label" htmlFor="sl-why">Mi motivación</label><input id="sl-why" className="bx-input" value={db.setup.why} onChange={(e) => setSetup({ why: e.target.value })} placeholder="¿Para qué quieres lograr esta meta?" /></div>
+        </div>
+        {metaPct !== null && (
+          <div className="mt-4" data-testid="log-metabar">
+            <div className="flex justify-between text-xs bx-muted"><span>Progreso hacia tu meta</span><span className="bx-num">{fm(metaPct, 0)}%</span></div>
+            <div className="mt-1 h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--fg),.1)" }}><div className="h-full rounded-full" style={{ width: metaPct + "%", background: "linear-gradient(90deg,#FF5A1F,#2ECC71)", transition: "width .5s" }} /></div>
           </div>
-        </form>
+        )}
       </section>
 
-      <section className="bx-card p-5">
-        <h3 className="text-lg font-black text-white">Mis salidas</h3>
-        <p className="text-sm bx-muted">Cuántas operaciones cerraron en BE, con cierre manual o con +3 TPs / 500–600+ pips.</p>
-        <div className="mt-4"><ExitCounts cats={cats} testid="exit-member" /></div>
-      </section>
-
-      <section className="bx-card p-4 md:p-5">
-        <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">{sorted.length} operación{sorted.length === 1 ? "" : "es"}</div>
-        <div className="overflow-x-auto">
-          <table className="mb-table" data-testid="log-table">
-            <thead><tr><th>Fecha</th><th>OPEN</th><th>Activo</th><th>Dir.</th><th>Resultado</th><th>Cierre</th><th>Notas</th><th /></tr></thead>
-            <tbody>
-              {sorted.map((x) => (
-                <tr key={x.id}>
-                  <td className="bx-num">{fmtDate(x.date)}</td><td className="bx-num">{x.open || "—"}</td><td className="font-bold text-white">{x.asset}</td><td>{x.dir}</td>
-                  <td className="bx-num font-bold" style={{ color: x.result > 0 ? "var(--pos)" : x.result < 0 ? "var(--neg)" : "var(--cardink2)" }}>{fmtP(x.result)} {x.unit}</td>
-                  <td>{LOG_CLOSE[x.close] || x.close}</td><td className="bx-muted" style={{ maxWidth: 220 }}>{x.notes}</td>
-                  <td><div className="flex gap-1.5"><button type="button" className="bx-ghost mb-act" onClick={() => { setForm({ ...emptyLog(), ...x, result: String(x.result) }); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Editar</button><button type="button" className="bx-ghost mb-act danger" onClick={() => del(x.id)} aria-label="Eliminar">✕</button></div></td>
-                </tr>
-              ))}
-              {sorted.length === 0 && <tr><td colSpan={8} className="text-center bx-muted py-6">Todavía no has registrado operaciones.</td></tr>}
-            </tbody>
-          </table>
+      {/* MÉTRICAS */}
+      <section data-testid="log-metrics">
+        <div className="grid gap-3 grid-cols-2 lg:grid-cols-4">
+          <Tile k="INVERSIÓN" v={Number.isFinite(inv) ? "$" + fm(inv) : "—"} tid="m-inv" />
+          <Tile k="BALANCE" v={"$" + fm(st.bal)} tone={st.net > 0 ? POS : st.net < 0 ? NEG : undefined} tid="m-bal" />
+          <Tile k="RENTABILIDAD" v={Number.isFinite(st.rent) ? (st.rent > 0 ? "+" : "") + fm(st.rent) + "%" : "—"} tone={st.rent > 0 ? POS : st.rent < 0 ? NEG : undefined} tid="m-rent" />
+          <Tile k="TOTAL OPERACIONES" v={st.tot} tid="m-tot" />
+          <Tile k="GANADOR" v={st.w} sub={fm(st.pw, 1) + "%"} tone={POS} tid="m-w" />
+          <Tile k="PERDEDOR" v={st.l} sub={fm(st.pl, 1) + "%"} tone={NEG} tid="m-l" />
+          <Tile k="BREAK EVEN" v={st.b} sub={fm(st.pb, 1) + "%"} tid="m-b" />
+          <Tile k="PIPS" v={(st.pips > 0 ? "+" : "") + fm(st.pips, 1)} tone={st.pips > 0 ? POS : st.pips < 0 ? NEG : undefined} tid="m-pips" />
+          <Tile k="GANANCIA MEDIA" v={"$" + fm(st.avgW)} tone={POS} tid="m-avgw" />
+          <Tile k="RIESGO MEDIO" v={"$" + fm(st.avgL)} tone={NEG} tid="m-avgl" />
+          <Tile k="RIESGO : BENEFICIO" v={Number.isFinite(st.ratio) ? "1 : " + fm(st.ratio) : "—"} tid="m-ratio" />
+          <Tile k="PROFIT FACTOR" v={st.pf === Infinity ? "∞" : Number.isFinite(st.pf) ? fm(st.pf) : "—"} tid="m-pf" />
+          <Tile k="ESP. MATEMÁT" v={fsm(st.exp)} sub={Number.isFinite(st.expR) ? `${st.expR > 0 ? "+" : ""}${fm(st.expR)} R por operación` : "relación riesgo-beneficio: —"} tone={st.exp > 0 ? POS : st.exp < 0 ? NEG : undefined} tid="m-exp" />
+          <Tile k="COMPRA" v={st.buy} sub={fm(st.pbuy, 1) + "%"} tid="m-buy" />
+          <Tile k="VENTA" v={st.sell} sub={fm(st.psell, 1) + "%"} tid="m-sell" />
+          <Tile k="GANANCIA / PÉRDIDAS" v={<span><span style={{ color: POS }}>${fm(st.sumW)}</span><span className="bx-muted"> / </span><span style={{ color: NEG }}>${fm(st.sumL)}</span></span>} tid="m-gp" />
         </div>
       </section>
+
+      <div className="flex flex-wrap gap-2" role="tablist" aria-label="Bitácora">
+        {[["ops", "Registro de operaciones"], ["chk", `Check-list (${doneChk}/${totalChk})`]].map(([k, l]) => <button key={k} type="button" role="tab" aria-selected={tab === k} className={`bx-pill ${tab === k ? "on" : ""}`} onClick={() => setTab(k)} data-testid={`log-tab-${k}`}>{l}</button>)}
+      </div>
+
+      {tab === "ops" && (<>
+        <section className="bx-card p-5" data-testid="log-form">
+          <h3 className="text-lg font-black text-white">{form.id ? "Editar operación" : "Registrar operación"}</h3>
+          <form onSubmit={submit} className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div><label className="bx-label" htmlFor="lg-date">Fecha</label><input id="lg-date" type="date" className="bx-input" value={form.date} onChange={(e) => set("date", e.target.value)} required data-testid="lg-date" /></div>
+            <div><label className="bx-label" htmlFor="lg-asset">Activo / índice</label><input id="lg-asset" list="syn-assets" className="bx-input" value={form.asset} onChange={(e) => set("asset", e.target.value)} placeholder="Boom 1000, Step Index 100…" data-testid="lg-asset" /><datalist id="syn-assets">{SYN_ASSETS.map((a) => <option key={a} value={a} />)}</datalist></div>
+            <div><label className="bx-label" htmlFor="lg-type">Tipo</label><select id="lg-type" className="bx-input" value={form.type} onChange={(e) => set("type", e.target.value)} data-testid="lg-type">{Object.entries(SYN_TYPE).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
+            <div><label className="bx-label" htmlFor="lg-lot">Lote</label><input id="lg-lot" className="bx-input" inputMode="decimal" value={form.lot} onChange={(e) => set("lot", e.target.value)} placeholder="Ej.: 0.20" data-testid="lg-lot" /></div>
+            <div><label className="bx-label" htmlFor="lg-entry">P. entrada</label><input id="lg-entry" className="bx-input" inputMode="decimal" value={form.entry} onChange={(e) => set("entry", e.target.value)} data-testid="lg-entry" /></div>
+            <div><label className="bx-label" htmlFor="lg-sl">P. stop loss</label><input id="lg-sl" className="bx-input" inputMode="decimal" value={form.sl} onChange={(e) => set("sl", e.target.value)} data-testid="lg-sl" /></div>
+            <div><label className="bx-label" htmlFor="lg-tp">P. take profit</label><input id="lg-tp" className="bx-input" inputMode="decimal" value={form.tp} onChange={(e) => set("tp", e.target.value)} data-testid="lg-tp" /></div>
+            <div><label className="bx-label" htmlFor="lg-res">Resultado</label><select id="lg-res" className="bx-input" value={form.res} onChange={(e) => set("res", e.target.value)} data-testid="lg-res">{Object.entries(SYN_RES).map(([k, v]) => <option key={k} value={k}>{v}</option>)}</select></div>
+            <div><label className="bx-label" htmlFor="lg-amt">Monto obtenido (USD)</label><input id="lg-amt" className="bx-input" inputMode="decimal" value={form.amt} onChange={(e) => set("amt", e.target.value)} placeholder={form.res === "P" ? "Lo que perdiste, sin signo" : "Ej.: 25"} data-testid="lg-amt" /></div>
+            <div><label className="bx-label" htmlFor="lg-pips">Pips (opcional)</label><input id="lg-pips" className="bx-input" inputMode="decimal" value={form.pips} onChange={(e) => set("pips", e.target.value)} placeholder={Number.isFinite(auto) ? `Auto: ${fm(auto, 1)}` : "Se calcula con entrada y TP/SL"} data-testid="lg-pips" /></div>
+            {[1, 2].map((k) => (
+              <div key={k} className="sm:col-span-1 lg:col-span-1">
+                <span className="bx-label">{k === 1 ? "Imagen I · inicial" : "Imagen II · final"}</span>
+                {form["d" + k] || form["img" + k] === "idb" ? (
+                  <div className="flex items-center gap-2"><Thumb ikey={form["d" + k] ? "" : `${storeKey}|${form.id}|${k}`} url={form["d" + k]} onOpen={setView} label={`Imagen ${k}`} /><button type="button" className="bx-ghost mb-act" onClick={() => setForm((f) => ({ ...f, ["d" + k]: "", ["img" + k]: "" }))}>Quitar</button></div>
+                ) : (
+                  <div className="flex flex-col gap-1.5">
+                    <label className="bx-ghost mb-act text-center cursor-pointer">Subir captura<input type="file" accept="image/*" className="sr-only" onChange={(e) => { pickImg(k, e.target.files && e.target.files[0]); e.target.value = ""; }} data-testid={`lg-img${k}`} /></label>
+                    <input className="bx-input" style={{ padding: ".35rem .6rem", fontSize: ".75rem" }} value={form["img" + k]} onChange={(e) => set("img" + k, e.target.value)} placeholder="o pega un enlace" aria-label={`Enlace imagen ${k}`} />
+                  </div>
+                )}
+              </div>
+            ))}
+            <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center gap-2">
+              <button type="submit" className="bx-btn px-4 py-2 text-sm" disabled={busy} data-testid="log-save">{form.id ? "Guardar cambios" : "Guardar operación"}</button>
+              {form.id && <button type="button" className="bx-ghost" onClick={() => setForm(emptySyn())}>Cancelar</button>}
+              {msg && <span className="text-sm bx-ink2" role="status" data-testid="log-msg">{msg}</span>}
+            </div>
+          </form>
+        </section>
+
+        <section className="bx-card p-4 md:p-5">
+          <div className="text-xs uppercase tracking-[0.18em] bx-muted mb-3">{rows.length} operación{rows.length === 1 ? "" : "es"}</div>
+          <div className="overflow-x-auto">
+            <table className="mb-table" style={{ minWidth: 1180 }} data-testid="log-table">
+              <thead><tr>{HEAD.map((h) => <th key={h}>{h}</th>)}<th /></tr></thead>
+              <tbody>
+                {[...rows].reverse().map((t) => (
+                  <tr key={t.id} data-testid="log-row">
+                    <td className="bx-num">{t.n}</td><td className="bx-num">{fmtDate(t.date)}</td><td className="font-bold text-white">{t.asset}</td><td>{SYN_TYPE[t.type]}</td>
+                    <td className="bx-num">{t.lot || "—"}</td><td className="bx-num">{t.entry || "—"}</td><td className="bx-num">{t.sl || "—"}</td><td className="bx-num">{t.tp || "—"}</td>
+                    <td><span className="mb-badge" style={{ background: t.res === "G" ? "rgba(46,204,113,.14)" : t.res === "P" ? "rgba(244,63,94,.14)" : "rgba(var(--fg),.08)", color: t.res === "G" ? "var(--pos)" : t.res === "P" ? "var(--neg)" : "var(--cardink2)" }}>{SYN_RES[t.res]}</span></td>
+                    <td className="bx-num font-bold" style={{ color: t.amt > 0 ? "var(--pos)" : t.amt < 0 ? "var(--neg)" : "var(--cardink2)" }}>{fsm(t.amt)}</td>
+                    <td className="bx-num">{fm(t.pips, 1)}</td><td className="bx-num font-bold text-white">${fm(t.bal)}</td>
+                    <td><Thumb ikey={t.img1 === "idb" ? `${storeKey}|${t.id}|1` : ""} url={t.img1 && t.img1 !== "idb" ? t.img1 : ""} onOpen={setView} label="Imagen I" /></td>
+                    <td><Thumb ikey={t.img2 === "idb" ? `${storeKey}|${t.id}|2` : ""} url={t.img2 && t.img2 !== "idb" ? t.img2 : ""} onOpen={setView} label="Imagen II" /></td>
+                    <td><div className="flex gap-1.5"><button type="button" className="bx-ghost mb-act" onClick={() => edit(t)}>Editar</button><button type="button" className="bx-ghost mb-act danger" onClick={() => del(t)} aria-label="Eliminar operación">✕</button></div></td>
+                  </tr>
+                ))}
+                {rows.length === 0 && <tr><td colSpan={15} className="text-center bx-muted py-6">Todavía no has registrado operaciones. Define tu inversión arriba y guarda la primera.</td></tr>}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </>)}
+
+      {tab === "chk" && (
+        <section className="space-y-3" data-testid="log-check">
+          <div className="bx-card p-4 flex flex-wrap items-center justify-between gap-2">
+            <div><div className="font-black text-white">Check-list de hoy · {fmtDate(today)}</div><div className="text-xs bx-muted">Se reinicia solo cada día. Marca cada punto antes de avanzar.</div></div>
+            <span className="mb-badge" style={{ background: doneChk === totalChk ? "rgba(46,204,113,.16)" : "rgba(255,90,31,.14)", color: doneChk === totalChk ? "var(--pos)" : "var(--accent)" }}>{doneChk} / {totalChk}</span>
+          </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            {SYN_CHECK.map((g) => {
+              const n = g.items.filter((_, i) => done[`${g.k}${i}`]).length;
+              return (
+                <div key={g.k} className="bx-card p-4" data-testid={`chk-${g.k}`}>
+                  <div className="flex items-center justify-between gap-2"><div className="font-extrabold" style={{ color: "var(--accent)" }}>{g.t}</div><span className="text-xs bx-muted bx-num">{n}/{g.items.length}</span></div>
+                  <ul className="mt-3 space-y-2">
+                    {g.items.map((it, i) => (
+                      <li key={i}><label className="flex gap-2.5 text-sm leading-snug cursor-pointer" style={{ color: done[`${g.k}${i}`] ? "var(--cardink2)" : "var(--cardink)" }}>
+                        <input type="checkbox" className="pz-check mt-0.5" checked={!!done[`${g.k}${i}`]} onChange={() => tick(`${g.k}${i}`)} data-testid={`chk-${g.k}-${i}`} /><span style={{ textDecoration: done[`${g.k}${i}`] ? "line-through" : "none" }}>{it}</span>
+                      </label></li>
+                    ))}
+                  </ul>
+                  <button type="button" className="mt-3 text-xs font-bold underline bx-muted" onClick={() => resetGroup(g)}>Reiniciar</button>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {view && (
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/85 p-4" onClick={() => setView("")} role="dialog" aria-modal="true" aria-label="Captura" data-testid="log-lightbox">
+          <img src={view} alt="Captura de la operación" style={{ maxWidth: "100%", maxHeight: "92vh", borderRadius: 12 }} />
+        </div>
+      )}
     </div>
   );
 }
 
-/* ----------------------------- Tutorial ----------------------------- */
+/* ----------------------------- Manual de Operativa (antes "Tutorial") ----------------------------- */
 const TUT_STEPS = [
   "Lee el mensaje de la señal completo: activo, dirección (BUY o SELL), PE, SL y los TP.",
   "Copia los parámetros exactos tal como llegan al canal; no los redondees ni los cambies.",
@@ -5002,7 +5420,7 @@ const PLAN_LEVELS = [
   { n: 2, from: 350, to: 760, title: "Nivel 2", range: "De $350 a $760 USD", lines: ["Lotaje: bajo-medio"], tp: "+$25", sl: "-$10" },
   { n: 3, from: 760, to: 1200, title: "Nivel 3", range: "De $760 a $1,200 USD", lines: ["Lotaje: medio"], tp: "+$45", sl: "-$20" },
 ];
-function TutorialView() {
+function OperativaManual() {
   const [bal, setBal] = useState("");
   const b = Number(String(bal).replace(",", "."));
   const has = bal !== "" && !isNaN(b) && b > 0;
@@ -5010,7 +5428,7 @@ function TutorialView() {
   const cur = PLAN_LEVELS.find((l) => l.n === lvl);
   const pct = !has ? 0 : lvl === "elite" ? 100 : Math.max(0, Math.min(100, ((b - cur.from) / (cur.to - cur.from)) * 100));
   return (
-    <div className="space-y-6" data-testid="tutorial-view">
+    <div className="space-y-6" data-testid="manual-view">
       <section className="bx-card p-5 md:p-6">
         <h3 className="text-xl font-black text-white">Cómo tomar una señal, paso a paso</h3>
         <ol className="mt-4 space-y-3">
@@ -5078,59 +5496,332 @@ function TutorialView() {
 }
 
 /* ----------------------------- Mi Acceso (portal del miembro) ----------------------------- */
-function MemberPage({ setPage }) {
-  const [phase, setPhase] = useState("boot"); // boot | login | loading | denied | ok
-  const [input, setInput] = useState("");
-  const [rec, setRec] = useState(null);
-  const [who, setWho] = useState(null); // { p, ident }
-  const [deny, setDeny] = useState(null); // { why, rec }
-  const [sec, setSec] = useState("home");
-  const supportUrl = `https://t.me/${MEMBER_SUPPORT}`;
-  const verify = async (value) => {
-    setPhase("loading");
+/* ----------------------------- MODAL "MI ACCESO" (glassmorphism) ----------------------------- */
+const pendingGet = () => { try { return JSON.parse(localStorage.getItem(PENDING_STORE) || "[]"); } catch (e) { return []; } };
+const EyeBtn = ({ show, onClick }) => (
+  <button type="button" className="pz-eye" onClick={onClick} aria-label={show ? "Ocultar contraseña" : "Mostrar contraseña"} aria-pressed={show} data-testid="pw-toggle">
+    {show
+      ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 3l18 18M10.6 6.2A9.9 9.9 0 0 1 12 6c5 0 8.5 4.2 9.5 6-.5.9-1.6 2.4-3.2 3.7M6.6 7.6C4.5 9 3.2 10.9 2.5 12c1 1.8 4.5 6 9.5 6 1.5 0 2.8-.4 4-.9M9.9 10a3 3 0 0 0 4.1 4.1" /></svg>
+      : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M2.5 12C3.5 10.2 7 6 12 6s8.5 4.2 9.5 6c-1 1.8-4.5 6-9.5 6s-8.5-4.2-9.5-6z" /><circle cx="12" cy="12" r="3" /></svg>}
+  </button>
+);
+function PwField({ id, label, value, onChange, show, setShow, autoComplete, testid }) {
+  return (
+    <div>
+      <label className="bx-label" htmlFor={id}>{label}</label>
+      <div className="relative">
+        <input id={id} className="bx-input" style={{ paddingRight: "2.8rem" }} type={show ? "text" : "password"} value={value} onChange={(e) => onChange(e.target.value)} autoComplete={autoComplete} autoCapitalize="off" spellCheck={false} data-testid={testid} />
+        <EyeBtn show={show} onClick={() => setShow(!show)} />
+      </div>
+    </div>
+  );
+}
+
+function MemberLoginForm({ onSuccess, goSignup }) {
+  const [id, setId] = useState("");
+  const [pw, setPw] = useState("");
+  const [show, setShow] = useState(false);
+  const [rem, setRem] = useState(true);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(null);
+  const submit = async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    if (!id.trim() || !pw) return setErr({ t: "Escribe tu usuario o teléfono de Telegram y tu contraseña." });
+    setBusy(true); setErr(null);
     try {
-      const { p, rec: r } = await memberLookup(value);
-      if (!r) { setDeny({ why: "none" }); setPhase("denied"); return; }
-      if (memberLeft(r) <= 0) { setDeny({ why: "expired", rec: r }); setPhase("denied"); return; }
-      try { localStorage.setItem(MEMBER_STORE, value); } catch (e) {}
-      setRec(r); setWho({ p, ident: value.trim() }); setSec("home"); setPhase("ok");
-    } catch (e) {
-      if (e && e.code === 400) { setDeny({ why: "bad" }); setPhase("denied"); }
-      else { setDeny({ why: "net" }); setPhase("denied"); }
+      const r = await memberAuth(id, pw);
+      if (!r.ok) {
+        const norm = (parseIdent(id) || {}).norm;
+        const pend = !r.found && norm && pendingGet().some((x) => x.n === norm);
+        setErr(pend
+          ? { t: "Tu solicitud sigue en revisión.", d: "Cuando la aprobemos podrás entrar con la contraseña que creaste. Si ya enviaste el comprobante por Telegram, solo falta esperar." }
+          : { t: "Usuario o contraseña incorrectos.", d: "Revisa que sea tu usuario o teléfono de Telegram. Si ya eres miembro y aún no tienes contraseña, escríbenos por Telegram." });
+        setBusy(false); return;
+      }
+      if (memberLeft(r.rec) <= 0) { setErr({ t: "Tu acceso VIP venció.", d: `Tu plan terminó el ${fmtDate(memberEnd(r.rec))}. Escribe a soporte para renovarlo.` }); setBusy(false); return; }
+      try { localStorage.setItem(PENDING_STORE, JSON.stringify(pendingGet().filter((x) => x.n !== r.p.norm))); } catch (e) {}
+      writeSess({ u: id.trim(), k: r.k }, rem);
+      setBusy(false); onSuccess();
+    } catch (e2) {
+      setBusy(false);
+      setErr(e2 && e2.code === 400 ? { t: "Revisa tu usuario.", d: "Escribe tu usuario de Telegram (por ejemplo @usuario) o tu número de teléfono completo." } : { t: "No pudimos verificar tu acceso.", d: "Revisa tu conexión e inténtalo de nuevo. Si sigue igual, escribe a soporte." });
     }
   };
-  useEffect(() => {
-    let saved = "";
-    try { saved = localStorage.getItem(MEMBER_STORE) || ""; } catch (e) {}
-    if (saved) { setInput(saved); verify(saved); } else setPhase("login");
-    // eslint-disable-next-line
-  }, []);
-  const logout = () => { try { localStorage.removeItem(MEMBER_STORE); } catch (e) {} setRec(null); setWho(null); setInput(""); setPhase("login"); };
+  return (
+    <form onSubmit={submit} className="space-y-4" data-testid="login-form" noValidate>
+      <div>
+        <label className="bx-label" htmlFor="pz-id">Usuario o teléfono de Telegram</label>
+        <input id="pz-id" className="bx-input" value={id} onChange={(e) => setId(e.target.value)} placeholder="@usuario  ·  +58 412 0000000" autoComplete="username" autoCapitalize="off" spellCheck={false} data-testid="member-input" />
+      </div>
+      <PwField id="pz-pw" label="Contraseña" value={pw} onChange={setPw} show={show} setShow={setShow} autoComplete="current-password" testid="member-pass" />
+      <label className="flex items-center gap-2 text-sm cursor-pointer select-none" style={{ color: "var(--cardink2)" }}>
+        <input type="checkbox" checked={rem} onChange={(e) => setRem(e.target.checked)} className="pz-check" data-testid="member-remember" /> Recordarme en este dispositivo
+      </label>
+      {err && (
+        <div className="pz-alert" role="alert" data-testid="member-denied">
+          <div className="font-extrabold text-white text-sm">{err.t}</div>
+          {err.d && <p className="mt-1 text-[13px] leading-relaxed" style={{ color: "var(--cardink2)" }}>{err.d}</p>}
+          <a href={`https://t.me/${MEMBER_SUPPORT}`} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-[13px] font-bold underline" style={{ color: "var(--accent)" }} data-testid="member-support">Escribir a soporte en Telegram</a>
+        </div>
+      )}
+      <button type="submit" className="bx-btn w-full py-3 text-base" disabled={busy} data-testid="member-enter">{busy ? "Verificando…" : "Entrar"}</button>
+      <p className="text-center text-[13px]" style={{ color: "var(--cardink2)" }}>¿Aún no eres miembro? <button type="button" className="font-bold underline" style={{ color: "var(--accent)" }} onClick={goSignup}>Solicita tu acceso</button></p>
+    </form>
+  );
+}
 
-  if (phase === "boot" || phase === "loading") return <div className="max-w-md mx-auto py-16 text-center bx-muted" data-testid="member-loading" role="status">Verificando tu acceso…</div>;
+function MemberSignupFlow({ goLogin }) {
+  const [step, setStep] = useState(1);
+  const [f, setF] = useState({ name: "", ident: "", date: localDate(), amount: "" });
+  const [file, setFile] = useState(null);
+  const [prev, setPrev] = useState("");
+  const [sel, setSel] = useState(null); // { ch, plan } elegido
+  const [adjust, setAdjust] = useState(false);
+  const [pw, setPw] = useState("");
+  const [pw2, setPw2] = useState("");
+  const [show, setShow] = useState(false);
+  const [err, setErr] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [done, setDone] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const upd = (patch) => { setErr(""); setF((x) => ({ ...x, ...patch })); };
+  useEffect(() => { if (!file) { setPrev(""); return undefined; } const u = URL.createObjectURL(file); setPrev(u); return () => URL.revokeObjectURL(u); }, [file]);
 
-  if (phase === "login" || phase === "denied") {
+  const amt = Number(String(f.amount).replace(",", "."));
+  const amtOk = f.amount !== "" && Number.isFinite(amt) && amt > 0;
+  const matches = amtOk ? detectPlan(amt) : [];
+  const auto = matches.length === 1 ? matches[0] : null;
+  // Elección efectiva: la del usuario si existe; si no, la detección automática
+  const eff = sel || (auto ? { ch: auto.ch, plan: auto.plan } : null);
+  const expected = eff ? priceOf(eff.ch, eff.plan) : null;
+  const mismatch = eff && amtOk && expected !== undefined && Math.abs(expected - amt) > 0.005;
+  const plansFor = (ch) => PRICE_TABLE.filter((x) => x.ch === ch);
+
+  const next1 = () => {
+    if (f.name.trim().length < 2) return setErr("Escribe tu nombre.");
+    if (!parseIdent(f.ident)) return setErr("Escribe tu usuario de Telegram (por ejemplo @usuario) o tu número de teléfono completo.");
+    setErr(""); setStep(2);
+  };
+  const next2 = () => {
+    if (!file) return setErr("Sube la captura de tu comprobante de pago.");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(f.date) || f.date > localDate()) return setErr("Confirma la fecha en que hiciste el pago (no puede ser futura).");
+    if (!amtOk) return setErr("Escribe el monto que pagaste.");
+    if (!eff) return setErr("Elige el canal y el plan que pagaste.");
+    setErr(""); setStep(3);
+  };
+  const finish = async () => {
+    if (!pwOk(pw)) return setErr("La contraseña necesita mínimo 8 caracteres, con letras y números.");
+    if (pw !== pw2) return setErr("Las contraseñas no coinciden.");
+    setBusy(true); setErr("");
+    try {
+      const p = parseIdent(f.ident);
+      const ps = randHex(16);
+      const pwh = await pwDerive(pw, p, ps);
+      const id = uid();
+      const payload = { i: id, n: f.name.trim(), u: f.ident.trim(), ch: eff.ch, pl: eff.plan, d: f.date, a: amt, t: Date.now(), f: file.name, ps, pw: pwh };
+      const code = REQ_PREFIX + b64uEnc(JSON.stringify(payload));
+      const msg = [
+        "Hola, quiero activar mi acceso VIP (Mi Acceso).",
+        `Nombre: ${payload.n}`,
+        `Telegram: ${payload.u}`,
+        `Canal: ${M_CH[eff.ch]} · Plan: ${M_PLAN[eff.plan].label}`,
+        `Pago: $${amt} el ${fmtDate(f.date)}`,
+        "Te adjunto la captura del comprobante.",
+        "",
+        code,
+      ].join("\n");
+      try { localStorage.setItem(PENDING_STORE, JSON.stringify([...pendingGet().filter((x) => x.n !== p.norm), { n: p.norm, id, ts: Date.now() }])); } catch (e) {}
+      setDone({ msg, code });
+    } catch (e) { setErr("Tu navegador no permite cifrar la contraseña. Usa Chrome, Edge o Safari actualizados."); }
+    setBusy(false);
+  };
+  const copy = async () => { try { await navigator.clipboard.writeText(done.msg); setCopied(true); setTimeout(() => setCopied(false), 2200); } catch (e) { setErr("No se pudo copiar. Selecciona el texto y cópialo."); } };
+  const canShareFile = typeof navigator !== "undefined" && navigator.canShare && file && (() => { try { return navigator.canShare({ files: [file] }); } catch (e) { return false; } })();
+  const shareFile = async () => { try { await navigator.share({ files: [file], text: done.msg }); } catch (e) {} };
+
+  if (done) {
     return (
-      <div className="max-w-md mx-auto py-6 md:py-12" data-testid="member-login">
-        <h1 className="bx-display text-4xl md:text-5xl text-white">MI ACCESO</h1>
-        <p className="mt-3 text-[15px] bx-ink2 leading-relaxed">Entra con tu usuario de Telegram o con el número que registraste. No necesitas contraseña.</p>
-        <form onSubmit={(e) => { e.preventDefault(); if (input.trim()) verify(input); }} className="bx-card p-5 mt-5">
-          <label className="bx-label" htmlFor="ma-id">Usuario de Telegram o teléfono</label>
-          <input id="ma-id" className="bx-input" value={input} onChange={(e) => setInput(e.target.value)} placeholder="@usuario  ·  +58 412 0000000" autoComplete="username" autoCapitalize="off" autoFocus data-testid="member-input" />
-          <button type="submit" className="bx-btn w-full mt-4 py-3 text-base" data-testid="member-enter">Entrar</button>
-        </form>
-        {phase === "denied" && (
-          <div className="mt-4 bx-card p-5" role="alert" data-testid="member-denied" style={{ borderColor: "rgba(251,113,133,.5)" }}>
-            <div className="font-black text-white">{deny?.why === "expired" ? "Tu acceso VIP venció" : deny?.why === "bad" ? "Revisa lo que escribiste" : deny?.why === "net" ? "No pudimos verificar tu acceso" : "Tu acceso no está activo"}</div>
-            <p className="mt-1 text-sm bx-ink2 leading-relaxed">
-              {deny?.why === "expired" ? `Tu plan terminó el ${fmtDate(memberEnd(deny.rec))}. Escribe a soporte para renovarlo.`
-                : deny?.why === "bad" ? "Escribe tu usuario de Telegram (por ejemplo @usuario) o tu número de teléfono completo."
-                : deny?.why === "net" ? "Revisa tu conexión e inténtalo de nuevo. Si sigue igual, escribe a soporte."
-                : "No encontramos ese usuario o teléfono entre los miembros VIP. Si ya pagaste o te afiliaste, escribe a soporte para activarte."}
-            </p>
-            <a href={supportUrl} target="_blank" rel="noopener noreferrer" className="bx-btn inline-block mt-3 px-4 py-2 text-sm" data-testid="member-support">Contactar soporte en Telegram</a>
+      <div className="space-y-4" data-testid="signup-done">
+        <div className="text-center">
+          <div className="mx-auto w-12 h-12 rounded-full flex items-center justify-center text-2xl" style={{ background: "rgba(46,204,113,.16)", color: "#2ECC71" }} aria-hidden="true">✓</div>
+          <h3 className="mt-3 text-xl font-black text-white">Solicitud lista</h3>
+          <p className="mt-1 text-[13px] leading-relaxed" style={{ color: "var(--cardink2)" }}>Falta un paso: envíala a soporte por Telegram y adjunta la captura de tu comprobante. Cuando la aprobemos, entras con tu usuario y la contraseña que creaste.</p>
+        </div>
+        <a href={`https://t.me/${MEMBER_SUPPORT}?text=${encodeURIComponent(done.msg)}`} target="_blank" rel="noopener noreferrer" className="bx-btn w-full py-3 text-base text-center block" data-testid="signup-send">1 · Enviar solicitud por Telegram</a>
+        <p className="text-[12px] text-center -mt-1" style={{ color: "var(--cardink2)" }}>2 · En el chat, adjunta la captura (<b className="text-white">{file?.name}</b>).</p>
+        <div className="flex flex-wrap gap-2 justify-center">
+          <button type="button" className="bx-ghost" onClick={copy} data-testid="signup-copy">{copied ? "¡Copiado!" : "Copiar solicitud"}</button>
+          {canShareFile && <button type="button" className="bx-ghost" onClick={shareFile}>Compartir con la captura</button>}
+        </div>
+        {err && <div className="text-sm text-rose-400" role="alert">{err}</div>}
+        <button type="button" className="w-full text-center text-[13px] font-bold underline" style={{ color: "var(--accent)" }} onClick={goLogin}>Ya me aprobaron, quiero entrar</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4" data-testid="signup-flow">
+      <ol className="flex items-center gap-2" aria-label="Pasos">
+        {["Tus datos", "Tu pago", "Contraseña"].map((t, i) => (
+          <li key={t} className="flex-1" aria-current={step === i + 1 ? "step" : undefined}>
+            <div className="h-1 rounded-full" style={{ background: step >= i + 1 ? "var(--accent)" : "rgba(255,255,255,.14)" }} />
+            <div className="mt-1 text-[11px] font-bold" style={{ color: step === i + 1 ? "var(--cardink)" : "var(--cardink2)" }}>{i + 1}. {t}</div>
+          </li>
+        ))}
+      </ol>
+
+      {step === 1 && (
+        <div className="space-y-4">
+          <div><label className="bx-label" htmlFor="sg-name">Tu nombre</label><input id="sg-name" className="bx-input" value={f.name} onChange={(e) => upd({ name: e.target.value })} placeholder="Ej.: Carlos Pérez" autoComplete="name" data-testid="sg-name" /></div>
+          <div><label className="bx-label" htmlFor="sg-id">Usuario o teléfono de Telegram</label><input id="sg-id" className="bx-input" value={f.ident} onChange={(e) => upd({ ident: e.target.value })} placeholder="@usuario  ·  +58 412 0000000" autoCapitalize="off" spellCheck={false} data-testid="sg-ident" /></div>
+          <p className="text-[12px]" style={{ color: "var(--cardink2)" }}>Es con lo que entrarás después. Solo usamos Telegram: no pedimos correo.</p>
+        </div>
+      )}
+
+      {step === 2 && (
+        <div className="space-y-4">
+          <div>
+            <span className="bx-label">Captura del comprobante</span>
+            <label className="pz-drop" data-testid="sg-drop">
+              <input type="file" accept="image/*" className="sr-only" onChange={(e) => { setErr(""); setFile((e.target.files && e.target.files[0]) || null); }} data-testid="sg-file" />
+              {prev ? <img src={prev} alt="Vista previa del comprobante" className="pz-prev" /> : <span className="text-sm" style={{ color: "var(--cardink2)" }}>Toca para elegir la captura de tu pago</span>}
+              {file && <span className="text-[12px] mt-1" style={{ color: "var(--cardink2)" }}>{file.name} · toca para cambiarla</span>}
+            </label>
           </div>
-        )}
+          <div className="grid grid-cols-2 gap-3">
+            <div><label className="bx-label" htmlFor="sg-date">Fecha del pago</label><input id="sg-date" type="date" max={localDate()} className="bx-input" value={f.date} onChange={(e) => upd({ date: e.target.value })} data-testid="sg-date" /></div>
+            <div><label className="bx-label" htmlFor="sg-amt">Monto pagado (USD)</label><input id="sg-amt" className="bx-input" inputMode="decimal" value={f.amount} onChange={(e) => { setSel(null); upd({ amount: e.target.value }); }} placeholder="Ej.: 150" data-testid="sg-amount" /></div>
+          </div>
+
+          {amtOk && eff && !adjust && (
+            <div className="pz-detect" data-testid="sg-detected">
+              <div className="text-[11px] font-bold tracking-wide" style={{ color: "var(--cardink2)" }}>{auto && !sel ? "DETECTAMOS TU PLAN" : "PLAN ELEGIDO"}</div>
+              <div className="mt-1 font-black text-white">{M_CH[eff.ch]} · {M_PLAN[eff.plan].label}</div>
+              {mismatch && <div className="mt-1 text-[12px]" style={{ color: "var(--amb2)" }}>El precio de este plan es ${expected}. Revisaremos tu pago.</div>}
+              <button type="button" className="mt-2 text-[13px] font-bold underline" style={{ color: "var(--accent)" }} onClick={() => setAdjust(true)} data-testid="sg-adjust">Cambiar canal o plan</button>
+            </div>
+          )}
+          {amtOk && matches.length > 1 && !sel && (
+            <div className="pz-detect" data-testid="sg-multi">
+              <div className="font-bold text-white text-sm">Este monto existe en más de un canal. Confirma el tuyo:</div>
+              <div className="mt-2 flex flex-wrap gap-2">{matches.map((m) => <button key={m.ch + m.plan} type="button" className="bx-pill" onClick={() => setSel({ ch: m.ch, plan: m.plan })}>{M_CH[m.ch]} · {M_PLAN[m.plan].label}</button>)}</div>
+            </div>
+          )}
+          {amtOk && matches.length === 0 && !adjust && (
+            <div className="pz-detect" data-testid="sg-nomatch">
+              <div className="font-bold text-white text-sm">Ese monto no coincide con ningún plan.</div>
+              <p className="mt-1 text-[12px]" style={{ color: "var(--cardink2)" }}>Revisa el monto o elige tu canal y plan.</p>
+              <button type="button" className="mt-2 text-[13px] font-bold underline" style={{ color: "var(--accent)" }} onClick={() => setAdjust(true)}>Elegir canal y plan</button>
+            </div>
+          )}
+          {adjust && (
+            <div className="pz-detect space-y-3" data-testid="sg-manual">
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="bx-label" htmlFor="sg-ch">Canal</label>
+                  <select id="sg-ch" className="bx-input" value={eff ? eff.ch : ""} onChange={(e) => setSel({ ch: e.target.value, plan: plansFor(e.target.value)[0].plan })}>
+                    {!eff && <option value="">Elige…</option>}
+                    <option value="GOLD">{M_CH.GOLD}</option><option value="SINT">{M_CH.SINT}</option>
+                  </select></div>
+                <div><label className="bx-label" htmlFor="sg-pl">Plan</label>
+                  <select id="sg-pl" className="bx-input" disabled={!eff} value={eff ? eff.plan : ""} onChange={(e) => setSel({ ch: eff.ch, plan: e.target.value })}>
+                    {eff && plansFor(eff.ch).map((x) => <option key={x.plan} value={x.plan}>{M_PLAN[x.plan].label} · ${x.amount}</option>)}
+                  </select></div>
+              </div>
+              <button type="button" className="text-[13px] font-bold underline" style={{ color: "var(--accent)" }} onClick={() => setAdjust(false)}>Listo</button>
+            </div>
+          )}
+          <p className="text-[12px] leading-relaxed" style={{ color: "var(--cardink2)" }}>Precios — Gold: {PRICE_TABLE.filter((x) => x.ch === "GOLD").map((x) => `$${x.amount}`).join(" · ")} · Sintéticos: {PRICE_TABLE.filter((x) => x.ch === "SINT").map((x) => `$${x.amount}`).join(" · ")}</p>
+        </div>
+      )}
+
+      {step === 3 && (
+        <div className="space-y-4">
+          <PwField id="sg-pw" label="Crea tu contraseña" value={pw} onChange={(v) => { setErr(""); setPw(v); }} show={show} setShow={setShow} autoComplete="new-password" testid="sg-pass" />
+          <PwField id="sg-pw2" label="Repite la contraseña" value={pw2} onChange={(v) => { setErr(""); setPw2(v); }} show={show} setShow={setShow} autoComplete="new-password" testid="sg-pass2" />
+          <ul className="text-[12px] space-y-0.5" style={{ color: "var(--cardink2)" }}>
+            <li style={{ color: pw.length >= 8 ? "#2ECC71" : undefined }}>{pw.length >= 8 ? "✓" : "•"} Mínimo 8 caracteres</li>
+            <li style={{ color: /[A-Za-z]/.test(pw) && /\d/.test(pw) ? "#2ECC71" : undefined }}>{/[A-Za-z]/.test(pw) && /\d/.test(pw) ? "✓" : "•"} Letras y números</li>
+          </ul>
+          <p className="text-[12px]" style={{ color: "var(--cardink2)" }}>Entrarás con ella cuando aprobemos tu pago. Guárdala bien: no la vemos nunca.</p>
+        </div>
+      )}
+
+      {err && <div className="text-sm text-rose-400" role="alert" data-testid="signup-error">{err}</div>}
+      <div className="flex gap-2">
+        {step > 1 && <button type="button" className="bx-ghost" onClick={() => { setErr(""); setStep(step - 1); }}>Atrás</button>}
+        {step < 3
+          ? <button type="button" className="bx-btn flex-1 py-3" onClick={step === 1 ? next1 : next2} data-testid="signup-next">Continuar</button>
+          : <button type="button" className="bx-btn flex-1 py-3" disabled={busy} onClick={finish} data-testid="signup-finish">{busy ? "Preparando…" : "Crear solicitud"}</button>}
+      </div>
+      <p className="text-center text-[13px]" style={{ color: "var(--cardink2)" }}>¿Ya eres miembro? <button type="button" className="font-bold underline" style={{ color: "var(--accent)" }} onClick={goLogin}>Inicia sesión</button></p>
+    </div>
+  );
+}
+
+function AccessModal({ onClose, onSuccess }) {
+  const [tab, setTab] = useState("login");
+  useEffect(() => {
+    const k = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", k);
+    const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", k); document.body.style.overflow = prev; };
+  }, [onClose]);
+  return (
+    <div className="pz-ov" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }} data-testid="access-modal">
+      <div className="pz-glass" role="dialog" aria-modal="true" aria-labelledby="pz-title">
+        <button type="button" className="pz-x" onClick={onClose} aria-label="Cerrar" data-testid="access-close">✕</button>
+        <div className="flex items-center gap-3">
+          <img src={LOGO} alt="" className="w-9 h-9 object-contain" />
+          <div>
+            <h2 id="pz-title" className="bx-display text-2xl leading-none text-white tracking-[0.04em]">MI ACCESO</h2>
+            <p className="text-[12px] mt-1" style={{ color: "var(--cardink2)" }}>Comunidad VIP · PRECISION ZONE FX</p>
+          </div>
+        </div>
+        <div className="pz-seg mt-5" role="tablist" aria-label="Tipo de acceso">
+          {[["login", "Ya soy miembro"], ["signup", "Nuevo miembro"]].map(([k, l]) => (
+            <button key={k} type="button" role="tab" aria-selected={tab === k} className={tab === k ? "on" : ""} onClick={() => setTab(k)} data-testid={`access-tab-${k}`}>{l}</button>
+          ))}
+        </div>
+        <div className="mt-5">
+          {tab === "login" ? <MemberLoginForm onSuccess={onSuccess} goSignup={() => setTab("signup")} /> : <MemberSignupFlow goLogin={() => setTab("login")} />}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MemberPage({ setPage }) {
+  const [phase, setPhase] = useState("boot"); // boot | login | expired | ok
+  const [rec, setRec] = useState(null);
+  const [who, setWho] = useState(null); // { p, ident }
+  const [sec, setSec] = useState("home");
+  const supportUrl = `https://t.me/${MEMBER_SUPPORT}`;
+  const boot = async () => {
+    const sess = readSess();
+    if (!sess) { setPhase("login"); return; }
+    setPhase("boot");
+    try {
+      const { p, rec: r } = await memberLookup(sess.u);
+      if (!r || !r.pw || r.pw !== sess.k) { clearSess(); setPhase("login"); return; }
+      setRec(r); setWho({ p, ident: sess.u });
+      if (memberLeft(r) <= 0) { setPhase("expired"); return; }
+      setSec("home"); setPhase("ok");
+    } catch (e) { setPhase("login"); }
+  };
+  useEffect(() => { boot(); /* eslint-disable-next-line */ }, []);
+  const logout = () => { clearSess(); setRec(null); setWho(null); setPage("home"); window.scrollTo(0, 0); };
+
+  if (phase === "boot") return <div className="max-w-md mx-auto py-16 text-center bx-muted" data-testid="member-loading" role="status">Verificando tu acceso…</div>;
+  if (phase === "login") return <AccessModal onClose={() => { setPage("home"); window.scrollTo(0, 0); }} onSuccess={boot} />;
+  if (phase === "expired") {
+    return (
+      <div className="max-w-md mx-auto py-10" data-testid="member-expired">
+        <div className="bx-card p-6" role="alert" style={{ borderColor: "rgba(244,63,94,.5)" }}>
+          <div className="text-lg font-black text-white">Tu acceso VIP venció</div>
+          <p className="mt-1 text-sm bx-ink2 leading-relaxed">Tu plan terminó el {fmtDate(memberEnd(rec))}. Escribe a soporte para renovarlo.</p>
+          <div className="mt-4 flex flex-wrap gap-2"><a href={supportUrl} target="_blank" rel="noopener noreferrer" className="bx-btn px-4 py-2 text-sm" data-testid="member-support">Contactar soporte en Telegram</a><button type="button" className="bx-ghost" onClick={logout} data-testid="member-logout">Salir</button></div>
+        </div>
       </div>
     );
   }
@@ -5138,9 +5829,10 @@ function MemberPage({ setPage }) {
   const left = memberLeft(rec), total = rec.days, used = Math.min(100, Math.max(0, ((total - left) / total) * 100));
   const st = memberStatus(rec);
   const chans = rec.ch === "AMBOS" ? ["SINT", "GOLD"] : [rec.ch];
+  const hasSyn = chans.includes("SINT");
   const mark = `${rec.n} · ${who.ident}`;
-  const storeKey = `pzfx_logbook_v1:${who.p.norm}`;
-  const SECS = [["home", "Inicio"], ["course", "Curso"], ["log", "Bitácora"], ["tut", "Tutorial"]];
+  const storeKey = `pzfx_synlog_v2:${who.p.norm}`;
+  const SECS = [["home", "Inicio"], ["course", "Curso"], ...(hasSyn ? [["log", "Bitácora"]] : []), ["tut", "Manual de Operativa"]];
   return (
     <div className="max-w-5xl mx-auto" data-testid="member-portal">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -5170,16 +5862,16 @@ function MemberPage({ setPage }) {
             </div>
             <p className="mt-3 text-xs bx-muted">¿Algún problema con tu acceso? <a className="underline font-bold" style={{ color: "var(--accent)" }} href={`https://t.me/${MEMBER_SUPPORT}`} target="_blank" rel="noopener noreferrer">Escribe a soporte</a>.</p>
           </section>
-          <div className="grid sm:grid-cols-3 gap-3">
-            {[["course", "🎬", "Curso", "Módulos y clases en video"], ["log", "📓", "Bitácora", "Registra y revisa tus operaciones"], ["tut", "📘", "Tutorial", "Operativa, disciplina y plan $100 → $1,200"]].map(([k, i, t, d]) => (
+          <div className={`grid gap-3 ${hasSyn ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
+            {[["course", "🎬", "Curso", "Módulos y clases en video", true], ["log", "📓", "Bitácora", "Gestión de riesgo y métricas de Sintéticos", hasSyn], ["tut", "📘", "Manual de Operativa", "Cómo tomar señales, disciplina y plan $100 → $1,200", true]].filter((x) => x[4]).map(([k, i, t, d]) => (
               <button key={k} type="button" className="bx-card p-4 text-left" onClick={() => { setSec(k); window.scrollTo(0, 0); }}><div className="text-2xl" aria-hidden="true">{i}</div><div className="mt-1 font-black text-white">{t}</div><div className="text-xs bx-muted">{d}</div></button>
             ))}
           </div>
         </div>
       )}
       {sec === "course" && <div className="mt-5"><CourseView mark={mark} /></div>}
-      {sec === "log" && <div className="mt-5"><Logbook storeKey={storeKey} /></div>}
-      {sec === "tut" && <div className="mt-5"><TutorialView /></div>}
+      {sec === "log" && hasSyn && <div className="mt-5"><Logbook storeKey={storeKey} /></div>}
+      {sec === "tut" && <div className="mt-5"><OperativaManual /></div>}
     </div>
   );
 }
@@ -5599,6 +6291,8 @@ export default function App() {
   const [tab, setTab] = useState("CFD"); // CFD | SINTETICO
   const [signalKind, setSignalKind] = useState("CFD"); // CFD | SINTETICO: lo eliges en el menú de "Señales"
   const [sigMenu, setSigMenu] = useState(false);
+  const [accessOpen, setAccessOpen] = useState(false);
+  const openAccess = () => { if (readSess()) { setPage("member"); window.scrollTo(0, 0); } else if (page !== "member") setAccessOpen(true); };
   const [showSubs, setShowSubs] = useState(false); // los subfiltros solo aparecen al pulsar CFDS o SINTÉTICOS
   const [cfdSub, setCfdSub] = useState("Todos");
   const [broker, setBroker] = useState("WELTRADE");
@@ -6072,9 +6766,10 @@ export default function App() {
       {page !== "admin" && <TelegramFab />}
       <style>{CSS}</style>
       <div className="bx-sitebg" aria-hidden="true" />
+      {accessOpen && page !== "member" && <AccessModal onClose={() => setAccessOpen(false)} onSuccess={() => { setAccessOpen(false); setPage("member"); window.scrollTo(0, 0); }} />}
 
       {/* ------------------------- HEADER ------------------------- */}
-      <header className="bx-header sticky top-0 z-30">
+      <header className="bx-header relative z-30">
         <div className="max-w-5xl mx-auto px-4 py-2.5 md:py-3 flex flex-wrap items-center gap-x-4 gap-y-1">
           <a href={PAGE_PATHS.home} onClick={(e) => { e.preventDefault(); setPage("home"); window.scrollTo(0, 0); }} className="flex items-center gap-3 order-1" data-testid="brand-link" aria-label="Ir al inicio" style={{ textDecoration: "none" }}>
             <img src={LOGO} alt="PRECISION ZONE FX" className="w-7 h-7 md:w-8 md:h-8 object-contain" />
@@ -6084,7 +6779,7 @@ export default function App() {
           </a>
 
           <div className="order-2 md:order-3 ml-auto md:ml-0 flex items-center gap-2">
-            <button type="button" className="bx-gold bx-gold-sm" onClick={() => { setPage("member"); window.scrollTo(0, 0); }} data-testid="member-btn">Mi Acceso</button>
+            <button type="button" className="bx-gold bx-gold-sm" onClick={openAccess} data-testid="member-btn">Mi Acceso</button>
             {isAdmin && <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>}
           </div>
 
@@ -6374,7 +7069,7 @@ export default function App() {
                 <h4>Explorar</h4>
                 <ul>
                   <li><button type="button" onClick={() => { setPage("track"); window.scrollTo(0, 0); }}>Track Record</button></li>
-                  <li><button type="button" onClick={() => { setPage("member"); window.scrollTo(0, 0); }} data-testid="footer-member">Mi Acceso</button></li>
+                  <li><button type="button" onClick={openAccess} data-testid="footer-member">Mi Acceso</button></li>
                   <li><button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }}>Herramientas</button></li>
                   <li><button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }}>Señales CFDs</button></li>
                   <li><button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }}>Señales Sintéticos</button></li>
