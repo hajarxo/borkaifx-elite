@@ -4123,6 +4123,49 @@
     "r": 3.33
   },
   {
+    "id": "1pmfbpthmwpb55ui",
+    "date": "2026-11-20",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "VOLATILITY 25",
+    "direction": "BUY",
+    "entry1": 2860.6,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 2846,
+    "tps": [
+      2898.1
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "SL",
+        "exit": 2846,
+        "pips": -14.6,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "VOLATILITY 25 BUY 2860.6\nSL 2846 \nTP1 2898.1",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "SL",
+    "pips": -14.6,
+    "r": -1
+  },
+  {
     "id": "g1q1wp3jmwp4zsb2",
     "date": "2026-11-20",
     "category": "CFD",
