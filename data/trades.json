@@ -3227,7 +3227,7 @@
     "discarded": false,
     "raw": "STEP INDEX 100 BUY 7260\nSL 7253 (70 pts)\nTP1 7310 (500 pts)\nTP2 7360 (1000 pts)\nTP3 7410 (1500 pts)",
     "notes": "",
-    "mgmt": "",
+    "mgmt": "Este trade se cerro con 650 pts solamente por gestion ya que el precio a estado jugando en esa zona. Se recomendo tomar parciales en 650 pts y dejar correr el restante hasta el TP indicado con su SL en BE. De igual manera quien quiso cerrar fue libre de hacerlo, oficialmente cerramos con 650 pts.",
     "tags": [
       "VIP Signal"
     ],
