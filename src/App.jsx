@@ -222,6 +222,18 @@ linear-gradient(180deg,rgba(255,90,31,.045) 0 1px,transparent 1px) 0 0/100% 160p
 .bx-cmp{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 .bx-cmp.yes{background:linear-gradient(160deg,rgba(255,90,31,.12),transparent 60%),rgba(255,255,255,.05)}
 .bx-finalcta{background:radial-gradient(520px circle at 88% 0%,rgba(255,90,31,.22),transparent 70%),rgba(16,19,27,.6);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+/* Botones con efecto glass (referencia: botones del landing) */
+.bx-gold,.bx-btn{position:relative;overflow:hidden;isolation:isolate;color:#1a0c05;background:linear-gradient(180deg,rgba(255,156,100,.94),rgba(255,90,31,.80));border:1px solid rgba(255,200,165,.55);-webkit-backdrop-filter:blur(10px) saturate(150%);backdrop-filter:blur(10px) saturate(150%);box-shadow:0 8px 26px rgba(255,90,31,.26),0 2px 8px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.40),inset 0 -1px 0 rgba(130,32,0,.28)}
+.bx-gold::after,.bx-btn::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.30) 50%,transparent 70%);transform:translateX(-120%);transition:transform .7s var(--ease)}
+.bx-planbtn,.bx-ghost,.bx-ghost-page{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(12px) saturate(140%);backdrop-filter:blur(12px) saturate(140%);box-shadow:0 6px 20px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.10)}
+.bx-pill:not(.on),.bx-tab:not(.on){background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+@media (hover:hover){
+.bx-gold:hover,.bx-btn:hover{filter:none;transform:translateY(-2px);box-shadow:0 14px 34px rgba(255,90,31,.36),0 2px 8px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 0 rgba(130,32,0,.28)}
+.bx-gold:hover::after,.bx-btn:hover::after{transform:translateX(120%)}
+.bx-planbtn:hover,.bx-ghost:hover,.bx-ghost-page:hover{transform:translateY(-2px);border-color:var(--accent);background:rgba(255,255,255,.09)}
+}
+.bx-btn:disabled{transform:none;filter:none}
+.pz-msg{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:.82rem;line-height:1.5;color:var(--cardink);padding:.75rem .9rem;border-radius:12px;background:rgba(5,8,12,.45);border:1px solid rgba(255,255,255,.14)}
 /* Mi Acceso */
 .mb-badge{display:inline-block;padding:.2rem .6rem;border-radius:9999px;font-size:.72rem;font-weight:800;white-space:nowrap}
 .mb-table{width:100%;min-width:760px;border-collapse:collapse;font-size:.85rem;color:var(--cardink2)}
@@ -3141,196 +3153,6 @@ function Testimonios() {
   );
 }
 
-/* ----------------------------- Conceptos (educación) ----------------------------- */
-// Mini gráfico de velas: cada vela = [apertura, máximo, mínimo, cierre] en escala 0-100.
-function MiniChart({ cs, under, over, label, h = 130 }) {
-  const W = 240;
-  const step = (W - 20) / cs.length;
-  const cw = Math.min(14, step * 0.6);
-  const X = (i) => 10 + step * (i + 0.5);
-  const Y = (v) => h - 8 - (v / 100) * (h - 16);
-  return (
-    <svg viewBox={`0 0 ${W} ${h}`} className="w-full" role="img" aria-label={label} style={{ display: "block" }}>
-      {under && under(X, Y, step)}
-      {cs.map((c, i) => {
-        const up = c[3] >= c[0];
-        const col = up ? "var(--pos)" : "var(--neg)";
-        const top = Y(Math.max(c[0], c[3])), bot = Y(Math.min(c[0], c[3]));
-        return (
-          <g key={i}>
-            <line x1={X(i)} x2={X(i)} y1={Y(c[1])} y2={Y(c[2])} stroke={col} strokeWidth="1.4" opacity=".85" />
-            <rect x={X(i) - cw / 2} y={top} width={cw} height={Math.max(2.5, bot - top)} rx="1.5" fill={col} />
-          </g>
-        );
-      })}
-      {over && over(X, Y, step)}
-    </svg>
-  );
-}
-const zoneP = (x, y, w, h, color, op = 0.16) => (
-  <rect x={x} y={y} width={w} height={h} rx="3" fill={color} fillOpacity={op} stroke={color} strokeOpacity=".7" strokeWidth="1" />
-);
-const lbl = (x, y, t, color, anchor = "start") => (
-  <text x={x} y={y} fill={color} fontSize="8.5" fontWeight="800" textAnchor={anchor} style={{ fontFamily: "Inter, sans-serif" }}>{t}</text>
-);
-
-function ConceptChart({ k }) {
-  if (k === "sweep") {
-    const cs = [[40,50,36,48],[48,54,44,46],[46,53,42,52],[52,54,44,46],[46,50,40,48],[48,53,46,50],[50,80,48,52],[52,53,36,38],[38,40,28,30],[30,32,18,20],[20,22,12,14]];
-    return <MiniChart cs={cs} label="Barrido de liquidez: la mecha supera los máximos y la vela cierra de nuevo adentro"
-      under={(X, Y) => <line x1={X(0) - 6} x2={X(7)} y1={Y(54)} y2={Y(54)} stroke="var(--ink2)" strokeDasharray="3 3" strokeWidth="1" />}
-      over={(X, Y) => (<g>
-        <circle cx={X(6)} cy={Y(80)} r="6" fill="none" stroke="var(--neg)" strokeWidth="1.3" />
-        {lbl(X(6) - 10, Y(80) + 3, "SWEEP", "var(--neg)", "end")}
-        {lbl(X(0) - 4, Y(54) - 4, "highs", "var(--ink2)")}
-        {lbl(X(7) + 8, Y(54) + 12, "cerró adentro", "var(--neg)")}
-      </g>)} />;
-  }
-  if (k === "fvg") {
-    const cs = [[70,74,64,66],[66,68,56,58],[58,60,48,50],[50,82,48,80],[80,90,70,88],[86,87,66,68],[68,86,66,84]];
-    return <MiniChart cs={cs} label="Displacement que deja un Fair Value Gap"
-      under={(X, Y) => zoneP(X(2) - 8, Y(70), X(6) - X(2) + 16, Y(60) - Y(70), "var(--accent)", 0.2)}
-      over={(X, Y) => (<g>
-        {lbl(X(6) + 8, Y(65) + 3, "FVG", "var(--accent)", "end")}
-        {lbl(X(3), Y(40), "displacement", "var(--pos)", "middle")}
-      </g>)} />;
-  }
-  if (k === "ob") {
-    const cs = [[70,72,62,64],[64,66,54,56],[56,58,46,48],[48,50,42,44],[44,66,42,64],[64,76,62,74],[74,86,72,84],[84,86,72,76],[76,92,74,90]];
-    return <MiniChart cs={cs} label="Order block alcista: última vela bajista antes del movimiento que rompe estructura"
-      under={(X, Y) => zoneP(X(3) - 8, Y(50), X(8) - X(3) + 16, Y(42) - Y(50), "var(--pos)", 0.18)}
-      over={(X, Y) => (<g>
-        {lbl(X(8) + 8, Y(36) + 3, "bullish order block", "var(--pos)", "end")}
-        {lbl(X(5), Y(96) + 4, "rompe estructura", "var(--ink)", "middle")}
-      </g>)} />;
-  }
-  if (k === "pd") {
-    const cs = [[14,22,10,20],[20,40,18,38],[38,60,36,58],[58,78,56,76],[76,90,74,88],[88,89,70,72],[72,74,54,56],[56,58,44,46],[46,48,34,36],[36,48,28,46]];
-    return <MiniChart cs={cs} label="Premium arriba del 50 por ciento, discount abajo, zona OTE del 62 al 79 por ciento"
-      under={(X, Y) => (<g>
-        {zoneP(8, Y(90), 224, Y(50) - Y(90), "var(--neg)", 0.1)}
-        {zoneP(8, Y(50), 224, Y(10) - Y(50), "var(--pos)", 0.1)}
-        {zoneP(8, Y(40), 224, Y(27) - Y(40), "var(--accent)", 0.22)}
-        <line x1="8" x2="232" y1={Y(50)} y2={Y(50)} stroke="var(--ink2)" strokeDasharray="3 3" strokeWidth="1" />
-      </g>)}
-      over={(X, Y) => (<g>
-        {lbl(14, Y(90) + 10, "PREMIUM: sell", "var(--neg)")}
-        {lbl(120, Y(10) - 3, "DISCOUNT: buy", "var(--pos)", "middle")}
-        {lbl(120, Y(27) - 3, "OTE 62–79%", "var(--accent)", "middle")}
-        {lbl(228, Y(50) - 3, "50%", "var(--ink2)", "end")}
-      </g>)} />;
-  }
-  if (k === "model") {
-    const cs = [[80,84,74,76],[76,78,68,70],[70,72,62,64],[64,68,60,66],[66,67,56,58],[58,60,30,34],[34,72,32,70],[70,86,66,84],[84,85,62,66],[66,96,64,94]];
-    return <MiniChart cs={cs} h={150} label="Modelo de entrada: sweep, CHoCH, FVG y entrada"
-      under={(X, Y) => (<g>
-        {zoneP(X(5) - 8, Y(66), X(9) - X(5) + 16, Y(60) - Y(66), "var(--accent)", 0.22)}
-        <line x1={X(3)} x2={X(6)} y1={Y(68)} y2={Y(68)} stroke="var(--ink2)" strokeDasharray="3 3" strokeWidth="1" />
-        <line x1={X(7)} x2={X(9) + 8} y1={Y(98)} y2={Y(98)} stroke="var(--pos)" strokeDasharray="3 3" strokeWidth="1" />
-        <line x1={X(7)} x2={X(9) + 8} y1={Y(24)} y2={Y(24)} stroke="var(--neg)" strokeDasharray="3 3" strokeWidth="1" />
-      </g>)}
-      over={(X, Y) => (<g>
-        {lbl(X(5), Y(20) + 11, "1 sweep", "var(--neg)", "middle")}
-        {lbl(X(4), Y(68) - 14, "2 CHoCH", "var(--ink)", "middle")}
-        {lbl(X(9) + 8, Y(60) + 11, "3 FVG", "var(--accent)", "end")}
-        {lbl(X(8), Y(86) - 2, "4 entry", "var(--pos)", "middle")}
-        {lbl(X(7) - 4, Y(98) - 3, "target", "var(--pos)")}
-        {lbl(X(7) - 4, Y(24) + 10, "stop", "var(--neg)")}
-      </g>)} />;
-  }
-  return null;
-}
-
-const CONCEPTS = [
-  { k: "sweep", tag: "01", title: "Sweep vs breakout real", text: "Un barrido perfora un nivel, toma los stops y cierra de nuevo adentro. Un breakout real cierra más allá del nivel y se sostiene.", key: "La clave es el cierre. Nunca persigas la mecha." },
-  { k: "fvg", tag: "02", title: "Displacement y FVG", text: "Un movimiento fuerte y rápido deja un Fair Value Gap: un desequilibrio de 3 velas donde el high de la vela 1 y el low de la vela 3 no se solapan.", key: "El precio suele regresar a reequilibrar el gap. Ese retorno es tu zona de entrada. Gaps aleatorios en un rango: ignóralos." },
-  { k: "ob", tag: "03", title: "Order block", text: "La última vela opuesta antes de un movimiento que rompe estructura. Marca dónde ingresaron las órdenes grandes.", bullets: ["Barrió liquidez primero", "Salió con desplazamiento y dejó un FVG", "Rompió estructura (BOS / CHoCH)", "Sigue sin mitigar", "Está en descuento (compras) o premium (ventas)"], key: "Si faltan 2 o más, es solo una vela, no un order block." },
-  { k: "pd", tag: "04", title: "Premium, discount y OTE", text: "Traza el rango del swing low al swing high. Por encima del 50% es premium (caro), por debajo es discount (barato). Compra en discount, vende en premium.", key: "OTE: el retroceso del 62% al 79% del swing. La zona de entrada de mayor probabilidad." },
-  { k: "model", tag: "05", title: "El modelo de entrada", text: "Júntalo todo. Cuatro pasos, en orden. Si falta uno, no hay trade.", bullets: ["Liquidity sweep: el precio elimina un mínimo (buys) o un máximo (sells) claro, idealmente en killzone", "Change of character: rompe el último máximo más bajo con desplazamiento", "Fair value gap: ese desplazamiento deja un FVG, idealmente en descuento", "Entry: orden límite en el FVG, stop más allá del barrido, objetivo en la siguiente liquidez"], numbered: true, key: "Si falta un paso, no hay trade." },
-  { k: "sessions", tag: "06", title: "Sesiones y killzones", text: "El oro cotiza 24 horas, pero no se mueve igual todo el día. Horas de Nueva York (ET).", key: "Asia construye el rango, Londres lo barre, Nueva York entrega el movimiento real." },
-];
-const SESSIONS = [
-  { n: "Sydney", t: "17:00 – 02:00", d: "Tranquilo, bajo volumen. Evita operar.", c: "var(--ink2)" },
-  { n: "Tokyo (Asia)", t: "19:00 – 04:00", d: "Se forman rangos. La liquidez se acumula arriba y abajo.", c: "var(--ink)" },
-  { n: "London", t: "03:00 – 12:00", d: "Llega volumen. A menudo barre un lado del rango asiático.", c: "var(--accent)" },
-  { n: "New York", t: "08:00 – 17:00", d: "Los movimientos más grandes. Las noticias impulsan el movimiento real.", c: "var(--pos)" },
-];
-const CHECKLIST = [
-  "El BIAS en la temporalidad mayor es claro (H4 / H1)",
-  "El precio está en discount o premium",
-  "Liquidez barrida",
-  "Un change of character con displacement",
-  "FVG limpio o zona de entrada en order block",
-  "Dentro de una killzone (London o New York)",
-  "No hay noticias de alto impacto en los próximos 30 minutos",
-  "Stop colocado más allá del barrido",
-  "El objetivo es de al menos 2R en liquidez clara",
-  "El riesgo es del 1% o menos",
-];
-
-function Conceptos() {
-  const [done, setDone] = useState({});
-  const n = CHECKLIST.filter((_, i) => done[i]).length;
-  return (
-    <section data-testid="home-concepts">
-      <h2 className="bx-h2 md:!text-[2.6rem]">LOS CONCEPTOS QUE USO CADA DÍA</h2>
-      <p className="mt-3 text-[15px] bx-ink2 max-w-xl leading-relaxed">Lo esencial de Smart Money, explicado simple y con dibujo. Si falta una pieza, no hay trade.</p>
-      <div className="mt-6 grid md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-        {CONCEPTS.map((c) => (
-          <div key={c.k} className="bx-plan" data-testid="concept-card">
-            <div className="flex items-center gap-2 text-[11px] font-bold tracking-[0.18em] uppercase" style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', color: ACCENT }}>{c.tag}</div>
-            <div className="mt-2 text-lg font-extrabold leading-snug" style={{ color: "var(--cardink)" }}>{c.title}</div>
-            <p className="mt-2 text-sm bx-ink2 leading-relaxed">{c.text}</p>
-            {c.k !== "sessions" && <div className="mt-3 rounded-xl p-2" style={{ background: "var(--field)", border: "1px solid var(--line)" }}><ConceptChart k={c.k} /></div>}
-            {c.k === "sessions" && (
-              <div className="mt-3 space-y-2">
-                {SESSIONS.map((s) => (
-                  <div key={s.n} className="rounded-xl px-3 py-2" style={{ background: "var(--field)", border: "1px solid var(--line)" }}>
-                    <div className="flex items-baseline justify-between gap-2"><span className="text-sm font-extrabold" style={{ color: s.c }}>{s.n}</span><span className="text-[11px] bx-muted" style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace' }}>{s.t}</span></div>
-                    <div className="text-xs bx-ink2 mt-0.5 leading-snug">{s.d}</div>
-                  </div>
-                ))}
-                <div className="text-xs bx-ink2 leading-relaxed"><b style={{ color: ACCENT }}>Killzones:</b> London open (02:00 – 05:00) y New York open (07:00 – 10:00). Ahí se forman los setups más limpios.</div>
-              </div>
-            )}
-            {c.bullets && (
-              <ul className="mt-3 space-y-1.5">
-                {c.bullets.map((b, i) => (
-                  <li key={i} className="flex gap-2 text-xs bx-ink2 leading-snug">
-                    {c.numbered ? <span className="shrink-0 rounded-full text-[11px] font-extrabold flex items-center justify-center" style={{ width: 20, height: 20, background: ACCENT_HEX, color: "#1a1405" }}>{i + 1}</span> : <span style={{ color: "var(--pos)" }}>✓</span>}
-                    <span>{b}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-            <div className="flex-1" />
-            <div className="mt-4 rounded-xl px-3 py-2 text-[13px] leading-snug" style={{ background: "rgba(255,90,31,.10)", borderLeft: `3px solid ${ACCENT_HEX}`, color: "var(--cardink)" }}>{c.key}</div>
-          </div>
-        ))}
-      </div>
-
-      <div className="bx-plan mt-4" data-testid="pretrade-checklist">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          <div>
-            <div className="text-[11px] font-bold tracking-[0.18em] uppercase" style={{ fontFamily: '"JetBrains Mono", ui-monospace, monospace', color: ACCENT }}>Checklist</div>
-            <div className="mt-1 text-lg font-extrabold" style={{ color: "var(--cardink)" }}>Antes de cada trade</div>
-          </div>
-          <div className="text-sm font-extrabold" style={{ color: n === CHECKLIST.length ? "var(--pos)" : ACCENT }} data-testid="pretrade-count">{n}/{CHECKLIST.length}</div>
-        </div>
-        <div className="mt-3 grid sm:grid-cols-2 gap-x-6">
-          {CHECKLIST.map((t, i) => (
-            <button key={i} type="button" data-testid={`pretrade-${i}`} onClick={() => setDone((d) => ({ ...d, [i]: !d[i] }))} className="flex items-start gap-3 py-2 text-left text-sm bx-ink2" style={{ borderBottom: "1px solid var(--line)" }}>
-              <span className="shrink-0 rounded-md flex items-center justify-center text-[12px] font-extrabold" style={{ width: 20, height: 20, border: `1.5px solid ${ACCENT_HEX}`, background: done[i] ? ACCENT_HEX : "transparent", color: "#1a1405" }}>{done[i] ? "✓" : ""}</span>
-              <span style={{ opacity: done[i] ? 0.6 : 1 }}>{t}</span>
-            </button>
-          ))}
-        </div>
-        <div className="mt-4 text-xs bx-muted">Solo educación. No es asesoría financiera. Operar implica un riesgo sustancial de pérdida.</div>
-      </div>
-    </section>
-  );
-}
-
 /* ----------------------------- Inicio ----------------------------- */
 const useReducedMotion = () => {
   const [r, setR] = useState(false);
@@ -3490,11 +3312,11 @@ function TelegramFab() {
   );
 }
 function HomePage({ setPage, openTool, openSignals, trades = [] }) {
-  const m = useMemo(() => computeMetrics(trades), [trades]);
+  const m = useMemo(() => computeMetrics(trades.filter((t) => t.category === "CFD")), [trades]); // solo CFDs
   const showStats = m.executed >= 3;
   const cfd = cfdMarketOpen(new Date());
   const steps = [
-    { n: 1, name: "Gratis", tone: GREEN, title: "Smart Money Action", text: "Una guía gratuita de 15 páginas, el playbook que necesitas: estructura, liquidez, FVG, las cuatro sesiones y un modelo simple.", cta: "Obtener la guía gratis", href: "https://t.me/borkaifxelite/633" },
+    { n: 1, name: "Gratis", tone: GREEN, title: "La Biblia del Trading", text: "Nuestra guía gratuita en PDF con los conceptos base para operar con claridad y entender dónde está la liquidez.", cta: "Obtener La Biblia", href: BIBLIA_URL },
     { n: 2, name: "El curso", tone: ACCENT, title: "El curso", price: "$299", text: "El curso para traders que, con o sin experiencia, buscan operar con claridad y estrategia institucional: XAUUSD, índices bursátiles y divisas, con estrategias por separado y ordenadas.", cta: "Quiero el curso", href: SITE.join.url },
     { n: 3, name: "VIP", tone: ACCENT, hot: true, title: "Tradea con nosotros", text: "Todas nuestras señales con punto de entrada, stop y take profit, con seguimiento a cada señal desde su activación.", cta: "Acceso al Telegram", href: TELEGRAM_URL, gold: true },
   ];
@@ -3518,7 +3340,7 @@ function HomePage({ setPage, openTool, openSignals, trades = [] }) {
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm bx-rise" style={{ "--d": "230ms" }} data-testid="hero-facts">
             {showStats && (<>
-              <div><span className="bx-num text-2xl font-extrabold" style={{ color: "var(--cardink)" }}>{Math.round(m.winRate)}%</span><span className="ml-2 bx-muted">de acierto en {m.executed} operaciones cerradas</span></div>
+              <div><span className="bx-num text-2xl font-extrabold" style={{ color: "var(--cardink)" }}>{Math.round(m.winRate)}%</span><span className="ml-2 bx-muted">de acierto en {m.executed} operaciones CFD cerradas</span></div>
             </>)}
           </div>
         </div>
@@ -3559,16 +3381,13 @@ function HomePage({ setPage, openTool, openSignals, trades = [] }) {
         <div className="mt-7"><ToolCards onPick={(k) => { openTool(k); window.scrollTo(0, 0); }} /></div>
       </section>
 
-      <Conceptos />
-
       <FaqHome setPage={setPage} />
 
       <section className="bx-finalcta" data-testid="home-final-cta">
-        <h2 className="bx-h2">Empieza con la guía gratis</h2>
-        <p className="mt-3 text-base bx-ink2 max-w-xl leading-relaxed">Quince páginas con estructura, liquidez, FVG, sesiones y un modelo de entrada completo. Sin costo.</p>
+        <h2 className="bx-h2">Empieza con La Biblia del Trading</h2>
+        <p className="mt-3 text-base bx-ink2 max-w-xl leading-relaxed">Nuestro recurso gratuito con los conceptos que necesitas para empezar a operar con un plan. Sin costo.</p>
         <div className="mt-7 flex flex-wrap gap-3">
-          <a href="https://t.me/borkaifxelite/633" target="_blank" rel="noopener noreferrer" className="bx-gold bx-cta">Obtener la guía gratis</a>
-          <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="bx-planbtn bx-cta">Unirme al canal</a>
+          <a href={BIBLIA_URL} target="_blank" rel="noopener noreferrer" className="bx-gold bx-cta" data-testid="biblia-cta">Obtener La Biblia del Trading</a>
         </div>
       </section>
     </div>
@@ -4526,7 +4345,8 @@ function AnnualEvolution({ trades, unit }) {
    Edita aquí: soporte, enlaces de los canales VIP y los videos del curso.
    ============================================================ */
 const MEMBER_SUPPORT = "ddazafx"; // soporte directo por Telegram
-const VIP_CHANNEL_LINKS = { SINT: "", GOLD: "" }; // enlace de invitación de cada canal VIP (vacío = el botón abre el chat de soporte)
+const VIP_CHANNEL_LINKS = { SINT: "https://t.me/+190hrDlGRqhjZGMx", GOLD: "https://t.me/+-4yW0gs1fstjYzgx" }; // enlaces de invitación de los canales VIP
+const BIBLIA_URL = "https://t.me/precisionzonefx/1066"; // La Biblia del Trading (recurso gratuito)
 // Curso: pega en "src" el enlace directo (.mp4 / .webm) de cada clase. Sin enlace se muestra "Próximamente".
 const COURSE_MODULES = [
   { title: "Módulo 1 · Fundamentos", lessons: [
@@ -4541,7 +4361,7 @@ const COURSE_MODULES = [
   ] },
   { title: "Módulo 3 · Mentalidad", lessons: [
     { title: "Disciplina y control emocional", src: "" },
-    { title: "Plan de crecimiento de cuenta", src: "" },
+    { title: "Plan de trading y gestión de riesgo", src: "" },
   ] },
 ];
 
@@ -4612,12 +4432,14 @@ async function pwDerive(password, p, ps) {
 }
 async function memberAuth(input, password) {
   const { p, rec } = await memberLookup(input);
-  if (!rec || !rec.pw || !rec.ps) return { ok: false, p, found: !!rec };
-  const k = await pwDerive(password, p, rec.ps);
-  return k === rec.pw ? { ok: true, p, rec, k } : { ok: false, p, found: true };
+  if (!rec) return { ok: false, p, found: false };
+  let ps = rec.ps, pw = rec.pw;
+  if (!pw) { const c = credRead()[derId(p)]; if (c) { ps = c.ps; pw = c.pw; } }
+  if (!pw || !ps) return { ok: false, p, found: true, noPass: true };
+  const k = await pwDerive(password, p, ps);
+  return k === pw ? { ok: true, p, rec, k } : { ok: false, p, found: true };
 }
 const MEMBER_STORE = "pzfx_member_sess_v2";
-const PENDING_STORE = "pzfx_member_pending";
 const readSess = () => {
   for (const s of ["localStorage", "sessionStorage"]) { try { const v = JSON.parse(window[s].getItem(MEMBER_STORE) || "null"); if (v && v.u && v.k) return v; } catch (e) {} }
   return null;
@@ -4634,22 +4456,17 @@ const PRICE_TABLE = [
 const detectPlan = (amt) => PRICE_TABLE.filter((x) => Math.abs(x.amount - amt) < 0.005);
 const priceOf = (ch, plan) => (PRICE_TABLE.find((x) => x.ch === ch && x.plan === plan) || {}).amount;
 
-// Solicitud de nuevo miembro → código que se envía a soporte por Telegram y se pega en el Dashboard
-const REQ_PREFIX = "PZFX1:";
-const b64uEnc = (s) => btoa(unescape(encodeURIComponent(s))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-const b64uDec = (s) => decodeURIComponent(escape(atob(s.replace(/-/g, "+").replace(/_/g, "/"))));
-function parseRequests(text) {
-  const out = [];
-  (String(text || "").match(/PZFX1:[A-Za-z0-9_-]+/g) || []).forEach((tok) => {
-    try {
-      const j = JSON.parse(b64uDec(tok.slice(REQ_PREFIX.length)));
-      const p = parseIdent(j.u);
-      if (!j.i || !j.n || !p || !M_CH[j.ch] || !M_PLAN[j.pl] || !/^\d{4}-\d{2}-\d{2}$/.test(j.d) || !Number.isFinite(Number(j.a)) || !/^[0-9a-f]{32}$/.test(j.ps || "") || !/^[0-9a-f]{64}$/.test(j.pw || "")) return;
-      out.push({ id: String(j.i), name: String(j.n).slice(0, 80), ident: String(j.u).slice(0, 80), ch: j.ch, plan: j.pl, paid: j.d, amount: Number(j.a), sent: Number(j.t) || 0, file: String(j.f || "").slice(0, 80), ps: j.ps, pw: j.pw });
-    } catch (e) {}
-  });
-  return out;
-}
+// Contraseñas creadas por el propio miembro en "Nuevo miembro": se guardan (cifradas) en su dispositivo
+const CRED_STORE = "pzfx_cred_v1";
+const credRead = () => { try { const v = JSON.parse(localStorage.getItem(CRED_STORE) || "{}"); return v && typeof v === "object" ? v : {}; } catch (e) { return {}; } };
+const credSave = (p, c) => { try { const m = credRead(); m[derId(p)] = c; localStorage.setItem(CRED_STORE, JSON.stringify(m)); } catch (e) {} };
+const normName = (x) => String(x || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9 ]/g, " ").split(/\s+/).filter(Boolean);
+const nameMatches = (typed, stored) => {
+  const a = normName(typed), b = normName(stored);
+  if (!a.length || !b.length) return false;
+  const [sm, lg] = a.length <= b.length ? [a, b] : [b, a];
+  return sm.join("").length >= 3 && sm.every((t) => lg.includes(t));
+};
 
 async function membersAdminLoad() {
   const { data } = await ghReadJson(MEMBERS_ENC, true, null);
@@ -4686,8 +4503,6 @@ function MembersAdmin() {
   const [busy, setBusy] = useState(false);
   const [form, setForm] = useState(null);
   const [q, setQ] = useState("");
-  const [paste, setPaste] = useState("");
-  const [importMsg, setImportMsg] = useState("");
   useEffect(() => {
     let alive = true;
     membersAdminLoad().then((r) => { if (alive) { setList(r.list); setLocked(r.locked); } }).catch((e) => { if (alive) { setList([]); setErr("No se pudo leer la lista: " + (e.message || "error de conexión")); } });
@@ -4699,14 +4514,20 @@ function MembersAdmin() {
     catch (e) { setErr("No se pudo guardar en GitHub: " + (e.message || "error")); return false; }
     finally { setBusy(false); }
   };
-  const openNew = () => setForm({ mode: "new", name: "", ident: "", ch: "AMBOS", plan: "1M", start: localDate(), days: 31, pass: genPass(), error: "" });
+  const openNew = () => setForm({ mode: "new", name: "", ident: "", ch: "GOLD", plan: "1M", start: localDate(), days: 31, amount: "", pass: "", error: "" });
   const openEdit = (m) => setForm({ mode: "edit", id: m.id, created: m.created, name: m.name, ident: m.ident, ch: m.ch, plan: m.plan, start: m.start, days: m.days, pass: "", error: "" });
-  const openApprove = (m) => setForm({ mode: "approve", id: m.id, created: m.created, name: m.name, ident: m.ident, ch: m.ch, plan: m.plan, start: m.req.paid, days: M_PLAN[m.plan].days, error: "" });
   const openRenew = (m) => setForm({ mode: "renew", id: m.id, created: m.created, name: m.name, ident: m.ident, ch: m.ch, plan: m.plan, ...renewCalc(m, m.plan), error: "" });
   const setF = (patch) => setForm((f) => ({ ...f, ...patch, error: "" }));
   const onPlan = (plan) => {
     if (form.mode === "renew") { const m = list.find((x) => x.id === form.id); setF({ plan, ...renewCalc(m, plan) }); }
     else setF({ plan, days: M_PLAN[plan].days });
+  };
+  // El monto que pagó el miembro identifica canal y plan
+  const onAmount = (v) => {
+    const a = Number(String(v).replace(",", "."));
+    const m = Number.isFinite(a) && a > 0 ? detectPlan(a) : [];
+    if (m.length === 1) setF({ amount: v, ch: m[0].ch, plan: m[0].plan, days: M_PLAN[m[0].plan].days });
+    else setF({ amount: v });
   };
   const submit = async () => {
     const f = form;
@@ -4719,51 +4540,28 @@ function MembersAdmin() {
     if (days < 1) return setForm({ ...f, error: "Los días de acceso deben ser 1 o más." });
     let hs;
     try { hs = await identHashes(p); } catch (e) { return setForm({ ...f, error: "Este navegador no permite cifrar. Usa Chrome, Edge o Safari actualizados." }); }
-    const dup = list.find((m) => !m.pending && m.id !== f.id && m.hs.some((h) => hs.includes(h)));
-    if (dup && f.mode !== "approve") return setForm({ ...f, error: "Ya existe un miembro con ese usuario o teléfono. Usa Editar o Renovar." });
+    if (list.some((m) => m.id !== f.id && m.hs.some((h) => hs.includes(h)))) return setForm({ ...f, error: "Ya existe un miembro con ese usuario o teléfono. Usa Editar o Renovar." });
     const old = f.id ? list.find((m) => m.id === f.id) : null;
     let ps = old && old.ps, pw = old && old.pw;
-    if (f.mode === "new" || (f.mode === "edit" && f.pass)) {
-      if (!pwOk(f.pass)) return setForm({ ...f, error: "La contraseña necesita mínimo 8 caracteres, con letras y números (usa «Generar»)." });
+    if ((f.mode === "new" || f.mode === "edit") && f.pass) {
+      if (!pwOk(f.pass)) return setForm({ ...f, error: "La contraseña necesita mínimo 8 caracteres, con letras y números (o déjala vacía)." });
       ps = randHex(16); pw = await pwDerive(f.pass, p, ps);
-    }
-    if (f.mode === "approve" && dup) {
-      // ya es miembro: la solicitud renueva su plan (suma días si aún está activo)
-      const rn = renewCalc(dup, f.plan);
-      const next = list.filter((m) => m.id !== f.id).map((m) => (m.id === dup.id ? { ...m, plan: f.plan, revoked: false, ps: m.ps || old.ps, pw: m.pw || old.pw, ...rn } : m));
-      if (await persist(next)) setForm(null);
-      return;
     }
     const rec = { id: f.id || uid(), name: nm, ident: f.ident.trim(), hs, ch: f.ch, plan: f.plan, start: f.start, days, revoked: false, created: f.created || localDate(), ps, pw };
     const next = f.id ? list.map((m) => (m.id === f.id ? rec : m)) : [...list, rec];
     if (await persist(next)) setForm(null);
   };
-  const importReq = async () => {
-    const reqs = parseRequests(paste);
-    if (!reqs.length) return setImportMsg("No encontré ninguna solicitud en ese texto. Pega el mensaje completo que te llegó por Telegram (incluye la línea que empieza con PZFX1:).");
-    const fresh = reqs.filter((r) => !list.some((m) => m.req && m.req.rid === r.id));
-    if (!fresh.length) return setImportMsg("Esa solicitud ya está en la lista.");
-    const recs = [];
-    for (const r of fresh) {
-      const p = parseIdent(r.ident);
-      recs.push({ id: uid(), name: r.name, ident: r.ident, hs: await identHashes(p), ch: r.ch, plan: r.plan, start: r.paid, days: M_PLAN[r.plan].days, revoked: false, pending: true, created: localDate(), ps: r.ps, pw: r.pw, req: { rid: r.id, paid: r.paid, amount: r.amount, sent: r.sent, file: r.file } });
-    }
-    if (await persist([...list, ...recs])) { setPaste(""); setImportMsg(`${recs.length} solicitud${recs.length === 1 ? "" : "es"} agregada${recs.length === 1 ? "" : "s"}. Revisa la captura en tu chat de Telegram y aprueba.`); }
-  };
-  const reject = async (m) => { if (window.confirm(`¿Rechazar la solicitud de ${m.name}? Se borra de la lista.`)) await persist(list.filter((x) => x.id !== m.id)); };
   const revoke = async (m) => { if (window.confirm(`¿Revocar el acceso de ${m.name}? Dejará de poder entrar a Mi Acceso.`)) await persist(list.map((x) => (x.id === m.id ? { ...x, revoked: true } : x))); };
   const remove = async (m) => { if (window.confirm(`¿Eliminar definitivamente a ${m.name} de la lista?`)) await persist(list.filter((x) => x.id !== m.id)); };
 
   const rows = useMemo(() => {
     const term = q.trim().toLowerCase();
     return (list || [])
-      .filter((m) => !m.pending)
       .filter((m) => !term || m.name.toLowerCase().includes(term) || m.ident.toLowerCase().includes(term))
       .sort((a, b) => (a.revoked ? 9999 : memberLeft(a)) - (b.revoked ? 9999 : memberLeft(b)));
   }, [list, q]);
   const count = (s) => (list || []).filter((m) => memberStatus(m) === s).length;
-  const pend = (list || []).filter((m) => m.pending);
-  const preview = form && form.mode !== "xx" && /^\d{4}-\d{2}-\d{2}$/.test(form.start) && form.days > 0 ? { ...form, days: Math.round(Number(form.days)) } : null;
+  const preview = form && /^\d{4}-\d{2}-\d{2}$/.test(form.start) && form.days > 0 ? { ...form, days: Math.round(Number(form.days)) } : null;
 
   return (
     <div className="space-y-5" data-testid="members-admin">
@@ -4771,7 +4569,7 @@ function MembersAdmin() {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-xl md:text-2xl font-black text-white">Miembros VIP · Mi Acceso</h2>
-            <p className="mt-1 text-sm bx-muted max-w-2xl">Autoriza a tus miembros con su usuario de Telegram o teléfono; entran con la contraseña que tú o ellos definen. Cada mes cuenta 31 días completos (3 meses = 93), así nadie pierde días cuando el mes siguiente es más corto.</p>
+            <p className="mt-1 text-sm bx-muted max-w-2xl">Cuando recibas el pago por Telegram, autoriza aquí al miembro. Después él entra por <b className="text-white">Mi Acceso → Nuevo miembro</b>, escribe su nombre y su usuario o teléfono, y crea su contraseña. Cada mes cuenta 31 días completos (3 meses = 93).</p>
           </div>
           {!locked && <button type="button" className="bx-btn px-4 py-2 text-sm" onClick={openNew} data-testid="member-add">+ Autorizar miembro</button>}
         </div>
@@ -4782,62 +4580,33 @@ function MembersAdmin() {
         {locked && <div className="mt-3 text-sm text-amber-300" role="alert">La lista está cifrada con otro token. Entra con el mismo token con el que la creaste para verla y editarla (no se sobrescribe nada).</div>}
       </section>
 
-      <section className="bx-card p-5 md:p-6" data-testid="requests-box">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="text-lg font-black text-white">Solicitudes de nuevos miembros {pend.length > 0 && <span className="mb-badge ml-1" style={{ background: "rgba(255,90,31,.18)", color: "var(--accent)" }}>{pend.length} pendiente{pend.length === 1 ? "" : "s"}</span>}</h3>
-        </div>
-        <p className="mt-1 text-sm bx-muted max-w-2xl">Cuando alguien se registra, te llega un mensaje por Telegram con su comprobante. Pega aquí ese mensaje para ver los datos, compara con la captura y aprueba.</p>
-        <textarea className="bx-input mt-3" rows={3} value={paste} onChange={(e) => { setPaste(e.target.value); setImportMsg(""); }} placeholder="Pega aquí el mensaje de la solicitud (incluye la línea PZFX1:…)" aria-label="Solicitud pegada" data-testid="request-paste" />
-        <div className="mt-2 flex flex-wrap items-center gap-2"><button type="button" className="bx-btn px-4 py-2 text-sm" disabled={busy || !paste.trim() || locked} onClick={importReq} data-testid="request-add">Agregar solicitud</button>{importMsg && <span className="text-sm bx-ink2" role="status" data-testid="request-msg">{importMsg}</span>}</div>
-        {pend.length > 0 && (
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            {pend.map((m) => {
-              const exp = priceOf(m.ch, m.plan), okAmt = exp !== undefined && Math.abs(exp - m.req.amount) < 0.005;
-              return (
-                <div key={m.id} className="mb-box" data-testid="request-card">
-                  <div className="flex items-start justify-between gap-2"><div><div className="font-black text-white">{m.name}</div><div className="text-sm bx-ink2">{m.ident}</div></div><MemberBadge s="Pendiente" /></div>
-                  <dl className="mt-3 grid grid-cols-2 gap-x-3 gap-y-1.5 text-sm">
-                    <dt className="bx-muted">Canal</dt><dd className="text-white">{M_CH[m.ch]}</dd>
-                    <dt className="bx-muted">Plan detectado</dt><dd className="text-white">{M_PLAN[m.plan].label}</dd>
-                    <dt className="bx-muted">Monto pagado</dt><dd className="text-white bx-num">${m.req.amount}{" "}<span style={{ color: okAmt ? "var(--pos)" : "var(--amb2)" }}>{okAmt ? "✓ coincide" : `⚠ el plan cuesta $${exp ?? "?"}`}</span></dd>
-                    <dt className="bx-muted">Fecha del pago</dt><dd className="text-white bx-num">{fmtDate(m.req.paid)}</dd>
-                    <dt className="bx-muted">Comprobante</dt><dd className="text-white break-all">{m.req.file || "—"} <span className="bx-muted">(revísalo en Telegram)</span></dd>
-                  </dl>
-                  <div className="mt-3 flex flex-wrap gap-2"><button type="button" className="bx-btn px-4 py-2 text-sm" onClick={() => openApprove(m)} data-testid="request-approve">Revisar y aprobar</button><button type="button" className="bx-ghost mb-act danger" onClick={() => reject(m)}>Rechazar</button></div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </section>
-
       {form && (
         <section className="bx-card p-5 md:p-6" data-testid="member-form">
-          <h3 className="text-lg font-black text-white">{form.mode === "new" ? "Autorizar nuevo miembro" : form.mode === "edit" ? "Editar miembro" : form.mode === "approve" ? `Aprobar solicitud de ${form.name}` : `Renovar a ${form.name}`}</h3>
+          <h3 className="text-lg font-black text-white">{form.mode === "new" ? "Autorizar nuevo miembro" : form.mode === "edit" ? "Editar miembro" : `Renovar a ${form.name}`}</h3>
           <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <div><label className="bx-label" htmlFor="mf-name">Nombre del miembro</label><input id="mf-name" className="bx-input" value={form.name} disabled={form.mode === "renew" || form.mode === "approve"} onChange={(e) => setF({ name: e.target.value })} placeholder="Ej.: Carlos Pérez" /></div>
-            <div><label className="bx-label" htmlFor="mf-id">Usuario de Telegram o teléfono</label><input id="mf-id" className="bx-input" value={form.ident} disabled={form.mode === "renew" || form.mode === "approve"} onChange={(e) => setF({ ident: e.target.value })} placeholder="@usuario  ·  +58 412 0000000" /></div>
+            <div><label className="bx-label" htmlFor="mf-name">Nombre del miembro</label><input id="mf-name" className="bx-input" value={form.name} disabled={form.mode === "renew"} onChange={(e) => setF({ name: e.target.value })} placeholder="Ej.: Carlos Pérez" /></div>
+            <div><label className="bx-label" htmlFor="mf-id">Usuario de Telegram o teléfono</label><input id="mf-id" className="bx-input" value={form.ident} disabled={form.mode === "renew"} onChange={(e) => setF({ ident: e.target.value })} placeholder="@usuario  ·  +58 412 0000000" /></div>
+            {form.mode === "new" && <div className="md:col-span-2"><label className="bx-label" htmlFor="mf-amt">Monto que pagó (opcional · detecta canal y plan)</label><input id="mf-amt" className="bx-input" style={{ maxWidth: 220 }} inputMode="decimal" value={form.amount} onChange={(e) => onAmount(e.target.value)} placeholder="Ej.: 150" data-testid="member-amount" /></div>}
             <div><label className="bx-label" htmlFor="mf-ch">Canal</label>
-              <select id="mf-ch" className="bx-input" value={form.ch} disabled={form.mode === "renew" || form.mode === "approve"} onChange={(e) => setF({ ch: e.target.value })}>
+              <select id="mf-ch" className="bx-input" value={form.ch} disabled={form.mode === "renew"} onChange={(e) => setF({ ch: e.target.value })}>
                 {Object.entries(M_CH).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
               </select></div>
             <div><label className="bx-label" htmlFor="mf-plan">Plan</label>
               <select id="mf-plan" className="bx-input" value={form.plan} onChange={(e) => onPlan(e.target.value)}>
                 <option value="1M">1 Mes (31 días)</option><option value="3M">3 Meses (93 días)</option><option value="12M">Anual (372 días)</option><option value="SOCIO">Plan Socio · acceso gratis por afiliación (31 días, renovable)</option>
               </select></div>
-            <div><label className="bx-label" htmlFor="mf-start">Fecha de inicio</label><input id="mf-start" type="date" className="bx-input" value={form.start} disabled={form.mode === "renew"} onChange={(e) => setF({ start: e.target.value })} /></div>
+            <div><label className="bx-label" htmlFor="mf-start">Fecha de inicio (fecha del pago)</label><input id="mf-start" type="date" className="bx-input" value={form.start} disabled={form.mode === "renew"} onChange={(e) => setF({ start: e.target.value })} /></div>
             <div><label className="bx-label" htmlFor="mf-days">Días de acceso</label><input id="mf-days" type="number" min="1" className="bx-input" value={form.days} onChange={(e) => setF({ days: e.target.value })} /></div>
             {(form.mode === "new" || form.mode === "edit") && (
-              <div className="md:col-span-2"><label className="bx-label" htmlFor="mf-pass">{form.mode === "new" ? "Contraseña inicial del miembro" : "Nueva contraseña (déjala vacía para mantener la actual)"}</label>
-                <div className="flex gap-2"><input id="mf-pass" className="bx-input" value={form.pass || ""} onChange={(e) => setF({ pass: e.target.value })} placeholder="Mínimo 8 caracteres, letras y números" autoComplete="off" data-testid="member-pass-input" /><button type="button" className="bx-ghost" onClick={() => setF({ pass: genPass() })}>Generar</button></div>
-                <p className="mt-1 text-xs bx-muted">Cópiala y envíasela por Telegram: después no se puede volver a ver (se guarda cifrada).</p></div>
+              <div className="md:col-span-2"><label className="bx-label" htmlFor="mf-pass">Contraseña (opcional)</label>
+                <div className="flex gap-2"><input id="mf-pass" className="bx-input" value={form.pass || ""} onChange={(e) => setF({ pass: e.target.value })} placeholder="Déjala vacía: el miembro la crea al entrar" autoComplete="off" data-testid="member-pass-input" /><button type="button" className="bx-ghost" onClick={() => setF({ pass: genPass() })}>Generar</button></div>
+                <p className="mt-1 text-xs bx-muted">Lo normal es dejarla vacía: él la crea en «Nuevo miembro». Si la pones tú, también funciona en cualquier dispositivo; envíasela por Telegram (se guarda cifrada y no se puede volver a ver).</p></div>
             )}
           </div>
-          {form.mode === "approve" && (() => { const me = list.find((x) => x.id === form.id); const ex = me && list.find((m) => !m.pending && m.hs.some((h) => me.hs.includes(h))); return ex ? <p className="mt-3 text-sm" style={{ color: "var(--amb2)" }} data-testid="approve-renew">Este usuario ya es miembro: al aprobar se renovará su plan (si sigue activo, se suman los días).</p> : null; })()}
           {preview && <p className="mt-3 text-sm bx-ink2" data-testid="member-preview">Acceso desde <b className="text-white">{fmtDate(preview.start)}</b> hasta <b className="text-white">{fmtDate(memberEnd(preview))}</b> · {preview.days} días reales · quedan <b className="text-white">{Math.max(0, memberLeft(preview))}</b> hoy.</p>}
           {form.error && <div className="mt-3 text-sm text-rose-400" role="alert">{form.error}</div>}
           <div className="mt-4 flex flex-wrap gap-2">
-            <button type="button" className="bx-btn px-4 py-2 text-sm" disabled={busy} onClick={submit} data-testid="member-save">{busy ? "Guardando…" : form.mode === "new" ? "Autorizar acceso" : form.mode === "edit" ? "Guardar cambios" : form.mode === "approve" ? "Aprobar y activar" : "Confirmar renovación"}</button>
+            <button type="button" className="bx-btn px-4 py-2 text-sm" disabled={busy} onClick={submit} data-testid="member-save">{busy ? "Guardando…" : form.mode === "new" ? "Autorizar acceso" : form.mode === "edit" ? "Guardar cambios" : "Confirmar renovación"}</button>
             <button type="button" className="bx-ghost" onClick={() => setForm(null)}>Cancelar</button>
           </div>
         </section>
@@ -4857,7 +4626,7 @@ function MembersAdmin() {
                 return (
                   <tr key={m.id} data-testid="member-row">
                     <td className="font-bold text-white">{m.name}</td>
-                    <td>{m.ident}{!m.pw && <div className="text-[11px]" style={{ color: "var(--amb2)" }}>Sin contraseña</div>}</td>
+                    <td>{m.ident}{!m.pw && <div className="text-[11px] bx-muted">Crea su contraseña al entrar</div>}</td>
                     <td>{M_CH[m.ch]}</td>
                     <td>{M_PLAN[m.plan].label}</td>
                     <td className="bx-num">{fmtDate(m.start)}</td>
@@ -5473,18 +5242,7 @@ const TUT_RULES = [
   ["Evaluación Semanal", "Haz el balance los viernes al finalizar la última sesión, enfocándote en la gestión semanal y no en las fluctuaciones diarias."],
   ["Mentalidad sobre el Dinero", "Es una herramienta de trabajo. No operes por necesidad y no retires fondos hasta alcanzar la meta."],
 ];
-const PLAN_LEVELS = [
-  { n: 1, from: 100, to: 350, title: "Nivel 1", range: "De $100 a $350 USD", lines: ["Monto inicial: $116 USD", "Lotaje: bajo"], tp: "+$10", sl: "-$5" },
-  { n: 2, from: 350, to: 760, title: "Nivel 2", range: "De $350 a $760 USD", lines: ["Lotaje: bajo-medio"], tp: "+$25", sl: "-$10" },
-  { n: 3, from: 760, to: 1200, title: "Nivel 3", range: "De $760 a $1,200 USD", lines: ["Lotaje: medio"], tp: "+$45", sl: "-$20" },
-];
 function OperativaManual() {
-  const [bal, setBal] = useState("");
-  const b = Number(String(bal).replace(",", "."));
-  const has = bal !== "" && !isNaN(b) && b > 0;
-  const lvl = !has ? null : b >= 1200 ? "elite" : b >= 760 ? 3 : b >= 350 ? 2 : 1;
-  const cur = PLAN_LEVELS.find((l) => l.n === lvl);
-  const pct = !has ? 0 : lvl === "elite" ? 100 : Math.max(0, Math.min(100, ((b - cur.from) / (cur.to - cur.from)) * 100));
   return (
     <div className="space-y-6" data-testid="manual-view">
       <section className="bx-card p-5 md:p-6">
@@ -5504,50 +5262,10 @@ function OperativaManual() {
 
       <section>
         <h3 className="text-xl font-black text-white">Reglas de disciplina 🏆</h3>
-        <p className="mt-1 text-sm bx-muted max-w-3xl">Estas reglas y el plan de crecimiento nacen de la operativa de Sintéticos de PRECISION ZONE FX y sirven como base de disciplina para todo lo que operes.</p>
+        <p className="mt-1 text-sm bx-muted max-w-3xl">Estas reglas son la base de disciplina de PRECISION ZONE FX para todo lo que operes.</p>
         <div className="mt-3 grid gap-3 md:grid-cols-2">
           {TUT_RULES.map(([k, v]) => <div key={k} className="bx-card p-4" data-testid={`rule-${k.split(" ")[0].toLowerCase()}`}><div className="font-extrabold" style={{ color: "var(--accent)" }}>{k}</div><p className="mt-1 text-sm leading-relaxed bx-ink2">{v}</p></div>)}
         </div>
-      </section>
-
-      <section data-testid="plan-100-1200">
-        <h3 className="text-xl font-black text-white">Plan para subir una cuenta de $100 a $1,200 USD</h3>
-        <p className="mt-1 text-sm bx-muted">Enfoque Sintéticos — PRECISION ZONE FX</p>
-        <div className="bx-card p-5 mt-3">
-          <div className="font-extrabold text-white">Objetivos clave</div>
-          <ul className="mt-2 space-y-1.5 text-sm bx-ink2 list-disc pl-5">
-            <li>La meta principal es llegar a $1,200 USD, sin importar el tiempo que tome.</li>
-            <li>Cero retiros durante la fase de crecimiento.</li>
-            <li>Paciencia y estricta disciplina.</li>
-            <li>Después, usar los $1,200 USD como base para retiros semanales o quincenales constantes.</li>
-          </ul>
-        </div>
-        <div className="mt-3 grid gap-3 md:grid-cols-3">
-          {PLAN_LEVELS.map((l) => (
-            <div key={l.n} className={`bx-card p-5 mb-level ${lvl === l.n ? "on" : ""}`}>
-              <div className="flex items-center gap-2"><span className="mb-num" aria-hidden="true">{l.n}</span><div><div className="font-black text-white">{l.title}</div><div className="text-xs bx-muted">{l.range}</div></div></div>
-              <ul className="mt-3 space-y-1 text-sm bx-ink2">{l.lines.map((x) => <li key={x}>{x}</li>)}</ul>
-              <div className="mt-3 text-[11px] bx-muted">Salida diaria</div>
-              <div className="flex gap-2 mt-1"><span className="mb-badge" style={{ background: "rgba(52,211,153,.14)", color: "var(--pos)" }}>TP {l.tp} USD</span><span className="mb-badge" style={{ background: "rgba(251,113,133,.14)", color: "var(--neg)" }}>SL {l.sl} USD</span></div>
-            </div>
-          ))}
-        </div>
-        <div className={`bx-card p-5 mt-3 mb-level elite ${lvl === "elite" ? "on" : ""}`}>
-          <div className="font-black text-white">Nivel Elite · $1,200 USD</div>
-          <div className="text-sm" style={{ color: "var(--accent)" }}>Hora de vivir del trading</div>
-          <p className="mt-2 text-sm bx-ink2">Mantén consistencia y rentabilidad durante un año completo, con retiros semanales, controlando el miedo y la avaricia.</p>
-        </div>
-        <div className="bx-card p-5 mt-3" data-testid="plan-calc">
-          <label className="bx-label" htmlFor="pl-bal">¿Cuánto tiene tu cuenta hoy? (USD)</label>
-          <input id="pl-bal" className="bx-input" style={{ maxWidth: 220 }} inputMode="decimal" value={bal} onChange={(e) => setBal(e.target.value)} placeholder="Ej.: 280" />
-          {has && (
-            <div className="mt-3" data-testid="plan-result">
-              <div className="text-sm text-white font-bold">{lvl === "elite" ? "Estás en el Nivel Elite 🎯" : `Estás en el Nivel ${lvl}`}{lvl !== "elite" && <span className="bx-muted font-normal"> · te falta ${Math.max(0, cur.to - b).toLocaleString("en-US", { maximumFractionDigits: 2 })} para el siguiente nivel</span>}</div>
-              <div className="mt-2 h-2 rounded-full overflow-hidden" style={{ background: "rgba(var(--fg),.1)" }}><div className="h-full rounded-full" style={{ width: pct + "%", background: "linear-gradient(90deg,#FF5A1F,#2ECC71)", transition: "width .5s var(--ease)" }} /></div>
-            </div>
-          )}
-        </div>
-        <p className="mt-3 text-xs bx-muted">Contenido educativo. No es asesoría financiera: operar conlleva riesgo de pérdida.</p>
       </section>
     </div>
   );
@@ -5555,7 +5273,6 @@ function OperativaManual() {
 
 /* ----------------------------- Mi Acceso (portal del miembro) ----------------------------- */
 /* ----------------------------- MODAL "MI ACCESO" (glassmorphism) ----------------------------- */
-const pendingGet = () => { try { return JSON.parse(localStorage.getItem(PENDING_STORE) || "[]"); } catch (e) { return []; } };
 const EyeBtn = ({ show, onClick }) => (
   <button type="button" className="pz-eye" onClick={onClick} aria-label={show ? "Ocultar contraseña" : "Mostrar contraseña"} aria-pressed={show} data-testid="pw-toggle">
     {show
@@ -5590,15 +5307,12 @@ function MemberLoginForm({ onSuccess, goSignup }) {
     try {
       const r = await memberAuth(id, pw);
       if (!r.ok) {
-        const norm = (parseIdent(id) || {}).norm;
-        const pend = !r.found && norm && pendingGet().some((x) => x.n === norm);
-        setErr(pend
-          ? { t: "Tu solicitud sigue en revisión.", d: "Cuando la aprobemos podrás entrar con la contraseña que creaste. Si ya enviaste el comprobante por Telegram, solo falta esperar." }
-          : { t: "Usuario o contraseña incorrectos.", d: "Revisa que sea tu usuario o teléfono de Telegram. Si ya eres miembro y aún no tienes contraseña, escríbenos por Telegram." });
+        setErr(r.noPass
+          ? { t: "Aún no creaste tu contraseña en este dispositivo.", d: "Entra por «Nuevo miembro», escribe tu nombre y tu usuario o teléfono, y crea tu contraseña." , signup: true }
+          : { t: "Usuario o contraseña incorrectos.", d: "Revisa que sea tu usuario o teléfono de Telegram. Si todavía no te autorizamos, entra por «Nuevo miembro»." });
         setBusy(false); return;
       }
       if (memberLeft(r.rec) <= 0) { setErr({ t: "Tu acceso VIP venció.", d: `Tu plan terminó el ${fmtDate(memberEnd(r.rec))}. Escribe a soporte para renovarlo.` }); setBusy(false); return; }
-      try { localStorage.setItem(PENDING_STORE, JSON.stringify(pendingGet().filter((x) => x.n !== r.p.norm))); } catch (e) {}
       writeSess({ u: id.trim(), k: r.k }, rem);
       setBusy(false); onSuccess();
     } catch (e2) {
@@ -5620,6 +5334,7 @@ function MemberLoginForm({ onSuccess, goSignup }) {
         <div className="pz-alert" role="alert" data-testid="member-denied">
           <div className="font-extrabold text-white text-sm">{err.t}</div>
           {err.d && <p className="mt-1 text-[13px] leading-relaxed" style={{ color: "var(--cardink2)" }}>{err.d}</p>}
+          {err.signup && <button type="button" className="mt-2 mr-3 text-[13px] font-bold underline" style={{ color: "var(--accent)" }} onClick={goSignup}>Ir a Nuevo miembro</button>}
           <a href={`https://t.me/${MEMBER_SUPPORT}`} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-[13px] font-bold underline" style={{ color: "var(--accent)" }} data-testid="member-support">Escribir a soporte en Telegram</a>
         </div>
       )}
@@ -5629,188 +5344,141 @@ function MemberLoginForm({ onSuccess, goSignup }) {
   );
 }
 
-function MemberSignupFlow({ goLogin }) {
+function NewMemberFlow({ goLogin, onSuccess }) {
   const [step, setStep] = useState(1);
-  const [f, setF] = useState({ name: "", ident: "", date: localDate(), amount: "" });
-  const [file, setFile] = useState(null);
-  const [prev, setPrev] = useState("");
-  const [sel, setSel] = useState(null); // { ch, plan } elegido
-  const [adjust, setAdjust] = useState(false);
+  const [name, setName] = useState("");
+  const [ident, setIdent] = useState("");
   const [pw, setPw] = useState("");
   const [pw2, setPw2] = useState("");
   const [show, setShow] = useState(false);
-  const [err, setErr] = useState("");
+  const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState(null);
+  const [found, setFound] = useState(null);
+  const [payOpen, setPayOpen] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [date, setDate] = useState(localDate());
+  const [sel, setSel] = useState(null);
   const [copied, setCopied] = useState(false);
-  const upd = (patch) => { setErr(""); setF((x) => ({ ...x, ...patch })); };
-  useEffect(() => { if (!file) { setPrev(""); return undefined; } const u = URL.createObjectURL(file); setPrev(u); return () => URL.revokeObjectURL(u); }, [file]);
+  const clr = () => setErr(null);
 
-  const amt = Number(String(f.amount).replace(",", "."));
-  const amtOk = f.amount !== "" && Number.isFinite(amt) && amt > 0;
+  const amt = Number(String(amount).replace(",", "."));
+  const amtOk = amount !== "" && Number.isFinite(amt) && amt > 0;
   const matches = amtOk ? detectPlan(amt) : [];
-  const auto = matches.length === 1 ? matches[0] : null;
-  // Elección efectiva: la del usuario si existe; si no, la detección automática
-  const eff = sel || (auto ? { ch: auto.ch, plan: auto.plan } : null);
-  const expected = eff ? priceOf(eff.ch, eff.plan) : null;
-  const mismatch = eff && amtOk && expected !== undefined && Math.abs(expected - amt) > 0.005;
+  const eff = sel || (matches.length === 1 ? { ch: matches[0].ch, plan: matches[0].plan } : null);
   const plansFor = (ch) => PRICE_TABLE.filter((x) => x.ch === ch);
+  const ready = name.trim().length >= 2 && parseIdent(ident) && amtOk && /^\d{4}-\d{2}-\d{2}$/.test(date);
+  const msg = ready ? [
+    "Hola 👋 Ya hice mi pago. Estos son mis datos para activar Mi Acceso:",
+    `Nombre: ${name.trim()}`,
+    `Telegram: ${ident.trim()}`,
+    `Canal: ${eff ? `${M_CH[eff.ch]} · ${M_PLAN[eff.plan].label}` : "(por confirmar)"}`,
+    `Monto: $${amt} · Fecha: ${fmtDate(date)}`,
+    "Adjunto la captura del pago.",
+  ].join("\n") : "";
+  const copy = async () => { try { await navigator.clipboard.writeText(msg); setCopied(true); setTimeout(() => setCopied(false), 2200); } catch (e) { setErr({ t: "No se pudo copiar.", d: "Selecciona el mensaje y cópialo a mano." }); } };
 
-  const next1 = () => {
-    if (f.name.trim().length < 2) return setErr("Escribe tu nombre.");
-    if (!parseIdent(f.ident)) return setErr("Escribe tu usuario de Telegram (por ejemplo @usuario) o tu número de teléfono completo.");
-    setErr(""); setStep(2);
-  };
-  const next2 = () => {
-    if (!file) return setErr("Sube la captura de tu comprobante de pago.");
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(f.date) || f.date > localDate()) return setErr("Confirma la fecha en que hiciste el pago (no puede ser futura).");
-    if (!amtOk) return setErr("Escribe el monto que pagaste.");
-    if (!eff) return setErr("Elige el canal y el plan que pagaste.");
-    setErr(""); setStep(3);
-  };
-  const finish = async () => {
-    if (!pwOk(pw)) return setErr("La contraseña necesita mínimo 8 caracteres, con letras y números.");
-    if (pw !== pw2) return setErr("Las contraseñas no coinciden.");
-    setBusy(true); setErr("");
+  const cont = async () => {
+    if (busy) return;
+    clr();
+    if (name.trim().length < 2) return setErr({ t: "Escribe tu nombre." });
+    if (!parseIdent(ident)) return setErr({ t: "Escribe tu usuario de Telegram (por ejemplo @usuario) o tu número de teléfono completo." });
+    setBusy(true);
     try {
-      const p = parseIdent(f.ident);
-      const ps = randHex(16);
-      const pwh = await pwDerive(pw, p, ps);
-      const id = uid();
-      const payload = { i: id, n: f.name.trim(), u: f.ident.trim(), ch: eff.ch, pl: eff.plan, d: f.date, a: amt, t: Date.now(), f: file.name, ps, pw: pwh };
-      const code = REQ_PREFIX + b64uEnc(JSON.stringify(payload));
-      const msg = [
-        "Hola, quiero activar mi acceso VIP (Mi Acceso).",
-        `Nombre: ${payload.n}`,
-        `Telegram: ${payload.u}`,
-        `Canal: ${M_CH[eff.ch]} · Plan: ${M_PLAN[eff.plan].label}`,
-        `Pago: $${amt} el ${fmtDate(f.date)}`,
-        "Te adjunto la captura del comprobante.",
-        "",
-        code,
-      ].join("\n");
-      try { localStorage.setItem(PENDING_STORE, JSON.stringify([...pendingGet().filter((x) => x.n !== p.norm), { n: p.norm, id, ts: Date.now() }])); } catch (e) {}
-      setDone({ msg, code });
-    } catch (e) { setErr("Tu navegador no permite cifrar la contraseña. Usa Chrome, Edge o Safari actualizados."); }
+      const { p, rec } = await memberLookup(ident);
+      if (!rec) { setPayOpen(true); setErr({ t: "Todavía no apareces como miembro autorizado.", d: "Haz tu pago y envíanos tus datos con el mensaje de abajo. Cuando te autoricemos, vuelve aquí y pulsa Continuar." }); }
+      else if (memberLeft(rec) <= 0) setErr({ t: "Tu acceso VIP venció.", d: `Tu plan terminó el ${fmtDate(memberEnd(rec))}. Escribe a soporte para renovarlo.`, sup: true });
+      else if (!nameMatches(name, rec.n)) setErr({ t: "El nombre no coincide con el que registramos.", d: "Escríbelo igual que en el mensaje que nos enviaste con tu pago.", sup: true });
+      else if (rec.pw || credRead()[derId(p)]) setErr({ t: "Ya tienes contraseña.", d: "Inicia sesión como miembro.", login: true });
+      else { setFound({ p, rec }); setStep(2); }
+    } catch (e) {
+      setErr(e && e.code === 400 ? { t: "Revisa tu usuario.", d: "Escribe tu usuario de Telegram (por ejemplo @usuario) o tu número de teléfono completo." } : { t: "No pudimos verificar tu acceso.", d: "Revisa tu conexión e inténtalo de nuevo.", sup: true });
+    }
     setBusy(false);
   };
-  const copy = async () => { try { await navigator.clipboard.writeText(done.msg); setCopied(true); setTimeout(() => setCopied(false), 2200); } catch (e) { setErr("No se pudo copiar. Selecciona el texto y cópialo."); } };
-  const canShareFile = typeof navigator !== "undefined" && navigator.canShare && file && (() => { try { return navigator.canShare({ files: [file] }); } catch (e) { return false; } })();
-  const shareFile = async () => { try { await navigator.share({ files: [file], text: done.msg }); } catch (e) {} };
+  const finish = async () => {
+    if (busy) return;
+    clr();
+    if (!pwOk(pw)) return setErr({ t: "La contraseña necesita mínimo 8 caracteres, con letras y números." });
+    if (pw !== pw2) return setErr({ t: "Las contraseñas no coinciden." });
+    setBusy(true);
+    try {
+      const ps = randHex(16), pwh = await pwDerive(pw, found.p, ps);
+      credSave(found.p, { ps, pw: pwh, ts: Date.now() });
+      writeSess({ u: ident.trim(), k: pwh }, true);
+      setBusy(false); onSuccess();
+    } catch (e) { setBusy(false); setErr({ t: "Tu navegador no permite cifrar la contraseña.", d: "Usa Chrome, Edge o Safari actualizados." }); }
+  };
 
-  if (done) {
+  const alertBox = err && (
+    <div className="pz-alert" role="alert" data-testid="signup-error">
+      <div className="font-extrabold text-white text-sm">{err.t}</div>
+      {err.d && <p className="mt-1 text-[13px] leading-relaxed" style={{ color: "var(--cardink2)" }}>{err.d}</p>}
+      {err.login && <button type="button" className="mt-2 text-[13px] font-bold underline" style={{ color: "var(--accent)" }} onClick={goLogin}>Ir a iniciar sesión</button>}
+      {err.sup && <a href={`https://t.me/${MEMBER_SUPPORT}`} target="_blank" rel="noopener noreferrer" className="inline-block mt-2 text-[13px] font-bold underline" style={{ color: "var(--accent)" }}>Escribir a soporte en Telegram</a>}
+    </div>
+  );
+
+  if (step === 2) {
     return (
-      <div className="space-y-4" data-testid="signup-done">
+      <div className="space-y-4" data-testid="signup-password">
         <div className="text-center">
           <div className="mx-auto w-12 h-12 rounded-full flex items-center justify-center text-2xl" style={{ background: "rgba(46,204,113,.16)", color: "#2ECC71" }} aria-hidden="true">✓</div>
-          <h3 className="mt-3 text-xl font-black text-white">Solicitud lista</h3>
-          <p className="mt-1 text-[13px] leading-relaxed" style={{ color: "var(--cardink2)" }}>Falta un paso: envíala a soporte por Telegram y adjunta la captura de tu comprobante. Cuando la aprobemos, entras con tu usuario y la contraseña que creaste.</p>
+          <h3 className="mt-3 text-xl font-black text-white">¡Estás autorizado, {found.rec.n.split(" ")[0]}!</h3>
+          <p className="mt-1 text-[13px] leading-relaxed" style={{ color: "var(--cardink2)" }}>Crea tu contraseña para activar tu cuenta. Después entras siempre con tu usuario o teléfono de Telegram y esta contraseña.</p>
         </div>
-        <a href={`https://t.me/${MEMBER_SUPPORT}?text=${encodeURIComponent(done.msg)}`} target="_blank" rel="noopener noreferrer" className="bx-btn w-full py-3 text-base text-center block" data-testid="signup-send">1 · Enviar solicitud por Telegram</a>
-        <p className="text-[12px] text-center -mt-1" style={{ color: "var(--cardink2)" }}>2 · En el chat, adjunta la captura (<b className="text-white">{file?.name}</b>).</p>
-        <div className="flex flex-wrap gap-2 justify-center">
-          <button type="button" className="bx-ghost" onClick={copy} data-testid="signup-copy">{copied ? "¡Copiado!" : "Copiar solicitud"}</button>
-          {canShareFile && <button type="button" className="bx-ghost" onClick={shareFile}>Compartir con la captura</button>}
-        </div>
-        {err && <div className="text-sm text-rose-400" role="alert">{err}</div>}
-        <button type="button" className="w-full text-center text-[13px] font-bold underline" style={{ color: "var(--accent)" }} onClick={goLogin}>Ya me aprobaron, quiero entrar</button>
+        <PwField id="sg-pw" label="Crea tu contraseña" value={pw} onChange={(v) => { clr(); setPw(v); }} show={show} setShow={setShow} autoComplete="new-password" testid="sg-pass" />
+        <PwField id="sg-pw2" label="Repite la contraseña" value={pw2} onChange={(v) => { clr(); setPw2(v); }} show={show} setShow={setShow} autoComplete="new-password" testid="sg-pass2" />
+        <ul className="text-[12px] space-y-0.5" style={{ color: "var(--cardink2)" }}>
+          <li style={{ color: pw.length >= 8 ? "#2ECC71" : undefined }}>{pw.length >= 8 ? "✓" : "•"} Mínimo 8 caracteres</li>
+          <li style={{ color: /[A-Za-z]/.test(pw) && /\d/.test(pw) ? "#2ECC71" : undefined }}>{/[A-Za-z]/.test(pw) && /\d/.test(pw) ? "✓" : "•"} Letras y números</li>
+        </ul>
+        {alertBox}
+        <div className="flex gap-2"><button type="button" className="bx-ghost" onClick={() => { clr(); setStep(1); }}>Atrás</button><button type="button" className="bx-btn flex-1 py-3" disabled={busy} onClick={finish} data-testid="signup-finish">{busy ? "Activando…" : "Activar mi cuenta"}</button></div>
       </div>
     );
   }
 
   return (
     <div className="space-y-4" data-testid="signup-flow">
-      <ol className="flex items-center gap-2" aria-label="Pasos">
-        {["Tus datos", "Tu pago", "Contraseña"].map((t, i) => (
-          <li key={t} className="flex-1" aria-current={step === i + 1 ? "step" : undefined}>
-            <div className="h-1 rounded-full" style={{ background: step >= i + 1 ? "var(--accent)" : "rgba(255,255,255,.14)" }} />
-            <div className="mt-1 text-[11px] font-bold" style={{ color: step === i + 1 ? "var(--cardink)" : "var(--cardink2)" }}>{i + 1}. {t}</div>
-          </li>
-        ))}
-      </ol>
+      <p className="text-[13px] leading-relaxed" style={{ color: "var(--cardink2)" }}>Si ya pagaste y te autorizamos, escribe tus datos y pulsa Continuar para crear tu contraseña.</p>
+      <div><label className="bx-label" htmlFor="sg-name">Tu nombre</label><input id="sg-name" className="bx-input" value={name} onChange={(e) => { clr(); setName(e.target.value); }} placeholder="Ej.: Carlos Pérez" autoComplete="name" data-testid="sg-name" /></div>
+      <div><label className="bx-label" htmlFor="sg-id">Usuario o teléfono de Telegram</label><input id="sg-id" className="bx-input" value={ident} onChange={(e) => { clr(); setIdent(e.target.value); }} placeholder="@usuario  ·  +58 412 0000000" autoCapitalize="off" spellCheck={false} data-testid="sg-ident" /></div>
+      {alertBox}
+      <button type="button" className="bx-btn w-full py-3 text-base" disabled={busy} onClick={cont} data-testid="signup-next">{busy ? "Verificando…" : "Continuar"}</button>
 
-      {step === 1 && (
-        <div className="space-y-4">
-          <div><label className="bx-label" htmlFor="sg-name">Tu nombre</label><input id="sg-name" className="bx-input" value={f.name} onChange={(e) => upd({ name: e.target.value })} placeholder="Ej.: Carlos Pérez" autoComplete="name" data-testid="sg-name" /></div>
-          <div><label className="bx-label" htmlFor="sg-id">Usuario o teléfono de Telegram</label><input id="sg-id" className="bx-input" value={f.ident} onChange={(e) => upd({ ident: e.target.value })} placeholder="@usuario  ·  +58 412 0000000" autoCapitalize="off" spellCheck={false} data-testid="sg-ident" /></div>
-          <p className="text-[12px]" style={{ color: "var(--cardink2)" }}>Es con lo que entrarás después. Solo usamos Telegram: no pedimos correo.</p>
-        </div>
-      )}
-
-      {step === 2 && (
-        <div className="space-y-4">
-          <div>
-            <span className="bx-label">Captura del comprobante</span>
-            <label className="pz-drop" data-testid="sg-drop">
-              <input type="file" accept="image/*" className="sr-only" onChange={(e) => { setErr(""); setFile((e.target.files && e.target.files[0]) || null); }} data-testid="sg-file" />
-              {prev ? <img src={prev} alt="Vista previa del comprobante" className="pz-prev" /> : <span className="text-sm" style={{ color: "var(--cardink2)" }}>Toca para elegir la captura de tu pago</span>}
-              {file && <span className="text-[12px] mt-1" style={{ color: "var(--cardink2)" }}>{file.name} · toca para cambiarla</span>}
-            </label>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div><label className="bx-label" htmlFor="sg-date">Fecha del pago</label><input id="sg-date" type="date" max={localDate()} className="bx-input" value={f.date} onChange={(e) => upd({ date: e.target.value })} data-testid="sg-date" /></div>
-            <div><label className="bx-label" htmlFor="sg-amt">Monto pagado (USD)</label><input id="sg-amt" className="bx-input" inputMode="decimal" value={f.amount} onChange={(e) => { setSel(null); upd({ amount: e.target.value }); }} placeholder="Ej.: 150" data-testid="sg-amount" /></div>
-          </div>
-
-          {amtOk && eff && !adjust && (
-            <div className="pz-detect" data-testid="sg-detected">
-              <div className="text-[11px] font-bold tracking-wide" style={{ color: "var(--cardink2)" }}>{auto && !sel ? "DETECTAMOS TU PLAN" : "PLAN ELEGIDO"}</div>
-              <div className="mt-1 font-black text-white">{M_CH[eff.ch]} · {M_PLAN[eff.plan].label}</div>
-              {mismatch && <div className="mt-1 text-[12px]" style={{ color: "var(--amb2)" }}>El precio de este plan es ${expected}. Revisaremos tu pago.</div>}
-              <button type="button" className="mt-2 text-[13px] font-bold underline" style={{ color: "var(--accent)" }} onClick={() => setAdjust(true)} data-testid="sg-adjust">Cambiar canal o plan</button>
+      <div className="pz-detect" data-testid="pay-box">
+        <button type="button" className="w-full flex items-center justify-between gap-2 text-left" onClick={() => setPayOpen((v) => !v)} aria-expanded={payOpen} data-testid="pay-toggle">
+          <span className="font-extrabold text-white text-sm">¿Aún no pagas? Envíanos tus datos</span><span aria-hidden="true" style={{ color: "var(--accent)" }}>{payOpen ? "▴" : "▾"}</span>
+        </button>
+        {payOpen && (
+          <div className="mt-3 space-y-3">
+            <p className="text-[12px]" style={{ color: "var(--cardink2)" }}>Haz tu pago, completa el monto y la fecha, y envía este mensaje corto con la captura. Te autorizamos y vuelves aquí a crear tu contraseña.</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="bx-label" htmlFor="pay-amt">Monto pagado (USD)</label><input id="pay-amt" className="bx-input" inputMode="decimal" value={amount} onChange={(e) => { setSel(null); setAmount(e.target.value); }} placeholder="Ej.: 150" data-testid="pay-amount" /></div>
+              <div><label className="bx-label" htmlFor="pay-date">Fecha del pago</label><input id="pay-date" type="date" max={localDate()} className="bx-input" value={date} onChange={(e) => setDate(e.target.value)} data-testid="pay-date" /></div>
             </div>
-          )}
-          {amtOk && matches.length > 1 && !sel && (
-            <div className="pz-detect" data-testid="sg-multi">
-              <div className="font-bold text-white text-sm">Este monto existe en más de un canal. Confirma el tuyo:</div>
-              <div className="mt-2 flex flex-wrap gap-2">{matches.map((m) => <button key={m.ch + m.plan} type="button" className="bx-pill" onClick={() => setSel({ ch: m.ch, plan: m.plan })}>{M_CH[m.ch]} · {M_PLAN[m.plan].label}</button>)}</div>
-            </div>
-          )}
-          {amtOk && matches.length === 0 && !adjust && (
-            <div className="pz-detect" data-testid="sg-nomatch">
-              <div className="font-bold text-white text-sm">Ese monto no coincide con ningún plan.</div>
-              <p className="mt-1 text-[12px]" style={{ color: "var(--cardink2)" }}>Revisa el monto o elige tu canal y plan.</p>
-              <button type="button" className="mt-2 text-[13px] font-bold underline" style={{ color: "var(--accent)" }} onClick={() => setAdjust(true)}>Elegir canal y plan</button>
-            </div>
-          )}
-          {adjust && (
-            <div className="pz-detect space-y-3" data-testid="sg-manual">
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className="bx-label" htmlFor="sg-ch">Canal</label>
-                  <select id="sg-ch" className="bx-input" value={eff ? eff.ch : ""} onChange={(e) => setSel({ ch: e.target.value, plan: plansFor(e.target.value)[0].plan })}>
-                    {!eff && <option value="">Elige…</option>}
-                    <option value="GOLD">{M_CH.GOLD}</option><option value="SINT">{M_CH.SINT}</option>
-                  </select></div>
-                <div><label className="bx-label" htmlFor="sg-pl">Plan</label>
-                  <select id="sg-pl" className="bx-input" disabled={!eff} value={eff ? eff.plan : ""} onChange={(e) => setSel({ ch: eff.ch, plan: e.target.value })}>
-                    {eff && plansFor(eff.ch).map((x) => <option key={x.plan} value={x.plan}>{M_PLAN[x.plan].label} · ${x.amount}</option>)}
-                  </select></div>
+            {amtOk && eff && <div className="text-[13px] text-white" data-testid="pay-detected">Detectamos: <b>{M_CH[eff.ch]} · {M_PLAN[eff.plan].label}</b></div>}
+            {amtOk && !eff && (
+              <div className="grid grid-cols-2 gap-3" data-testid="pay-manual">
+                <div><label className="bx-label" htmlFor="pay-ch">Canal</label><select id="pay-ch" className="bx-input" value="" onChange={(e) => e.target.value && setSel({ ch: e.target.value, plan: plansFor(e.target.value)[0].plan })}><option value="">Elige…</option><option value="GOLD">{M_CH.GOLD}</option><option value="SINT">{M_CH.SINT}</option></select></div>
+                <div><label className="bx-label">Plan</label><div className="text-[12px]" style={{ color: "var(--cardink2)" }}>Ese monto no coincide con un plan; elige tu canal.</div></div>
               </div>
-              <button type="button" className="text-[13px] font-bold underline" style={{ color: "var(--accent)" }} onClick={() => setAdjust(false)}>Listo</button>
-            </div>
-          )}
-          <p className="text-[12px] leading-relaxed" style={{ color: "var(--cardink2)" }}>Precios — Gold: {PRICE_TABLE.filter((x) => x.ch === "GOLD").map((x) => `$${x.amount}`).join(" · ")} · Sintéticos: {PRICE_TABLE.filter((x) => x.ch === "SINT").map((x) => `$${x.amount}`).join(" · ")}</p>
-        </div>
-      )}
-
-      {step === 3 && (
-        <div className="space-y-4">
-          <PwField id="sg-pw" label="Crea tu contraseña" value={pw} onChange={(v) => { setErr(""); setPw(v); }} show={show} setShow={setShow} autoComplete="new-password" testid="sg-pass" />
-          <PwField id="sg-pw2" label="Repite la contraseña" value={pw2} onChange={(v) => { setErr(""); setPw2(v); }} show={show} setShow={setShow} autoComplete="new-password" testid="sg-pass2" />
-          <ul className="text-[12px] space-y-0.5" style={{ color: "var(--cardink2)" }}>
-            <li style={{ color: pw.length >= 8 ? "#2ECC71" : undefined }}>{pw.length >= 8 ? "✓" : "•"} Mínimo 8 caracteres</li>
-            <li style={{ color: /[A-Za-z]/.test(pw) && /\d/.test(pw) ? "#2ECC71" : undefined }}>{/[A-Za-z]/.test(pw) && /\d/.test(pw) ? "✓" : "•"} Letras y números</li>
-          </ul>
-          <p className="text-[12px]" style={{ color: "var(--cardink2)" }}>Entrarás con ella cuando aprobemos tu pago. Guárdala bien: no la vemos nunca.</p>
-        </div>
-      )}
-
-      {err && <div className="text-sm text-rose-400" role="alert" data-testid="signup-error">{err}</div>}
-      <div className="flex gap-2">
-        {step > 1 && <button type="button" className="bx-ghost" onClick={() => { setErr(""); setStep(step - 1); }}>Atrás</button>}
-        {step < 3
-          ? <button type="button" className="bx-btn flex-1 py-3" onClick={step === 1 ? next1 : next2} data-testid="signup-next">Continuar</button>
-          : <button type="button" className="bx-btn flex-1 py-3" disabled={busy} onClick={finish} data-testid="signup-finish">{busy ? "Preparando…" : "Crear solicitud"}</button>}
+            )}
+            {amtOk && sel && matches.length !== 1 && (
+              <div><label className="bx-label" htmlFor="pay-pl">Plan</label><select id="pay-pl" className="bx-input" value={sel.plan} onChange={(e) => setSel({ ch: sel.ch, plan: e.target.value })}>{plansFor(sel.ch).map((x) => <option key={x.plan} value={x.plan}>{M_PLAN[x.plan].label} · ${x.amount}</option>)}</select></div>
+            )}
+            {ready ? (
+              <>
+                <pre className="pz-msg" data-testid="pay-message">{msg}</pre>
+                <div className="flex flex-wrap gap-2">
+                  <a href={`https://t.me/${MEMBER_SUPPORT}?text=${encodeURIComponent(msg)}`} target="_blank" rel="noopener noreferrer" className="bx-btn px-4 py-2 text-sm" data-testid="pay-send">Enviar por Telegram</a>
+                  <button type="button" className="bx-ghost" onClick={copy} data-testid="pay-copy">{copied ? "¡Copiado!" : "Copiar mensaje"}</button>
+                </div>
+                <p className="text-[12px]" style={{ color: "var(--cardink2)" }}>En el chat, adjunta la captura de tu pago.</p>
+              </>
+            ) : <p className="text-[12px]" style={{ color: "var(--cardink2)" }}>Completa tu nombre y usuario (arriba), el monto y la fecha para generar el mensaje.</p>}
+          </div>
+        )}
       </div>
       <p className="text-center text-[13px]" style={{ color: "var(--cardink2)" }}>¿Ya eres miembro? <button type="button" className="font-bold underline" style={{ color: "var(--accent)" }} onClick={goLogin}>Inicia sesión</button></p>
     </div>
@@ -5842,7 +5510,7 @@ function AccessModal({ onClose, onSuccess }) {
           ))}
         </div>
         <div className="mt-5">
-          {tab === "login" ? <MemberLoginForm onSuccess={onSuccess} goSignup={() => setTab("signup")} /> : <MemberSignupFlow goLogin={() => setTab("login")} />}
+          {tab === "login" ? <MemberLoginForm onSuccess={onSuccess} goSignup={() => setTab("signup")} /> : <NewMemberFlow goLogin={() => setTab("login")} onSuccess={onSuccess} />}
         </div>
       </div>
     </div>
@@ -5861,7 +5529,8 @@ function MemberPage({ setPage }) {
     setPhase("boot");
     try {
       const { p, rec: r } = await memberLookup(sess.u);
-      if (!r || !r.pw || r.pw !== sess.k) { clearSess(); setPhase("login"); return; }
+      const exp = r && (r.pw || (credRead()[derId(p)] || {}).pw);
+      if (!r || !exp || exp !== sess.k) { clearSess(); setPhase("login"); return; }
       setRec(r); setWho({ p, ident: sess.u });
       if (memberLeft(r) <= 0) { setPhase("expired"); return; }
       setSec("home"); setPhase("ok");
@@ -5921,7 +5590,7 @@ function MemberPage({ setPage }) {
             <p className="mt-3 text-xs bx-muted">¿Algún problema con tu acceso? <a className="underline font-bold" style={{ color: "var(--accent)" }} href={`https://t.me/${MEMBER_SUPPORT}`} target="_blank" rel="noopener noreferrer">Escribe a soporte</a>.</p>
           </section>
           <div className={`grid gap-3 ${hasSyn ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
-            {[["course", "🎬", "Curso", "Módulos y clases en video", true], ["log", "📓", "Bitácora", "Gestión de riesgo y métricas de Sintéticos", hasSyn], ["tut", "📘", "Manual de Operativa", "Cómo tomar señales, disciplina y plan $100 → $1,200", true]].filter((x) => x[4]).map(([k, i, t, d]) => (
+            {[["course", "🎬", "Curso", "Módulos y clases en video", true], ["log", "📓", "Bitácora", "Gestión de riesgo y métricas de Sintéticos", hasSyn], ["tut", "📘", "Manual de Operativa", "Cómo tomar señales, lenguaje y reglas de disciplina", true]].filter((x) => x[4]).map(([k, i, t, d]) => (
               <button key={k} type="button" className="bx-card p-4 text-left" onClick={() => { setSec(k); window.scrollTo(0, 0); }}><div className="text-2xl" aria-hidden="true">{i}</div><div className="mt-1 font-black text-white">{t}</div><div className="text-xs bx-muted">{d}</div></button>
             ))}
           </div>
@@ -5947,7 +5616,7 @@ const LINKS_CFG = {
     { id: "youtube", label: "YouTube @precisionzonefx", url: "https://www.youtube.com/@precisionzonefx" },
     { id: "whatsapp", label: "WhatsApp +1 772 207 1549", url: "https://wa.me/17722071549" },
   ],
-  guideUrl: "https://t.me/borkaifxelite/633", // guía gratuita
+  guideUrl: "https://t.me/precisionzonefx/1066", // La Biblia del Trading (recurso gratuito)
   tradingViewUrl: "https://www.tradingview.com/pricing/?share_your_love=precisionzonefx", // TradingView (afiliado)
   ebookUrl: "", // ebook "Domina tu mente": pega aquí su enlace
   // Panel "Brokers y recursos"
@@ -6242,7 +5911,7 @@ function LinksPage({ setPage }) {
         <LinkCard icon="chart" title="Track record & canales VIP" sub="Resultados, calendario y planes" onClick={() => go("track")} style={d(8)} testid="links-track" />
 
         <div className="lk-sep lk-in" style={d(9)}>EDUCACIÓN &amp; RECURSOS</div>
-        <LinkCard icon="book" title="Guía gratuita de trading" sub="Smart Money paso a paso" href={LINKS_CFG.guideUrl} style={d(10)} testid="links-guide" />
+        <LinkCard icon="book" title="La Biblia del Trading" sub="Recurso gratuito en PDF" href={LINKS_CFG.guideUrl} style={d(10)} testid="links-guide" />
         {LINKS_CFG.ebookUrl
           ? <LinkCard icon="mind" title="Ebook: domina tu mente" sub="Psicotrading" href={LINKS_CFG.ebookUrl} style={d(11)} testid="links-ebook" />
           : <LinkCard soon icon="mind" title="Ebook: domina tu mente" sub="Psicotrading" style={d(11)} testid="links-ebook" />}
@@ -6820,7 +6489,7 @@ export default function App() {
 
   return (
     <div className={`bx-root ${page === "home" ? "bx-home" : ""}`} data-theme={theme}>
-      {page !== "admin" && <TelegramFab />}
+      {page !== "admin" && page !== "member" && <TelegramFab />}
       <style>{CSS}</style>
       <div className="bx-sitebg" aria-hidden="true" />
       {accessOpen && page !== "member" && <AccessModal onClose={() => setAccessOpen(false)} onSuccess={() => { setAccessOpen(false); setPage("member"); window.scrollTo(0, 0); }} />}
