@@ -4810,7 +4810,7 @@
       "e1": {
         "status": "TP",
         "exit": "OPEN",
-        "pips": "",
+        "pips": 300,
         "tpIdx": 3,
         "reached": null
       },
@@ -4828,9 +4828,9 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "BE",
-    "pips": 0,
-    "r": 0
+    "status": "TP",
+    "pips": 300,
+    "r": 3
   },
   {
     "id": "l4uj49inmwt7d5hl",
