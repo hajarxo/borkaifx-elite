@@ -4809,9 +4809,9 @@
     "legs": {
       "e1": {
         "status": "TP",
-        "exit": 3666,
+        "exit": "OPEN",
         "pips": "",
-        "tpIdx": 2,
+        "tpIdx": 3,
         "reached": null
       },
       "e2": {
