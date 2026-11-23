@@ -4655,5 +4655,49 @@
     "status": "TP",
     "pips": 300,
     "r": 15
+  },
+  {
+    "id": "7kcedjyomws2rs71",
+    "date": "2026-11-22",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "BOOM 600",
+    "direction": "BUY",
+    "entry1": 5306,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 5278,
+    "tps": [
+      5339,
+      5409
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 5409,
+        "pips": 103,
+        "tpIdx": 1,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "BOOM 600 BUY NOW 5306\nSL 5278 \nTP1 5339\nTP2 5409",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 103,
+    "r": 3.68
   }
 ]
