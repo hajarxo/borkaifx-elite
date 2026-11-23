@@ -268,6 +268,7 @@ linear-gradient(180deg,rgba(255,90,31,.045) 0 1px,transparent 1px) 0 0/100% 160p
 @keyframes pzov{from{opacity:0}to{opacity:1}}
 @keyframes pzin{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.pz-ov,.pz-glass{animation:none}}
+.mb-cover{flex:none;width:58px;height:76px;border-radius:8px 14px 14px 8px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:8px;font-weight:900;font-size:.7rem;letter-spacing:.12em;color:#1a0c05;background:linear-gradient(160deg,rgba(255,150,90,.95),rgba(255,90,31,.8));box-shadow:inset 4px 0 0 rgba(0,0,0,.18),0 10px 24px -8px rgba(255,90,31,.5)}
 .mb-warn{border:1px solid rgba(255,90,31,.55);background:rgba(255,90,31,.1);border-radius:1.1rem;padding:1.1rem 1.25rem;color:var(--cardink2)}
 .mb-num{flex:none;width:28px;height:28px;border-radius:9999px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:.82rem;color:#17120a;background:linear-gradient(180deg,#FF8A3D,#FF5A1F)}
 .mb-level.on{border-color:rgba(255,90,31,.8)!important;box-shadow:0 0 0 1px rgba(255,90,31,.3),0 10px 40px rgba(255,90,31,.15)}
@@ -4823,30 +4824,24 @@ const SYN_RES = { G: "GANADOR", P: "PERDEDOR", B: "BREAK EVEN" };
 const SYN_TYPE = { C: "COMPRA", V: "VENTA" };
 const SYN_CHECK = [
   { k: "pre", t: "Pre-mercado", items: [
-    "Revisé mi plan del día y el nivel de mi cuenta.",
-    "Definí mi riesgo máximo por operación y mi pérdida máxima del día.",
-    "Sé cuántas operaciones haré como máximo hoy.",
-    "Estoy descansado y con la mente tranquila (sin prisa ni revancha).",
-    "Cerré distracciones: redes, chats y notificaciones.",
+    "Verificar estado de ánimo y personal antes de operar.",
+    "Revisar el desarrollo de las operaciones de ayer (posiciones abiertas y cerradas).",
+    "Revisar decisiones tomadas el día de ayer.",
+    "Revisar calendario económico, noticias importantes, días festivos.",
+    "Tener lista calculadora de riesgo.",
+    "Revisar pares en lista de seguimiento, revisar los movimientos del mercado y escoger los mejores para operar, actualizar análisis, líneas, niveles, etc.",
   ] },
   { k: "antes", t: "Antes de cada operación", items: [
-    "La entrada coincide con la señal o con mi estrategia.",
-    "Definí SL y TP antes de entrar.",
-    "Calculé el lote según mi riesgo; no sobrelotear.",
-    "El riesgo-beneficio tiene sentido para el plan.",
-    "No estoy entrando por emoción o para recuperar una pérdida.",
+    "¿LAS PROBABILIDADES DE ÉXITO ESTÁN A MI FAVOR?",
+    "¿OPERO LO QUE VEO, O LO QUE PIENSO QUE VA A HACER EL MERCADO?",
   ] },
   { k: "durante", t: "Durante cada operación", items: [
-    "No muevo el SL en mi contra.",
-    "No agrego lotes ni hago reentradas no autorizadas.",
-    "Sigo las indicaciones del canal (BE, parciales, cierres).",
-    "Respeto el plan aunque el precio fluctúe.",
+    "SI NO HUBIESE ENTRADO EN LA OPERACIÓN CUANDO LO HICE, ¿ME GUSTARÍA ESTAR EN ELLA AHORA?",
   ] },
   { k: "post", t: "Post-mercado", items: [
-    "Registré cada operación con sus capturas (Imagen I e Imagen II).",
-    "Anoté qué hice bien y qué debo corregir.",
-    "Cerré la plataforma al cumplir mi meta o tocar mi pérdida del día.",
-    "Los viernes: revisé las métricas de la semana.",
+    "Completar diario de trading: emociones, pensamientos, decisiones, etc.",
+    "Actualizar pares en lista de seguimiento del día anterior, hacer copia de los gráficos para el día siguiente.",
+    "Planificar OPERACIONES del día siguiente (hora por hora).",
   ] },
 ];
 const emptySyn = () => ({ id: "", date: localDate(), asset: "", type: "C", lot: "", entry: "", sl: "", tp: "", res: "G", amt: "", pips: "", img1: "", img2: "", d1: "", d2: "", ts: 0 });
@@ -4908,7 +4903,7 @@ function zipStore(files) {
   const enc = new TextEncoder(), u16 = (n) => [n & 255, (n >> 8) & 255], u32 = (n) => [n & 255, (n >> 8) & 255, (n >> 16) & 255, (n >>> 24) & 255];
   const parts = [], cen = []; let off = 0;
   files.forEach((f) => {
-    const name = enc.encode(f.name), data = enc.encode(f.text), crc = crc32(data);
+    const name = enc.encode(f.name), data = f.bytes || enc.encode(f.text), crc = crc32(data);
     const lh = new Uint8Array([0x50, 0x4b, 3, 4, ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0)]);
     parts.push(lh, name, data);
     cen.push(new Uint8Array([0x50, 0x4b, 1, 2, ...u16(20), ...u16(20), ...u16(0x0800), ...u16(0), ...u16(0), ...u16(0x21), ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(name.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0), ...u32(0), ...u32(off)]), name);
@@ -4920,17 +4915,171 @@ function zipStore(files) {
 }
 const colL = (i) => { let s = "", n = i + 1; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
 const xesc = (s) => String(s).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "").replace(/[<>&"']/g, (c) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;", "'": "&apos;" }[c]));
-const sheetXml = (rows) => `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>${rows.map((r, ri) => `<row r="${ri + 1}">${r.map((v, ci) => (v === "" || v == null || (typeof v === "number" && !Number.isFinite(v)) ? "" : typeof v === "number" ? `<c r="${colL(ci)}${ri + 1}"><v>${v}</v></c>` : `<c r="${colL(ci)}${ri + 1}" t="inlineStr"><is><t xml:space="preserve">${xesc(v)}</t></is></c>`)).join("")}</row>`).join("")}</sheetData></worksheet>`;
-function makeXlsx(sheets) {
-  const X = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-  return zipStore([
-    { name: "[Content_Types].xml", text: `${X}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>${sheets.map((_, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join("")}</Types>` },
-    { name: "_rels/.rels", text: `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>` },
-    { name: "xl/workbook.xml", text: `${X}<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets>${sheets.map((s, i) => `<sheet name="${xesc(s.name)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join("")}</sheets></workbook>` },
-    { name: "xl/_rels/workbook.xml.rels", text: `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((_, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join("")}</Relationships>` },
-    ...sheets.map((s, i) => ({ name: `xl/worksheets/sheet${i + 1}.xml`, text: sheetXml(s.rows) })),
-  ]);
+/* ---- Excel (.xlsx) con el formato de la plantilla "Mi Gestión de Riesgo" ---- */
+function xlStyles() {
+  const reg = (arr, key) => { const k = JSON.stringify(key); let i = arr.findIndex((e) => e.k === k); if (i < 0) { arr.push({ k, v: key }); i = arr.length - 1; } return i; };
+  const fonts = [], fills = [{ k: "n", v: "none" }, { k: "g", v: "gray125" }], borders = [], fmts = [], xfs = [];
+  const style = (o = {}) => {
+    const f = reg(fonts, { sz: o.sz || 8, b: !!o.b, u: !!o.u, c: o.c || "FF000000" });
+    const fl = o.fill ? reg(fills, o.fill) : 0;
+    const bd = reg(borders, o.border ? 1 : 0);
+    let nfid = 0;
+    if (o.fmt) { const bi = { "0": 1, "0.00": 2, "0%": 9 }[o.fmt]; nfid = bi || 164 + reg(fmts, o.fmt); }
+    return reg(xfs, { f, fl, bd, nfid, h: o.h || "", v: o.v || "", w: !!o.w });
+  };
+  style({ sz: 11 }); // estilo 0 por defecto
+  const xml = () => {
+    const fx = fonts.map((e) => `<font>${e.v.b ? "<b/>" : ""}${e.v.u ? "<u/>" : ""}<sz val="${e.v.sz}"/><color rgb="${e.v.c}"/><name val="Calibri"/><family val="2"/></font>`).join("");
+    const fl = fills.map((e) => (e.v === "none" || e.v === "gray125" ? `<fill><patternFill patternType="${e.v}"/></fill>` : `<fill><patternFill patternType="solid"><fgColor rgb="FF${e.v}"/><bgColor indexed="64"/></patternFill></fill>`)).join("");
+    const ln = (s) => `<${s} style="thin"><color rgb="FF000000"/></${s}>`;
+    const bx = borders.map((e) => (e.v ? `<border>${ln("left")}${ln("right")}${ln("top")}${ln("bottom")}<diagonal/></border>` : "<border><left/><right/><top/><bottom/><diagonal/></border>")).join("");
+    const nf = fmts.length ? `<numFmts count="${fmts.length}">${fmts.map((e, i) => `<numFmt numFmtId="${164 + i}" formatCode="${xesc(e.v)}"/>`).join("")}</numFmts>` : "";
+    const xf = xfs.map((e) => `<xf numFmtId="${e.v.nfid}" fontId="${e.v.f}" fillId="${e.v.fl}" borderId="${e.v.bd}" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment${e.v.h ? ` horizontal="${e.v.h}"` : ""}${e.v.v ? ` vertical="${e.v.v}"` : ""}${e.v.w ? ' wrapText="1"' : ""}/></xf>`).join("");
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">${nf}<fonts count="${fonts.length}">${fx}</fonts><fills count="${fills.length}">${fl}</fills><borders count="${borders.length}">${bx}</borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="${xfs.length}">${xf}</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>`;
+  };
+  return { style, xml };
 }
+function xlSheet() {
+  const rows = new Map(), heights = new Map(), merges = [];
+  const bad = (v) => v === "" || v == null || (typeof v === "number" && !Number.isFinite(v));
+  const set = (c, r, v, s, f) => {
+    const a = `r="${colL(c)}${r}" s="${s}"`;
+    let x;
+    if (f) x = `<c ${a}${typeof v === "string" ? ' t="str"' : ""}><f>${xesc(f)}</f>${bad(v) ? "" : `<v>${typeof v === "string" ? xesc(v) : v}</v>`}</c>`;
+    else if (bad(v)) x = `<c ${a}/>`;
+    else if (typeof v === "number") x = `<c ${a}><v>${v}</v></c>`;
+    else x = `<c ${a} t="inlineStr"><is><t xml:space="preserve">${xesc(v)}</t></is></c>`;
+    if (!rows.has(r)) rows.set(r, new Map());
+    rows.get(r).set(c, x);
+  };
+  const box = (c1, r1, c2, r2, s) => { for (let r = r1; r <= r2; r++) for (let c = c1; c <= c2; c++) if (!(rows.has(r) && rows.get(r).has(c))) set(c, r, null, s); };
+  const merge = (c1, r1, c2, r2) => merges.push(`${colL(c1)}${r1}:${colL(c2)}${r2}`);
+  const sheetData = () => [...rows.keys()].sort((a, b) => a - b).map((r) => `<row r="${r}"${heights.has(r) ? ` ht="${heights.get(r)}" customHeight="1"` : ""}>${[...rows.get(r).keys()].sort((a, b) => a - b).map((c) => rows.get(r).get(c)).join("")}</row>`).join("");
+  return { set, box, merge, heights, merges, sheetData };
+}
+// data: { inv, meta, why, rows (synRows), st (synStats), pics: { "id|k": {bytes,w,h} } }
+function makeBitacoraXlsx(data) {
+  const { inv, meta, why, rows, st, pics = {} } = data;
+  const S = xlStyles(), s1 = xlSheet(), s2 = xlSheet();
+  const X = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+  const NS = 'xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+  const FIRST = 16, END = Math.max(315, FIRST + rows.length + 40), LAST = Math.max(115, FIRST + rows.length + 40);
+  const M = "[$$-409]#,##0.00", MD = "[$$-409]#,##0.0";
+  const stl = {
+    banner: S.style({ sz: 24, b: 1, c: "FFFFFFFF", fill: "0A0D12", h: "center", v: "center" }),
+    tgL: S.style({ sz: 11, fill: "FFD965", h: "center", border: 1 }), tgV: S.style({ sz: 11, c: "FF0000FF", u: 1, h: "center", border: 1 }),
+    title: S.style({ sz: 12, b: 1, fill: "FFFF00", h: "center", v: "center", border: 1 }),
+    invL: S.style({ sz: 8, fill: "FFFF99", h: "center", v: "center", border: 1 }), invV: S.style({ sz: 9, fmt: M, v: "center", border: 1 }),
+    metaL: S.style({ sz: 11, fill: "FFD965", border: 1 }), metaV: S.style({ sz: 11, h: "center", border: 1 }),
+    band: S.style({ sz: 8, b: 1, c: "FFFFFFFF", fill: "13918B", h: "center", v: "center", border: 1 }),
+    sub: S.style({ sz: 8, fill: "D8D8D8", h: "center", v: "center", border: 1 }),
+    lab: (f) => S.style({ sz: 8, b: 1, fill: f, h: "center", v: "center", border: 1 }),
+    val: (fmt) => S.style({ sz: 8, fmt, h: "center", v: "center", border: 1 }),
+    reg: S.style({ sz: 12, b: 1, c: "FFFFFFFF", fill: "002060", h: "center", v: "center", border: 1 }),
+    th: S.style({ sz: 8, b: 1, fill: "FFFF00", h: "center", v: "center", border: 1 }),
+    cB: S.style({ sz: 8, h: "center", v: "center", border: 1 }),
+    cD: S.style({ sz: 8, fmt: "d/m/yyyy", h: "center", v: "center", border: 1 }),
+    cN: S.style({ sz: 8, fmt: "0.00##", h: "center", v: "center", border: 1 }),
+    cM: S.style({ sz: 8, fmt: M, h: "center", v: "center", border: 1 }),
+    cP: S.style({ sz: 8, fmt: "0.0", h: "center", v: "center", border: 1 }),
+    cBal: S.style({ sz: 8, fmt: M, fill: "FFFF99", h: "center", v: "center", border: 1 }),
+  };
+  const GREEN = "CAE8AA", RED = "FFA3A3", BLUE = "B4C6E7", GRAY = "AEABAB";
+  const R = (c) => `${c}${FIRST}:${c}${END}`;
+  // ---- cabecera
+  s1.heights.set(1, 90.75); s1.heights.set(2, 18); s1.heights.set(3, 26.25); s1.heights.set(14, 20.25); s1.heights.set(15, 18);
+  s1.set(1, 1, "PRECISION ZONE FX", stl.banner); s1.box(1, 1, 14, 1, stl.banner); s1.merge(1, 1, 14, 1);
+  s1.set(1, 2, "Telegram", stl.tgL); s1.set(2, 2, "https://t.me/precisionzonefx", stl.tgV, 'HYPERLINK("https://t.me/precisionzonefx","https://t.me/precisionzonefx")'); s1.box(2, 2, 4, 2, stl.tgV); s1.merge(2, 2, 4, 2);
+  s1.set(1, 3, "REGISTRO DE OPERACIONES TRADING · PRECISION ZONE FX", stl.title); s1.box(1, 3, 14, 3, stl.title); s1.merge(1, 3, 14, 3);
+  s1.set(1, 5, "INVERSIÓN", stl.invL); s1.set(2, 5, Number.isFinite(inv) ? inv : 0, stl.invV);
+  s1.set(9, 5, "Mi meta:", stl.metaL);
+  const metaTxt = [Number.isFinite(meta) ? "$" + fm(meta) : "", why || ""].filter(Boolean).join(" · ") || "escribe aquí tu meta y tu motivación";
+  s1.set(10, 5, metaTxt, stl.metaV); s1.box(10, 5, 14, 5, stl.metaV); s1.merge(10, 5, 14, 5);
+  // ---- métricas
+  [[1, 3, "RESULTADO"], [5, 7, "RATIO RIESGO BENEFICIO"], [9, 11, "TIPO"], [13, 14, "TOTAL"]].forEach(([a, b, t]) => { s1.set(a, 7, t, stl.band); s1.box(a, 7, b, 7, stl.band); s1.merge(a, 7, b, 7); });
+  [["/", "# Operaciones", "%", 1], ["/", "MONTO", "RELACIÓN", 5], ["/", "# Operaciones", "%", 9]].forEach(([a, b, c, col]) => { s1.set(col, 8, a, stl.sub); s1.set(col + 1, 8, b, stl.sub); s1.set(col + 2, 8, c, stl.sub); });
+  const tot = st.tot, pc = (n) => (tot ? n / tot : 0);
+  const D9 = pc(st.w), D10 = pc(st.l), D11 = pc(st.b);
+  const G9 = st.w ? st.avgW : 0, G10 = st.l ? -st.avgL : 0, H9 = G10 ? Math.abs(G9 / G10) : 0;
+  const O8 = st.sumW, O9 = -st.sumL;
+  const pf = O9 ? Math.abs(O8 / O9) : 0;
+  s1.set(1, 9, "GANADOR", stl.lab(GREEN)); s1.set(2, 9, st.w, stl.val("General"), `COUNTIF(${R("J")},"GANADOR")`); s1.set(3, 9, D9, stl.val("0.0%"), "IFERROR(C9/C12,0)");
+  s1.set(1, 10, "PERDEDOR", stl.lab(RED)); s1.set(2, 10, st.l, stl.val("General"), `COUNTIF(${R("J")},"PERDEDOR")`); s1.set(3, 10, D10, stl.val("0.0%"), "IFERROR(C10/C12,0)");
+  s1.set(1, 11, "BREAK EVEN", stl.lab(BLUE)); s1.set(2, 11, st.b, stl.val("General"), `COUNTIF(${R("J")},"BREAK EVEN")`); s1.set(3, 11, D11, stl.val("0.0%"), "IFERROR(C11/C12,0)");
+  s1.set(1, 12, "TOTAL ", stl.lab(GRAY)); s1.set(2, 12, tot, stl.val("General"), "SUM(C9:C11)"); s1.set(3, 12, tot ? 1 : 0, stl.val("0.0%"), "SUM(D9:D11)");
+  s1.set(5, 9, "GANANCIA MEDIA", stl.lab(GREEN)); s1.set(6, 9, G9, stl.val(MD), `IFERROR(SUMIF(${R("J")},"GANADOR",${R("K")})/C9,0)`); s1.set(7, 9, H9, stl.val("0.0"), "IFERROR(ABS(G9/G10),0)");
+  s1.set(5, 10, "RIESGO MEDIO", stl.lab(RED)); s1.set(6, 10, G10, stl.val(MD), `IFERROR(SUMIF(${R("J")},"PERDEDOR",${R("K")})/C10,0)`); s1.set(7, 10, 1, stl.val("General"));
+  s1.set(5, 12, "ESP. MATEMÁT", stl.lab(GRAY)); s1.set(6, 12, D9 * G9 + D10 * G10, stl.val(MD), "(D9*G9)+(D10*G10)"); s1.set(7, 12, D9 * H9 - D10, stl.val("0.00"), "(D9*H9)-(D10*H10)");
+  s1.set(9, 9, "COMPRA", stl.lab(GREEN)); s1.set(10, 9, st.buy, stl.val("General"), `COUNTIF(${R("E")},"COMPRA")`); s1.set(11, 9, pc(st.buy), stl.val("0.0%"), "IFERROR(K9/C12,0)");
+  s1.set(9, 10, "VENTA", stl.lab(RED)); s1.set(10, 10, st.sell, stl.val("General"), `COUNTIF(${R("E")},"VENTA")`); s1.set(11, 10, pc(st.sell), stl.val("0.0%"), "IFERROR(K10/C12,0)");
+  s1.set(9, 12, "PIPS", stl.lab(GRAY)); s1.set(10, 12, st.pips, stl.val("General"), `SUM(${R("L")})`);
+  s1.set(13, 8, "GANANCIA", stl.lab(GREEN)); s1.set(14, 8, O8, stl.val(M), `SUMIF(${R("J")},"GANADOR",${R("K")})`);
+  s1.set(13, 9, "PERDIDAS", stl.lab(RED)); s1.set(14, 9, O9, stl.val(M), `SUMIF(${R("J")},"PERDEDOR",${R("K")})`);
+  s1.set(13, 10, "PROFIT FACTOR", stl.lab(BLUE)); s1.set(14, 10, pf, stl.val("0.00"), "IFERROR(ABS(O8/O9),0)");
+  s1.set(12, 12, "RENTABILIDAD", stl.lab(GRAY)); s1.set(13, 12, inv > 0 ? (O8 + O9) / inv : 0, stl.val("0.0%"), "IFERROR((O8+O9)/C5,0)");
+  // ---- registro
+  s1.set(1, 14, "REGISTRO DE OPERACIONES", stl.reg); s1.box(1, 14, 14, 14, stl.reg); s1.merge(1, 14, 14, 14);
+  ["N° ", "FECHA", "DIVISA", "TIPO", "LOTE", "P.ENTRADA", "P.STOP LOSS", "P. TAKE PROFIT", "RESULTADO", "MONTO OBTENIDO", "PIPS", "BALANCE", "IMAGEN I", "IMAGEN II"].forEach((h, i) => s1.set(1 + i, 15, h, stl.th));
+  const drawings = [];
+  for (let r = FIRST; r <= LAST; r++) {
+    const t = rows[r - FIRST];
+    const num = (v) => { const n = nn(v); return Number.isFinite(n) ? n : null; };
+    s1.set(1, r, t ? t.n : null, stl.cB);
+    s1.set(2, r, t ? dayNum(t.date) + 25569 : null, stl.cD);
+    s1.set(3, r, t ? t.asset : null, stl.cB); s1.set(4, r, t ? SYN_TYPE[t.type] : null, stl.cB);
+    s1.set(5, r, t ? num(t.lot) : null, S.style({ sz: 8, fmt: "0.00", h: "center", v: "center", border: 1 }));
+    s1.set(6, r, t ? num(t.entry) : null, stl.cN); s1.set(7, r, t ? num(t.sl) : null, stl.cN); s1.set(8, r, t ? num(t.tp) : null, stl.cN);
+    s1.set(9, r, t ? SYN_RES[t.res] : null, stl.cB); s1.set(10, r, t ? t.amt : null, stl.cM); s1.set(11, r, t ? t.pips : null, stl.cP);
+    s1.set(12, r, t ? t.bal : "", stl.cBal, r === FIRST ? `IF(OR(J${r}="",K${r}=""),"",$C$5+K${r})` : `IF(OR(J${r}="",K${r}=""),"",M${r - 1}+K${r})`);
+    [1, 2].forEach((k) => {
+      const col = 12 + k, p = t && pics[`${t.id}|${k}`];
+      if (p) {
+        const mw = 86, mh = 66, sc = Math.min(mw / p.w, mh / p.h, 1);
+        drawings.push({ col, row: r - 1, w: Math.round(p.w * sc), h: Math.round(p.h * sc), bytes: p.bytes });
+        s1.heights.set(r, 54); s1.set(col, r, null, stl.cB);
+      } else s1.set(col, r, t ? (t["img" + k] && t["img" + k] !== "idb" ? t["img" + k] : "") : null, stl.cB);
+    });
+  }
+  // ---- hoja CHECK-LIST
+  const hdr = (c) => S.style({ sz: 11, b: 1, fill: c, v: "center" }), itm = S.style({ sz: 11, v: "center" });
+  const CL = [["CHECK LIST: PRE-MERCADO", "FF4B4B", SYN_CHECK[0].items, 1], ["CHECK LIST: ANTES DE CADA OPERACIÓN", "3399FF", SYN_CHECK[1].items, 10], ["CHECK LIST: DURANTE CADA OPERACIÓN", "3399FF", SYN_CHECK[2].items, 15], ["CHECK LIST: POST-MERCADO", "09AF09", SYN_CHECK[3].items, 19]];
+  CL.forEach(([t, c, items, r0]) => {
+    s2.set(0, r0, t, hdr(c)); s2.box(0, r0, 7, r0, hdr(c)); s2.merge(0, r0, 7, r0);
+    items.forEach((it, i) => { s2.set(0, r0 + 1 + i, `${i + 1}) ${it}`, itm); s2.box(0, r0 + 1 + i, 7, r0 + 1 + i, itm); s2.merge(0, r0 + 1 + i, 7, r0 + 1 + i); });
+  });
+  // ---- empaquetado
+  const cols1 = [3.71, 11.43, 11.43, 11.43, 11.43, 13.29, 13, 14.57, 12.86, 14, 17.57, 11.43, 12.57, 12.86].map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join("");
+  const dv = `<dataValidations count="2"><dataValidation type="list" allowBlank="1" showErrorMessage="1" sqref="${R("E")}"><formula1>"COMPRA,VENTA"</formula1></dataValidation><dataValidation type="list" allowBlank="1" showErrorMessage="1" sqref="${R("J")}"><formula1>"GANADOR,PERDEDOR,BREAK EVEN"</formula1></dataValidation></dataValidations>`;
+  const sheet1 = `${X}<worksheet ${NS}><sheetViews><sheetView workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols>${cols1}</cols><sheetData>${s1.sheetData()}</sheetData><autoFilter ref="B15:O${LAST}"/><mergeCells count="${s1.merges.length}">${s1.merges.map((m) => `<mergeCell ref="${m}"/>`).join("")}</mergeCells>${dv}<pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/>${drawings.length ? '<drawing r:id="rId1"/>' : ""}</worksheet>`;
+  const sheet2 = `${X}<worksheet ${NS}><sheetViews><sheetView workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols><col min="1" max="1" width="10.7" customWidth="1"/><col min="8" max="8" width="59.6" customWidth="1"/></cols><sheetData>${s2.sheetData()}</sheetData><mergeCells count="${s2.merges.length}">${s2.merges.map((m) => `<mergeCell ref="${m}"/>`).join("")}</mergeCells><pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/></worksheet>`;
+  const files = [
+    { name: "[Content_Types].xml", text: `${X}<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>${drawings.length ? '<Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>' : ""}</Types>` },
+    { name: "_rels/.rels", text: `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>` },
+    { name: "xl/workbook.xml", text: `${X}<workbook ${NS}><bookViews><workbookView/></bookViews><sheets><sheet name="Registro de Operaciones" sheetId="1" r:id="rId1"/><sheet name="CHECK-LIST" sheetId="2" r:id="rId2"/></sheets><calcPr fullCalcOnLoad="1"/></workbook>` },
+    { name: "xl/_rels/workbook.xml.rels", text: `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>` },
+    { name: "xl/styles.xml", text: S.xml() },
+    { name: "xl/worksheets/sheet1.xml", text: sheet1 },
+    { name: "xl/worksheets/sheet2.xml", text: sheet2 },
+  ];
+  if (drawings.length) {
+    const E = 9525;
+    files.push({ name: "xl/worksheets/_rels/sheet1.xml.rels", text: `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>` });
+    files.push({ name: "xl/drawings/_rels/drawing1.xml.rels", text: `${X}<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${drawings.map((d, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="../media/image${i + 1}.jpeg"/>`).join("")}</Relationships>` });
+    files.push({ name: "xl/drawings/drawing1.xml", text: `${X}<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">${drawings.map((d, i) => `<xdr:oneCellAnchor><xdr:from><xdr:col>${d.col}</xdr:col><xdr:colOff>${3 * E}</xdr:colOff><xdr:row>${d.row}</xdr:row><xdr:rowOff>${3 * E}</xdr:rowOff></xdr:from><xdr:ext cx="${d.w * E}" cy="${d.h * E}"/><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="${i + 2}" name="Captura ${i + 1}"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed="rId${i + 1}"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${d.w * E}" cy="${d.h * E}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:oneCellAnchor>`).join("")}</xdr:wsDr>` });
+    drawings.forEach((d, i) => files.push({ name: `xl/media/image${i + 1}.jpeg`, bytes: d.bytes }));
+  }
+  return zipStore(files);
+}
+const picInfo = (dataUrl) => new Promise((res, rej) => {
+  try {
+    const b = atob(String(dataUrl).split(",")[1] || ""), bytes = new Uint8Array(b.length);
+    for (let i = 0; i < b.length; i++) bytes[i] = b.charCodeAt(i);
+    const im = new Image();
+    im.onload = () => res({ bytes, w: im.naturalWidth || 90, h: im.naturalHeight || 60 });
+    im.onerror = () => rej(new Error("img"));
+    im.src = dataUrl;
+  } catch (e) { rej(e); }
+});
 
 function Thumb({ ikey, url, onOpen, label }) {
   const [src, setSrc] = useState(url || "");
@@ -5036,7 +5185,15 @@ function Logbook({ storeKey }) {
     ["ESP. MATEMÁT (monto)", r2(st.exp)], ["ESP. MATEMÁT (R)", Number.isFinite(st.expR) ? r2(st.expR) : ""], ["PROFIT FACTOR", Number.isFinite(st.pf) ? r2(st.pf) : st.pf === Infinity ? "∞" : ""], ["PIPS", r2(st.pips)],
     ["COMPRA", st.buy], ["% COMPRA", r2(st.pbuy)], ["VENTA", st.sell], ["% VENTA", r2(st.psell)], ["GANANCIA TOTAL", r2(st.sumW)], ["PÉRDIDAS TOTAL", -r2(st.sumL)],
   ];
-  const exportXlsx = () => { download(`bitacora-sinteticos-${localDate()}.xlsx`, makeXlsx([{ name: "Operaciones", rows: [HEAD, ...tableRows()] }, { name: "Resumen", rows: sumRows() }])); setMsg("Archivo Excel (.xlsx) descargado."); };
+  const exportXlsx = async () => {
+    setMsg("Preparando tu Excel…");
+    try {
+      const pics = {};
+      for (const t of rows) for (const k of [1, 2]) if (t["img" + k] === "idb") { try { const d = await imgGet(`${storeKey}|${t.id}|${k}`); if (d) pics[`${t.id}|${k}`] = await picInfo(d); } catch (e) {} }
+      download(`bitacora-sinteticos-${localDate()}.xlsx`, makeBitacoraXlsx({ inv, meta, why: db.setup.why, rows, st, pics }));
+      setMsg("Excel (.xlsx) descargado con el formato de tu plantilla.");
+    } catch (e) { setMsg("No se pudo crear el Excel. Prueba con «Exportar CSV»."); }
+  };
   const exportCsv = () => {
     const q = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const cell = (v) => q(typeof v === "number" ? String(v).replace(".", ",") : v);
@@ -5517,6 +5674,227 @@ function AccessModal({ onClose, onSuccess }) {
   );
 }
 
+/* ----------------------------- Biblioteca de PDFs ----------------------------- */
+// Para sumar más libros: agrega un objeto a LIBRARY (con "url" del PDF o del post de Telegram). Sin url se muestra "Próximamente".
+const LIBRARY = [
+  { id: "biblia", title: "La Biblia del Trading", desc: "Recurso gratuito: los conceptos base para operar con claridad.", tag: "GRATIS", url: BIBLIA_URL, cta: "Abrir La Biblia" },
+  { id: "proximo", title: "Más guías en camino", desc: "Psicotrading, análisis técnico y diccionario del trader, con el estilo de la plataforma.", tag: "PRÓXIMAMENTE", url: "", cta: "" },
+];
+function LibraryView() {
+  return (
+    <div data-testid="library-view">
+      <h2 className="bx-h2">Biblioteca</h2>
+      <p className="mt-2 text-sm bx-muted max-w-xl">Libros y guías en PDF para estudiar a tu ritmo.</p>
+      <div className="mt-5 grid gap-4 sm:grid-cols-2">
+        {LIBRARY.map((b) => (
+          <div key={b.id} className="bx-card p-5 flex flex-col" data-testid="library-card">
+            <div className="flex items-start gap-4">
+              <div className="mb-cover" aria-hidden="true"><span>PDF</span></div>
+              <div className="min-w-0">
+                <span className="mb-badge" style={{ background: b.url ? "rgba(46,204,113,.14)" : "rgba(var(--fg),.08)", color: b.url ? "var(--pos)" : "var(--cardink2)" }}>{b.tag}</span>
+                <div className="mt-2 text-lg font-black text-white leading-snug">{b.title}</div>
+              </div>
+            </div>
+            <p className="mt-3 text-sm bx-ink2 leading-relaxed">{b.desc}</p>
+            <div className="flex-1" />
+            {b.url ? <a href={b.url} target="_blank" rel="noopener noreferrer" className="bx-btn mt-4 px-4 py-2.5 text-sm text-center" data-testid={`library-${b.id}`}>{b.cta || "Abrir"}</a> : <div className="mt-4 text-xs bx-muted">Se publicará pronto.</div>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ----------------------------- Plan de Trading · Oro / CFDs + simulador ----------------------------- */
+const SIM_INSTR = [
+  { k: "XAUUSD", n: "XAUUSD (Oro)", pip: 0.1, val: () => 10, unit: "pips", dec: 2, price: 4000 },
+  { k: "EURUSD", n: "EURUSD", pip: 0.0001, val: () => 10, unit: "pips", dec: 5, price: 1.08 },
+  { k: "GBPUSD", n: "GBPUSD", pip: 0.0001, val: () => 10, unit: "pips", dec: 5, price: 1.27 },
+  { k: "AUDUSD", n: "AUDUSD", pip: 0.0001, val: () => 10, unit: "pips", dec: 5, price: 0.66 },
+  { k: "USDJPY", n: "USDJPY", pip: 0.01, val: (p) => 1000 / p, unit: "pips", dec: 3, price: 150 },
+  { k: "USDCAD", n: "USDCAD", pip: 0.0001, val: (p) => 10 / p, unit: "pips", dec: 5, price: 1.37 },
+  { k: "USDCHF", n: "USDCHF", pip: 0.0001, val: (p) => 10 / p, unit: "pips", dec: 5, price: 0.88 },
+  { k: "NAS100", n: "NAS100 (US100)", pip: 1, val: () => 1, unit: "puntos", dec: 1, price: 21000 },
+  { k: "US30", n: "US30", pip: 1, val: () => 1, unit: "puntos", dec: 1, price: 44000 },
+  { k: "SPX500", n: "SPX500", pip: 1, val: () => 1, unit: "puntos", dec: 1, price: 6000 },
+];
+const SIM_RES = { P: ["Pérdida", -1], BE: ["Break Even", 0], G1: ["Ganancia 1:1 R", 1], G2: ["Ganancia 1:2 R", 2], G3: ["Ganancia 1:3 R", 3] };
+const PT_BLOCKS = [
+  { ico: "🛡", t: "Riesgo Máximo por Operación", items: [
+    <><b>Límite sugerido:</b> Arriesga únicamente entre el <b>0.5% y el 1%</b> de tu capital total.</>,
+    <><i>Ejemplo:</i> En una cuenta de <b>$5,000 USD</b> → Tu riesgo es de <b>$25 a $50 USD</b> por trade.</>,
+    <><b>Monto Fijo:</b> También puedes operar con un monto fijo con el que te sientas cómodo perdiendo en cada entrada.</>,
+    <><i>Ejemplo personal:</i> Yo arriesgo <b>$300 USD</b> por operación. Si entro en racha perdedora, reduzco a <b>$150 USD</b> hasta volver a Break-Even (Punto de Equilibrio) y luego retomo mis <b>$300 USD</b> habituales.</>,
+  ] },
+  { ico: "🚨", t: "Límites Diarios Operativos", items: [
+    <><b>Máximo diario:</b> 3 operaciones por día.</>,
+    <><b>Tras 1 Pérdida:</b> Reduce el riesgo al <b>0.5% – 0.7%</b> en las operaciones restantes.</>,
+    <><b>Tras 2 Pérdidas:</b> <b>FIN DE LA SESIÓN.</b> Cierra la plataforma por hoy.</>,
+    <><b>Tras 1 Ganancia:</b> Ratio <b>1:2 R</b> → <b>FIN DE LA SESIÓN.</b> Aseguras tu día. Ratio <b>1:1 R</b> → Tienes permitido tomar hasta <b>2 operaciones más</b>.</>,
+  ] },
+  { ico: "🕒", t: "Sesiones de Trading", items: [<><b>Londres:</b> Apertura <b>3:00 AM</b></>, <><b>Nueva York:</b> Apertura <b>8:00 AM</b></>] },
+  { ico: "⚙️", t: "Reglas de Gestión para Señales VIP", items: [
+    <><b>División de Posiciones:</b> Puedes abrir <b>2 posiciones</b> dividiendo el riesgo a la mitad en cada una (ejemplo: si usas 1% total, ejecutas dos posiciones de <b>0.5% / $150 USD</b> cada una).</>,
+    <><b>Indicación de Break-Even (BE):</b> Cuando indique mover a BE, cierras <b>1 posición en ganancias</b> y dejas correr la segunda libre de riesgo. Nunca sobrearriesgues.</>,
+    <><b>Gestión Progresiva de Toma de Ganancias (TP):</b> Ratio <b>1:1 o BE:</b> Asegura parciales según las instrucciones en el canal. Ratio <b>1:2 R:</b> Asegura un porcentaje mayor y mantén la posición restante en BE. Ratio <b>1:3 R:</b> <b>CIERRE TOTAL.</b> Operación finalizada con éxito. 🎯💸</>,
+  ] },
+];
+
+function RiskSimulator() {
+  const [cap, setCap] = useState("5000");
+  const [mode, setMode] = useState("pct");
+  const [pct, setPct] = useState("1");
+  const [fixed, setFixed] = useState("300");
+  const [lossPct, setLossPct] = useState("0.6");
+  const [ik, setIk] = useState("XAUUSD");
+  const [dir, setDir] = useState("BUY");
+  const [entry, setEntry] = useState("");
+  const [sl, setSl] = useState("50");
+  const [ovr, setOvr] = useState("");
+  const [day, setDay] = useState([]);
+  const ins = SIM_INSTR.find((x) => x.k === ik);
+  const capN = nn(cap), pctN = Math.min(1, Math.max(0.1, nn(pct) || 1)), fixN = nn(fixed), slN = nn(sl), lossN = Number(lossPct);
+  const price = nn(entry) || ins.price;
+  const pipVal = nn(ovr) > 0 ? nn(ovr) : ins.val(price);
+  const baseRisk = mode === "pct" ? (capN || 0) * pctN / 100 : fixN || 0;
+  const reducedRisk = mode === "pct" ? (capN || 0) * Math.min(pctN, lossN) / 100 : (fixN || 0) / 2;
+  // estado del día
+  const losses = day.filter((t) => t.r === "P").length;
+  const bigWin = day.some((t) => t.r === "G2" || t.r === "G3");
+  const end = losses >= 2 ? "2 pérdidas: cierra la plataforma por hoy." : bigWin ? "Ganancia de 1:2 R o más: aseguraste tu día." : day.length >= 3 ? "Llegaste al máximo de 3 operaciones por día." : "";
+  const left = Math.max(0, 3 - day.length);
+  const reduced = losses >= 1;
+  const riskNow = reduced ? reducedRisk : baseRisk;
+  const g1 = day.length > 0 && day[day.length - 1].r === "G1";
+  const add = (r) => { if (end) return; const [, m] = SIM_RES[r]; setDay((d) => [...d, { r, risk: riskNow, usd: riskNow * m }]); };
+  const dayUsd = day.reduce((s, t) => s + t.usd, 0);
+  // calculadora de la operación
+  const slOk = Number.isFinite(slN) && slN > 0;
+  const lotRaw = slOk && pipVal > 0 ? riskNow / (slN * pipVal) : 0;
+  const lot = Math.floor(lotRaw * 100 + 1e-9) / 100;
+  const half = Math.floor((lot / 2) * 100 + 1e-9) / 100;
+  const realRisk = slOk ? lot * slN * pipVal : 0;
+  const R = realRisk > 0 ? realRisk : riskNow;
+  const pctOf = (v) => (capN > 0 ? (v / capN) * 100 : NaN);
+  const sgn = dir === "BUY" ? 1 : -1;
+  const lvl = (rr) => (slOk ? slN * rr : NaN);
+  const px = (rr) => (nn(entry) ? fm(nn(entry) + sgn * lvl(rr) * ins.pip, ins.dec > 2 ? Math.min(ins.dec, 5) : ins.dec) : "—");
+  const rows = [
+    ["Stop Loss", "Pérdida total de la operación", -R, slOk ? slN : NaN, nn(entry) ? fm(nn(entry) - sgn * slN * ins.pip, Math.min(ins.dec, 5)) : "—", "neg"],
+    ["1:1 R o BE", "Cierras la posición A y mueves B a BE", R * 0.5, lvl(1), px(1), "pos"],
+    ["1:2 R", "Aseguras más (cierras A); B sigue en BE", R * 1, lvl(2), px(2), "pos"],
+    ["1:3 R", "CIERRE TOTAL de A y B", R * 3, lvl(3), px(3), "pos"],
+  ];
+  const Num = ({ v, f }) => <span className="bx-num">{Number.isFinite(v) ? f(v) : "—"}</span>;
+  return (
+    <section data-testid="risk-sim" className="space-y-4">
+      <div>
+        <h2 className="bx-h2">Simulador de gestión de riesgo</h2>
+        <p className="mt-2 text-sm bx-muted max-w-2xl">Divisas, Oro e índices bursátiles. Aplica las reglas del plan: riesgo por operación, 2 posiciones, parciales en 1:1 / BE, 1:2 R y 1:3 R, y límites del día.</p>
+      </div>
+      <div className="grid lg:grid-cols-2 gap-4 items-start">
+        <div className="bx-card p-5 space-y-4" data-testid="sim-inputs">
+          <div className="grid grid-cols-2 gap-3">
+            <div><label className="bx-label" htmlFor="sm-cap">Capital de la cuenta (USD)</label><input id="sm-cap" className="bx-input" inputMode="decimal" value={cap} onChange={(e) => setCap(e.target.value)} data-testid="sim-cap" /></div>
+            <div><span className="bx-label">Modo de riesgo</span>
+              <div className="flex gap-1">{[["pct", "Porcentaje"], ["fix", "Monto fijo"]].map(([k, l]) => <button key={k} type="button" className={`bx-seg ${mode === k ? "on acc" : ""}`} onClick={() => setMode(k)} data-testid={`sim-mode-${k}`}>{l}</button>)}</div></div>
+          </div>
+          {mode === "pct" ? (
+            <div className="grid grid-cols-2 gap-3">
+              <div><label className="bx-label" htmlFor="sm-pct">Riesgo por operación: {fm(pctN, 2)}%</label><input id="sm-pct" type="range" min="0.5" max="1" step="0.05" value={Math.min(1, Math.max(0.5, pctN))} onChange={(e) => setPct(e.target.value)} className="mb-range w-full" data-testid="sim-pct" /><div className="flex justify-between text-[11px] bx-muted"><span>0.5%</span><span>1%</span></div></div>
+              <div><label className="bx-label" htmlFor="sm-loss">Riesgo tras 1 pérdida</label><select id="sm-loss" className="bx-input" value={lossPct} onChange={(e) => setLossPct(e.target.value)} data-testid="sim-loss"><option value="0.5">0.5%</option><option value="0.6">0.6%</option><option value="0.7">0.7%</option></select></div>
+            </div>
+          ) : (
+            <div><label className="bx-label" htmlFor="sm-fix">Monto fijo por operación (USD)</label><input id="sm-fix" className="bx-input" style={{ maxWidth: 220 }} inputMode="decimal" value={fixed} onChange={(e) => setFixed(e.target.value)} data-testid="sim-fixed" /><p className="mt-1 text-xs bx-muted">Tras 1 pérdida baja a la mitad (${fm((fixN || 0) / 2, 0)}).</p></div>
+          )}
+          <div className="grid grid-cols-2 gap-3">
+            <div><label className="bx-label" htmlFor="sm-ins">Instrumento</label><select id="sm-ins" className="bx-input" value={ik} onChange={(e) => { setIk(e.target.value); setOvr(""); }} data-testid="sim-instr">{SIM_INSTR.map((x) => <option key={x.k} value={x.k}>{x.n}</option>)}</select></div>
+            <div><span className="bx-label">Dirección</span><div className="flex gap-1">{["BUY", "SELL"].map((d) => <button key={d} type="button" className={`bx-seg ${dir === d ? `on ${d === "BUY" ? "pos" : "neg"}` : ""}`} onClick={() => setDir(d)}>{d}</button>)}</div></div>
+            <div><label className="bx-label" htmlFor="sm-entry">Precio de entrada (opcional)</label><input id="sm-entry" className="bx-input" inputMode="decimal" value={entry} onChange={(e) => setEntry(e.target.value)} placeholder={String(ins.price)} data-testid="sim-entry" /></div>
+            <div><label className="bx-label" htmlFor="sm-sl">Stop Loss ({ins.unit})</label><input id="sm-sl" className="bx-input" inputMode="decimal" value={sl} onChange={(e) => setSl(e.target.value)} data-testid="sim-sl" /></div>
+          </div>
+          <div><label className="bx-label" htmlFor="sm-ovr">Valor de 1 {ins.unit === "pips" ? "pip" : "punto"} por lote (USD) · opcional</label><input id="sm-ovr" className="bx-input" style={{ maxWidth: 220 }} inputMode="decimal" value={ovr} onChange={(e) => setOvr(e.target.value)} placeholder={`Auto: $${fm(ins.val(price), 2)}`} data-testid="sim-pipval" /><p className="mt-1 text-xs bx-muted">Verifica este valor en el Specification de tu broker.</p></div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="bx-card p-5" data-testid="sim-status" style={{ borderColor: end ? "rgba(244,63,94,.6)" : "rgba(46,204,113,.45)" }}>
+            <div className="text-[11px] font-bold tracking-[0.16em]" style={{ color: "var(--cardink2)" }}>ESTADO DE TU DÍA</div>
+            {end ? (
+              <><div className="mt-1 text-2xl font-black" style={{ color: "var(--neg)" }} data-testid="sim-end">FIN DE LA SESIÓN</div><p className="mt-1 text-sm bx-ink2">{end}</p></>
+            ) : (
+              <><div className="mt-1 text-2xl font-black" style={{ color: "var(--pos)" }} data-testid="sim-ok">PUEDES OPERAR</div>
+                <p className="mt-1 text-sm bx-ink2" data-testid="sim-left">Te quedan <b className="text-white">{left}</b> {left === 1 ? "operación" : "operaciones"} hoy.{g1 ? " Ganancia 1:1 R: puedes tomar hasta 2 más (sin pasar de 3 al día)." : ""}</p></>
+            )}
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <div className="mb-tile"><div className="mb-tile-k">RIESGO PERMITIDO AHORA</div><div className="mb-tile-v" style={{ color: reduced ? "var(--amb2)" : undefined }} data-testid="sim-risknow">${fm(riskNow)}</div><div className="mb-tile-s">{mode === "pct" ? `${fm(capN > 0 ? (riskNow / capN) * 100 : 0, 2)}% de la cuenta` : "monto fijo"}{reduced ? " · reducido tras pérdida" : ""}</div></div>
+              <div className="mb-tile"><div className="mb-tile-k">RESULTADO DEL DÍA</div><div className="mb-tile-v" style={{ color: dayUsd > 0 ? "var(--pos)" : dayUsd < 0 ? "var(--neg)" : undefined }} data-testid="sim-dayusd">{fsm(dayUsd)}</div><div className="mb-tile-s">{day.length} operación{day.length === 1 ? "" : "es"}</div></div>
+            </div>
+          </div>
+
+          <div className="bx-card p-5" data-testid="sim-calc">
+            <div className="text-[11px] font-bold tracking-[0.16em]" style={{ color: "var(--cardink2)" }}>CÁLCULO DE LA OPERACIÓN</div>
+            {slOk ? (
+              <>
+                <div className="mt-2 grid grid-cols-3 gap-2">
+                  <div className="mb-tile"><div className="mb-tile-k">RIESGO</div><div className="mb-tile-v" data-testid="sim-risk">${fm(realRisk || riskNow)}</div></div>
+                  <div className="mb-tile"><div className="mb-tile-k">LOTE TOTAL</div><div className="mb-tile-v" data-testid="sim-lot">{lot >= 0.01 ? lot.toFixed(2) : "—"}</div></div>
+                  <div className="mb-tile"><div className="mb-tile-k">2 POSICIONES</div><div className="mb-tile-v" data-testid="sim-half">{half >= 0.01 ? `${half.toFixed(2)} + ${half.toFixed(2)}` : "—"}</div></div>
+                </div>
+                {lot < 0.01 && <p className="mt-2 text-sm" style={{ color: "var(--amb2)" }}>Con este Stop Loss el lote mínimo (0.01) ya supera tu riesgo permitido. Reduce el SL o aumenta el riesgo.</p>}
+                {lot >= 0.01 && half < 0.01 && <p className="mt-2 text-sm" style={{ color: "var(--amb2)" }}>El lote es muy pequeño para dividirlo: usa una sola posición de {lot.toFixed(2)}.</p>}
+                <p className="mt-2 text-xs bx-muted">Cada posición arriesga la mitad: <b className="text-white">${fm(R / 2)}</b> ({fm(pctOf(R / 2), 2)}% de la cuenta).</p>
+                <div className="mt-3 overflow-x-auto">
+                  <table className="mb-table" style={{ minWidth: 420 }} data-testid="sim-levels">
+                    <thead><tr><th>Nivel</th><th>{ins.unit}</th><th>Precio</th><th>Resultado</th></tr></thead>
+                    <tbody>{rows.map(([n, d, usd, pp, price2, tone]) => (
+                      <tr key={n}><td><div className="font-bold text-white">{n}</div><div className="text-[11px] bx-muted">{d}</div></td><td><Num v={pp} f={(v) => fm(v, 1)} /></td><td><span className="bx-num">{price2}</span></td><td><span className="bx-num font-bold" style={{ color: `var(--${tone})` }}>{fsm(usd)}</span><div className="text-[11px] bx-muted">{fm(pctOf(usd), 2)}%</div></td></tr>
+                    ))}</tbody>
+                  </table>
+                </div>
+              </>
+            ) : <p className="mt-2 text-sm bx-muted">Escribe tu Stop Loss en {ins.unit} para calcular lote y niveles.</p>}
+          </div>
+        </div>
+      </div>
+
+      <div className="bx-card p-5" data-testid="sim-day">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div><h3 className="text-lg font-black text-white">Mi día de trading</h3><p className="text-sm bx-muted">Marca cómo cerró cada operación y mira qué te permite el plan.</p></div>
+          <button type="button" className="bx-ghost" onClick={() => setDay([])} data-testid="sim-reset">↺ Reiniciar día</button>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {Object.entries(SIM_RES).map(([k, [l]]) => <button key={k} type="button" className="bx-ghost" disabled={!!end} onClick={() => add(k)} data-testid={`sim-add-${k}`} style={{ opacity: end ? 0.4 : 1 }}>{l}</button>)}
+        </div>
+        <ul className="mt-3 space-y-1.5">
+          {day.map((t, i) => <li key={i} className="mb-item"><span className="bx-num text-[11px] bx-muted">#{i + 1}</span><b className="text-white">{SIM_RES[t.r][0]}</b><span className="bx-muted text-[11px]">riesgo ${fm(t.risk)}</span><span className="ml-auto bx-num text-xs font-bold" style={{ color: t.usd > 0 ? "var(--pos)" : t.usd < 0 ? "var(--neg)" : "var(--cardink2)" }}>{fsm(t.usd)}</span></li>)}
+          {day.length === 0 && <li className="text-xs bx-muted">Aún no has registrado operaciones hoy.</li>}
+        </ul>
+      </div>
+      <p className="text-xs bx-muted">Simulación educativa: los valores por pip/punto son aproximados. No es asesoría financiera.</p>
+    </section>
+  );
+}
+
+function PlanTrading() {
+  return (
+    <div className="space-y-8" data-testid="plan-trading">
+      <div>
+        <h2 className="bx-h2">📊 Plan de Trading y Gestión de Riesgo</h2>
+        <p className="mt-2 text-sm bx-muted max-w-xl">Canal de Oro / CFDs · el plan que seguimos en cada sesión.</p>
+      </div>
+      <div className="grid md:grid-cols-2 gap-4">
+        {PT_BLOCKS.map((b) => (
+          <div key={b.t} className="bx-card p-5" data-testid="plan-block">
+            <h3 className="text-lg font-black text-white"><span aria-hidden="true">{b.ico} </span>{b.t}</h3>
+            <ul className="mt-3 space-y-2.5">{b.items.map((it, i) => <li key={i} className="flex gap-2.5 text-sm bx-ink2 leading-relaxed"><span style={{ color: "var(--accent)" }} aria-hidden="true">•</span><span>{it}</span></li>)}</ul>
+          </div>
+        ))}
+      </div>
+      <RiskSimulator />
+    </div>
+  );
+}
+
 function MemberPage({ setPage }) {
   const [phase, setPhase] = useState("boot"); // boot | login | expired | ok
   const [rec, setRec] = useState(null);
@@ -5557,9 +5935,10 @@ function MemberPage({ setPage }) {
   const st = memberStatus(rec);
   const chans = rec.ch === "AMBOS" ? ["SINT", "GOLD"] : [rec.ch];
   const hasSyn = chans.includes("SINT");
+  const hasGold = chans.includes("GOLD");
   const mark = `${rec.n} · ${who.ident}`;
   const storeKey = `pzfx_synlog_v2:${who.p.norm}`;
-  const SECS = [["home", "Inicio"], ["course", "Curso"], ...(hasSyn ? [["log", "Bitácora"]] : []), ["tut", "Manual de Operativa"]];
+  const SECS = [["home", "Inicio"], ["course", "Curso"], ...(hasSyn ? [["log", "Bitácora"]] : []), ...(hasGold ? [["plan", "Plan de Trading"]] : []), ["lib", "Biblioteca"], ["tut", "Manual de Operativa"]];
   return (
     <div className="max-w-5xl mx-auto" data-testid="member-portal">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -5589,8 +5968,8 @@ function MemberPage({ setPage }) {
             </div>
             <p className="mt-3 text-xs bx-muted">¿Algún problema con tu acceso? <a className="underline font-bold" style={{ color: "var(--accent)" }} href={`https://t.me/${MEMBER_SUPPORT}`} target="_blank" rel="noopener noreferrer">Escribe a soporte</a>.</p>
           </section>
-          <div className={`grid gap-3 ${hasSyn ? "sm:grid-cols-3" : "sm:grid-cols-2"}`}>
-            {[["course", "🎬", "Curso", "Módulos y clases en video", true], ["log", "📓", "Bitácora", "Gestión de riesgo y métricas de Sintéticos", hasSyn], ["tut", "📘", "Manual de Operativa", "Cómo tomar señales, lenguaje y reglas de disciplina", true]].filter((x) => x[4]).map(([k, i, t, d]) => (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {[["course", "🎬", "Curso", "Módulos y clases en video", true], ["log", "📓", "Bitácora", "Gestión de riesgo y métricas de Sintéticos", hasSyn], ["plan", "📊", "Plan de Trading", "Plan de riesgo del canal de Oro + simulador", hasGold], ["lib", "📚", "Biblioteca", "La Biblia del Trading y más guías en PDF", true], ["tut", "📘", "Manual de Operativa", "Cómo tomar señales, lenguaje y reglas de disciplina", true]].filter((x) => x[4]).map(([k, i, t, d]) => (
               <button key={k} type="button" className="bx-card p-4 text-left" onClick={() => { setSec(k); window.scrollTo(0, 0); }}><div className="text-2xl" aria-hidden="true">{i}</div><div className="mt-1 font-black text-white">{t}</div><div className="text-xs bx-muted">{d}</div></button>
             ))}
           </div>
@@ -5598,6 +5977,8 @@ function MemberPage({ setPage }) {
       )}
       {sec === "course" && <div className="mt-5"><CourseView mark={mark} /></div>}
       {sec === "log" && hasSyn && <div className="mt-5"><Logbook storeKey={storeKey} /></div>}
+      {sec === "plan" && hasGold && <div className="mt-5"><PlanTrading /></div>}
+      {sec === "lib" && <div className="mt-5"><LibraryView /></div>}
       {sec === "tut" && <div className="mt-5"><OperativaManual /></div>}
     </div>
   );
