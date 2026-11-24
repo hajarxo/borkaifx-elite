@@ -243,6 +243,22 @@ linear-gradient(180deg,rgba(255,90,31,.045) 0 1px,transparent 1px) 0 0/100% 160p
 .mb-act.danger{color:var(--neg)}
 .mb-box{border:1px solid var(--cardline);border-radius:1rem;padding:1rem;background:rgba(var(--fg),.04)}
 .mb-item{display:flex;align-items:center;gap:.5rem;font-size:.8rem;padding:.4rem .55rem;border-radius:.6rem;background:rgba(var(--fg),.05)}
+.bx-burger{width:42px;height:38px;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:.8rem;cursor:pointer;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);transition:transform .16s var(--ease),border-color .16s,background .16s}
+.bx-burger span{display:block;width:18px;height:2px;border-radius:2px;background:var(--cardink)}
+.bx-burger:hover{border-color:var(--accent);background:rgba(255,255,255,.09)}
+.bx-burger:active{transform:scale(.95)}
+.pz-mov{position:fixed;inset:0;z-index:90;background:rgba(5,7,10,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:pzov .2s ease both}
+.pz-mpanel{position:absolute;top:0;right:0;bottom:0;width:min(100%,400px);display:flex;flex-direction:column;padding:16px 18px calc(18px + env(safe-area-inset-bottom));color:var(--cardink);background:linear-gradient(170deg,rgba(255,255,255,.09),rgba(255,255,255,.03) 55%,rgba(255,90,31,.08)),rgba(12,15,21,.92);border-left:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(24px) saturate(1.4);backdrop-filter:blur(24px) saturate(1.4);box-shadow:-30px 0 70px -20px rgba(0,0,0,.7);overflow-y:auto;animation:pzslide .28s cubic-bezier(.2,.8,.2,1) both}
+.pz-x2{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--cardink2);cursor:pointer;font-size:.85rem}
+.pz-x2:hover{color:#fff;border-color:var(--accent)}
+.pz-mlist{margin-top:18px;display:flex;flex-direction:column}
+.pz-mlist button{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:54px;padding:0 4px;text-align:left;font-size:1.02rem;font-weight:700;color:var(--cardink);background:transparent;border:0;border-bottom:1px solid rgba(255,255,255,.09);cursor:pointer;transition:color .15s,padding .2s var(--ease)}
+.pz-mlist button svg{color:var(--cardink2);flex:none;transition:transform .2s var(--ease),color .15s}
+.pz-mlist button:hover{color:var(--accent);padding-left:8px}
+.pz-mlist button:hover svg{color:var(--accent);transform:translateX(3px)}
+.pz-mlist button.on{color:var(--accent)}
+@keyframes pzslide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.pz-mov,.pz-mpanel{animation:none}}
 .pz-ov{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,7,10,.58);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:pzov .22s ease both}
 .pz-glass{position:relative;width:100%;max-width:440px;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;border-radius:26px;padding:26px 24px 22px;color:var(--cardink);background:linear-gradient(160deg,rgba(255,255,255,.11),rgba(255,255,255,.035) 55%,rgba(255,90,31,.08));border:1px solid rgba(255,255,255,.17);-webkit-backdrop-filter:blur(28px) saturate(1.5);backdrop-filter:blur(28px) saturate(1.5);box-shadow:0 40px 90px -30px rgba(0,0,0,.85),0 0 0 1px rgba(255,90,31,.10),inset 0 1px 0 rgba(255,255,255,.15);animation:pzin .3s cubic-bezier(.2,.8,.2,1) both}
 .pz-glass .bx-input{background:rgba(5,8,12,.45);border-color:rgba(255,255,255,.15)}
@@ -3266,7 +3282,6 @@ const HOME_FAQ = [
   { q: "¿Sirve si estoy empezando?", a: "Sí. La guía gratuita y el curso están pensados para traders con o sin experiencia. Cada señal trae entrada, stop y take profit definidos, y en la sección de conceptos puedes repasar la lógica de cada movimiento." },
   { q: "¿Qué activos se operan?", a: "En CFDs: oro (XAUUSD), índices como NAS100 y divisas. Por separado, índices sintéticos en Deriv y Weltrade." },
   { q: "¿Cómo verifico los resultados?", a: "En Track Record está cada operación publicada, con su fecha, su entrada y su resultado. Puedes filtrar por mes y por mercado." },
-  { q: "¿Cómo entro al VIP sin pagar el pase?", a: "Abres una cuenta en uno de los brokers afiliados con nuestro enlace, haces el depósito mínimo y verificas tu cuenta por WhatsApp. Los pasos están en la página VIP gratis.", link: "vip" },
   { q: "¿Esto es asesoría financiera?", a: "No. Todo el contenido es educativo. Operar con apalancamiento puede hacerte perder todo el capital, y los resultados pasados no garantizan resultados futuros." },
 ];
 function FaqHome({ setPage }) {
@@ -3298,20 +3313,6 @@ function FaqHome({ setPage }) {
   );
 }
 
-function TelegramFab() {
-  const [show, setShow] = useState(false);
-  useEffect(() => {
-    const f = () => setShow(window.scrollY > 520);
-    f(); window.addEventListener("scroll", f, { passive: true });
-    return () => window.removeEventListener("scroll", f);
-  }, []);
-  return (
-    <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className={`bx-fab ${show ? "show" : ""}`} data-testid="telegram-fab" tabIndex={show ? 0 : -1} aria-hidden={show ? undefined : "true"}>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.9 3.6 2.6 11c-1.3.5-1.3 1.3-.2 1.6l4.9 1.5 1.9 5.8c.2.6.1.8.7.8.5 0 .7-.2 1-.5l2.4-2.3 4.9 3.6c.9.5 1.5.2 1.8-.8L23 5c.3-1.3-.5-1.9-1.1-1.4zM8.4 13.8l9.3-5.9c.4-.3.8-.1.5.2l-7.6 6.9-.3 3.2-1.9-4.4z"/></svg>
-      Unirme al canal
-    </a>
-  );
-}
 function HomePage({ setPage, openTool, openSignals, trades = [] }) {
   const m = useMemo(() => computeMetrics(trades.filter((t) => t.category === "CFD")), [trades]); // solo CFDs
   const showStats = m.executed >= 3;
@@ -3336,7 +3337,6 @@ function HomePage({ setPage, openTool, openSignals, trades = [] }) {
             El mercado no se adivina, se entiende. En PRECISION ZONE FX transformamos tu operativa mediante conceptos SMC. Aprende a identificar las huellas del dinero, protege tu capital con precisión y desarrolla la consistencia real que define a un trader profesional.
           </p>
           <div className="mt-7 flex flex-wrap gap-3 bx-rise" style={{ "--d": "160ms" }}>
-            <button type="button" className="bx-gold bx-cta" onClick={() => { setPage("vip"); window.scrollTo(0, 0); }} data-testid="hero-cta-vip">Entrar al VIP gratis</button>
             <button type="button" className="bx-planbtn bx-cta" onClick={() => { setPage("track"); window.scrollTo(0, 0); }} data-testid="hero-cta-track">Ver el track record</button>
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm bx-rise" style={{ "--d": "230ms" }} data-testid="hero-facts">
@@ -3395,71 +3395,9 @@ function HomePage({ setPage, openTool, openSignals, trades = [] }) {
   );
 }
 
-function VipPage() {
-  return (
-    <div className="max-w-6xl mx-auto" data-testid="vip-page">
-      <SectionTitle
-        kicker="PASO A PASO"
-        title="Acceso VIP gratis"
-        text="Si prefieres no pagar el pase, puedes acceder al canal VIP abriendo tu cuenta en uno de nuestros brokers recomendados con nuestro enlace y realizando tu depósito."
-      />
-      <div className="grid md:grid-cols-3 gap-4 text-center" data-testid="vip-steps">
-        <div className="bx-card p-5">
-          <StepDot n="1" />
-          <h3 className="mt-3 text-lg font-extrabold">Regístrate con nuestro enlace</h3>
-          <p className="mt-2 text-sm bx-muted">Crea tu cuenta en uno de los brokers afiliados oficiales:</p>
-          <div className="mt-4 grid grid-cols-2 gap-2">
-            {SITE.affiliates.map((b) => <BrokerBtn key={b.broker} b={b} />)}
-          </div>
-        </div>
-        <div className="bx-card p-5">
-          <StepDot n="2" />
-          <h3 className="mt-3 text-lg font-extrabold">Realiza tu depósito</h3>
-          <p className="mt-2 text-sm bx-muted">El depósito mínimo requerido en tu cuenta de trading para acceder al VIP GRATIS es de</p>
-          <div className="mt-2 text-3xl font-black bx-accent">{SITE.vipMinDeposit}</div>
-        </div>
-        <div className="bx-card p-5">
-          <StepDot n="3" />
-          <h3 className="mt-3 text-lg font-extrabold">Verifica tu cuenta</h3>
-          <p className="mt-2 text-sm bx-muted">Una vez enviado tu depósito, contáctanos para verificar tu cuenta y activarte el acceso VIP de inmediato.</p>
-          <div className="mt-4">
-            <a href={OFFER_WA_URL} target="_blank" rel="noopener noreferrer" className="bx-btn" data-testid="verify-wa">Verificar por WhatsApp</a>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-10 max-w-3xl mx-auto">
-        <FaqVip />
-      </div>
-    </div>
-  );
-}
-
 // Bloque de oferta exclusiva (VIP gratis): se usa en Señales y en Educación
 // WhatsApp de verificación del VIP gratis (botón "Verifica tu cuenta" en /vip-gratis), con el mensaje ya escrito
 const OFFER_WA_URL = "https://wa.me/17722071549?text=Hola,%20mi%20nombre%20es%20__________%20vi%20la%20promocion%20para%20unirse%20al%20VIP%20siendo%20afiliado,%20me%20gustaria%20aprovechar%20la%20promocion%20con%20el%20broker%20_____";
-function VipOfferCta({ setPage }) {
-  return (
-    <div
-      className="mt-8 rounded-2xl p-6 md:p-8 text-center"
-      style={{ background: "radial-gradient(600px circle at 50% 0%, rgba(255,90,31,.30), transparent 65%), var(--c2)", border: `2px solid ${ACCENT}`, boxShadow: "0 0 40px rgba(255,90,31,.25)" }}
-    >
-      <div className="text-[11px] tracking-[0.3em] font-bold bx-accent">OFERTA EXCLUSIVA</div>
-      <h3 className="mt-2 text-xl md:text-3xl font-black leading-tight text-white">¿Quieres ser parte del VIP sin pagar mensualidad?</h3>
-      <p className="mt-2 text-sm bx-muted max-w-xl mx-auto">Accede gratis registrándote en uno de nuestros brokers afiliados.</p>
-      <button
-        type="button"
-        onClick={() => { setPage("vip"); window.scrollTo(0, 0); }}
-        className="bx-btn mt-5"
-        style={{ padding: "1rem 2.25rem", fontSize: "1.05rem", letterSpacing: ".04em" }}
-        data-testid="offer-link"
-      >
-        🔥 Oferta exclusiva · Clic aquí →
-      </button>
-    </div>
-  );
-}
-
 /* ----------------------------- Ejemplo de señal (formato del canal ELITE VIP FX) ----------------------------- */
 const CHANNEL_NAME = "Precisionzonefx | GOLD";
 const SIGNAL_AVATAR = "data:image/jpeg;base64,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"; // foto de perfil SOLO para los ejemplos de señal
@@ -3633,7 +3571,6 @@ function ServicesPricing({ setPage, kind = "CFD" }) {
 
       </section>
       <SignalShowcase kind={kind} />
-      <div data-testid="offer-below"><VipOfferCta setPage={setPage} /></div>
 
     </div>
   );
@@ -5511,28 +5448,7 @@ function NewMemberFlow({ goLogin, onSuccess }) {
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(false);
   const [found, setFound] = useState(null);
-  const [payOpen, setPayOpen] = useState(false);
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState(localDate());
-  const [sel, setSel] = useState(null);
-  const [copied, setCopied] = useState(false);
   const clr = () => setErr(null);
-
-  const amt = Number(String(amount).replace(",", "."));
-  const amtOk = amount !== "" && Number.isFinite(amt) && amt > 0;
-  const matches = amtOk ? detectPlan(amt) : [];
-  const eff = sel || (matches.length === 1 ? { ch: matches[0].ch, plan: matches[0].plan } : null);
-  const plansFor = (ch) => PRICE_TABLE.filter((x) => x.ch === ch);
-  const ready = name.trim().length >= 2 && parseIdent(ident) && amtOk && /^\d{4}-\d{2}-\d{2}$/.test(date);
-  const msg = ready ? [
-    "Hola 👋 Ya hice mi pago. Estos son mis datos para activar Mi Acceso:",
-    `Nombre: ${name.trim()}`,
-    `Telegram: ${ident.trim()}`,
-    `Canal: ${eff ? `${M_CH[eff.ch]} · ${M_PLAN[eff.plan].label}` : "(por confirmar)"}`,
-    `Monto: $${amt} · Fecha: ${fmtDate(date)}`,
-    "Adjunto la captura del pago.",
-  ].join("\n") : "";
-  const copy = async () => { try { await navigator.clipboard.writeText(msg); setCopied(true); setTimeout(() => setCopied(false), 2200); } catch (e) { setErr({ t: "No se pudo copiar.", d: "Selecciona el mensaje y cópialo a mano." }); } };
 
   const cont = async () => {
     if (busy) return;
@@ -5542,7 +5458,7 @@ function NewMemberFlow({ goLogin, onSuccess }) {
     setBusy(true);
     try {
       const { p, rec } = await memberLookup(ident);
-      if (!rec) { setPayOpen(true); setErr({ t: "Todavía no apareces como miembro autorizado.", d: "Haz tu pago y envíanos tus datos con el mensaje de abajo. Cuando te autoricemos, vuelve aquí y pulsa Continuar." }); }
+      if (!rec) setErr({ t: "Todavía no apareces como miembro autorizado.", d: "Cuando te autoricemos, vuelve aquí y pulsa Continuar. Si ya pagaste, escríbenos a soporte.", sup: true });
       else if (memberLeft(rec) <= 0) setErr({ t: "Tu acceso VIP venció.", d: `Tu plan terminó el ${fmtDate(memberEnd(rec))}. Escribe a soporte para renovarlo.`, sup: true });
       else if (!nameMatches(name, rec.n)) setErr({ t: "El nombre no coincide con el que registramos.", d: "Escríbelo igual que en el mensaje que nos enviaste con tu pago.", sup: true });
       else if (rec.pw || credRead()[derId(p)]) setErr({ t: "Ya tienes contraseña.", d: "Inicia sesión como miembro.", login: true });
@@ -5603,40 +5519,6 @@ function NewMemberFlow({ goLogin, onSuccess }) {
       {alertBox}
       <button type="button" className="bx-btn w-full py-3 text-base" disabled={busy} onClick={cont} data-testid="signup-next">{busy ? "Verificando…" : "Continuar"}</button>
 
-      <div className="pz-detect" data-testid="pay-box">
-        <button type="button" className="w-full flex items-center justify-between gap-2 text-left" onClick={() => setPayOpen((v) => !v)} aria-expanded={payOpen} data-testid="pay-toggle">
-          <span className="font-extrabold text-white text-sm">¿Aún no pagas? Envíanos tus datos</span><span aria-hidden="true" style={{ color: "var(--accent)" }}>{payOpen ? "▴" : "▾"}</span>
-        </button>
-        {payOpen && (
-          <div className="mt-3 space-y-3">
-            <p className="text-[12px]" style={{ color: "var(--cardink2)" }}>Haz tu pago, completa el monto y la fecha, y envía este mensaje corto con la captura. Te autorizamos y vuelves aquí a crear tu contraseña.</p>
-            <div className="grid grid-cols-2 gap-3">
-              <div><label className="bx-label" htmlFor="pay-amt">Monto pagado (USD)</label><input id="pay-amt" className="bx-input" inputMode="decimal" value={amount} onChange={(e) => { setSel(null); setAmount(e.target.value); }} placeholder="Ej.: 150" data-testid="pay-amount" /></div>
-              <div><label className="bx-label" htmlFor="pay-date">Fecha del pago</label><input id="pay-date" type="date" max={localDate()} className="bx-input" value={date} onChange={(e) => setDate(e.target.value)} data-testid="pay-date" /></div>
-            </div>
-            {amtOk && eff && <div className="text-[13px] text-white" data-testid="pay-detected">Detectamos: <b>{M_CH[eff.ch]} · {M_PLAN[eff.plan].label}</b></div>}
-            {amtOk && !eff && (
-              <div className="grid grid-cols-2 gap-3" data-testid="pay-manual">
-                <div><label className="bx-label" htmlFor="pay-ch">Canal</label><select id="pay-ch" className="bx-input" value="" onChange={(e) => e.target.value && setSel({ ch: e.target.value, plan: plansFor(e.target.value)[0].plan })}><option value="">Elige…</option><option value="GOLD">{M_CH.GOLD}</option><option value="SINT">{M_CH.SINT}</option></select></div>
-                <div><label className="bx-label">Plan</label><div className="text-[12px]" style={{ color: "var(--cardink2)" }}>Ese monto no coincide con un plan; elige tu canal.</div></div>
-              </div>
-            )}
-            {amtOk && sel && matches.length !== 1 && (
-              <div><label className="bx-label" htmlFor="pay-pl">Plan</label><select id="pay-pl" className="bx-input" value={sel.plan} onChange={(e) => setSel({ ch: sel.ch, plan: e.target.value })}>{plansFor(sel.ch).map((x) => <option key={x.plan} value={x.plan}>{M_PLAN[x.plan].label} · ${x.amount}</option>)}</select></div>
-            )}
-            {ready ? (
-              <>
-                <pre className="pz-msg" data-testid="pay-message">{msg}</pre>
-                <div className="flex flex-wrap gap-2">
-                  <a href={`https://t.me/${MEMBER_SUPPORT}?text=${encodeURIComponent(msg)}`} target="_blank" rel="noopener noreferrer" className="bx-btn px-4 py-2 text-sm" data-testid="pay-send">Enviar por Telegram</a>
-                  <button type="button" className="bx-ghost" onClick={copy} data-testid="pay-copy">{copied ? "¡Copiado!" : "Copiar mensaje"}</button>
-                </div>
-                <p className="text-[12px]" style={{ color: "var(--cardink2)" }}>En el chat, adjunta la captura de tu pago.</p>
-              </>
-            ) : <p className="text-[12px]" style={{ color: "var(--cardink2)" }}>Completa tu nombre y usuario (arriba), el monto y la fecha para generar el mensaje.</p>}
-          </div>
-        )}
-      </div>
       <p className="text-center text-[13px]" style={{ color: "var(--cardink2)" }}>¿Ya eres miembro? <button type="button" className="font-bold underline" style={{ color: "var(--accent)" }} onClick={goLogin}>Inicia sesión</button></p>
     </div>
   );
@@ -5674,51 +5556,6 @@ function AccessModal({ onClose, onSuccess }) {
   );
 }
 
-/* ----------------------------- Biblioteca de PDFs ----------------------------- */
-// Para sumar más libros: agrega un objeto a LIBRARY (con "url" del PDF o del post de Telegram). Sin url se muestra "Próximamente".
-const LIBRARY = [
-  { id: "biblia", title: "La Biblia del Trading", desc: "Recurso gratuito: los conceptos base para operar con claridad.", tag: "GRATIS", url: BIBLIA_URL, cta: "Abrir La Biblia" },
-  { id: "proximo", title: "Más guías en camino", desc: "Psicotrading, análisis técnico y diccionario del trader, con el estilo de la plataforma.", tag: "PRÓXIMAMENTE", url: "", cta: "" },
-];
-function LibraryView() {
-  return (
-    <div data-testid="library-view">
-      <h2 className="bx-h2">Biblioteca</h2>
-      <p className="mt-2 text-sm bx-muted max-w-xl">Libros y guías en PDF para estudiar a tu ritmo.</p>
-      <div className="mt-5 grid gap-4 sm:grid-cols-2">
-        {LIBRARY.map((b) => (
-          <div key={b.id} className="bx-card p-5 flex flex-col" data-testid="library-card">
-            <div className="flex items-start gap-4">
-              <div className="mb-cover" aria-hidden="true"><span>PDF</span></div>
-              <div className="min-w-0">
-                <span className="mb-badge" style={{ background: b.url ? "rgba(46,204,113,.14)" : "rgba(var(--fg),.08)", color: b.url ? "var(--pos)" : "var(--cardink2)" }}>{b.tag}</span>
-                <div className="mt-2 text-lg font-black text-white leading-snug">{b.title}</div>
-              </div>
-            </div>
-            <p className="mt-3 text-sm bx-ink2 leading-relaxed">{b.desc}</p>
-            <div className="flex-1" />
-            {b.url ? <a href={b.url} target="_blank" rel="noopener noreferrer" className="bx-btn mt-4 px-4 py-2.5 text-sm text-center" data-testid={`library-${b.id}`}>{b.cta || "Abrir"}</a> : <div className="mt-4 text-xs bx-muted">Se publicará pronto.</div>}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ----------------------------- Plan de Trading · Oro / CFDs + simulador ----------------------------- */
-const SIM_INSTR = [
-  { k: "XAUUSD", n: "XAUUSD (Oro)", pip: 0.1, val: () => 10, unit: "pips", dec: 2, price: 4000 },
-  { k: "EURUSD", n: "EURUSD", pip: 0.0001, val: () => 10, unit: "pips", dec: 5, price: 1.08 },
-  { k: "GBPUSD", n: "GBPUSD", pip: 0.0001, val: () => 10, unit: "pips", dec: 5, price: 1.27 },
-  { k: "AUDUSD", n: "AUDUSD", pip: 0.0001, val: () => 10, unit: "pips", dec: 5, price: 0.66 },
-  { k: "USDJPY", n: "USDJPY", pip: 0.01, val: (p) => 1000 / p, unit: "pips", dec: 3, price: 150 },
-  { k: "USDCAD", n: "USDCAD", pip: 0.0001, val: (p) => 10 / p, unit: "pips", dec: 5, price: 1.37 },
-  { k: "USDCHF", n: "USDCHF", pip: 0.0001, val: (p) => 10 / p, unit: "pips", dec: 5, price: 0.88 },
-  { k: "NAS100", n: "NAS100 (US100)", pip: 1, val: () => 1, unit: "puntos", dec: 1, price: 21000 },
-  { k: "US30", n: "US30", pip: 1, val: () => 1, unit: "puntos", dec: 1, price: 44000 },
-  { k: "SPX500", n: "SPX500", pip: 1, val: () => 1, unit: "puntos", dec: 1, price: 6000 },
-];
-const SIM_RES = { P: ["Pérdida", -1], BE: ["Break Even", 0], G1: ["Ganancia 1:1 R", 1], G2: ["Ganancia 1:2 R", 2], G3: ["Ganancia 1:3 R", 3] };
 const PT_BLOCKS = [
   { ico: "🛡", t: "Riesgo Máximo por Operación", items: [
     <><b>Límite sugerido:</b> Arriesga únicamente entre el <b>0.5% y el 1%</b> de tu capital total.</>,
@@ -5740,141 +5577,6 @@ const PT_BLOCKS = [
   ] },
 ];
 
-function RiskSimulator() {
-  const [cap, setCap] = useState("5000");
-  const [mode, setMode] = useState("pct");
-  const [pct, setPct] = useState("1");
-  const [fixed, setFixed] = useState("300");
-  const [lossPct, setLossPct] = useState("0.6");
-  const [ik, setIk] = useState("XAUUSD");
-  const [dir, setDir] = useState("BUY");
-  const [entry, setEntry] = useState("");
-  const [sl, setSl] = useState("50");
-  const [ovr, setOvr] = useState("");
-  const [day, setDay] = useState([]);
-  const ins = SIM_INSTR.find((x) => x.k === ik);
-  const capN = nn(cap), pctN = Math.min(1, Math.max(0.1, nn(pct) || 1)), fixN = nn(fixed), slN = nn(sl), lossN = Number(lossPct);
-  const price = nn(entry) || ins.price;
-  const pipVal = nn(ovr) > 0 ? nn(ovr) : ins.val(price);
-  const baseRisk = mode === "pct" ? (capN || 0) * pctN / 100 : fixN || 0;
-  const reducedRisk = mode === "pct" ? (capN || 0) * Math.min(pctN, lossN) / 100 : (fixN || 0) / 2;
-  // estado del día
-  const losses = day.filter((t) => t.r === "P").length;
-  const bigWin = day.some((t) => t.r === "G2" || t.r === "G3");
-  const end = losses >= 2 ? "2 pérdidas: cierra la plataforma por hoy." : bigWin ? "Ganancia de 1:2 R o más: aseguraste tu día." : day.length >= 3 ? "Llegaste al máximo de 3 operaciones por día." : "";
-  const left = Math.max(0, 3 - day.length);
-  const reduced = losses >= 1;
-  const riskNow = reduced ? reducedRisk : baseRisk;
-  const g1 = day.length > 0 && day[day.length - 1].r === "G1";
-  const add = (r) => { if (end) return; const [, m] = SIM_RES[r]; setDay((d) => [...d, { r, risk: riskNow, usd: riskNow * m }]); };
-  const dayUsd = day.reduce((s, t) => s + t.usd, 0);
-  // calculadora de la operación
-  const slOk = Number.isFinite(slN) && slN > 0;
-  const lotRaw = slOk && pipVal > 0 ? riskNow / (slN * pipVal) : 0;
-  const lot = Math.floor(lotRaw * 100 + 1e-9) / 100;
-  const half = Math.floor((lot / 2) * 100 + 1e-9) / 100;
-  const realRisk = slOk ? lot * slN * pipVal : 0;
-  const R = realRisk > 0 ? realRisk : riskNow;
-  const pctOf = (v) => (capN > 0 ? (v / capN) * 100 : NaN);
-  const sgn = dir === "BUY" ? 1 : -1;
-  const lvl = (rr) => (slOk ? slN * rr : NaN);
-  const px = (rr) => (nn(entry) ? fm(nn(entry) + sgn * lvl(rr) * ins.pip, ins.dec > 2 ? Math.min(ins.dec, 5) : ins.dec) : "—");
-  const rows = [
-    ["Stop Loss", "Pérdida total de la operación", -R, slOk ? slN : NaN, nn(entry) ? fm(nn(entry) - sgn * slN * ins.pip, Math.min(ins.dec, 5)) : "—", "neg"],
-    ["1:1 R o BE", "Cierras la posición A y mueves B a BE", R * 0.5, lvl(1), px(1), "pos"],
-    ["1:2 R", "Aseguras más (cierras A); B sigue en BE", R * 1, lvl(2), px(2), "pos"],
-    ["1:3 R", "CIERRE TOTAL de A y B", R * 3, lvl(3), px(3), "pos"],
-  ];
-  const Num = ({ v, f }) => <span className="bx-num">{Number.isFinite(v) ? f(v) : "—"}</span>;
-  return (
-    <section data-testid="risk-sim" className="space-y-4">
-      <div>
-        <h2 className="bx-h2">Simulador de gestión de riesgo</h2>
-        <p className="mt-2 text-sm bx-muted max-w-2xl">Divisas, Oro e índices bursátiles. Aplica las reglas del plan: riesgo por operación, 2 posiciones, parciales en 1:1 / BE, 1:2 R y 1:3 R, y límites del día.</p>
-      </div>
-      <div className="grid lg:grid-cols-2 gap-4 items-start">
-        <div className="bx-card p-5 space-y-4" data-testid="sim-inputs">
-          <div className="grid grid-cols-2 gap-3">
-            <div><label className="bx-label" htmlFor="sm-cap">Capital de la cuenta (USD)</label><input id="sm-cap" className="bx-input" inputMode="decimal" value={cap} onChange={(e) => setCap(e.target.value)} data-testid="sim-cap" /></div>
-            <div><span className="bx-label">Modo de riesgo</span>
-              <div className="flex gap-1">{[["pct", "Porcentaje"], ["fix", "Monto fijo"]].map(([k, l]) => <button key={k} type="button" className={`bx-seg ${mode === k ? "on acc" : ""}`} onClick={() => setMode(k)} data-testid={`sim-mode-${k}`}>{l}</button>)}</div></div>
-          </div>
-          {mode === "pct" ? (
-            <div className="grid grid-cols-2 gap-3">
-              <div><label className="bx-label" htmlFor="sm-pct">Riesgo por operación: {fm(pctN, 2)}%</label><input id="sm-pct" type="range" min="0.5" max="1" step="0.05" value={Math.min(1, Math.max(0.5, pctN))} onChange={(e) => setPct(e.target.value)} className="mb-range w-full" data-testid="sim-pct" /><div className="flex justify-between text-[11px] bx-muted"><span>0.5%</span><span>1%</span></div></div>
-              <div><label className="bx-label" htmlFor="sm-loss">Riesgo tras 1 pérdida</label><select id="sm-loss" className="bx-input" value={lossPct} onChange={(e) => setLossPct(e.target.value)} data-testid="sim-loss"><option value="0.5">0.5%</option><option value="0.6">0.6%</option><option value="0.7">0.7%</option></select></div>
-            </div>
-          ) : (
-            <div><label className="bx-label" htmlFor="sm-fix">Monto fijo por operación (USD)</label><input id="sm-fix" className="bx-input" style={{ maxWidth: 220 }} inputMode="decimal" value={fixed} onChange={(e) => setFixed(e.target.value)} data-testid="sim-fixed" /><p className="mt-1 text-xs bx-muted">Tras 1 pérdida baja a la mitad (${fm((fixN || 0) / 2, 0)}).</p></div>
-          )}
-          <div className="grid grid-cols-2 gap-3">
-            <div><label className="bx-label" htmlFor="sm-ins">Instrumento</label><select id="sm-ins" className="bx-input" value={ik} onChange={(e) => { setIk(e.target.value); setOvr(""); }} data-testid="sim-instr">{SIM_INSTR.map((x) => <option key={x.k} value={x.k}>{x.n}</option>)}</select></div>
-            <div><span className="bx-label">Dirección</span><div className="flex gap-1">{["BUY", "SELL"].map((d) => <button key={d} type="button" className={`bx-seg ${dir === d ? `on ${d === "BUY" ? "pos" : "neg"}` : ""}`} onClick={() => setDir(d)}>{d}</button>)}</div></div>
-            <div><label className="bx-label" htmlFor="sm-entry">Precio de entrada (opcional)</label><input id="sm-entry" className="bx-input" inputMode="decimal" value={entry} onChange={(e) => setEntry(e.target.value)} placeholder={String(ins.price)} data-testid="sim-entry" /></div>
-            <div><label className="bx-label" htmlFor="sm-sl">Stop Loss ({ins.unit})</label><input id="sm-sl" className="bx-input" inputMode="decimal" value={sl} onChange={(e) => setSl(e.target.value)} data-testid="sim-sl" /></div>
-          </div>
-          <div><label className="bx-label" htmlFor="sm-ovr">Valor de 1 {ins.unit === "pips" ? "pip" : "punto"} por lote (USD) · opcional</label><input id="sm-ovr" className="bx-input" style={{ maxWidth: 220 }} inputMode="decimal" value={ovr} onChange={(e) => setOvr(e.target.value)} placeholder={`Auto: $${fm(ins.val(price), 2)}`} data-testid="sim-pipval" /><p className="mt-1 text-xs bx-muted">Verifica este valor en el Specification de tu broker.</p></div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="bx-card p-5" data-testid="sim-status" style={{ borderColor: end ? "rgba(244,63,94,.6)" : "rgba(46,204,113,.45)" }}>
-            <div className="text-[11px] font-bold tracking-[0.16em]" style={{ color: "var(--cardink2)" }}>ESTADO DE TU DÍA</div>
-            {end ? (
-              <><div className="mt-1 text-2xl font-black" style={{ color: "var(--neg)" }} data-testid="sim-end">FIN DE LA SESIÓN</div><p className="mt-1 text-sm bx-ink2">{end}</p></>
-            ) : (
-              <><div className="mt-1 text-2xl font-black" style={{ color: "var(--pos)" }} data-testid="sim-ok">PUEDES OPERAR</div>
-                <p className="mt-1 text-sm bx-ink2" data-testid="sim-left">Te quedan <b className="text-white">{left}</b> {left === 1 ? "operación" : "operaciones"} hoy.{g1 ? " Ganancia 1:1 R: puedes tomar hasta 2 más (sin pasar de 3 al día)." : ""}</p></>
-            )}
-            <div className="mt-3 grid grid-cols-2 gap-3">
-              <div className="mb-tile"><div className="mb-tile-k">RIESGO PERMITIDO AHORA</div><div className="mb-tile-v" style={{ color: reduced ? "var(--amb2)" : undefined }} data-testid="sim-risknow">${fm(riskNow)}</div><div className="mb-tile-s">{mode === "pct" ? `${fm(capN > 0 ? (riskNow / capN) * 100 : 0, 2)}% de la cuenta` : "monto fijo"}{reduced ? " · reducido tras pérdida" : ""}</div></div>
-              <div className="mb-tile"><div className="mb-tile-k">RESULTADO DEL DÍA</div><div className="mb-tile-v" style={{ color: dayUsd > 0 ? "var(--pos)" : dayUsd < 0 ? "var(--neg)" : undefined }} data-testid="sim-dayusd">{fsm(dayUsd)}</div><div className="mb-tile-s">{day.length} operación{day.length === 1 ? "" : "es"}</div></div>
-            </div>
-          </div>
-
-          <div className="bx-card p-5" data-testid="sim-calc">
-            <div className="text-[11px] font-bold tracking-[0.16em]" style={{ color: "var(--cardink2)" }}>CÁLCULO DE LA OPERACIÓN</div>
-            {slOk ? (
-              <>
-                <div className="mt-2 grid grid-cols-3 gap-2">
-                  <div className="mb-tile"><div className="mb-tile-k">RIESGO</div><div className="mb-tile-v" data-testid="sim-risk">${fm(realRisk || riskNow)}</div></div>
-                  <div className="mb-tile"><div className="mb-tile-k">LOTE TOTAL</div><div className="mb-tile-v" data-testid="sim-lot">{lot >= 0.01 ? lot.toFixed(2) : "—"}</div></div>
-                  <div className="mb-tile"><div className="mb-tile-k">2 POSICIONES</div><div className="mb-tile-v" data-testid="sim-half">{half >= 0.01 ? `${half.toFixed(2)} + ${half.toFixed(2)}` : "—"}</div></div>
-                </div>
-                {lot < 0.01 && <p className="mt-2 text-sm" style={{ color: "var(--amb2)" }}>Con este Stop Loss el lote mínimo (0.01) ya supera tu riesgo permitido. Reduce el SL o aumenta el riesgo.</p>}
-                {lot >= 0.01 && half < 0.01 && <p className="mt-2 text-sm" style={{ color: "var(--amb2)" }}>El lote es muy pequeño para dividirlo: usa una sola posición de {lot.toFixed(2)}.</p>}
-                <p className="mt-2 text-xs bx-muted">Cada posición arriesga la mitad: <b className="text-white">${fm(R / 2)}</b> ({fm(pctOf(R / 2), 2)}% de la cuenta).</p>
-                <div className="mt-3 overflow-x-auto">
-                  <table className="mb-table" style={{ minWidth: 420 }} data-testid="sim-levels">
-                    <thead><tr><th>Nivel</th><th>{ins.unit}</th><th>Precio</th><th>Resultado</th></tr></thead>
-                    <tbody>{rows.map(([n, d, usd, pp, price2, tone]) => (
-                      <tr key={n}><td><div className="font-bold text-white">{n}</div><div className="text-[11px] bx-muted">{d}</div></td><td><Num v={pp} f={(v) => fm(v, 1)} /></td><td><span className="bx-num">{price2}</span></td><td><span className="bx-num font-bold" style={{ color: `var(--${tone})` }}>{fsm(usd)}</span><div className="text-[11px] bx-muted">{fm(pctOf(usd), 2)}%</div></td></tr>
-                    ))}</tbody>
-                  </table>
-                </div>
-              </>
-            ) : <p className="mt-2 text-sm bx-muted">Escribe tu Stop Loss en {ins.unit} para calcular lote y niveles.</p>}
-          </div>
-        </div>
-      </div>
-
-      <div className="bx-card p-5" data-testid="sim-day">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div><h3 className="text-lg font-black text-white">Mi día de trading</h3><p className="text-sm bx-muted">Marca cómo cerró cada operación y mira qué te permite el plan.</p></div>
-          <button type="button" className="bx-ghost" onClick={() => setDay([])} data-testid="sim-reset">↺ Reiniciar día</button>
-        </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          {Object.entries(SIM_RES).map(([k, [l]]) => <button key={k} type="button" className="bx-ghost" disabled={!!end} onClick={() => add(k)} data-testid={`sim-add-${k}`} style={{ opacity: end ? 0.4 : 1 }}>{l}</button>)}
-        </div>
-        <ul className="mt-3 space-y-1.5">
-          {day.map((t, i) => <li key={i} className="mb-item"><span className="bx-num text-[11px] bx-muted">#{i + 1}</span><b className="text-white">{SIM_RES[t.r][0]}</b><span className="bx-muted text-[11px]">riesgo ${fm(t.risk)}</span><span className="ml-auto bx-num text-xs font-bold" style={{ color: t.usd > 0 ? "var(--pos)" : t.usd < 0 ? "var(--neg)" : "var(--cardink2)" }}>{fsm(t.usd)}</span></li>)}
-          {day.length === 0 && <li className="text-xs bx-muted">Aún no has registrado operaciones hoy.</li>}
-        </ul>
-      </div>
-      <p className="text-xs bx-muted">Simulación educativa: los valores por pip/punto son aproximados. No es asesoría financiera.</p>
-    </section>
-  );
-}
-
 function PlanTrading() {
   return (
     <div className="space-y-8" data-testid="plan-trading">
@@ -5890,7 +5592,6 @@ function PlanTrading() {
           </div>
         ))}
       </div>
-      <RiskSimulator />
     </div>
   );
 }
@@ -5938,7 +5639,7 @@ function MemberPage({ setPage }) {
   const hasGold = chans.includes("GOLD");
   const mark = `${rec.n} · ${who.ident}`;
   const storeKey = `pzfx_synlog_v2:${who.p.norm}`;
-  const SECS = [["home", "Inicio"], ["course", "Curso"], ...(hasSyn ? [["log", "Bitácora"]] : []), ...(hasGold ? [["plan", "Plan de Trading"]] : []), ["lib", "Biblioteca"], ["tut", "Manual de Operativa"]];
+  const SECS = [["home", "Inicio"], ["course", "Curso"], ...(hasSyn ? [["log", "Bitácora"]] : []), ...(hasGold ? [["plan", "Plan de Trading"]] : []), ["tut", "Manual de Operativa"]];
   return (
     <div className="max-w-5xl mx-auto" data-testid="member-portal">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -5969,7 +5670,7 @@ function MemberPage({ setPage }) {
             <p className="mt-3 text-xs bx-muted">¿Algún problema con tu acceso? <a className="underline font-bold" style={{ color: "var(--accent)" }} href={`https://t.me/${MEMBER_SUPPORT}`} target="_blank" rel="noopener noreferrer">Escribe a soporte</a>.</p>
           </section>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {[["course", "🎬", "Curso", "Módulos y clases en video", true], ["log", "📓", "Bitácora", "Gestión de riesgo y métricas de Sintéticos", hasSyn], ["plan", "📊", "Plan de Trading", "Plan de riesgo del canal de Oro + simulador", hasGold], ["lib", "📚", "Biblioteca", "La Biblia del Trading y más guías en PDF", true], ["tut", "📘", "Manual de Operativa", "Cómo tomar señales, lenguaje y reglas de disciplina", true]].filter((x) => x[4]).map(([k, i, t, d]) => (
+            {[["course", "🎬", "Curso", "Módulos y clases en video", true], ["log", "📓", "Bitácora", "Gestión de riesgo y métricas de Sintéticos", hasSyn], ["plan", "📊", "Plan de Trading", "Plan de riesgo del canal de Oro", hasGold], ["tut", "📘", "Manual de Operativa", "Cómo tomar señales, lenguaje y reglas de disciplina", true]].filter((x) => x[4]).map(([k, i, t, d]) => (
               <button key={k} type="button" className="bx-card p-4 text-left" onClick={() => { setSec(k); window.scrollTo(0, 0); }}><div className="text-2xl" aria-hidden="true">{i}</div><div className="mt-1 font-black text-white">{t}</div><div className="text-xs bx-muted">{d}</div></button>
             ))}
           </div>
@@ -5978,7 +5679,6 @@ function MemberPage({ setPage }) {
       {sec === "course" && <div className="mt-5"><CourseView mark={mark} /></div>}
       {sec === "log" && hasSyn && <div className="mt-5"><Logbook storeKey={storeKey} /></div>}
       {sec === "plan" && hasGold && <div className="mt-5"><PlanTrading /></div>}
-      {sec === "lib" && <div className="mt-5"><LibraryView /></div>}
       {sec === "tut" && <div className="mt-5"><OperativaManual /></div>}
     </div>
   );
@@ -6323,7 +6023,7 @@ function LinksPage({ setPage }) {
   );
 }
 
-const PAGE_PATHS = { links: "/", home: "/home", member: "/mi-acceso", track: "/track-record", signals: "/senales", vip: "/vip-gratis", tools: "/herramientas", admin: "/elpatron" }; // el panel de administración vive en /elpatron
+const PAGE_PATHS = { links: "/", home: "/home", member: "/mi-acceso", track: "/track-record", signals: "/senales", tools: "/herramientas", admin: "/elpatron" }; // el panel de administración vive en /elpatron
 const pageFromPath = () => {
   try {
     const p = (window.location.pathname || "/").replace(/\/+$/, "") || "/";
@@ -6397,7 +6097,14 @@ export default function App() {
   // navegación
   const [tab, setTab] = useState("CFD"); // CFD | SINTETICO
   const [signalKind, setSignalKind] = useState("CFD"); // CFD | SINTETICO: lo eliges en el menú de "Señales"
-  const [sigMenu, setSigMenu] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+    const k = (e) => { if (e.key === "Escape") setMenuOpen(false); };
+    document.addEventListener("keydown", k);
+    const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
+    return () => { document.removeEventListener("keydown", k); document.body.style.overflow = prev; };
+  }, [menuOpen]);
   const [accessOpen, setAccessOpen] = useState(false);
   const openAccess = () => { if (readSess()) { setPage("member"); window.scrollTo(0, 0); } else if (page !== "member") setAccessOpen(true); };
   const [showSubs, setShowSubs] = useState(false); // los subfiltros solo aparecen al pulsar CFDS o SINTÉTICOS
@@ -6870,46 +6577,24 @@ export default function App() {
 
   return (
     <div className={`bx-root ${page === "home" ? "bx-home" : ""}`} data-theme={theme}>
-      {page !== "admin" && page !== "member" && <TelegramFab />}
       <style>{CSS}</style>
       <div className="bx-sitebg" aria-hidden="true" />
       {accessOpen && page !== "member" && <AccessModal onClose={() => setAccessOpen(false)} onSuccess={() => { setAccessOpen(false); setPage("member"); window.scrollTo(0, 0); }} />}
 
       {/* ------------------------- HEADER ------------------------- */}
       <header className="bx-header relative z-30">
-        <div className="max-w-5xl mx-auto px-4 py-2.5 md:py-3 flex flex-wrap items-center gap-x-4 gap-y-1">
-          <a href={PAGE_PATHS.home} onClick={(e) => { e.preventDefault(); setPage("home"); window.scrollTo(0, 0); }} className="flex items-center gap-3 order-1" data-testid="brand-link" aria-label="Ir al inicio" style={{ textDecoration: "none" }}>
+        <div className="max-w-5xl mx-auto px-4 py-2.5 md:py-3 flex items-center gap-x-4">
+          <a href={PAGE_PATHS.home} onClick={(e) => { e.preventDefault(); setPage("home"); window.scrollTo(0, 0); }} className="flex items-center gap-3" data-testid="brand-link" aria-label="Ir al inicio" style={{ textDecoration: "none" }}>
             <img src={LOGO} alt="PRECISION ZONE FX" className="w-7 h-7 md:w-8 md:h-8 object-contain" />
             <div>
               <div className="bx-display bx-brand text-lg md:text-xl tracking-[0.06em] leading-none whitespace-nowrap" style={{ color: "var(--ink)" }}>PRECISION <span style={{ color: ACCENT }}>ZONE FX</span></div>
             </div>
           </a>
 
-          <div className="order-2 md:order-3 ml-auto md:ml-0 flex items-center gap-2">
+          <div className="ml-auto flex items-center gap-2">
             <button type="button" className="bx-gold bx-gold-sm" onClick={openAccess} data-testid="member-btn">Mi Acceso</button>
-            {isAdmin && <button onClick={logout} className="bx-ghost-page">Salir de Admin</button>}
+            <button type="button" className="bx-burger" onClick={() => setMenuOpen(true)} aria-label="Abrir menú" aria-expanded={menuOpen} aria-controls="pz-menu" data-testid="menu-btn"><span /><span /><span /></button>
           </div>
-
-          <nav className="bx-hnav order-3 md:order-2 w-full md:w-auto md:mr-auto md:ml-3" data-testid="main-nav" aria-label="Principal">
-            <div className="relative hidden md:block" onMouseEnter={() => setSigMenu(true)} onMouseLeave={() => setSigMenu(false)} data-testid="signals-menu">
-              <button onClick={() => { setPage("signals"); setSigMenu((v) => !v); }} aria-haspopup="menu" aria-expanded={sigMenu} className={`bx-navbtn ${page === "signals" ? "on" : ""}`}>Señales <span style={{ fontSize: ".7em" }}>▾</span></button>
-              {sigMenu && (
-                <div role="menu" className="absolute left-0 top-full z-50 pt-1" style={{ minWidth: 170 }}>
-                  <div className="bx-card p-1.5 space-y-1" style={{ background: "var(--c2)" }}>
-                    {[["CFD", "CFDs"], ["SINTETICO", "Sintéticos"]].map(([v, t]) => (
-                      <button key={v} role="menuitem" onClick={() => { setSignalKind(v); setPage("signals"); setSigMenu(false); }} className={`bx-navbtn w-full text-left ${page === "signals" && signalKind === v ? "on" : ""}`} style={{ display: "block" }}>{t}</button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            {[["CFD", "Señales CFDs"], ["SINTETICO", "Sintéticos"]].map(([v, t]) => (
-              <button key={v} onClick={() => { setSignalKind(v); setPage("signals"); }} className={`bx-navbtn md:hidden ${page === "signals" && signalKind === v ? "on" : ""}`}>{t}</button>
-            ))}
-            {[["tools", "Herramientas"], ["track", "Track Record"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => (
-              <button key={k} onClick={() => setPage(k)} className={`bx-navbtn ${page === k ? "on" : ""}`} aria-current={page === k ? "page" : undefined}>{l}</button>
-            ))}
-          </nav>
         </div>
         {isAdmin && (
           <div className="text-center text-[11px] tracking-[0.25em] py-1 font-bold" style={{ background: ACCENT_HEX, color: "#17120a" }}>
@@ -6917,6 +6602,37 @@ export default function App() {
           </div>
         )}
       </header>
+
+      {menuOpen && (
+        <div className="pz-mov" onMouseDown={(e) => { if (e.target === e.currentTarget) setMenuOpen(false); }} data-testid="menu-overlay">
+          <aside id="pz-menu" className="pz-mpanel" role="dialog" aria-modal="true" aria-label="Menú principal" data-testid="menu-panel">
+            <div className="flex items-center justify-between gap-3">
+              <a href={PAGE_PATHS.home} onClick={(e) => { e.preventDefault(); setMenuOpen(false); setPage("home"); window.scrollTo(0, 0); }} className="flex items-center gap-2.5 min-w-0" style={{ textDecoration: "none" }} aria-label="Ir al inicio">
+                <img src={LOGO} alt="" className="w-7 h-7 object-contain" />
+                <span className="bx-display text-base tracking-[0.06em] leading-none whitespace-nowrap" style={{ color: "var(--ink)" }}>PRECISION <span style={{ color: ACCENT }}>ZONE FX</span></span>
+              </a>
+              <div className="flex items-center gap-2">
+                <button type="button" className="bx-gold bx-gold-sm" onClick={() => { setMenuOpen(false); openAccess(); }} data-testid="menu-member">Mi Acceso</button>
+                <button type="button" className="pz-x2" onClick={() => setMenuOpen(false)} aria-label="Cerrar menú" data-testid="menu-close">✕</button>
+              </div>
+            </div>
+            <nav className="pz-mlist" aria-label="Principal" data-testid="menu-list">
+              {[["home", "Inicio", null], ["signals", "Señales CFDs", "CFD"], ["signals", "Señales Sintéticos", "SINTETICO"], ["tools", "Herramientas", null], ["track", "Track Record", null], ...(isAdmin ? [["admin", "Panel Admin", null]] : [])].map(([k, l, kind]) => {
+                const on = page === k && (!kind || signalKind === kind);
+                return (
+                  <button key={l} type="button" className={on ? "on" : ""} aria-current={on ? "page" : undefined} onClick={() => { if (kind) setSignalKind(kind); setMenuOpen(false); setPage(k); window.scrollTo(0, 0); }}>
+                    <span>{l}</span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3.5l5 4.5-5 4.5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                  </button>
+                );
+              })}
+            </nav>
+            <div className="mt-auto pt-5 space-y-2">
+              {isAdmin && <button type="button" className="bx-ghost w-full" onClick={() => { setMenuOpen(false); logout(); }}>Salir de Admin</button>}
+              <button type="button" className="bx-gold bx-cta w-full" onClick={() => { setMenuOpen(false); setPage("track"); window.scrollTo(0, 0); }} data-testid="menu-main">Ver el Track Record</button>
+            </div>
+          </aside>
+        </div>
+      )}
 
       <Ticker />
 
@@ -6928,7 +6644,6 @@ export default function App() {
 
       <main className={`${page === "admin" ? "max-w-6xl" : "max-w-5xl"} mx-auto px-4 py-6 space-y-6`}>
         {page === "member" && <MemberPage setPage={setPage} />}
-        {page === "vip" && <VipPage />}
         {page === "home" && <HomePage trades={visible} setPage={setPage} openSignals={(k) => { setSignalKind(k); setPage("signals"); }} openTool={(k) => { setTool(k); setPage("tools"); }} />}
         {page === "tools" && <ToolsPage tool={tool} setTool={setTool} />}
         {page === "track" && (<>
@@ -7176,11 +6891,9 @@ export default function App() {
                 <h4>Explorar</h4>
                 <ul>
                   <li><button type="button" onClick={() => { setPage("track"); window.scrollTo(0, 0); }}>Track Record</button></li>
-                  <li><button type="button" onClick={openAccess} data-testid="footer-member">Mi Acceso</button></li>
                   <li><button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }}>Herramientas</button></li>
                   <li><button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }}>Señales CFDs</button></li>
                   <li><button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }}>Señales Sintéticos</button></li>
-                  <li><button type="button" onClick={() => { setPage("vip"); window.scrollTo(0, 0); }} data-testid="footer-vip-free">VIP gratis</button></li>
                 </ul>
               </nav>
               <div>
