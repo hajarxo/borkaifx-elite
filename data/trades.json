@@ -5312,5 +5312,48 @@
     "status": "BE",
     "pips": 0,
     "r": 0
+  },
+  {
+    "id": "m18qpx3gmww47pzo",
+    "date": "2026-11-25",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "STEP INDEX 500",
+    "direction": "BUY",
+    "entry1": 3959.6,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 3954.6,
+    "tps": [
+      4019.6
+    ],
+    "pipSize": 0.1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 4019.6,
+        "pips": 600,
+        "tpIdx": 0,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "STEP INDEX 500 BUY 3959.6\nSL 3954.6 \nTP1 4019.6",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 600,
+    "r": 12
   }
 ]
