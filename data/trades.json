@@ -5579,6 +5579,49 @@
     "r": 0
   },
   {
+    "id": "192yp1rfmwwd4q57",
+    "date": "2026-11-25",
+    "category": "CFD",
+    "sub": "Forex",
+    "broker": "",
+    "asset": "GBPJPY",
+    "direction": "SELL",
+    "entry1": 208.924,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 209.295,
+    "tps": [
+      207.61
+    ],
+    "pipSize": 0.01,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 207.61,
+        "pips": 131.4,
+        "tpIdx": 0,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "GBPJPY SELL NOW 208.924\nSL 209.295\nTP 206.975",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal",
+      "Daniela"
+    ],
+    "status": "TP",
+    "pips": 131.4,
+    "r": 3.54
+  },
+  {
     "id": "7wcwkmucmwwcpmki",
     "date": "2026-11-25",
     "category": "CFD",
