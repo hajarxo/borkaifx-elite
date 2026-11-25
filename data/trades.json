@@ -5606,10 +5606,10 @@
         "reached": null
       },
       "e2": {
-        "status": "TP",
-        "exit": 3451,
-        "pips": 120,
-        "tpIdx": 1,
+        "status": "BE",
+        "exit": 3463,
+        "pips": 0,
+        "tpIdx": null,
         "reached": null
       }
     },
@@ -5621,9 +5621,9 @@
       "VIP Signal",
       "Sebas"
     ],
-    "status": "TP",
-    "pips": 120,
-    "r": 1
+    "status": "BE",
+    "pips": 0,
+    "r": 0
   },
   {
     "id": "m18qpx3gmww47pzo",
