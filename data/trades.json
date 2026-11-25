@@ -5608,7 +5608,7 @@
       "e2": {
         "status": "BE",
         "exit": 3463,
-        "pips": 0,
+        "pips": 120,
         "tpIdx": null,
         "reached": null
       }
@@ -5622,8 +5622,8 @@
       "Sebas"
     ],
     "status": "BE",
-    "pips": 0,
-    "r": 0
+    "pips": 120,
+    "r": 1
   },
   {
     "id": "m18qpx3gmww47pzo",
