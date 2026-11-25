@@ -5626,6 +5626,53 @@
     "r": 1
   },
   {
+    "id": "bxzvczkmmwwcqznt",
+    "date": "2026-11-25",
+    "category": "CFD",
+    "sub": "Oro/Metales",
+    "broker": "",
+    "asset": "XAUUSD",
+    "direction": "SELL",
+    "entry1": 3502,
+    "entry2": 3504,
+    "activation": "BOTH",
+    "sl": 3517,
+    "tps": [
+      3497,
+      3492,
+      3487,
+      "OPEN"
+    ],
+    "pipSize": 0.1,
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 3497,
+        "pips": 50,
+        "tpIdx": 0,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null,
+        "reached": null
+      }
+    },
+    "discarded": true,
+    "raw": "Gold 🏆\nPair: XAUUSD 📊\nSide: Short / Sell Limit\nEntry: 3502 - 3504\nTP: Open\nSL: 3517\nNote: past profits do not predict future profits \nRisk 0.5-1-2% \n\nTP1 3497 50pips ✅\nTP2 3492 100pips ✅\nTP3 3487 150pips ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal",
+      "Sebas"
+    ],
+    "status": "Descartada",
+    "pips": 0,
+    "r": 0
+  },
+  {
     "id": "c2tw48ktmwwcqoch",
     "date": "2026-11-25",
     "category": "CFD",
