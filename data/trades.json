@@ -4833,6 +4833,50 @@
     "r": 3
   },
   {
+    "id": "dubgy61dmwuqpr2s",
+    "date": "2026-11-23",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "JUMP 10",
+    "direction": "SELL",
+    "entry1": 90137,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 90921,
+    "tps": [
+      89460,
+      86819
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "TP",
+        "exit": 89460,
+        "pips": 677,
+        "tpIdx": 0,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "JUMP 10 SELL 90137\nSL 90921 \nTP1 89460\nTP2 86819",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 677,
+    "r": 0.86
+  },
+  {
     "id": "l4uj49inmwt7d5hl",
     "date": "2026-11-23",
     "category": "CFD",
