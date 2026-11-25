@@ -5269,6 +5269,50 @@
     "r": 5
   },
   {
+    "id": "r6r56osqmww3l2b5",
+    "date": "2026-11-24",
+    "category": "CFD",
+    "sub": "Oro/Metales",
+    "broker": "",
+    "asset": "XAUUSD",
+    "direction": "BUY",
+    "entry1": 3495,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 3479,
+    "tps": [
+      3510,
+      3700,
+      "OPEN"
+    ],
+    "pipSize": 0.1,
+    "legs": {
+      "e1": {
+        "status": "BE",
+        "exit": 3495,
+        "pips": 0,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "Gold 🏆\nPair: XAUUSD 📊\nSide: Long / Buy Limit\nEntry: 3495.00\nTP: Open\nSL: 3479.00\nNote: past profits do not predict future profits \nRisk 0.5-1-2% \n\nTP1 3510.00 150pips ✅\nTP2 3700.00 2050pips ✅\n\nUse Proper Risk Management",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "BE",
+    "pips": 0,
+    "r": 0
+  },
+  {
     "id": "xeywo0egmwv2nqya",
     "date": "2026-11-24",
     "category": "CFD",
@@ -5355,49 +5399,5 @@
     "status": "TP",
     "pips": 600,
     "r": 12
-  },
-  {
-    "id": "r6r56osqmww3l2b5",
-    "date": "2026-11-25",
-    "category": "CFD",
-    "sub": "Oro/Metales",
-    "broker": "",
-    "asset": "XAUUSD",
-    "direction": "BUY",
-    "entry1": 3495,
-    "entry2": "",
-    "activation": "E1",
-    "sl": 3479,
-    "tps": [
-      3510,
-      3700,
-      "OPEN"
-    ],
-    "pipSize": 0.1,
-    "legs": {
-      "e1": {
-        "status": "BE",
-        "exit": 3495,
-        "pips": 0,
-        "tpIdx": null,
-        "reached": null
-      },
-      "e2": {
-        "status": "Pendiente",
-        "exit": "",
-        "pips": "",
-        "tpIdx": null
-      }
-    },
-    "discarded": false,
-    "raw": "Gold 🏆\nPair: XAUUSD 📊\nSide: Long / Buy Limit\nEntry: 3495.00\nTP: Open\nSL: 3479.00\nNote: past profits do not predict future profits \nRisk 0.5-1-2% \n\nTP1 3510.00 150pips ✅\nTP2 3700.00 2050pips ✅\n\nUse Proper Risk Management",
-    "notes": "",
-    "mgmt": "",
-    "tags": [
-      "VIP Signal"
-    ],
-    "status": "BE",
-    "pips": 0,
-    "r": 0
   }
 ]
