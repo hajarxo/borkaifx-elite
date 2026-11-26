@@ -259,6 +259,22 @@ linear-gradient(180deg,rgba(255,90,31,.045) 0 1px,transparent 1px) 0 0/100% 160p
 .pz-mlist button.on{color:var(--accent)}
 @keyframes pzslide{from{transform:translateX(24px);opacity:0}to{transform:none;opacity:1}}
 @media (prefers-reduced-motion:reduce){.pz-mov,.pz-mpanel{animation:none}}
+/* ===== Estilo tipo OHLC: negro profundo, tarjetas planas con borde fino, etiquetas en píldora, navegación en línea (colores de marca) ===== */
+html,body,.bx-root{background:#050608}
+.bx-sitebg{background:radial-gradient(900px 460px at 50% -10%,rgba(255,90,31,.15),transparent 66%),radial-gradient(700px 420px at 100% 100%,rgba(194,65,12,.10),transparent 62%),#050608}
+.bx-sitebg::after{display:none}
+.bx-header{background:rgba(5,6,8,.72);border-bottom:1px solid rgba(255,255,255,.07)}
+.bx-card,.bx-plan,.bx-cmp,.bx-ticket,.bx-finalcta{border-radius:16px;border:1px solid rgba(255,255,255,.08);box-shadow:none;transition:border-color .2s var(--ease),background .2s var(--ease)}
+.bx-card,.bx-plan,.bx-cmp{background:rgba(255,255,255,.028)}
+.bx-card:hover,.bx-plan:hover,.bx-cmp:hover{border-color:rgba(255,255,255,.16)}
+.bx-cmp.yes,.bx-plan.hot{border-color:rgba(255,90,31,.5)}
+.bx-kicker{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .75rem;border-radius:999px;border:1px solid rgba(255,90,31,.35);background:rgba(255,90,31,.08);font-size:.72rem!important;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+.bx-kicker.center{display:flex;width:fit-content;margin-left:auto;margin-right:auto}
+.bx-gold,.bx-btn,.bx-cta,.bx-planbtn{border-radius:.7rem}
+.bx-dnav{display:none;align-items:center;gap:.15rem;margin-left:1.25rem}
+.bx-dnav button{padding:.5rem .85rem;border-radius:.6rem;font-size:.88rem;font-weight:600;color:var(--cardink2);background:transparent;border:0;cursor:pointer;transition:color .15s,background .15s}
+.bx-dnav button:hover,.bx-dnav button.on{color:var(--cardink);background:rgba(255,255,255,.06)}
+@media(min-width:768px){.bx-dnav{display:flex}.bx-burger{display:none}.pz-mov{display:none}}
 .pz-ov{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(5,7,10,.58);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:pzov .22s ease both}
 .pz-glass{position:relative;width:100%;max-width:440px;max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;border-radius:26px;padding:26px 24px 22px;color:var(--cardink);background:linear-gradient(160deg,rgba(255,255,255,.11),rgba(255,255,255,.035) 55%,rgba(255,90,31,.08));border:1px solid rgba(255,255,255,.17);-webkit-backdrop-filter:blur(28px) saturate(1.5);backdrop-filter:blur(28px) saturate(1.5);box-shadow:0 40px 90px -30px rgba(0,0,0,.85),0 0 0 1px rgba(255,90,31,.10),inset 0 1px 0 rgba(255,255,255,.15);animation:pzin .3s cubic-bezier(.2,.8,.2,1) both}
 .pz-glass .bx-input{background:rgba(5,8,12,.45);border-color:rgba(255,255,255,.15)}
@@ -6101,9 +6117,10 @@ export default function App() {
   useEffect(() => {
     if (!menuOpen) return undefined;
     const k = (e) => { if (e.key === "Escape") setMenuOpen(false); };
-    document.addEventListener("keydown", k);
+    const rz = () => { if (window.innerWidth >= 768) setMenuOpen(false); };
+    document.addEventListener("keydown", k); window.addEventListener("resize", rz);
     const prev = document.body.style.overflow; document.body.style.overflow = "hidden";
-    return () => { document.removeEventListener("keydown", k); document.body.style.overflow = prev; };
+    return () => { document.removeEventListener("keydown", k); window.removeEventListener("resize", rz); document.body.style.overflow = prev; };
   }, [menuOpen]);
   const [accessOpen, setAccessOpen] = useState(false);
   const openAccess = () => { if (readSess()) { setPage("member"); window.scrollTo(0, 0); } else if (page !== "member") setAccessOpen(true); };
@@ -6591,6 +6608,12 @@ export default function App() {
             </div>
           </a>
 
+          <nav className="bx-dnav" aria-label="Principal" data-testid="main-nav">
+            {[["signals", "Señales CFDs"], ["tools", "Herramientas"], ["track", "Track Record"], ...(isAdmin ? [["admin", "Panel Admin"]] : [])].map(([k, l]) => (
+              <button key={k} type="button" className={page === k ? "on" : ""} aria-current={page === k ? "page" : undefined} onClick={() => { if (k === "signals") setSignalKind("CFD"); setPage(k); window.scrollTo(0, 0); }}>{l}</button>
+            ))}
+            {isAdmin && <button type="button" onClick={logout}>Salir de Admin</button>}
+          </nav>
           <div className="ml-auto flex items-center gap-2">
             <button type="button" className="bx-gold bx-gold-sm" onClick={openAccess} data-testid="member-btn">Mi Acceso</button>
             <button type="button" className="bx-burger" onClick={() => setMenuOpen(true)} aria-label="Abrir menú" aria-expanded={menuOpen} aria-controls="pz-menu" data-testid="menu-btn"><span /><span /><span /></button>
@@ -6617,7 +6640,7 @@ export default function App() {
               </div>
             </div>
             <nav className="pz-mlist" aria-label="Principal" data-testid="menu-list">
-              {[["home", "Inicio", null], ["signals", "Señales CFDs", "CFD"], ["signals", "Señales Sintéticos", "SINTETICO"], ["tools", "Herramientas", null], ["track", "Track Record", null], ...(isAdmin ? [["admin", "Panel Admin", null]] : [])].map(([k, l, kind]) => {
+              {[["home", "Inicio", null], ["signals", "Señales CFDs", "CFD"], ["tools", "Herramientas", null], ["track", "Track Record", null], ...(isAdmin ? [["admin", "Panel Admin", null]] : [])].map(([k, l, kind]) => {
                 const on = page === k && (!kind || signalKind === kind);
                 return (
                   <button key={l} type="button" className={on ? "on" : ""} aria-current={on ? "page" : undefined} onClick={() => { if (kind) setSignalKind(kind); setMenuOpen(false); setPage(k); window.scrollTo(0, 0); }}>
@@ -6657,7 +6680,7 @@ export default function App() {
 
           <div className="mt-6 space-y-2.5 bx-hero-filters">
             <div className="flex flex-wrap justify-center gap-2">
-              {[["CFD", "CFDs"], ["SINTETICO", "Sintéticos"]].map(([k, label]) => (
+              {[["CFD", "CFDs"], ...(isAdmin ? [["SINTETICO", "Sintéticos"]] : [])].map(([k, label]) => (
                 <button key={k} onClick={() => { if (tab === k) setShowSubs((v) => !v); else { setTab(k); setShowSubs(true); } }} className={`bx-tab ${tab === k ? "on" : ""}`} aria-expanded={tab === k && showSubs}>
                   {label.toUpperCase()}
                 </button>
@@ -6877,7 +6900,7 @@ export default function App() {
             {adminTab === "members" && <MembersAdmin />}
           </div>
         )}
-        {page === "signals" && <ServicesPricing setPage={setPage} kind={signalKind} />}
+        {page === "signals" && <ServicesPricing setPage={setPage} kind="CFD" />}
 
         {/* ------------------------- FOOTER ------------------------- */}
         <footer className="bx-foot bx-ink2" data-testid="site-footer">
@@ -6893,7 +6916,6 @@ export default function App() {
                   <li><button type="button" onClick={() => { setPage("track"); window.scrollTo(0, 0); }}>Track Record</button></li>
                   <li><button type="button" onClick={() => { setPage("tools"); window.scrollTo(0, 0); }}>Herramientas</button></li>
                   <li><button type="button" onClick={() => { setSignalKind("CFD"); setPage("signals"); window.scrollTo(0, 0); }}>Señales CFDs</button></li>
-                  <li><button type="button" onClick={() => { setSignalKind("SINTETICO"); setPage("signals"); window.scrollTo(0, 0); }}>Señales Sintéticos</button></li>
                 </ul>
               </nav>
               <div>
