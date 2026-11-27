@@ -5939,6 +5939,51 @@
     "r": 1.07
   },
   {
+    "id": "md58v0knmwz3q6yq",
+    "date": "2026-11-26",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "VOLATILITY 25",
+    "direction": "SELL",
+    "entry1": 3010,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 3038,
+    "tps": [
+      2960,
+      2910,
+      2660
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "MANUAL",
+        "exit": "",
+        "pips": 5,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "VOLATILITY 25 SELL 3010\nSL 3038 \nTP1 2960 \nTP2 2910\nTP3 2660",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "TP",
+    "pips": 5,
+    "r": 0.18
+  },
+  {
     "id": "srxoavgnmwz3ljik",
     "date": "2026-11-26",
     "category": "SINTETICO",
