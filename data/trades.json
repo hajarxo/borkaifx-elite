@@ -5936,5 +5936,49 @@
     "status": "SL",
     "pips": -40,
     "r": -1
+  },
+  {
+    "id": "h0aphnb7mwz3n4ib",
+    "date": "2026-11-27",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "BOOM 900",
+    "direction": "BUY",
+    "entry1": 9205,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 9176.89,
+    "tps": [
+      9270.894,
+      9315.779
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "BE",
+        "exit": 9205,
+        "pips": 0,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "BOOM 900 BUY NOW 9205\nSL: 9176.890\nTP1: 9270.894\nTP2: 9315.779",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "BE",
+    "pips": 0,
+    "r": 0
   }
 ]
