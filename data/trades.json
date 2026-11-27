@@ -5961,7 +5961,7 @@
       "e1": {
         "status": "MANUAL",
         "exit": "",
-        "pips": 5,
+        "pips": -5,
         "tpIdx": null,
         "reached": null
       },
@@ -5979,9 +5979,9 @@
     "tags": [
       "VIP Signal"
     ],
-    "status": "TP",
-    "pips": 5,
-    "r": 0.18
+    "status": "SL",
+    "pips": -5,
+    "r": -0.18
   },
   {
     "id": "srxoavgnmwz3ljik",
