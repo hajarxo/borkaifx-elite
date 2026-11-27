@@ -5959,7 +5959,7 @@
       "e1": {
         "status": "BE",
         "exit": 9205,
-        "pips": 0,
+        "pips": 30,
         "tpIdx": null,
         "reached": null
       },
@@ -5978,7 +5978,7 @@
       "VIP Signal"
     ],
     "status": "BE",
-    "pips": 0,
-    "r": 0
+    "pips": 30,
+    "r": 1.07
   }
 ]
