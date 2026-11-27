@@ -6025,5 +6025,50 @@
     "status": "SL",
     "pips": -40,
     "r": -1
+  },
+  {
+    "id": "vi94ywjomwz3w2ew",
+    "date": "2026-11-27",
+    "category": "SINTETICO",
+    "sub": "",
+    "broker": "DERIV",
+    "asset": "CRASH 900",
+    "direction": "BUY",
+    "entry1": 17290,
+    "entry2": "",
+    "activation": "E1",
+    "sl": 17270,
+    "tps": [
+      17310,
+      17365,
+      17440
+    ],
+    "pipSize": 1,
+    "unit": "puntos",
+    "legs": {
+      "e1": {
+        "status": "SL",
+        "exit": 17270,
+        "pips": -20,
+        "tpIdx": null,
+        "reached": null
+      },
+      "e2": {
+        "status": "Pendiente",
+        "exit": "",
+        "pips": "",
+        "tpIdx": null
+      }
+    },
+    "discarded": false,
+    "raw": "CRASH 900 BUY 17290\nSL 17270\nTP1 17310\nTP2 17365\nTP3 17440",
+    "notes": "",
+    "mgmt": "",
+    "tags": [
+      "VIP Signal"
+    ],
+    "status": "SL",
+    "pips": -20,
+    "r": -1
   }
 ]
